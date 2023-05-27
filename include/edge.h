@@ -1,8 +1,8 @@
 #ifndef EDGE_H
 #define EDGE_H
 
-#include <string>
 #include <ostream>
+#include <string>
 #include <vector>
 
 namespace frac {
@@ -13,26 +13,28 @@ enum class EdgeType {
 
 class Edge {
 public:
-    Edge(Edge const &other);
+    Edge(Edge const& other);
     Edge(EdgeType edgeType, unsigned int nbSubdivisions, unsigned int delay = 0);
 
-    EdgeType edgeType() const;
-    unsigned int delay() const;
-    unsigned int nbSubdivisions() const;
+    [[nodiscard]] EdgeType edgeType() const;
+    [[nodiscard]] unsigned int nbSubdivisions() const;
+    [[nodiscard]] unsigned int delay() const;
 
-    bool isDelay() const;
-    std::vector<Edge> subdivisions() const;
+    [[nodiscard]] std::vector<Edge> subdivisions() const;
+    [[nodiscard]] bool isDelay() const;
 
-    friend std::ostream &operator<<(std::ostream &os, const Edge &edge);
-    bool operator==(Edge const &other) const;
-    bool operator!=(Edge const &other) const;
+    friend std::ostream& operator<<(std::ostream& os, const Edge& edge);
+    bool operator==(Edge const& other) const;
+    bool operator!=(Edge const& other) const;
 
 private:
     EdgeType m_edgeType;
     unsigned int m_nbSubdivisions;
     unsigned int m_delay;
 };
-}
+
+} // frac
+
 #endif // EDGE_H
 
 
