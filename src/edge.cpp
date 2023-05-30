@@ -8,6 +8,11 @@ frac::Edge::Edge(Edge const& other) :
         m_edgeType(other.m_edgeType), m_nbSubdivisions(other.m_nbSubdivisions), m_delay(other.m_delay) {
 }
 
+void frac::Edge::decreaseDelay() {
+    if (this->isDelay())
+        this->m_delay--;
+}
+
 frac::EdgeType frac::Edge::edgeType() const {
     return this->m_edgeType;
 }

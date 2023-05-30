@@ -3,9 +3,8 @@
 
 #include <vector>
 #include <map>
-#include <set>
-#include <functional>
 #include "edge.h"
+#include "uniquevector.h"
 
 namespace frac {
 
@@ -19,8 +18,10 @@ public:
     [[nodiscard]] std::string name() const;
     [[nodiscard]] int offset() const;
     void setFirstInterior(int index);
+    std::vector<Face> subdivisions() const;
+    UniqueVector<Face> allSubdivisions() const;
 
-    Edge const& operator[](int index) const;
+    Edge const& operator[](std::size_t index) const;
     bool operator==(Face const& other) const;
     friend std::ostream& operator<<(std::ostream& os, const Face& edge);
 
@@ -35,7 +36,7 @@ private:
     int m_offset;
     int m_firstInterior;
 
-    inline static std::set<Face, std::equal_to<>> s_existingFaces;
+    inline static UniqueVector<Face> s_existingFaces;
     inline static std::map<std::string, std::string> s_incidenceConstraints;
     inline static std::map<std::string, std::string> s_adjacencyConstraints;
 

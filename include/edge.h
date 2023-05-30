@@ -16,10 +16,10 @@ public:
     Edge(Edge const& other);
     Edge(EdgeType edgeType, unsigned int nbSubdivisions, unsigned int delay = 0);
 
+    void decreaseDelay();
     [[nodiscard]] EdgeType edgeType() const;
     [[nodiscard]] unsigned int nbSubdivisions() const;
     [[nodiscard]] unsigned int delay() const;
-
     [[nodiscard]] std::vector<Edge> subdivisions() const;
     [[nodiscard]] bool isDelay() const;
 
