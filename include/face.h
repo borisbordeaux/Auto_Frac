@@ -12,14 +12,15 @@ class Face {
 public:
     explicit Face(std::vector<Edge> edges, unsigned int delay = 0, const Edge& adjEdge = { EdgeType::CANTOR, 2 }, const Edge& gapEdge = { EdgeType::BEZIER, 2 }, const Edge& reqEdge = { EdgeType::BEZIER, 2 });
 
+    [[nodiscard]] std::vector<Edge> const& data() const;
     [[nodiscard]] int firstInterior() const;
     [[nodiscard]] int lastInterior() const;
     [[nodiscard]] std::size_t len() const;
     [[nodiscard]] std::string name() const;
     [[nodiscard]] int offset() const;
     void setFirstInterior(int index);
-    std::vector<Face> subdivisions() const;
-    UniqueVector<Face> allSubdivisions() const;
+    [[nodiscard]] std::vector<Face> subdivisions() const;
+    [[nodiscard]] UniqueVector<Face> allSubdivisions() const;
 
     Edge const& operator[](std::size_t index) const;
     bool operator==(Face const& other) const;

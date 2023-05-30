@@ -27,6 +27,10 @@ frac::Face::Face(std::vector<Edge> edges, unsigned int delay, frac::Edge const& 
     }
 }
 
+std::vector<frac::Edge> const& frac::Face::data() const {
+    return this->m_data;
+}
+
 int frac::Face::firstInterior() const {
     return this->m_firstInterior;
 }
