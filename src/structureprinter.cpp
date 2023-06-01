@@ -259,23 +259,24 @@ void frac::StructurePrinter::print_bezier_state_impl(unsigned int n) {
     FilePrinter::append_nl("    B" + std::to_string(n) + ".prim.elems = [Figure(1, [Bord_('0'), Bord_('1')])]");
     for (int i = 0; i < n; ++i) {  // for each subdivision T0, T1, ... Tn-1
         FilePrinter::append_nl("    B" + std::to_string(n) + ".initMat[Sub_('" + std::to_string(i) + "')] = FMat([");
-        auto t = StructurePrinter::get_bezier_transfo(i, n);
+        auto t = StructurePrinter::get_bezier_transformation(i, n);
         FilePrinter::append_nl("        [" + std::to_string(t[0]) + ", " + std::to_string(t[1]) + ", " + std::to_string(t[2]) + "],");
         FilePrinter::append_nl("        [" + std::to_string(t[3]) + ", " + std::to_string(t[4]) + ", " + std::to_string(t[5]) + "],");
         FilePrinter::append_nl("        [" + std::to_string(t[6]) + ", " + std::to_string(t[7]) + ", " + std::to_string(t[8]) + "]]).setTyp('Const')");
     }
 }
 
-std::vector<float> frac::StructurePrinter::get_bezier_transfo(unsigned int i, unsigned int n) {
+std::vector<float> frac::StructurePrinter::get_bezier_transformation(unsigned int i, unsigned int n) {
     float denominator { static_cast<float>(n * n) };
-    return { static_cast<float>(((i - n) * (i - n))) / denominator,
-             static_cast<float>(((i - n) * (1. + i - n)) / denominator),
-             static_cast<float>(((1. + i - n) * (1. + i - n)) / denominator),
-             static_cast<float>((2. * i * (n - i)) / denominator),
-             static_cast<float>((n + 2. * i * n - 2. * i * (i + 1.)) / denominator),
-             static_cast<float>((-2. * (1. + i - n) * (1. + i)) / denominator),
-             static_cast<float>((i * i, i * (1. + i)) / denominator),
-             static_cast<float>(((i + 1.) * (i + 1.)) / denominator)
+    return { static_cast<float>((i - n) * (i - n)) / denominator,
+             static_cast<float>((i - n) * (1. + i - n)) / denominator,
+             static_cast<float>((1. + i - n) * (1. + i - n)) / denominator,
+             static_cast<float>(2. * i * (n - i)) / denominator,
+             static_cast<float>(n + 2. * i * n - 2. * i * (i + 1.)) / denominator,
+             static_cast<float>(-2. * (1. + i - n) * (1. + i)) / denominator,
+             static_cast<float>(i * i) / denominator,
+             static_cast<float>(i * (1. + i)) / denominator,
+             static_cast<float>((i + 1.) * (i + 1.)) / denominator
     };
 }
 

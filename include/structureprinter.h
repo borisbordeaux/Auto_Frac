@@ -27,7 +27,7 @@ private:
     static void print_cantor_n_state_impl(unsigned int n);
     static void print_delay_bezier_impl(unsigned int n, unsigned int delay_count);
     static void print_bezier_state_impl(unsigned int n);
-    static std::vector<float> get_bezier_transfo(unsigned int i, unsigned int n);
+    static std::vector<float> get_bezier_transformation(unsigned int i, unsigned int n);
     static void print_init_subds(Structure const& structure);
     static void print_edges_of_cell(Face const& cell);
     static void print_subd_of_cell(Face const& cell);
