@@ -1,5 +1,5 @@
-#include <iostream>
 #include "structure.h"
+#include <iostream>
 
 frac::Structure::Structure(std::vector<Face> const& faces) : m_faces(faces) {}
 
@@ -58,4 +58,12 @@ std::ostream& operator<<(std::ostream& os, frac::Structure const& structure) {
 
 frac::Face const& frac::Structure::operator[](std::size_t index) const {
     return m_faces[index];
+}
+
+std::string frac::Structure::adjacencies() const {
+    return this->m_adj;
+}
+
+const std::vector<frac::Face>& frac::Structure::faces() const {
+    return m_faces;
 }

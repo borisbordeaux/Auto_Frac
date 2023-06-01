@@ -1,5 +1,9 @@
 #include "face.h"
 
+frac::UniqueVector<frac::Face> frac::Face::s_existingFaces;
+std::map<std::string, std::string> frac::Face::s_incidenceConstraints;
+std::map<std::string, std::string> frac::Face::s_adjacencyConstraints;
+
 frac::Face::Face(std::vector<Edge> edges, unsigned int delay, frac::Edge const& adjEdge, frac::Edge const& gapEdge, frac::Edge const& reqEdge) :
         m_data(std::move(edges)), m_delay(delay), m_adjEdge(adjEdge), m_gapEdge(gapEdge), m_reqEdge(reqEdge), m_nbSubdivisions(0), m_offset(0), m_firstInterior(-1) {
     for (Face const& f: s_existingFaces.data()) {
@@ -215,14 +219,14 @@ bool frac::Face::operator==(frac::Face const& other) const {
 }
 
 namespace frac {
-std::ostream& operator<<(std::ostream& os, frac::Face const& edge) {
-    os << edge.m_name << " : [" << edge[0];
-    for (int i = 1; i < edge.len(); ++i) {
-        os << ", " << edge[i];
+std::ostream& operator<<(std::ostream& os, frac::Face const& face) {
+    os << face.m_name << " : [" << face[0];
+    for (int i = 1; i < face.len(); ++i) {
+        os << ", " << face[i];
     }
-    os << "], " << edge.m_nbSubdivisions << " subdivisions, interior is ";
+    os << "], " << face.m_nbSubdivisions << " subdivisions, interior is ";
 
-    for (const Edge& e: Face::interior(edge.m_adjEdge, edge.m_gapEdge)) {
+    for (const Edge& e: Face::interior(face.m_adjEdge, face.m_gapEdge)) {
         os << e << " ";
     }
 
@@ -290,6 +294,19 @@ frac::UniqueVector<frac::Face> frac::Face::allSubdivisions() const {
         }
         changed = res.len() != lastSize;
         i = lastSize;
+    }
+    return res;
+}
+
+std::string frac::Face::toString() const {
+    std::string res = this->m_name + " : [" + (*this)[0].toString();
+    for (int i = 1; i < this->len(); ++i) {
+        res += ", " + (*this)[i].toString();
+    }
+    res += "], " + std::to_string(this->m_nbSubdivisions) + " subdivisions, interior is ";
+
+    for (const Edge& e: Face::interior(this->m_adjEdge, this->m_gapEdge)) {
+        res += e.toString() + " ";
     }
     return res;
 }

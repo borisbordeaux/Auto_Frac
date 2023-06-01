@@ -1,10 +1,11 @@
 #ifndef AUTOFRAC_FACE_H
 #define AUTOFRAC_FACE_H
 
-#include <vector>
-#include <map>
 #include "edge.h"
 #include "uniquevector.h"
+
+#include <map>
+#include <vector>
 
 namespace frac {
 
@@ -26,6 +27,11 @@ public:
     bool operator==(Face const& other) const;
     friend std::ostream& operator<<(std::ostream& os, const Face& edge);
 
+    std::string toString() const;
+
+    static std::map<std::string, std::string> s_incidenceConstraints;
+    static std::map<std::string, std::string> s_adjacencyConstraints;
+
 private:
     std::vector<Edge> m_data;
     unsigned int m_delay;
@@ -37,9 +43,7 @@ private:
     int m_offset;
     int m_firstInterior;
 
-    inline static UniqueVector<Face> s_existingFaces;
-    inline static std::map<std::string, std::string> s_incidenceConstraints;
-    inline static std::map<std::string, std::string> s_adjacencyConstraints;
+    static UniqueVector<Face> s_existingFaces;
 
     static void addAdjacencyConstraint(Face const& face, Face const& faceSub1, Face const& faceSub2, unsigned int indexSubFace1, unsigned int indexBordFace1, unsigned int indexSubFace2, unsigned int indexBordFace2);
     static void addIncidenceConstraint(Face const& face, Face const& faceSub, unsigned int indexParentEdge, unsigned int indexSubEdge, unsigned int indexSubFaceEdge, unsigned int indexSubFace);

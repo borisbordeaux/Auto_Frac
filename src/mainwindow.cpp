@@ -3,6 +3,7 @@
 #include "edge.h"
 #include "face.h"
 #include "structure.h"
+#include "structureprinter.h"
 
 #include <QtWidgets>
 #include <iostream>
@@ -25,10 +26,12 @@ void MainWindow::slot1() {
     frac::Face cell0 {{ b2, c2, b2, c2, b2, c2 }, 0, c2, b2, b2 };
     frac::Face cell1 {{ c2, b3, c2, b2, c2, b2 }, 0, c2, b2, b2 };
 
-    frac::Structure s {{ cell0, cell1 }};
-    s.addAdjacency(0, 0, 1, 3);
+    frac::Structure s {{ cell0 }};
+    //s.addAdjacency(0, 0, 1, 3);
 
     std::cout << s;
+
+    frac::StructurePrinter::exportStruct(s);
 
     std::cout.flush();
 }

@@ -68,3 +68,13 @@ bool frac::Edge::operator==(const Edge& other) const {
 bool frac::Edge::operator!=(const Edge& other) const {
     return !(*this == other);
 }
+
+std::string frac::Edge::toString() const {
+    std::string res;
+
+    std::string edgeType = this->edgeType() == frac::EdgeType::BEZIER ? "B" : "C";
+    std::string nbSub = std::to_string(this->nbSubdivisions());
+    std::string delay = this->isDelay() ? "_" + std::to_string(this->delay()) : "";
+
+    return edgeType + nbSub + delay;
+}

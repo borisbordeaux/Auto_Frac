@@ -27,6 +27,8 @@ public:
     bool operator==(Edge const& other) const;
     bool operator!=(Edge const& other) const;
 
+    std::string toString() const;
+
 private:
     EdgeType m_edgeType;
     unsigned int m_nbSubdivisions;
