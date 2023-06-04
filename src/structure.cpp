@@ -28,7 +28,7 @@ frac::UniqueVector<frac::Face> frac::Structure::allFaces() const {
     for (frac::Face const& f: this->m_faces) {
         res.add(f);
     }
-    for (frac::Face const& f: res.data()) {
+    for (frac::Face const& f: this->m_faces) {
         frac::UniqueVector<frac::Face> subdivisions = f.allSubdivisions();
         for (frac::Face const& sub: subdivisions.data()) {
             res.add(sub);

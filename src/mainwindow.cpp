@@ -80,7 +80,7 @@ void MainWindow::slotRemoveFace() {
 
 void MainWindow::slotOnFaceSelected(int row) {
     if (row == -1) return;
-    
+
     QString cellName = this->ui->listWidget_Faces->item(row)->text();
     frac::Face f = MainWindow::toFace(cellName);
     //adjEdge
