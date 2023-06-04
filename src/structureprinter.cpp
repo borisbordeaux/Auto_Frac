@@ -4,8 +4,9 @@
 #include "face.h"
 #include "structure.h"
 #include "fileprinter.h"
+#include "utils.h"
 
-void frac::StructurePrinter::exportStruct(const frac::Structure& structure, bool planarControlPoints) {
+void frac::StructurePrinter::exportStruct(const frac::Structure& structure, bool planarControlPoints, std::string const& filename) {
     StructurePrinter::print_header();
     StructurePrinter::print_vertex_state();
     FilePrinter::append_nl("    ##############################");
@@ -89,11 +90,11 @@ void frac::StructurePrinter::exportStruct(const frac::Structure& structure, bool
     if (planarControlPoints) {
         StructurePrinter::print_plan_control_points(structure);
     }
-    StructurePrinter::print_init_ctrl_pts_8_bezier();
+    // StructurePrinter::print_init_ctrl_pts_8_bezier();
 
     StructurePrinter::print_footer();
-    FilePrinter::printToFile("result.py");
-    std::cout << "Finished, result is in result.py" << std::endl;
+    FilePrinter::printToFile(filename);
+    std::cout << "Finished, result is in " << filename << std::endl;
 }
 
 void frac::StructurePrinter::print_header() {
@@ -189,7 +190,7 @@ void frac::StructurePrinter::print_delay_cantor_impl(unsigned int n, unsigned in
 
 void frac::StructurePrinter::print_cantor_n_state_impl(unsigned int n) {
     FilePrinter::append("    C" + std::to_string(n) + ".subs = {");
-    for (int i = 0; i < n - 1; ++i) {
+    for (unsigned int i = 0; i < n - 1; ++i) {
         FilePrinter::append("Sub('" + std::to_string(i) + "'): C" + std::to_string(n) + ", ");
     }
     FilePrinter::append_nl("Sub('" + std::to_string(n - 1) + "'): C" + std::to_string(n) + "}");
@@ -197,7 +198,7 @@ void frac::StructurePrinter::print_cantor_n_state_impl(unsigned int n) {
     FilePrinter::append_nl("    C" + std::to_string(n) + ".space = [Bord_('0'), Bord_('1')]");
     FilePrinter::append_nl("    C" + std::to_string(n) + "(Permut('0') + Bord('0'), Bord('1'))");
     FilePrinter::append_nl("    C" + std::to_string(n) + "(Permut('0') + Bord('1'), Bord('0'))");
-    for (int i = 0; i < n; ++i) {
+    for (unsigned int i = 0; i < n; ++i) {
         FilePrinter::append_nl("    C" + std::to_string(n) + "(Permut('0') + Sub('" + std::to_string(i) + "'), Sub('" + std::to_string(n - i - 1) + "') + Permut('0'))");
     }
     FilePrinter::append_nl("    C" + std::to_string(n) + "(Bord('0') + Sub('0'), Sub('0') + Bord('0'))");
@@ -207,20 +208,20 @@ void frac::StructurePrinter::print_cantor_n_state_impl(unsigned int n) {
     unsigned int prem = m - 1;
     unsigned int deux = 1;
     FilePrinter::append_nl("    C" + std::to_string(n) + ".initMat[Sub_('0') + Bord('1')] = FMat([");
-    FilePrinter::append_nl("        [" + std::to_string(float(prem) / float(m)) + "],");
-    FilePrinter::append_nl("        [" + std::to_string(float(deux) / float(m)) + "]]).setTyp('Const')");
+    FilePrinter::append_nl("        [" + Utils::to_string(float(prem) / float(m)) + "],");
+    FilePrinter::append_nl("        [" + Utils::to_string(float(deux) / float(m)) + "]]).setTyp('Const')");
     prem = prem - 1;
     deux = deux + 1;
-    for (int j = 0; j < n - 2; ++j) {
+    for (unsigned int j = 0; j < n - 2; ++j) {
         FilePrinter::append_nl("    C" + std::to_string(n) + ".initMat[Sub_('" + std::to_string(j + 1) + "')] = FMat([");
-        FilePrinter::append_nl("        [" + std::to_string(float(prem) / float(m)) + ", " + std::to_string(float(prem - 1) / float(m)) + "],");
-        FilePrinter::append_nl("        [" + std::to_string(float(deux) / float(m)) + ", " + std::to_string(float(deux + 1) / float(m)) + "]]).setTyp('Const')");
+        FilePrinter::append_nl("        [" + Utils::to_string(float(prem) / float(m)) + ", " + Utils::to_string(float(prem - 1) / float(m)) + "],");
+        FilePrinter::append_nl("        [" + Utils::to_string(float(deux) / float(m)) + ", " + Utils::to_string(float(deux + 1) / float(m)) + "]]).setTyp('Const')");
         prem = prem - 2;
         deux = deux + 2;
     }
     FilePrinter::append_nl("    C" + std::to_string(n) + ".initMat[Sub_('" + std::to_string(n - 1) + "') + Bord('0')] = FMat([");
-    FilePrinter::append_nl("        [" + std::to_string(float(prem) / float(m)) + "],");
-    FilePrinter::append_nl("        [" + std::to_string(float(deux) / float(m)) + "]]).setTyp('Const')");
+    FilePrinter::append_nl("        [" + Utils::to_string(float(prem) / float(m)) + "],");
+    FilePrinter::append_nl("        [" + Utils::to_string(float(deux) / float(m)) + "]]).setTyp('Const')");
 }
 
 void frac::StructurePrinter::print_delay_bezier_impl(unsigned int n, unsigned int delay_count) {
@@ -243,7 +244,7 @@ void frac::StructurePrinter::print_delay_bezier_impl(unsigned int n, unsigned in
 
 void frac::StructurePrinter::print_bezier_state_impl(unsigned int n) {
     FilePrinter::append("    B" + std::to_string(n) + ".subs = {");
-    for (int i = 0; i < n - 1; ++i) {
+    for (unsigned int i = 0; i < n - 1; ++i) {
         FilePrinter::append("Sub('" + std::to_string(i) + "'): B" + std::to_string(n) + ", ");
     }
     FilePrinter::append_nl("Sub('" + std::to_string(n - 1) + "'): B" + std::to_string(n) + "}");
@@ -252,39 +253,39 @@ void frac::StructurePrinter::print_bezier_state_impl(unsigned int n) {
     FilePrinter::append_nl("    B" + std::to_string(n) + "(Permut('0') + Bord('0'), Bord('1'))");
     FilePrinter::append_nl("    B" + std::to_string(n) + "(Permut('0') + Bord('1'), Bord('0'))");
     FilePrinter::append_nl("    B" + std::to_string(n) + "(Permut('0') + Intern(''), Intern(''))");
-    for (int i = 0; i < n; ++i) {
+    for (unsigned int i = 0; i < n; ++i) {
         FilePrinter::append_nl("    B" + std::to_string(n) + "(Permut('0') + Sub(" + std::to_string(i) + "), Sub(" + std::to_string(n - i - 1) + ") + Permut('0'))");
     }
     FilePrinter::append_nl("    B" + std::to_string(n) + ".grid.elems = [Figure(1, [Bord_('0'), Intern_(''), Bord_('1')])]");
     FilePrinter::append_nl("    B" + std::to_string(n) + ".prim.elems = [Figure(1, [Bord_('0'), Bord_('1')])]");
-    for (int i = 0; i < n; ++i) {  // for each subdivision T0, T1, ... Tn-1
+    for (unsigned int i = 0; i < n; ++i) {  // for each subdivision T0, T1, ... Tn-1
         FilePrinter::append_nl("    B" + std::to_string(n) + ".initMat[Sub_('" + std::to_string(i) + "')] = FMat([");
-        auto t = StructurePrinter::get_bezier_transformation(i, n);
-        FilePrinter::append_nl("        [" + std::to_string(t[0]) + ", " + std::to_string(t[1]) + ", " + std::to_string(t[2]) + "],");
-        FilePrinter::append_nl("        [" + std::to_string(t[3]) + ", " + std::to_string(t[4]) + ", " + std::to_string(t[5]) + "],");
-        FilePrinter::append_nl("        [" + std::to_string(t[6]) + ", " + std::to_string(t[7]) + ", " + std::to_string(t[8]) + "]]).setTyp('Const')");
+        std::vector<float> t = StructurePrinter::get_bezier_transformation(i, n);
+        FilePrinter::append_nl("        [" + Utils::to_string(t[0]) + ", " + Utils::to_string(t[1]) + ", " + Utils::to_string(t[2]) + "],");
+        FilePrinter::append_nl("        [" + Utils::to_string(t[3]) + ", " + Utils::to_string(t[4]) + ", " + Utils::to_string(t[5]) + "],");
+        FilePrinter::append_nl("        [" + Utils::to_string(t[6]) + ", " + Utils::to_string(t[7]) + ", " + Utils::to_string(t[8]) + "]]).setTyp('Const')");
     }
 }
 
 std::vector<float> frac::StructurePrinter::get_bezier_transformation(unsigned int i, unsigned int n) {
     float denominator { static_cast<float>(n * n) };
     return { static_cast<float>((i - n) * (i - n)) / denominator,
-             static_cast<float>((i - n) * (1. + i - n)) / denominator,
-             static_cast<float>((1. + i - n) * (1. + i - n)) / denominator,
-             static_cast<float>(2. * i * (n - i)) / denominator,
-             static_cast<float>(n + 2. * i * n - 2. * i * (i + 1.)) / denominator,
-             static_cast<float>(-2. * (1. + i - n) * (1. + i)) / denominator,
+             static_cast<float>((i - n) * (1 + i - n)) / denominator,
+             static_cast<float>((1 + i - n) * (1 + i - n)) / denominator,
+             static_cast<float>(2 * i * (n - i)) / denominator,
+             static_cast<float>(n + 2 * i * n - 2 * i * (i + 1)) / denominator,
+             static_cast<float>(-2 * (1 + i - n) * (1 + i)) / denominator,
              static_cast<float>(i * i) / denominator,
-             static_cast<float>(i * (1. + i)) / denominator,
-             static_cast<float>((i + 1.) * (i + 1.)) / denominator
+             static_cast<float>(i * (1 + i)) / denominator,
+             static_cast<float>((i + 1) * (i + 1)) / denominator
     };
 }
 
 void frac::StructurePrinter::print_init_subds(const frac::Structure& structure) {
-    auto subds = structure.allFaces();
+    auto const& subds = structure.faces();
     FilePrinter::append("    init.subs = {");
     int i = 0;
-    for (auto const& s: subds.data()) {
+    for (auto const& s: subds) {
         if (i == 0) {
             FilePrinter::append("Sub('" + std::to_string(i) + "'): " + s.name());
         } else {
@@ -300,9 +301,9 @@ void frac::StructurePrinter::print_edges_of_cell(const frac::Face& cell) {
     int i = 0;
     for (auto const& edge: cell.data()) {
         if (i == 0) {
-            FilePrinter::append("Bord('" + std::to_string(i) + "'): " + edge.toString());
+            FilePrinter::append("Bord('" + std::to_string(i) + "'): " + edge.name());
         } else {
-            FilePrinter::append(", Bord('" + std::to_string(i) + "'): " + edge.toString());
+            FilePrinter::append(", Bord('" + std::to_string(i) + "'): " + edge.name());
         }
         i += 1;
     }
@@ -310,14 +311,14 @@ void frac::StructurePrinter::print_edges_of_cell(const frac::Face& cell) {
 }
 
 void frac::StructurePrinter::print_subd_of_cell(const frac::Face& cell) {
-    auto subds = cell.subdivisions();
+    std::vector<frac::Face> subds = cell.subdivisions();
     FilePrinter::append("    " + cell.name() + ".subs = {");
     int i = 0;
-    for (auto const& s: subds) {
+    for (frac::Face const& f: subds) {
         if (i == 0) {
-            FilePrinter::append("Sub('" + std::to_string(i) + "'): " + s.name());
+            FilePrinter::append("Sub('" + std::to_string(i) + "'): " + f.name());
         } else {
-            FilePrinter::append(", Sub('" + std::to_string(i) + "'): " + s.name());
+            FilePrinter::append(", Sub('" + std::to_string(i) + "'): " + f.name());
         }
         i += 1;
     }
@@ -326,7 +327,7 @@ void frac::StructurePrinter::print_subd_of_cell(const frac::Face& cell) {
 
 void frac::StructurePrinter::print_space_of_cell(const frac::Face& cell) {
     FilePrinter::append("    " + cell.name() + ".space = [");
-    for (int i = 0; i < cell.len(); ++i) {
+    for (std::size_t i = 0; i < cell.len(); ++i) {
         if (i == 0) {
             FilePrinter::append("Bord_('" + std::to_string(i) + "')");
         } else {
@@ -338,7 +339,7 @@ void frac::StructurePrinter::print_space_of_cell(const frac::Face& cell) {
 
 void frac::StructurePrinter::print_prim_of_cell(const frac::Face& cell) {
     FilePrinter::append("    " + cell.name() + ".prim.elems = [Figure(2, [");
-    for (int i = 0; i < cell.len(); ++i) {
+    for (std::size_t i = 0; i < cell.len(); ++i) {
         if (i == 0) {
             if (cell[i].edgeType() == EdgeType::BEZIER && cell[i].delay() == 0) {
                 FilePrinter::append("Bord_('" + std::to_string(i) + "') + Sub('0') + Sub('0') + Bord('0'), Bord_('" + std::to_string(i) + "') + Sub('0') + Sub('1') + Bord('0'), Bord_('" + std::to_string(i) + "') + Sub('1') + Sub('0') + Bord('0'), Bord_('" + std::to_string(i) + "') + Sub('1') + Sub('1') + Bord('0')");
@@ -355,27 +356,27 @@ void frac::StructurePrinter::print_prim_of_cell(const frac::Face& cell) {
 }
 
 void frac::StructurePrinter::print_edge_adjacencies_of_cell(const frac::Face& cell) {
-    for (int i = 0; i < cell.len(); ++i) {
-        FilePrinter::append_nl("    " + cell.name() + "(Bord('" + std::to_string(i) + "') + Bord('1'), Bord('" + std::to_string((i + 1) % cell.len()) + "') + Bord('0'))");
+    for (std::size_t i = 0; i < cell.len(); ++i) {
+        FilePrinter::append_nl("    " + cell.name() + "(Bord('" + std::to_string(i) + "') + Bord('1'), Bord('" + std::to_string(Utils::mod(i + 1, cell.len())) + "') + Bord('0'))");
     }
 }
 
 void frac::StructurePrinter::print_plan_control_points(const frac::Structure& structure) {
     std::size_t max = structure.faces().size();
-    for (int index_face = 0; index_face < max; ++index_face) {
+    for (std::size_t index_face = 0; index_face < max; ++index_face) {
         std::size_t nb_pts = structure.nbControlPointsOfFace(index_face);
         FilePrinter::append_nl("    init.initMat[Sub_('" + std::to_string(index_face) + "')] = FMat([");
         for (int j = 0; j < 3; ++j) {
             // x, y, z set to 0
             FilePrinter::append("        [");
-            for (int i = 0; i < nb_pts - 1; ++i) {
+            for (std::size_t i = 0; i < nb_pts - 1; ++i) {
                 FilePrinter::append("0, ");
             }
             FilePrinter::append_nl("0],");
         }
         // w
         FilePrinter::append("        [");
-        for (int i = 0; i < nb_pts - 1; ++i) {
+        for (std::size_t i = 0; i < nb_pts - 1; ++i) {
             FilePrinter::append("1, ");
         }
         FilePrinter::append_nl("1]]).setTyp('Var')");

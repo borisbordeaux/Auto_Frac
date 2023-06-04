@@ -13,10 +13,16 @@ public:
     std::size_t len() const;
     T const& operator[](std::size_t index) const;
     std::vector<T> const& data() const;
+    void clear();
 
 private:
     std::vector<T> m_data;
 };
+
+template<typename T>
+void UniqueVector<T>::clear() {
+    this->m_data.clear();
+}
 
 template<typename T>
 const std::vector<T>& UniqueVector<T>::data() const {

@@ -16,16 +16,13 @@ void frac::FilePrinter::append_nl(const std::string& text) {
 void frac::FilePrinter::printToFile(const std::string& filename) noexcept {
     std::ofstream file;
     try {
-        file.open(filename);
+        file.open(filename, std::ofstream::out | std::ofstream::trunc);
         file << FilePrinter::s_output;
     } catch (std::runtime_error const& error) {
         std::cerr << error.what() << std::endl;
     }
-    try {
-        if (file.is_open()) {
-            file.close();
-        }
-    } catch (std::runtime_error const& error) {
-        std::cerr << error.what() << std::endl;
-    }
+}
+
+void frac::FilePrinter::reset() {
+    FilePrinter::s_output.clear();
 }

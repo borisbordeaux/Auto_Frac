@@ -8,7 +8,7 @@ void frac::Structure::addAdjacency(std::size_t indexFace1, std::size_t indexEdge
         this->m_adj += "    init(Sub('" + std::to_string(indexFace1) + "') + Bord('" + std::to_string(indexEdgeFace1) + "') + Permut('0'), Sub('" + std::to_string(indexFace2) + "') + Bord('" + std::to_string(indexEdgeFace2) + "'))\n";
     } else {
         //TODO: throw exception, to be caught in window
-        std::cout << "Error on adj constraint";
+        std::cout << "Error on adj constraint" << std::endl;
     }
 }
 
@@ -28,7 +28,7 @@ frac::UniqueVector<frac::Face> frac::Structure::allFaces() const {
     for (frac::Face const& f: this->m_faces) {
         res.add(f);
     }
-    for (frac::Face const& f: this->m_faces) {
+    for (frac::Face const& f: res.data()) {
         frac::UniqueVector<frac::Face> subdivisions = f.allSubdivisions();
         for (frac::Face const& sub: subdivisions.data()) {
             res.add(sub);

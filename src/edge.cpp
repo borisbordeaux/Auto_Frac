@@ -17,6 +17,10 @@ frac::EdgeType frac::Edge::edgeType() const {
     return this->m_edgeType;
 }
 
+unsigned int frac::Edge::nbActualSubdivisions() const {
+    return this->isDelay() ? 1 : this->m_nbSubdivisions;
+}
+
 unsigned int frac::Edge::nbSubdivisions() const {
     return this->m_nbSubdivisions;
 }
@@ -25,21 +29,21 @@ unsigned int frac::Edge::delay() const {
     return this->m_delay;
 }
 
-std::vector<frac::Edge> frac::Edge::subdivisions() const {
+std::vector<frac::Edge> frac::Edge::subdivisions(Edge const& reqEdge) const {
     std::vector<Edge> result;
     if (this->isDelay()) {
         result.emplace_back(this->edgeType(), this->nbSubdivisions(), this->delay() - 1);
     } else {
         if (this->edgeType() == EdgeType::CANTOR) {
-            for (int i = 0; i < this->nbSubdivisions() - 1; ++i) {
+            for (unsigned int i = 0; i < this->nbSubdivisions() - 1; ++i) {
                 result.emplace_back(EdgeType::CANTOR, this->nbSubdivisions());
-                result.emplace_back(EdgeType::BEZIER, 2);
-                result.emplace_back(EdgeType::BEZIER, 2);
+                result.emplace_back(reqEdge);
+                result.emplace_back(reqEdge);
             }
             result.emplace_back(EdgeType::CANTOR, this->nbSubdivisions());
         }
         if (this->edgeType() == EdgeType::BEZIER) {
-            for (int i = 0; i < this->nbSubdivisions() - 1; ++i) {
+            for (unsigned int i = 0; i < this->nbSubdivisions(); ++i) {
                 result.emplace_back(EdgeType::BEZIER, this->nbSubdivisions());
             }
         }
@@ -70,6 +74,16 @@ bool frac::Edge::operator!=(const Edge& other) const {
 }
 
 std::string frac::Edge::toString() const {
+    std::string res;
+
+    std::string edgeType = this->edgeType() == frac::EdgeType::BEZIER ? "B_" : "C_";
+    std::string nbSub = std::to_string(this->nbSubdivisions());
+    std::string delay = "_" + std::to_string(this->delay());
+
+    return edgeType + nbSub + delay;
+}
+
+std::string frac::Edge::name() const {
     std::string res;
 
     std::string edgeType = this->edgeType() == frac::EdgeType::BEZIER ? "B" : "C";

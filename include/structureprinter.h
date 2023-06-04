@@ -13,7 +13,7 @@ class Edge;
 
 class StructurePrinter {
 public:
-    static void exportStruct(Structure const& s, bool planarControlPoints = true);
+    static void exportStruct(Structure const& s, bool planarControlPoints, std::string const& filename);
 private:
     static void print_header();
     static void print_vertex_state();

@@ -19,15 +19,17 @@ public:
     void decreaseDelay();
     [[nodiscard]] EdgeType edgeType() const;
     [[nodiscard]] unsigned int nbSubdivisions() const;
+    [[nodiscard]] unsigned int nbActualSubdivisions() const;
     [[nodiscard]] unsigned int delay() const;
-    [[nodiscard]] std::vector<Edge> subdivisions() const;
+    [[nodiscard]] std::vector<Edge> subdivisions(Edge const& reqEdge) const;
     [[nodiscard]] bool isDelay() const;
+    [[nodiscard]] std::string name() const;
 
-    friend std::ostream& operator<<(std::ostream& os, const Edge& edge);
+    friend std::ostream& operator<<(std::ostream& os, Edge const& edge);
     bool operator==(Edge const& other) const;
     bool operator!=(Edge const& other) const;
 
-    std::string toString() const;
+    [[nodiscard]] std::string toString() const;
 
 private:
     EdgeType m_edgeType;

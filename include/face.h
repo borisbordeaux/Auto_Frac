@@ -6,6 +6,7 @@
 
 #include <map>
 #include <vector>
+#include <optional>
 
 namespace frac {
 
@@ -19,6 +20,9 @@ public:
     [[nodiscard]] std::size_t len() const;
     [[nodiscard]] std::string name() const;
     [[nodiscard]] int offset() const;
+    [[nodiscard]] Edge adjEdge() const;
+    [[nodiscard]] Edge gapEdge() const;
+    [[nodiscard]] Edge reqEdge() const;
     void setFirstInterior(int index);
     [[nodiscard]] std::vector<Face> subdivisions() const;
     [[nodiscard]] UniqueVector<Face> allSubdivisions() const;
@@ -27,10 +31,11 @@ public:
     bool operator==(Face const& other) const;
     friend std::ostream& operator<<(std::ostream& os, const Face& edge);
 
-    std::string toString() const;
+    [[nodiscard]] std::string toString() const;
 
     static std::map<std::string, std::string> s_incidenceConstraints;
     static std::map<std::string, std::string> s_adjacencyConstraints;
+    static void reset();
 
 private:
     std::vector<Edge> m_data;
@@ -39,7 +44,6 @@ private:
     Edge m_gapEdge;
     Edge m_reqEdge;
     std::string m_name;
-    unsigned int m_nbSubdivisions;
     int m_offset;
     int m_firstInterior;
 
@@ -49,8 +53,7 @@ private:
     static void addIncidenceConstraint(Face const& face, Face const& faceSub, unsigned int indexParentEdge, unsigned int indexSubEdge, unsigned int indexSubFaceEdge, unsigned int indexSubFace);
 
     static int computeOffset(Face const& face, Face const& other);
-    static std::vector<Edge> edgeIfRequired(const Edge& edge, const Edge& reqEdge);
-    static std::vector<Edge> interior(Edge const& adjacencyEdge, Edge const& gapEdge);
+    static std::optional<Edge> edgeIfRequired(const Edge& edge, const Edge& reqEdge);
 };
 
 } // frac
