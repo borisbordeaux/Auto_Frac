@@ -299,7 +299,7 @@ void frac::StructurePrinter::print_init_subds(const frac::Structure& structure) 
 void frac::StructurePrinter::print_edges_of_cell(const frac::Face& cell) {
     FilePrinter::append("    " + cell.name() + ".bords = {");
     int i = 0;
-    for (auto const& edge: cell.data()) {
+    for (auto const& edge: cell.constData()) {
         if (i == 0) {
             FilePrinter::append("Bord('" + std::to_string(i) + "'): " + edge.name());
         } else {

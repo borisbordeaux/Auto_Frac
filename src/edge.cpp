@@ -92,3 +92,15 @@ std::string frac::Edge::name() const {
 
     return edgeType + nbSub + delay;
 }
+
+void frac::Edge::setEdgeType(frac::EdgeType edgeType) {
+    this->m_edgeType = edgeType;
+}
+
+void frac::Edge::setNbSubdivisions(unsigned int nbSubdivisions) {
+    this->m_nbSubdivisions = nbSubdivisions;
+}
+
+void frac::Edge::setDelay(unsigned int delay) {
+    this->m_delay = delay;
+}

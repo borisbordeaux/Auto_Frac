@@ -15,6 +15,7 @@ class Edge {
 public:
     Edge(Edge const& other);
     Edge(EdgeType edgeType, unsigned int nbSubdivisions, unsigned int delay = 0);
+    Edge& operator=(const Edge& other) = default;
 
     void decreaseDelay();
     [[nodiscard]] EdgeType edgeType() const;
@@ -24,6 +25,9 @@ public:
     [[nodiscard]] std::vector<Edge> subdivisions(Edge const& reqEdge) const;
     [[nodiscard]] bool isDelay() const;
     [[nodiscard]] std::string name() const;
+    void setEdgeType(EdgeType edgeType);
+    void setNbSubdivisions(unsigned int nbSubdivisions);
+    void setDelay(unsigned int delay);
 
     friend std::ostream& operator<<(std::ostream& os, Edge const& edge);
     bool operator==(Edge const& other) const;

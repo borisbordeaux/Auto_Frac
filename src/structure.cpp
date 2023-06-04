@@ -16,7 +16,7 @@ frac::UniqueVector<frac::Edge> frac::Structure::allEdges() const {
     frac::UniqueVector<frac::Edge> res;
     frac::UniqueVector<frac::Face> faces = this->allFaces();
     for (frac::Face const& f: faces.data()) {
-        for (frac::Edge const& e: f.data()) {
+        for (frac::Edge const& e: f.constData()) {
             res.add(e);
         }
     }
@@ -39,7 +39,7 @@ frac::UniqueVector<frac::Face> frac::Structure::allFaces() const {
 
 std::size_t frac::Structure::nbControlPointsOfFace(std::size_t indexFace) const {
     std::size_t res { 0 };
-    for (Edge const& e: this->m_faces[indexFace].data()) {
+    for (Edge const& e: this->m_faces[indexFace].constData()) {
         res += e.edgeType() == EdgeType::BEZIER ? 3 : 2;
         res--;
     }

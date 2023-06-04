@@ -36,9 +36,14 @@ frac::Face::Face(std::vector<Edge> edges, unsigned int delay, frac::Edge const& 
     }
 }
 
-std::vector<frac::Edge> const& frac::Face::data() const {
+std::vector<frac::Edge> const& frac::Face::constData() const {
     return this->m_data;
 }
+
+std::vector<frac::Edge>& frac::Face::data() {
+    return this->m_data;
+}
+
 
 int frac::Face::firstInterior() const {
     return this->m_firstInterior;
@@ -318,17 +323,19 @@ frac::UniqueVector<frac::Face> frac::Face::allSubdivisions() const {
 }
 
 std::string frac::Face::toString() const {
-    std::string res = this->m_name + " : [" + (*this)[0].toString();
+    std::string res = (*this)[0].toString();
     for (std::size_t i = 1; i < this->len(); ++i) {
-        res += ", " + (*this)[i].toString();
+        res += " - " + (*this)[i].toString();
     }
-    res += "], adj, gap, req edges are ";
+    res += " / ";
 
-    res += this->m_adjEdge.toString() + " ";
-    res += this->m_gapEdge.toString() + " ";
-    res += this->m_reqEdge.toString() + " ";
+    res += this->m_adjEdge.toString() + " - ";
+    res += this->m_gapEdge.toString() + " - ";
+    res += this->m_reqEdge.toString() + " / ";
+    res += std::to_string(this->m_delay);
     return res;
 }
+
 
 frac::Edge frac::Face::adjEdge() const {
     return this->m_adjEdge;
@@ -346,4 +353,24 @@ void frac::Face::reset() {
     Face::s_incidenceConstraints.clear();
     Face::s_adjacencyConstraints.clear();
     Face::s_existingFaces.clear();
+}
+
+void frac::Face::setAdjEdge(frac::Edge const& edge) {
+    this->m_adjEdge = edge;
+}
+
+void frac::Face::setGapEdge(frac::Edge const& edge) {
+    this->m_gapEdge = edge;
+}
+
+void frac::Face::setReqEdge(frac::Edge const& edge) {
+    this->m_reqEdge = edge;
+}
+
+void frac::Face::setDelay(unsigned int delay) {
+    this->m_delay = delay;
+}
+
+unsigned int frac::Face::delay() const {
+    return this->m_delay;
 }

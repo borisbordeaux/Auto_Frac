@@ -14,7 +14,8 @@ class Face {
 public:
     explicit Face(std::vector<Edge> edges, unsigned int delay = 0, const Edge& adjEdge = { EdgeType::CANTOR, 2 }, const Edge& gapEdge = { EdgeType::BEZIER, 2 }, const Edge& reqEdge = { EdgeType::BEZIER, 2 });
 
-    [[nodiscard]] std::vector<Edge> const& data() const;
+    [[nodiscard]] std::vector<Edge> const& constData() const;
+    [[nodiscard]] std::vector<Edge>& data();
     [[nodiscard]] int firstInterior() const;
     [[nodiscard]] int lastInterior() const;
     [[nodiscard]] std::size_t len() const;
@@ -23,6 +24,11 @@ public:
     [[nodiscard]] Edge adjEdge() const;
     [[nodiscard]] Edge gapEdge() const;
     [[nodiscard]] Edge reqEdge() const;
+    [[nodiscard]] unsigned int delay() const;
+    void setAdjEdge(Edge const& edge);
+    void setGapEdge(Edge const& edge);
+    void setReqEdge(Edge const& edge);
+    void setDelay(unsigned int delay);
     void setFirstInterior(int index);
     [[nodiscard]] std::vector<Face> subdivisions() const;
     [[nodiscard]] UniqueVector<Face> allSubdivisions() const;
