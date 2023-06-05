@@ -17,8 +17,8 @@
 *.qm
 .#*
 *.*#
-core
-!core/
+src/gui
+!src/gui/
 tags
 .DS_Store
 .directory
@@ -73,4 +73,6 @@ CMakeLists.txt.user*
 *.exe
 
 cmake-build-debug
+cmake-build-profile
+cmake-build-release
 .idea

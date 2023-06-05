@@ -1,6 +1,7 @@
+#include "fractal/face.h"
+#include "utils/utils.h"
+
 #include <iostream>
-#include "face.h"
-#include "utils.h"
 
 frac::UniqueVector<frac::Face> frac::Face::s_existingFaces;
 std::map<std::string, std::string> frac::Face::s_incidenceConstraints;
@@ -17,7 +18,7 @@ std::vector<frac::Edge> shiftVector(std::vector<frac::Edge> const& edges) {
 }
 
 frac::Face::Face(std::vector<Edge> edges, unsigned int delay, frac::Edge const& adjEdge, frac::Edge const& gapEdge, frac::Edge const& reqEdge) :
-        m_data(std::move(edges)), m_delay(delay), m_adjEdge(adjEdge), m_gapEdge(gapEdge), m_reqEdge(reqEdge), m_offset(0), m_firstInterior(-1) {
+m_data(std::move(edges)), m_delay(delay), m_adjEdge(adjEdge), m_gapEdge(gapEdge), m_reqEdge(reqEdge), m_offset(0), m_firstInterior(-1) {
     for (Face const& f: s_existingFaces.data()) {
         if (*this == f) {
             this->m_name = f.m_name;
@@ -26,7 +27,7 @@ frac::Face::Face(std::vector<Edge> edges, unsigned int delay, frac::Edge const& 
     }
     //if face doesn't exist
     if (this->m_name.empty()) {
-        this->m_name = "Cell_" + std::to_string(s_existingFaces.len());
+        this->m_name = "Cell_" + std::to_string(s_existingFaces.size());
         if (this->m_delay != 0) {
             // one face if delayed, with subdivided boundaries
             // add delay info to name
@@ -92,7 +93,7 @@ std::vector<frac::Face> frac::Face::subdivisions() const {
                 res.push_back(c);
             } else {
                 // current edge has not a delay, so we look at the edge before
-                std::size_t idx = static_cast<std::size_t>(Utils::mod(static_cast<int>(i) - 1, static_cast<int>(this->len())));
+                std::size_t idx = static_cast<std::size_t>(utils::mod(static_cast<int>(i) - 1, static_cast<int>(this->len())));
                 if ((*this)[idx].isDelay()) {
                     // the state before has a delay
                     std::vector<frac::Edge> boundaries = { current };
@@ -135,7 +136,7 @@ std::vector<frac::Face> frac::Face::subdivisions() const {
                 }
 
                 // creation of last state of the edge
-                frac::Edge next = (*this)[Utils::mod(i + 1, this->len())];
+                frac::Edge next = (*this)[utils::mod(i + 1, this->len())];
                 if (next.isDelay()) {
                     // if next edge has delay
                     std::vector<frac::Edge> boundaries = { current };
@@ -171,7 +172,7 @@ std::vector<frac::Face> frac::Face::subdivisions() const {
                     c.setFirstInterior(indexFirstInterior);
                     if (writeConstraints) {
                         addIncidenceConstraint(*this, c, i, nbIntermediateStates + 1, 0, res.size());
-                        addIncidenceConstraint(*this, c, frac::Utils::mod(i + 1, this->len()), 0, 1, res.size());
+                        addIncidenceConstraint(*this, c, frac::utils::mod(i + 1, this->len()), 0, 1, res.size());
                     }
                     res.push_back(c);
                 }
@@ -179,9 +180,9 @@ std::vector<frac::Face> frac::Face::subdivisions() const {
         }
         for (std::size_t i = 0; i < res.size(); ++i) {
             frac::Face current = res[i];
-            frac::Face next = res[frac::Utils::mod(i + 1, res.size())];
+            frac::Face next = res[frac::utils::mod(i + 1, res.size())];
             if (writeConstraints) {
-                addAdjacencyConstraint(*this, current, next, i, current.firstInterior(), frac::Utils::mod(i + 1, res.size()), next.lastInterior());
+                addAdjacencyConstraint(*this, current, next, i, current.firstInterior(), frac::utils::mod(i + 1, res.size()), next.lastInterior());
             }
         }
     } else {
@@ -224,12 +225,13 @@ std::vector<frac::Face> frac::Face::subdivisions() const {
 }
 
 const frac::Edge& frac::Face::operator[](std::size_t index) const {
-    return this->m_data[index];
+    return this->m_data.at(index);
 }
 
 bool frac::Face::operator==(frac::Face const& other) const {
-    if (this->m_delay != other.m_delay || this->len() != other.len() || this->m_adjEdge != other.m_adjEdge || this->m_gapEdge != other.m_gapEdge || this->m_reqEdge != other.m_reqEdge)
+    if (this->m_delay != other.m_delay || this->len() != other.len() || this->m_adjEdge != other.m_adjEdge || this->m_gapEdge != other.m_gapEdge || this->m_reqEdge != other.m_reqEdge) {
         return false;
+    }
 
     std::vector<frac::Edge> shifted { other.m_data };
 
@@ -257,9 +259,9 @@ void frac::Face::addAdjacencyConstraint(frac::Face const& face, frac::Face const
         s_adjacencyConstraints[face.name()] = "";
     }
     int s1 = static_cast<int>(indexSubFace1);
-    int b1 = frac::Utils::mod(static_cast<int>(indexBordFace1) - faceSub1.offset(), static_cast<int>(faceSub1.len()));
+    int b1 = frac::utils::mod(static_cast<int>(indexBordFace1) - faceSub1.offset(), static_cast<int>(faceSub1.len()));
     int s2 = static_cast<int>(indexSubFace2);
-    int b2 = frac::Utils::mod(static_cast<int>(indexBordFace2) - faceSub2.offset(), static_cast<int>(faceSub2.len()));
+    int b2 = frac::utils::mod(static_cast<int>(indexBordFace2) - faceSub2.offset(), static_cast<int>(faceSub2.len()));
     s_adjacencyConstraints[face.name()] += "    " + face.name() + "(Sub('" + std::to_string(s1) + "') + Bord('" + std::to_string(b1) + "') + Permut('0'), Sub('" + std::to_string(s2) + "') + Bord('" + std::to_string(b2) + "'))\n";
 }
 
@@ -267,16 +269,17 @@ void frac::Face::addIncidenceConstraint(frac::Face const& face, frac::Face const
     if (s_incidenceConstraints.find(face.name()) == std::end(Face::s_incidenceConstraints)) {
         s_incidenceConstraints[face.name()] = "";
     }
-    int b1 = frac::Utils::mod(static_cast<int>(indexParentEdge) - face.offset(), static_cast<int>(face.len()));
+    int b1 = frac::utils::mod(static_cast<int>(indexParentEdge) - face.offset(), static_cast<int>(face.len()));
     int s1 = static_cast<int>(indexSubEdge);
     int s2 = static_cast<int>(indexSubFace);
-    int b2 = frac::Utils::mod(static_cast<int>(indexSubFaceEdge) - faceSub.offset(), static_cast<int>(faceSub.len()));
+    int b2 = frac::utils::mod(static_cast<int>(indexSubFaceEdge) - faceSub.offset(), static_cast<int>(faceSub.len()));
     s_incidenceConstraints[face.name()] += "    " + face.name() + "(Bord('" + std::to_string(b1) + "') + Sub('" + std::to_string(s1) + "'), Sub('" + std::to_string(s2) + "') + Bord('" + std::to_string(b2) + "'))\n";
 }
 
 int frac::Face::computeOffset(frac::Face const& face, frac::Face const& other) {
-    if (face.m_delay != other.m_delay || face.len() != other.len() || face.m_adjEdge != other.m_adjEdge || face.m_gapEdge != other.m_gapEdge || face.m_reqEdge != other.m_reqEdge)
+    if (face.m_delay != other.m_delay || face.len() != other.len() || face.m_adjEdge != other.m_adjEdge || face.m_gapEdge != other.m_gapEdge || face.m_reqEdge != other.m_reqEdge) {
         return -1;
+    }
     std::vector<Edge> shifted { other.m_data };
     for (std::size_t i = 0; i < other.len(); ++i) {
         if (face.m_data == shifted) {
@@ -306,17 +309,17 @@ frac::UniqueVector<frac::Face> frac::Face::allSubdivisions() const {
     bool changed = true;
     while (changed) {
         frac::UniqueVector<frac::Face> added;
-        for (std::size_t j = i; j < res.len(); ++j) {
+        for (std::size_t j = i; j < res.size(); ++j) {
             std::vector<frac::Face> subs = res[j].subdivisions();
             for (frac::Face const& f: subs) {
                 added.add(f);
             }
         }
-        std::size_t lastSize = res.len();
+        std::size_t lastSize = res.size();
         for (frac::Face const& f: added.data()) {
             res.add(f);
         }
-        changed = res.len() != lastSize;
+        changed = res.size() != lastSize;
         i = lastSize;
     }
     return res;

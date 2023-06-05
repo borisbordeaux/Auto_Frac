@@ -10,7 +10,7 @@ template<typename T>
 class UniqueVector {
 public:
     void add(T const& elt);
-    std::size_t len() const;
+    std::size_t size() const;
     T const& operator[](std::size_t index) const;
     std::vector<T> const& data() const;
     void clear();
@@ -20,12 +20,12 @@ private:
 };
 
 template<typename T>
-void UniqueVector<T>::clear() {
+void frac::UniqueVector<T>::clear() {
     this->m_data.clear();
 }
 
 template<typename T>
-const std::vector<T>& UniqueVector<T>::data() const {
+std::vector<T> const& frac::UniqueVector<T>::data() const {
     return this->m_data;
 }
 
@@ -37,7 +37,7 @@ void frac::UniqueVector<T>::add(T const& elt) {
 }
 
 template<typename T>
-std::size_t frac::UniqueVector<T>::len() const {
+std::size_t frac::UniqueVector<T>::size() const {
     return this->m_data.size();
 }
 

@@ -1,5 +1,4 @@
-#include "fileprinter.h"
-#include <iostream>
+#include "utils/fileprinter.h"
 #include <fstream>
 #include <ostream>
 
@@ -13,14 +12,10 @@ void frac::FilePrinter::append_nl(const std::string& text) {
     FilePrinter::s_output += text + '\n';
 }
 
-void frac::FilePrinter::printToFile(const std::string& filename) noexcept {
+void frac::FilePrinter::printToFile(const std::string& filename) {
     std::ofstream file;
-    try {
-        file.open(filename, std::ofstream::out | std::ofstream::trunc);
-        file << FilePrinter::s_output;
-    } catch (std::runtime_error const& error) {
-        std::cerr << error.what() << std::endl;
-    }
+    file.open(filename, std::ofstream::out | std::ofstream::trunc);
+    file << FilePrinter::s_output;
 }
 
 void frac::FilePrinter::reset() {

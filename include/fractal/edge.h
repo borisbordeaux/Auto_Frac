@@ -13,30 +13,30 @@ enum class EdgeType {
 
 class Edge {
 public:
-    Edge(Edge const& other);
-    Edge(EdgeType edgeType, unsigned int nbSubdivisions, unsigned int delay = 0);
-    Edge& operator=(const Edge& other) = default;
+    Edge(frac::Edge const& other);
+    Edge(frac::EdgeType edgeType, unsigned int nbSubdivisions, unsigned int delay = 0);
+    Edge& operator=(const frac::Edge& other) = default;
 
     void decreaseDelay();
-    [[nodiscard]] EdgeType edgeType() const;
+    [[nodiscard]] frac::EdgeType edgeType() const;
     [[nodiscard]] unsigned int nbSubdivisions() const;
     [[nodiscard]] unsigned int nbActualSubdivisions() const;
     [[nodiscard]] unsigned int delay() const;
-    [[nodiscard]] std::vector<Edge> subdivisions(Edge const& reqEdge) const;
+    [[nodiscard]] std::vector<frac::Edge> subdivisions(frac::Edge const& reqEdge) const;
     [[nodiscard]] bool isDelay() const;
     [[nodiscard]] std::string name() const;
-    void setEdgeType(EdgeType edgeType);
+    void setEdgeType(frac::EdgeType edgeType);
     void setNbSubdivisions(unsigned int nbSubdivisions);
     void setDelay(unsigned int delay);
 
-    friend std::ostream& operator<<(std::ostream& os, Edge const& edge);
-    bool operator==(Edge const& other) const;
-    bool operator!=(Edge const& other) const;
+    friend std::ostream& operator<<(std::ostream& os, frac::Edge const& edge);
+    bool operator==(frac::Edge const& other) const;
+    bool operator!=(frac::Edge const& other) const;
 
     [[nodiscard]] std::string toString() const;
 
 private:
-    EdgeType m_edgeType;
+    frac::EdgeType m_edgeType;
     unsigned int m_nbSubdivisions;
     unsigned int m_delay;
 };

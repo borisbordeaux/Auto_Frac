@@ -487,7 +487,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QListWidget" name="listWidget_Faces">
+               <widget class="QListWidget" name="listWidget_faces">
                 <property name="styleSheet">
                  <string notr="true">QListWidget::item:selected{
 	background-color: #35a753;
@@ -524,7 +524,7 @@ QListWidget {
                 <item>
                  <widget class="QPushButton" name="pushButton_removeFace">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="text">
                    <string>-</string>
@@ -581,7 +581,7 @@ QListWidget {
                 <item row="1" column="1">
                  <widget class="QComboBox" name="comboBox_adjEdgeTopology">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="currentIndex">
                    <number>0</number>
@@ -614,7 +614,7 @@ QListWidget {
                 <item row="2" column="1">
                  <widget class="QSpinBox" name="spinBox_adjEdgeNbSubdivisions">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="minimum">
                    <number>2</number>
@@ -637,7 +637,7 @@ QListWidget {
                 <item row="3" column="1">
                  <widget class="QSpinBox" name="spinBox_adjEdgeDelay">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                  </widget>
                 </item>
@@ -684,7 +684,7 @@ QListWidget {
                 <item row="1" column="1">
                  <widget class="QComboBox" name="comboBox_gapEdgeTopology">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="currentIndex">
                    <number>1</number>
@@ -717,7 +717,7 @@ QListWidget {
                 <item row="2" column="1">
                  <widget class="QSpinBox" name="spinBox_gapEdgeNbSubdivisions">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="minimum">
                    <number>2</number>
@@ -740,7 +740,7 @@ QListWidget {
                 <item row="3" column="1">
                  <widget class="QSpinBox" name="spinBox_gapEdgeDelay">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                  </widget>
                 </item>
@@ -797,7 +797,7 @@ QListWidget {
                 <item row="1" column="1">
                  <widget class="QComboBox" name="comboBox_reqEdgeTopology">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="currentIndex">
                    <number>1</number>
@@ -830,7 +830,7 @@ QListWidget {
                 <item row="2" column="1">
                  <widget class="QSpinBox" name="spinBox_reqEdgeNbSubdivisions">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="minimum">
                    <number>2</number>
@@ -853,7 +853,7 @@ QListWidget {
                 <item row="3" column="1">
                  <widget class="QSpinBox" name="spinBox_reqEdgeDelay">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                  </widget>
                 </item>
@@ -884,7 +884,7 @@ QListWidget {
                 <item>
                  <widget class="QSpinBox" name="spinBox_faceDelay">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="minimumSize">
                    <size>
@@ -948,7 +948,7 @@ QListWidget {
                </widget>
               </item>
               <item>
-               <widget class="QListWidget" name="listWidget_Edges">
+               <widget class="QListWidget" name="listWidget_edges">
                 <property name="styleSheet">
                  <string notr="true">QListWidget::item:selected{
 	background-color: #35a753;
@@ -978,7 +978,7 @@ QListWidget {
                 <item>
                  <widget class="QPushButton" name="pushButton_addEdge">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="text">
                    <string>+</string>
@@ -988,7 +988,7 @@ QListWidget {
                 <item>
                  <widget class="QPushButton" name="pushButton_removeEdge">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="text">
                    <string>-</string>
@@ -1030,7 +1030,7 @@ QListWidget {
               <item row="1" column="1">
                <widget class="QComboBox" name="comboBox_currentEdgeTopology">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <item>
                  <property name="text">
@@ -1060,7 +1060,7 @@ QListWidget {
               <item row="2" column="1">
                <widget class="QSpinBox" name="spinBox_currentEdgeNbSubdivisions">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="minimum">
                  <number>2</number>
@@ -1083,7 +1083,7 @@ QListWidget {
               <item row="3" column="1">
                <widget class="QSpinBox" name="spinBox_currentEdgeDelay">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
@@ -1162,7 +1162,7 @@ QListWidget {
                </widget>
               </item>
               <item>
-               <widget class="QListWidget" name="listWidget_3">
+               <widget class="QListWidget" name="listWidget_constraints">
                 <property name="styleSheet">
                  <string notr="true">QListWidget::item:selected{
 	background-color: #35a753;
@@ -1190,9 +1190,9 @@ QListWidget {
                  </spacer>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="pushButton_6">
+                 <widget class="QPushButton" name="pushButton_addConstraint">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="text">
                    <string>+</string>
@@ -1200,9 +1200,9 @@ QListWidget {
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="pushButton_7">
+                 <widget class="QPushButton" name="pushButton_removeConstraint">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="text">
                    <string>-</string>
@@ -1239,7 +1239,14 @@ QListWidget {
                </widget>
               </item>
               <item>
-               <layout class="QGridLayout" name="gridLayout">
+               <layout class="QFormLayout" name="formLayout_5">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_8">
+                  <property name="text">
+                   <string>Face 1</string>
+                  </property>
+                 </widget>
+                </item>
                 <item row="1" column="0">
                  <widget class="QLabel" name="label_9">
                   <property name="text">
@@ -1247,78 +1254,36 @@ QListWidget {
                   </property>
                  </widget>
                 </item>
-                <item row="1" column="3">
+                <item row="3" column="0">
+                 <widget class="QLabel" name="label_10">
+                  <property name="text">
+                   <string>Face 2</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="4" column="0">
                  <widget class="QLabel" name="label_11">
                   <property name="text">
                    <string>Edge 2</string>
                   </property>
                  </widget>
                 </item>
-                <item row="0" column="2">
-                 <spacer name="horizontalSpacer_11">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
+                <item row="0" column="1">
+                 <widget class="QSpinBox" name="spinBox_constraintFace1"/>
                 </item>
                 <item row="1" column="1">
-                 <widget class="QComboBox" name="comboBox_6">
-                  <property name="enabled">
-                   <bool>false</bool>
-                  </property>
-                 </widget>
+                 <widget class="QSpinBox" name="spinBox_constraintEdge1"/>
                 </item>
-                <item row="1" column="2">
-                 <spacer name="horizontalSpacer_12">
+                <item row="3" column="1">
+                 <widget class="QSpinBox" name="spinBox_constraintFace2"/>
+                </item>
+                <item row="4" column="1">
+                 <widget class="QSpinBox" name="spinBox_constraintEdge2"/>
+                </item>
+                <item row="2" column="0" colspan="2">
+                 <widget class="Line" name="line_3">
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item row="1" column="4">
-                 <widget class="QComboBox" name="comboBox_8">
-                  <property name="enabled">
-                   <bool>false</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="0">
-                 <widget class="QLabel" name="label_8">
-                  <property name="text">
-                   <string>Cell 1</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="1">
-                 <widget class="QComboBox" name="comboBox_5">
-                  <property name="enabled">
-                   <bool>false</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="4">
-                 <widget class="QComboBox" name="comboBox_7">
-                  <property name="enabled">
-                   <bool>false</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="3">
-                 <widget class="QLabel" name="label_10">
-                  <property name="text">
-                   <string>Cell 2</string>
                   </property>
                  </widget>
                 </item>
@@ -1368,6 +1333,22 @@ QListWidget {
            </spacer>
           </item>
           <item>
+           <widget class="QLabel" name="label_log">
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel{background-color: #ff0000; color: #fff;}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
            <layout class="QHBoxLayout" name="horizontalLayout_7">
             <item>
              <spacer name="horizontalSpacer_13">
@@ -1385,7 +1366,7 @@ QListWidget {
             <item>
              <widget class="QPushButton" name="pushButton_generateScript">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="text">
                <string>Generate Script</string>
@@ -1431,7 +1412,7 @@ QListWidget {
      <x>0</x>
      <y>0</y>
      <width>1061</width>
-     <height>20</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
@@ -1445,7 +1426,7 @@ QListWidget {
    <slot>slot1()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>580</x>
+     <x>578</x>
      <y>993</y>
     </hint>
     <hint type="destinationlabel">
@@ -1487,7 +1468,7 @@ QListWidget {
    </hints>
   </connection>
   <connection>
-   <sender>listWidget_Faces</sender>
+   <sender>listWidget_faces</sender>
    <signal>currentRowChanged(int)</signal>
    <receiver>MainWindow</receiver>
    <slot>slotOnFaceSelected(int)</slot>
@@ -1503,7 +1484,7 @@ QListWidget {
    </hints>
   </connection>
   <connection>
-   <sender>listWidget_Edges</sender>
+   <sender>listWidget_edges</sender>
    <signal>currentRowChanged(int)</signal>
    <receiver>MainWindow</receiver>
    <slot>slotOnEdgeSelected(int)</slot>
@@ -1557,8 +1538,8 @@ QListWidget {
    <slot>slotOnFaceAdjDelayChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>203</x>
-     <y>423</y>
+     <x>237</x>
+     <y>449</y>
     </hint>
     <hint type="destinationlabel">
      <x>530</x>
@@ -1605,8 +1586,8 @@ QListWidget {
    <slot>slotOnFaceGapDelayChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>541</x>
-     <y>427</y>
+     <x>538</x>
+     <y>449</y>
     </hint>
     <hint type="destinationlabel">
      <x>621</x>
@@ -1637,8 +1618,8 @@ QListWidget {
    <slot>slotOnFaceReqNbSubdivisionsChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>835</x>
-     <y>390</y>
+     <x>840</x>
+     <y>417</y>
     </hint>
     <hint type="destinationlabel">
      <x>678</x>
@@ -1733,8 +1714,8 @@ QListWidget {
    <slot>slotOnSelectedEdgeDelayChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>625</x>
-     <y>568</y>
+     <x>637</x>
+     <y>600</y>
     </hint>
     <hint type="destinationlabel">
      <x>1055</x>
@@ -1749,12 +1730,124 @@ QListWidget {
    <slot>slotOnFaceDelayChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1015</x>
-     <y>378</y>
+     <x>1036</x>
+     <y>406</y>
     </hint>
     <hint type="destinationlabel">
      <x>1053</x>
      <y>370</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_addConstraint</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotAddConstraint()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>197</x>
+     <y>931</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>849</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_removeConstraint</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotRemoveConstraint()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>272</x>
+     <y>935</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>6</x>
+     <y>899</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>listWidget_constraints</sender>
+   <signal>currentRowChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnConstraintSelected(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>82</x>
+     <y>795</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>3</x>
+     <y>798</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_constraintFace1</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnConstraintFace1Changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>553</x>
+     <y>777</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1058</x>
+     <y>680</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_constraintEdge1</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnConstraintEdge1Changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>537</x>
+     <y>805</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1057</x>
+     <y>725</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_constraintFace2</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnConstraintFace2Changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>575</x>
+     <y>849</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1056</x>
+     <y>773</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_constraintEdge2</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnConstraintEdge2Changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>572</x>
+     <y>889</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1057</x>
+     <y>848</y>
     </hint>
    </hints>
   </connection>
@@ -1780,5 +1873,12 @@ QListWidget {
   <slot>slotOnSelectedEdgeNbSubdivisionsChanged(int)</slot>
   <slot>slotOnSelectedEdgeDelayChanged(int)</slot>
   <slot>slotOnFaceDelayChanged(int)</slot>
+  <slot>slotAddConstraint()</slot>
+  <slot>slotRemoveConstraint()</slot>
+  <slot>slotOnConstraintSelected(int)</slot>
+  <slot>slotOnConstraintFace1Changed(int)</slot>
+  <slot>slotOnConstraintEdge1Changed(int)</slot>
+  <slot>slotOnConstraintFace2Changed(int)</slot>
+  <slot>slotOnConstraintEdge2Changed(int)</slot>
  </slots>
 </ui>

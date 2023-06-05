@@ -1,4 +1,4 @@
-#include "structure.h"
+#include "fractal/structure.h"
 #include <iostream>
 
 frac::Structure::Structure(std::vector<Face> const& faces) : m_faces(faces) {}
@@ -6,9 +6,6 @@ frac::Structure::Structure(std::vector<Face> const& faces) : m_faces(faces) {}
 void frac::Structure::addAdjacency(std::size_t indexFace1, std::size_t indexEdgeFace1, std::size_t indexFace2, std::size_t indexEdgeFace2) {
     if (m_faces[indexFace1][indexEdgeFace1] == m_faces[indexFace2][indexEdgeFace2]) {
         this->m_adj += "    init(Sub('" + std::to_string(indexFace1) + "') + Bord('" + std::to_string(indexEdgeFace1) + "') + Permut('0'), Sub('" + std::to_string(indexFace2) + "') + Bord('" + std::to_string(indexEdgeFace2) + "'))\n";
-    } else {
-        //TODO: throw exception, to be caught in window
-        std::cout << "Error on adj constraint" << std::endl;
     }
 }
 

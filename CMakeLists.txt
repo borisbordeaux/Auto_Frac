@@ -4,19 +4,20 @@ project(AutoFrac)
 set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-# set(CMAKE_PREFIX_PATH "/home/boris/Qt/6.5.1/gcc_64")
-set(CMAKE_PREFIX_PATH "/opt/Qt/6.5.1/gcc_64")
+set(CMAKE_PREFIX_PATH "/home/boris/Qt/6.5.1/gcc_64")
+# set(CMAKE_PREFIX_PATH "/opt/Qt/6.5.1/gcc_64")
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 
-file(GLOB FILES "./src/**.cpp")
+file(GLOB_RECURSE FILES "src/*.cpp")
 
 # add mainwindow.h file because Qt is weird
-add_executable(AutoFrac ${FILES} include/mainwindow.h)
+add_executable(AutoFrac ${FILES} include/gui/mainwindow.h)
 
-target_include_directories(AutoFrac PUBLIC "./include")
+target_include_directories(AutoFrac PUBLIC include)
 
 target_link_libraries(AutoFrac PRIVATE Qt6::Core)
 target_link_libraries(AutoFrac PRIVATE Qt6::Gui)
