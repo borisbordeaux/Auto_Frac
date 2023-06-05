@@ -300,7 +300,7 @@ void MainWindow::updateEnablement() {
 }
 
 [[maybe_unused]] void MainWindow::slotAddConstraint() {
-    this->ui->listWidget_constraints->addItem("1.0 / 2.0");
+    this->ui->listWidget_constraints->addItem("0.0 / 1.0");
     this->ui->listWidget_constraints->setCurrentRow(this->ui->listWidget_constraints->count() - 1);
     this->updateEnablement();
 }
