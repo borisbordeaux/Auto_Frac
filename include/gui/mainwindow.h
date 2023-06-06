@@ -45,6 +45,7 @@ public slots:
     [[maybe_unused]] void slotOnConstraintEdge1Changed(int value);
     [[maybe_unused]] void slotOnConstraintFace2Changed(int value);
     [[maybe_unused]] void slotOnConstraintEdge2Changed(int value);
+    [[maybe_unused]] void slotOpenOBJFile();
 
 private:
     struct Constraint {

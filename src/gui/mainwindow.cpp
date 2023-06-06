@@ -3,6 +3,8 @@
 #include "fractal/structure.h"
 #include "fractal/structureprinter.h"
 #include "utils/fileprinter.h"
+#include "utils/objreader.h"
+#include "polytopal/mesh.h"
 
 #include <QtWidgets>
 #include <iostream>
@@ -375,4 +377,17 @@ void MainWindow::setInfo(std::string const& textInfo) {
     this->ui->label_log->setStyleSheet("QLabel{background-color: #35a753; color: #fff;}");
     this->ui->label_log->setVisible(true);
     this->ui->label_log->setText(textInfo.c_str());
+}
+
+[[maybe_unused]] void MainWindow::slotOpenOBJFile() {
+    QString file = QFileDialog::getOpenFileName(this, "Open OBJ", "", "OBJ Files (*.obj)");
+
+    if (file != "") {
+        std::cout << "[opening the file...] " << file.toStdString() << std::endl;
+        poly::Mesh m {};
+        poly::reader::readOBJ(file, m);
+        std::cout << "[finished]" << std::endl;
+        std::cout << m.toString().toStdString() << std::endl;
+        std::cout.flush();
+    }
 }

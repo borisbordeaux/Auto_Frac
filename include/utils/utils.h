@@ -17,6 +17,6 @@ inline T mod(T a, T b) {
     return (a % b + b) % b;
 }
 
-};
+}
 
 #endif //AUTOFRAC_UTILS_H

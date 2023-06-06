@@ -1,10 +1,49 @@
 #ifndef AUTOFRAC_FACE_H
 #define AUTOFRAC_FACE_H
 
+#include <QString>
+
 namespace poly {
 
-class Face {
+class HalfEdge;
 
+class Face {
+public:
+    /**
+     * @brief Construct a Face with one half-edge
+     * @param halfEdge the half-edge the face will use
+     */
+    explicit Face(QString name = "", HalfEdge* halfEdge = nullptr);
+
+    /**
+     * @brief getter
+     * @return the half-edge associated to this Face
+     */
+    HalfEdge* halfEdge();
+    /**
+     * @brief setter
+     * @param halfEdge the half-edge that has to be
+     * associated to this Face
+     */
+    void setHalfEdge(HalfEdge* halfEdge);
+
+    /**
+     * @brief getter
+     * @return the name of this face
+     */
+    QString name() const;
+
+    /**
+     * @brief setter
+     * @param name the name to set to this face
+     */
+    void setName(const QString& name);
+
+private:
+    //the name of the face
+    QString m_name;
+    //the half-edge of the face
+    HalfEdge* m_halfEdge;
 };
 
 }
