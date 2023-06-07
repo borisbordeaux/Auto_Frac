@@ -5,7 +5,7 @@
 #include <QString>
 #include <QVector>
 
-namespace poly {
+namespace he {
 
 class Vertex;
 
@@ -18,26 +18,26 @@ public:
     Mesh();
     ~Mesh();
 
-    QVector<Vertex*> vertices() const;
-    QVector<HalfEdge*> halfEdges() const;
-    QVector<Face*> faces() const;
+    QVector<he::Vertex*> vertices() const;
+    QVector<he::HalfEdge*> halfEdges() const;
+    QVector<he::Face*> faces() const;
 
-    void append(Vertex* v);
-    void append(HalfEdge* he);
-    void append(Face* f);
-    [[maybe_unused]] void remove(Vertex* v);
-    [[maybe_unused]] void remove(HalfEdge* he);
-    [[maybe_unused]] void remove(Face* f);
-    HalfEdge* findByName(const QString& name);
+    void append(he::Vertex* v);
+    void append(he::HalfEdge* he);
+    void append(he::Face* f);
+    [[maybe_unused]] void remove(he::Vertex* v);
+    [[maybe_unused]] void remove(he::HalfEdge* he);
+    [[maybe_unused]] void remove(he::Face* f);
+    he::HalfEdge* findByName(const QString& name);
 
     void reset();
 
     QString toString() const;
 
 private:
-    QVector<Vertex*> m_vertices;
-    QVector<HalfEdge*> m_halfEdges;
-    QVector<Face*> m_faces;
+    QVector<he::Vertex*> m_vertices;
+    QVector<he::HalfEdge*> m_halfEdges;
+    QVector<he::Face*> m_faces;
 
     //to enhance the finding of one half-edge by its name
     //we store each half-edge using their unique name

@@ -1,10 +1,12 @@
 #include "gui/mainwindow.h"
 #include "ui_mainwindow.h"
+
 #include "fractal/structure.h"
 #include "fractal/structureprinter.h"
+#include "halfedge/mesh.h"
+#include "polytopal/structure.h"
 #include "utils/fileprinter.h"
 #include "utils/objreader.h"
-#include "halfedge/mesh.h"
 
 #include <QtWidgets>
 #include <iostream>
@@ -384,10 +386,13 @@ void MainWindow::setInfo(std::string const& textInfo) {
 
     if (file != "") {
         std::cout << "[opening the file...] " << file.toStdString() << std::endl;
-        poly::Mesh m {};
-        poly::reader::readOBJ(file, m);
+        he::Mesh m;
+        he::reader::readOBJ(file, m);
         std::cout << "[finished]" << std::endl;
-        std::cout << m.toString().toStdString() << std::endl;
+
+        poly::Structure structure { m };
+
+        std::cout << structure.toString() << std::endl;
         std::cout.flush();
     }
 }

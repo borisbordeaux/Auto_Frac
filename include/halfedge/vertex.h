@@ -3,7 +3,7 @@
 
 #include <QString>
 
-namespace poly {
+namespace he {
 
 class HalfEdge;
 
@@ -57,13 +57,13 @@ public:
      * @brief getter
      * @return a half-edge from which this point is its origin
      */
-    poly::HalfEdge* halfEdge();
+    he::HalfEdge* halfEdge();
 
     /**
      * @brief setter
      * @param halfEdge a half-edge that have this point as origin
      */
-    void setHalfEdge(poly::HalfEdge* halfEdge);
+    void setHalfEdge(he::HalfEdge* halfEdge);
 
     /**
      * @brief getter
@@ -82,13 +82,13 @@ public:
      * @param other the vertex that has to be tested
      * @return true if the vertices has the same position, false otherwise
      */
-    bool equals(poly::Vertex* other) const;
+    bool equals(Vertex* other) const;
 
 private:
     //coordinates of this vertex
     float m_x, m_y, m_z;
     //a half-edge from which this point is its origin
-    poly::HalfEdge* m_halfEdge;
+    he::HalfEdge* m_halfEdge;
     //name of the vertex
     QString m_name;
 };

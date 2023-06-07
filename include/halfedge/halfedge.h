@@ -3,7 +3,7 @@
 
 #include <QString>
 
-namespace poly {
+namespace he {
 
 class Vertex;
 
@@ -15,31 +15,31 @@ public:
      * @brief Construct a half-edge with its origin
      * @param origin the origin of the half-edge
      */
-    explicit HalfEdge(Vertex* origin, QString name = "");
+    explicit HalfEdge(he::Vertex* origin, QString name = "");
 
     /**
      * @brief getter
      * @return the origin of the half-edge
      */
-    Vertex* origin();
+    he::Vertex* origin();
 
     /**
      * @brief setter
      * @param origin the origin to set for this half-edge
      */
-    void setOrigin(Vertex* origin);
+    void setOrigin(he::Vertex* origin);
 
     /**
      * @brief getter
      * @return the face of this half-edge
      */
-    Face* face();
+    he::Face* face();
 
     /**
      * @brief setter
      * @param face the face to set for this half-edge
      */
-    void setFace(Face* face);
+    void setFace(he::Face* face);
 
     /**
      * @brief getter
@@ -91,8 +91,8 @@ public:
     void setName(const QString& name);
 
 private:
-    Vertex* m_origin;
-    Face* m_face;
+    he::Vertex* m_origin;
+    he::Face* m_face;
     HalfEdge* m_twin;
     HalfEdge* m_prev;
     HalfEdge* m_next;

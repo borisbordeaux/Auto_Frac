@@ -3,13 +3,13 @@
 
 class QString;
 
-namespace poly {
+namespace he {
 class Mesh;
 }
 
-namespace poly::reader {
+namespace he::reader {
 
-void readOBJ(QString const& filename, poly::Mesh& mesh);
+void readOBJ(QString const& filename, he::Mesh& mesh);
 
 } // poly
 

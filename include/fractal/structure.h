@@ -1,5 +1,5 @@
-#ifndef AUTOFRAC_STRUCTURE_H
-#define AUTOFRAC_STRUCTURE_H
+#ifndef AUTOFRAC_FRAC_STRUCTURE_H
+#define AUTOFRAC_FRAC_STRUCTURE_H
 
 #include <ostream>
 #include <string>
@@ -33,4 +33,4 @@ private:
 
 } // frac
 
-#endif //AUTOFRAC_STRUCTURE_H
+#endif //AUTOFRAC_FRAC_STRUCTURE_H

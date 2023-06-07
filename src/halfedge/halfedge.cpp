@@ -5,57 +5,57 @@
 #include "halfedge/face.h"
 #include "halfedge/vertex.h"
 
-poly::HalfEdge::HalfEdge(poly::Vertex* origin, QString name) :
+he::HalfEdge::HalfEdge(he::Vertex* origin, QString name) :
         m_origin(origin), m_face(nullptr),
         m_twin(nullptr), m_prev(nullptr),
         m_next(nullptr), m_name(std::move(name)) {
 
 }
 
-poly::Vertex* poly::HalfEdge::origin() {
+he::Vertex* he::HalfEdge::origin() {
     return m_origin;
 }
 
-void poly::HalfEdge::setOrigin(poly::Vertex* origin) {
+void he::HalfEdge::setOrigin(he::Vertex* origin) {
     m_origin = origin;
 }
 
-poly::Face* poly::HalfEdge::face() {
+he::Face* he::HalfEdge::face() {
     return m_face;
 }
 
-void poly::HalfEdge::setFace(Face* face) {
+void he::HalfEdge::setFace(he::Face* face) {
     m_face = face;
 }
 
-poly::HalfEdge* poly::HalfEdge::twin() {
+he::HalfEdge* he::HalfEdge::twin() {
     return m_twin;
 }
 
-void poly::HalfEdge::setTwin(poly::HalfEdge* twin) {
+void he::HalfEdge::setTwin(he::HalfEdge* twin) {
     m_twin = twin;
 }
 
-poly::HalfEdge* poly::HalfEdge::prev() {
+he::HalfEdge* he::HalfEdge::prev() {
     return m_prev;
 }
 
-void poly::HalfEdge::setPrev(HalfEdge* prev) {
+void he::HalfEdge::setPrev(HalfEdge* prev) {
     m_prev = prev;
 }
 
-poly::HalfEdge* poly::HalfEdge::next() {
+he::HalfEdge* he::HalfEdge::next() {
     return m_next;
 }
 
-void poly::HalfEdge::setNext(poly::HalfEdge* next) {
+void he::HalfEdge::setNext(he::HalfEdge* next) {
     m_next = next;
 }
 
-QString poly::HalfEdge::name() const {
+QString he::HalfEdge::name() const {
     return m_name;
 }
 
-void poly::HalfEdge::setName(QString const& name) {
+void he::HalfEdge::setName(QString const& name) {
     m_name = name;
 }
