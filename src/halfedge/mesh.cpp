@@ -1,8 +1,8 @@
-#include "polytopal/mesh.h"
+#include "halfedge/mesh.h"
 
-#include "polytopal/face.h"
-#include "polytopal/halfedge.h"
-#include "polytopal/vertex.h"
+#include "halfedge/face.h"
+#include "halfedge/halfedge.h"
+#include "halfedge/vertex.h"
 
 poly::Mesh::Mesh() {
 }

@@ -4,7 +4,7 @@
 #include "fractal/structureprinter.h"
 #include "utils/fileprinter.h"
 #include "utils/objreader.h"
-#include "polytopal/mesh.h"
+#include "halfedge/mesh.h"
 
 #include <QtWidgets>
 #include <iostream>

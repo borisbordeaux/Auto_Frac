@@ -7,8 +7,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-set(CMAKE_PREFIX_PATH "/home/boris/Qt/6.5.1/gcc_64")
-# set(CMAKE_PREFIX_PATH "/opt/Qt/6.5.1/gcc_64")
+set(CMAKE_PREFIX_PATH "$ENV{QT_PATH}")
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 

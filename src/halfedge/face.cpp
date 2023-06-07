@@ -1,7 +1,7 @@
-#include "polytopal/face.h"
+#include "halfedge/face.h"
 
-#include "polytopal/halfedge.h"
-#include "polytopal/vertex.h"
+#include "halfedge/halfedge.h"
+#include "halfedge/vertex.h"
 
 poly::Face::Face(QString name, HalfEdge* halfEdge) : m_name(std::move(name)), m_halfEdge(halfEdge) {}
 

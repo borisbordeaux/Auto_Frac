@@ -1,9 +1,9 @@
-#include "polytopal/halfedge.h"
+#include "halfedge/halfedge.h"
 
 #include <utility>
 
-#include "polytopal/face.h"
-#include "polytopal/vertex.h"
+#include "halfedge/face.h"
+#include "halfedge/vertex.h"
 
 poly::HalfEdge::HalfEdge(poly::Vertex* origin, QString name) :
         m_origin(origin), m_face(nullptr),

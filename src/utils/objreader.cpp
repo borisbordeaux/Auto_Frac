@@ -1,9 +1,9 @@
 #include "utils/objreader.h"
 
-#include "polytopal/mesh.h"
-#include "polytopal/face.h"
-#include "polytopal/halfedge.h"
-#include "polytopal/vertex.h"
+#include "halfedge/mesh.h"
+#include "halfedge/face.h"
+#include "halfedge/halfedge.h"
+#include "halfedge/vertex.h"
 
 #include <QString>
 #include <QFile>

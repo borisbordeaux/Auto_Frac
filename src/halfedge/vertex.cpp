@@ -1,8 +1,8 @@
-#include "polytopal/vertex.h"
+#include "halfedge/vertex.h"
 
 #include <utility>
 
-#include "polytopal/halfedge.h"
+#include "halfedge/halfedge.h"
 
 poly::Vertex::Vertex(float x, float y, float z, QString name) :
         m_x(x), m_y(y), m_z(z), m_halfEdge(nullptr), m_name(std::move(name)) {
