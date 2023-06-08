@@ -1,5 +1,5 @@
-#ifndef AUTOFRAC_HALFEDGE_H
-#define AUTOFRAC_HALFEDGE_H
+#ifndef AUTOFRAC_HE_HALFEDGE_H
+#define AUTOFRAC_HE_HALFEDGE_H
 
 #include <QString>
 
@@ -101,4 +101,4 @@ private:
 
 } // poly
 
-#endif //AUTOFRAC_HALFEDGE_H
+#endif //AUTOFRAC_HE_HALFEDGE_H

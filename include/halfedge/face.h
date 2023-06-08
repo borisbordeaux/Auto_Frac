@@ -1,5 +1,5 @@
-#ifndef AUTOFRAC_FACE_H
-#define AUTOFRAC_FACE_H
+#ifndef AUTOFRAC_HE_FACE_H
+#define AUTOFRAC_HE_FACE_H
 
 #include <QString>
 
@@ -48,4 +48,4 @@ private:
 
 }
 
-#endif //AUTOFRAC_FACE_H
+#endif //AUTOFRAC_HE_FACE_H

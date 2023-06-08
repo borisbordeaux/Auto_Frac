@@ -1,5 +1,5 @@
-#ifndef AUTOFRAC_MESH_H
-#define AUTOFRAC_MESH_H
+#ifndef AUTOFRAC_HE_MESH_H
+#define AUTOFRAC_HE_MESH_H
 
 #include <QMap>
 #include <QString>
@@ -30,6 +30,9 @@ public:
     [[maybe_unused]] void remove(he::Face* f);
     he::HalfEdge* findByName(const QString& name);
 
+    QVector<he::Face*> adjacenciesOf(he::Face* f) const;
+    std::size_t degreeOf(he::Vertex* v) const;
+
     void reset();
 
     QString toString() const;
@@ -46,4 +49,4 @@ private:
 
 } // poly
 
-#endif //AUTOFRAC_MESH_H
+#endif //AUTOFRAC_HE_MESH_H

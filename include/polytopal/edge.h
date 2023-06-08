@@ -1,5 +1,5 @@
-#ifndef AUTOFRAC_EDGE_H
-#define AUTOFRAC_EDGE_H
+#ifndef AUTOFRAC_POLY_EDGE_H
+#define AUTOFRAC_POLY_EDGE_H
 
 namespace poly {
 
@@ -9,4 +9,4 @@ class Edge {
 
 } // poly
 
-#endif //AUTOFRAC_EDGE_H
+#endif //AUTOFRAC_POLY_EDGE_H

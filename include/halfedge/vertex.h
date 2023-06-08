@@ -1,5 +1,5 @@
-#ifndef AUTOFRAC_VERTEX_H
-#define AUTOFRAC_VERTEX_H
+#ifndef AUTOFRAC_HE_VERTEX_H
+#define AUTOFRAC_HE_VERTEX_H
 
 #include <QString>
 
@@ -95,4 +95,4 @@ private:
 
 } // poly
 
-#endif //AUTOFRAC_VERTEX_H
+#endif //AUTOFRAC_HE_VERTEX_H

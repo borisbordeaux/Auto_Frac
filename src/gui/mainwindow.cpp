@@ -3,6 +3,7 @@
 
 #include "fractal/structure.h"
 #include "fractal/structureprinter.h"
+#include "halfedge/face.h"
 #include "halfedge/mesh.h"
 #include "polytopal/structure.h"
 #include "utils/fileprinter.h"
@@ -390,9 +391,15 @@ void MainWindow::setInfo(std::string const& textInfo) {
         he::reader::readOBJ(file, m);
         std::cout << "[finished]" << std::endl;
 
+        for (he::Face* f: m.adjacenciesOf(m.faces()[0])) {
+            std::cout << f->name().toStdString() << ", ";
+        }
+
+        std::cout << std::endl << "degree of vertex 0 : " << m.degreeOf(m.vertices()[0]);
+
         poly::Structure structure { m };
 
-        std::cout << structure.toString() << std::endl;
+        std::cout << std::endl << m.toString().toStdString() << std::endl;
         std::cout.flush();
     }
 }

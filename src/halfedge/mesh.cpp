@@ -125,3 +125,30 @@ QString he::Mesh::toString() const {
     }
     return res;
 }
+
+QVector<he::Face*> he::Mesh::adjacenciesOf(he::Face* f) const {
+    QVector<he::Face*> res;
+    he::HalfEdge* he = f->halfEdge();
+    he::HalfEdge* nxt = he;
+    do {
+        if (nxt->twin() != nullptr) {
+            if (nxt->twin()->face() != nullptr) {
+                res.append(nxt->twin()->face());
+            }
+        }
+        nxt = nxt->next();
+    } while (nxt != he);
+
+    return res;
+}
+
+std::size_t he::Mesh::degreeOf(he::Vertex* v) const {
+    std::size_t res { 1 };
+    he::HalfEdge* he = v->halfEdge();
+    he::HalfEdge* twin_next = he->twin()->next();
+    do {
+        res++;
+        twin_next = twin_next->twin()->next();
+    } while (he != twin_next);
+    return res;
+}
