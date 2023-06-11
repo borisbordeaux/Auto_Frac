@@ -488,14 +488,27 @@
               </item>
               <item>
                <widget class="QListWidget" name="listWidget_faces">
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
                 <property name="styleSheet">
                  <string notr="true">QListWidget::item:selected{
-	background-color: #35a753;
-	color: #fff;
+	background-color: #AEAEFE;
+	color: rgba(0, 0, 0, 0.66);
+}
+QListWidget::item{
+	padding: 5px;
 }
 QListWidget {
 	background-color: black;
+	outline: none;
 }</string>
+                </property>
+                <property name="spacing">
+                 <number>0</number>
                 </property>
                </widget>
               </item>
@@ -949,14 +962,27 @@ QListWidget {
               </item>
               <item>
                <widget class="QListWidget" name="listWidget_edges">
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
                 <property name="styleSheet">
                  <string notr="true">QListWidget::item:selected{
-	background-color: #35a753;
-	color: #fff;
+	background-color: #AEAEFE;
+	color: rgba(0, 0, 0, 0.66);
+}
+QListWidget::item{
+	padding: 5px;
 }
 QListWidget {
 	background-color: black;
+	outline: none;
 }</string>
+                </property>
+                <property name="spacing">
+                 <number>0</number>
                 </property>
                </widget>
               </item>
@@ -1163,14 +1189,27 @@ QListWidget {
               </item>
               <item>
                <widget class="QListWidget" name="listWidget_constraints">
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
                 <property name="styleSheet">
                  <string notr="true">QListWidget::item:selected{
-	background-color: #35a753;
-	color: #fff;
+	background-color: #AEAEFE;
+	color: rgba(0, 0, 0, 0.66);
+}
+QListWidget::item{
+	padding: 5px;
 }
 QListWidget {
 	background-color: black;
+	outline: none;
 }</string>
+                </property>
+                <property name="spacing">
+                 <number>0</number>
                 </property>
                </widget>
               </item>
@@ -1425,7 +1464,7 @@ QListWidget {
      <x>0</x>
      <y>0</y>
      <width>1061</width>
-     <height>22</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>
@@ -1473,22 +1512,6 @@ QListWidget {
     <hint type="sourcelabel">
      <x>573</x>
      <y>281</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>530</x>
-     <y>507</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>listWidget_faces</sender>
-   <signal>currentRowChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnFaceSelected(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>530</x>
-     <y>175</y>
     </hint>
     <hint type="destinationlabel">
      <x>530</x>
@@ -1877,6 +1900,22 @@ QListWidget {
     <hint type="destinationlabel">
      <x>7</x>
      <y>196</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>listWidget_faces</sender>
+   <signal>currentRowChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnFaceSelected(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>530</x>
+     <y>175</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>530</x>
+     <y>507</y>
     </hint>
    </hints>
   </connection>
