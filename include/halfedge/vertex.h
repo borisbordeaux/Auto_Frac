@@ -71,18 +71,7 @@ public:
      */
     QString name() const;
 
-    /**
-     * @brief setter
-     * @param name the name to set to this vertex
-     */
-    void setName(const QString& name);
-
-    /**
-     * @brief tests if the vertices are at the same position
-     * @param other the vertex that has to be tested
-     * @return true if the vertices has the same position, false otherwise
-     */
-    bool equals(Vertex* other) const;
+    [[nodiscard]] std::size_t degree() const;
 
 private:
     //coordinates of this vertex

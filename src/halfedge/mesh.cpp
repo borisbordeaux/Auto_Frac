@@ -38,31 +38,6 @@ void he::Mesh::append(Face* f) {
     m_faces.append(f);
 }
 
-[[maybe_unused]] void he::Mesh::remove(he::Vertex* v) {
-    qsizetype index = m_vertices.indexOf(v);
-
-    if (index >= 0) {
-        m_vertices.remove(index);
-    }
-}
-
-[[maybe_unused]] void he::Mesh::remove(he::HalfEdge* he) {
-    qsizetype index = m_halfEdges.indexOf(he);
-
-    if (index >= 0) {
-        m_halfEdges.remove(index);
-        m_map.remove(he->name());
-    }
-}
-
-[[maybe_unused]] void he::Mesh::remove(he::Face* f) {
-    qsizetype index = m_faces.indexOf(f);
-
-    if (index >= 0) {
-        m_faces.remove(index);
-    }
-}
-
 he::HalfEdge* he::Mesh::findByName(const QString& name) {
     he::HalfEdge* res = nullptr;
 
@@ -139,16 +114,5 @@ QVector<he::Face*> he::Mesh::adjacenciesOf(he::Face* f) const {
         nxt = nxt->next();
     } while (nxt != he);
 
-    return res;
-}
-
-std::size_t he::Mesh::degreeOf(he::Vertex* v) const {
-    std::size_t res { 1 };
-    he::HalfEdge* he = v->halfEdge();
-    he::HalfEdge* twin_next = he->twin()->next();
-    do {
-        res++;
-        twin_next = twin_next->twin()->next();
-    } while (he != twin_next);
     return res;
 }

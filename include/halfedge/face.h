@@ -33,11 +33,7 @@ public:
      */
     QString name() const;
 
-    /**
-     * @brief setter
-     * @param name the name to set to this face
-     */
-    void setName(const QString& name);
+    std::size_t nbEdges() const;
 
 private:
     //the name of the face

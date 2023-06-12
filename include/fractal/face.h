@@ -35,7 +35,7 @@ public:
 
     frac::Edge const& operator[](std::size_t index) const;
     bool operator==(frac::Face const& other) const;
-    friend std::ostream& operator<<(std::ostream& os, const frac::Face& edge);
+    friend std::ostream& operator<<(std::ostream& os, const frac::Face& face);
 
     [[nodiscard]] std::string toString() const;
 

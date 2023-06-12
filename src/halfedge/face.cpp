@@ -17,6 +17,15 @@ QString he::Face::name() const {
     return m_name;
 }
 
-void he::Face::setName(const QString& name) {
-    m_name = name;
+std::size_t he::Face::nbEdges() const {
+    std::size_t res = 1;
+
+    he::HalfEdge* he = this->m_halfEdge;
+    he::HalfEdge* heNxt = he;
+    do {
+        res++;
+        heNxt = heNxt->next();
+    } while (heNxt != he);
+
+    return res;
 }
