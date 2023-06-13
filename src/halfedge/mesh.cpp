@@ -11,31 +11,31 @@ he::Mesh::~Mesh() {
     reset();
 }
 
-QVector<he::Vertex*> he::Mesh::vertices() const {
+std::vector<he::Vertex*> he::Mesh::vertices() const {
     return m_vertices;
 }
 
-QVector<he::HalfEdge*> he::Mesh::halfEdges() const {
+std::vector<he::HalfEdge*> he::Mesh::halfEdges() const {
     return m_halfEdges;
 }
 
-QVector<he::Face*> he::Mesh::faces() const {
+std::vector<he::Face*> he::Mesh::faces() const {
     return m_faces;
 }
 
 void he::Mesh::append(he::Vertex* v) {
-    m_vertices.append(v);
+    m_vertices.push_back(v);
 }
 
 void he::Mesh::append(he::HalfEdge* he) {
     //append a half-edge to the mesh
-    m_halfEdges.append(he);
+    m_halfEdges.push_back(he);
     //and to the map to enhance the finding
     m_map[he->name()] = m_halfEdges.size() - 1;
 }
 
 void he::Mesh::append(Face* f) {
-    m_faces.append(f);
+    m_faces.push_back(f);
 }
 
 he::HalfEdge* he::Mesh::findByName(const QString& name) {
@@ -101,14 +101,14 @@ QString he::Mesh::toString() const {
     return res;
 }
 
-QVector<he::Face*> he::Mesh::adjacenciesOf(he::Face* f) const {
-    QVector<he::Face*> res;
+std::vector<he::Face*> he::Mesh::adjacenciesOf(he::Face* f) const {
+    std::vector<he::Face*> res;
     he::HalfEdge* he = f->halfEdge();
     he::HalfEdge* nxt = he;
     do {
         if (nxt->twin() != nullptr) {
             if (nxt->twin()->face() != nullptr) {
-                res.append(nxt->twin()->face());
+                res.push_back(nxt->twin()->face());
             }
         }
         nxt = nxt->next();

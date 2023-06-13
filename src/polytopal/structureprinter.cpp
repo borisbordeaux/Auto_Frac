@@ -162,7 +162,7 @@ std::vector<float> poly::StructurePrinter::get_bezier_transformation(unsigned in
     };
 }
 
-void poly::StructurePrinter::print_init_subds(const poly::Structure& structure) {
+void poly::StructurePrinter::print_init_subds(poly::Structure const& structure) {
     auto const& subds = structure.faces();
     frac::FilePrinter::append("    init.subs = {");
     int i = 0;
@@ -177,7 +177,7 @@ void poly::StructurePrinter::print_init_subds(const poly::Structure& structure) 
     frac::FilePrinter::append_nl("}");
 }
 
-void poly::StructurePrinter::print_edges_of_cell(const poly::Face& cell) {
+void poly::StructurePrinter::print_edges_of_cell(poly::Face const& cell) {
     frac::FilePrinter::append("    " + cell.name() + ".bords = {");
     int i = 0;
     for (auto const& edge: cell.constData()) {
@@ -191,7 +191,7 @@ void poly::StructurePrinter::print_edges_of_cell(const poly::Face& cell) {
     frac::FilePrinter::append_nl("}");
 }
 
-void poly::StructurePrinter::print_subd_of_cell(const poly::Face& cell) {
+void poly::StructurePrinter::print_subd_of_cell(poly::Face const& cell) {
     std::vector<poly::Face> subds = cell.subdivisions();
     frac::FilePrinter::append("    " + cell.name() + ".subs = {");
     int i = 0;
@@ -206,7 +206,7 @@ void poly::StructurePrinter::print_subd_of_cell(const poly::Face& cell) {
     frac::FilePrinter::append_nl("}");
 }
 
-void poly::StructurePrinter::print_space_of_cell(const poly::Face& cell) {
+void poly::StructurePrinter::print_space_of_cell(poly::Face const& cell) {
     frac::FilePrinter::append("    " + cell.name() + ".space = [");
     for (std::size_t i = 0; i < cell.len(); ++i) {
         if (i == 0) {
@@ -218,7 +218,7 @@ void poly::StructurePrinter::print_space_of_cell(const poly::Face& cell) {
     frac::FilePrinter::append_nl("]");
 }
 
-void poly::StructurePrinter::print_prim_of_cell(const poly::Face& cell) {
+void poly::StructurePrinter::print_prim_of_cell(poly::Face const& cell) {
     frac::FilePrinter::append("    " + cell.name() + ".prim.elems = [Figure(2, [");
     for (std::size_t i = 0; i < cell.len(); ++i) {
         if (i == 0) {
@@ -230,13 +230,13 @@ void poly::StructurePrinter::print_prim_of_cell(const poly::Face& cell) {
     frac::FilePrinter::append_nl("])]");
 }
 
-void poly::StructurePrinter::print_edge_adjacencies_of_cell(const poly::Face& cell) {
+void poly::StructurePrinter::print_edge_adjacencies_of_cell(poly::Face const& cell) {
     for (std::size_t i = 0; i < cell.len(); ++i) {
         frac::FilePrinter::append_nl("    " + cell.name() + "(Bord('" + std::to_string(i) + "') + Bord('1'), Bord('" + std::to_string(frac::utils::mod(i + 1, cell.len())) + "') + Bord('0'))");
     }
 }
 
-void poly::StructurePrinter::print_plan_control_points(const poly::Structure& structure) {
+void poly::StructurePrinter::print_plan_control_points(poly::Structure const& structure) {
     std::size_t max = structure.faces().size();
     for (std::size_t index_face = 0; index_face < max; ++index_face) {
         std::size_t nb_pts = structure.nbControlPointsOfFace(index_face);

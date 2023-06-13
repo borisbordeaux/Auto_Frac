@@ -12,6 +12,7 @@ public:
     explicit Structure(he::Mesh const& mesh);
     std::string toString() const;
 
+    void addAdjacency(std::size_t indexFace1, std::size_t indexEdgeFace1, std::size_t indexFace2, std::size_t indexEdgeFace2);
     [[nodiscard]] std::string adjacencies() const;
     [[nodiscard]] frac::UniqueVector<poly::Edge> allEdges() const;
     [[nodiscard]] frac::UniqueVector<poly::Face> allFaces() const;

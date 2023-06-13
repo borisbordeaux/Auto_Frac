@@ -387,14 +387,16 @@ void MainWindow::setInfo(std::string const& textInfo) {
     QString file = QFileDialog::getOpenFileName(this, "Open OBJ", "", "OBJ Files (*.obj)");
 
     if (file != "") {
+        poly::Face::reset();
         std::cout << "[opening the file...] " << file.toStdString() << std::endl;
         he::Mesh m;
         he::reader::readOBJ(file, m);
         std::cout << "[finished]" << std::endl;
 
         poly::Structure structure { m };
+        frac::FilePrinter::reset();
 
-        poly::StructurePrinter::exportStruct(structure, true, "../result_poly.py");
+        poly::StructurePrinter::exportStruct(structure, false, "../result_poly.py");
 
         std::cout.flush();
     }

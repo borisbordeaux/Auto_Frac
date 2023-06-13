@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "halfedge/mesh.h"
 
 namespace poly {
 

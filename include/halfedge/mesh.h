@@ -3,7 +3,7 @@
 
 #include <QMap>
 #include <QString>
-#include <QVector>
+#include <vector>
 
 namespace he {
 
@@ -18,29 +18,25 @@ public:
     Mesh();
     ~Mesh();
 
-    QVector<he::Vertex*> vertices() const;
-    QVector<he::HalfEdge*> halfEdges() const;
-    QVector<he::Face*> faces() const;
+    std::vector<he::Vertex*> vertices() const;
+    std::vector<he::HalfEdge*> halfEdges() const;
+    std::vector<he::Face*> faces() const;
 
     void append(he::Vertex* v);
     void append(he::HalfEdge* he);
     void append(he::Face* f);
-    [[maybe_unused]] void remove(he::Vertex* v);
-    [[maybe_unused]] void remove(he::HalfEdge* he);
-    [[maybe_unused]] void remove(he::Face* f);
     he::HalfEdge* findByName(const QString& name);
 
-    QVector<he::Face*> adjacenciesOf(he::Face* f) const;
-    std::size_t degreeOf(he::Vertex* v) const;
+    std::vector<he::Face*> adjacenciesOf(he::Face* f) const;
 
     void reset();
 
     QString toString() const;
 
 private:
-    QVector<he::Vertex*> m_vertices;
-    QVector<he::HalfEdge*> m_halfEdges;
-    QVector<he::Face*> m_faces;
+    std::vector<he::Vertex*> m_vertices;
+    std::vector<he::HalfEdge*> m_halfEdges;
+    std::vector<he::Face*> m_faces;
 
     //to enhance the finding of one half-edge by its name
     //we store each half-edge using their unique name

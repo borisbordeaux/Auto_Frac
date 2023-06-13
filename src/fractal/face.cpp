@@ -7,16 +7,6 @@ frac::UniqueVector<frac::Face> frac::Face::s_existingFaces;
 std::map<std::string, std::string> frac::Face::s_incidenceConstraints;
 std::map<std::string, std::string> frac::Face::s_adjacencyConstraints;
 
-std::vector<frac::Edge> shiftVector(std::vector<frac::Edge> const& edges) {
-    std::vector<frac::Edge> res;
-    res.reserve(edges.size());
-    for (std::size_t i = 1; i < edges.size(); ++i) {
-        res.emplace_back(edges[i]);
-    }
-    res.emplace_back(edges[0]);
-    return res;
-}
-
 frac::Face::Face(std::vector<Edge> edges, unsigned int delay, frac::Edge const& adjEdge, frac::Edge const& gapEdge, frac::Edge const& reqEdge) :
 m_data(std::move(edges)), m_delay(delay), m_adjEdge(adjEdge), m_gapEdge(gapEdge), m_reqEdge(reqEdge), m_offset(0), m_firstInterior(-1) {
     for (Face const& f: s_existingFaces.data()) {
@@ -239,7 +229,7 @@ bool frac::Face::operator==(frac::Face const& other) const {
         if (this->m_data == shifted) {
             return true;
         }
-        std::vector<frac::Edge> new_shifted { shiftVector(shifted) };
+        std::vector<frac::Edge> new_shifted { frac::utils::shiftVector(shifted) };
         shifted.clear();
         for (Edge const& e: new_shifted) {
             shifted.emplace_back(e);
@@ -285,7 +275,7 @@ int frac::Face::computeOffset(frac::Face const& face, frac::Face const& other) {
         if (face.m_data == shifted) {
             return static_cast<int>(i);
         }
-        std::vector<frac::Edge> new_shifted { shiftVector(shifted) };
+        std::vector<frac::Edge> new_shifted { frac::utils::shiftVector(shifted) };
         shifted.clear();
         for (Edge const& e: new_shifted) {
             shifted.emplace_back(e);

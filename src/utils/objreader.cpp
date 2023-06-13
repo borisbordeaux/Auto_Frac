@@ -87,7 +87,7 @@ void he::reader::readOBJ(QString const& filename, he::Mesh& mesh) {
             QString name = he->name();
             QString nextBeginName = name.split(" ")[1];
 
-            for (int i = 1; i < mesh.vertices().size() + 1; i++) {
+            for (std::size_t i = 1; i < mesh.vertices().size() + 1; i++) {
                 he::HalfEdge* other = mesh.findByName(nextBeginName + " " + QString::number(i));
 
                 if (other != nullptr && other->face() == he->face()) {

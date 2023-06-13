@@ -1,3 +1,4 @@
+#include <iostream>
 #include "halfedge/face.h"
 
 #include "halfedge/halfedge.h"
@@ -18,7 +19,7 @@ QString he::Face::name() const {
 }
 
 std::size_t he::Face::nbEdges() const {
-    std::size_t res = 1;
+    std::size_t res = 0;
 
     he::HalfEdge* he = this->m_halfEdge;
     he::HalfEdge* heNxt = he;
