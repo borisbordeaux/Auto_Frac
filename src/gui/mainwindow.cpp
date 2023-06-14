@@ -384,7 +384,7 @@ void MainWindow::setInfo(std::string const& textInfo) {
 }
 
 [[maybe_unused]] void MainWindow::slotOpenOBJFile() {
-    QString file = QFileDialog::getOpenFileName(this, "Open OBJ", "", "OBJ Files (*.obj)");
+    QString file = QFileDialog::getOpenFileName(this, "Open an OBJ File...", "../obj", "OBJ Files (*.obj)");
 
     if (file != "") {
         poly::Face::reset();
@@ -394,6 +394,7 @@ void MainWindow::setInfo(std::string const& textInfo) {
         std::cout << "[finished]" << std::endl;
 
         poly::Structure structure { m };
+
         frac::FilePrinter::reset();
 
         poly::StructurePrinter::exportStruct(structure, false, "../result_poly.py");

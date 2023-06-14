@@ -41,174 +41,122 @@ def modele():
         [0.250000, 0.500000, 1.000000]]).setTyp('Const')
     ##############################
     # all cells states
-    # Cell_0
+    # Cell_0 -- B2 associated HE vertex : 3 -- B2 associated HE vertex : 1 -- B2 associated HE vertex : 2
     Cell_0 = Etat('Cell_0', 0)
-    # Cell_1
+    # Cell_1 -- B2 associated HE vertex : 4 -- B2 associated HE vertex : 1 -- B2 associated HE vertex : 3
     Cell_1 = Etat('Cell_1', 0)
-    # Cell_2
+    # Cell_2 -- B2 associated HE vertex : 2 -- B2 associated HE vertex : 1 -- B2 associated HE vertex : 4
     Cell_2 = Etat('Cell_2', 0)
-    # Cell_3
+    # Cell_3 -- B2 associated HE vertex : 3 -- B2 associated HE vertex : 2 -- B2 associated HE vertex : 4
     Cell_3 = Etat('Cell_3', 0)
-    # Cell_4
-    Cell_4 = Etat('Cell_4', 0)
-    # Cell_5
-    Cell_5 = Etat('Cell_5', 0)
     ##############################
     # subd of init
-    init.subs = {Sub('0'): Cell_0, Sub('1'): Cell_1, Sub('2'): Cell_2, Sub('3'): Cell_3, Sub('4'): Cell_4, Sub('5'): Cell_5}
+    init.subs = {Sub('0'): Cell_0, Sub('1'): Cell_1, Sub('2'): Cell_2, Sub('3'): Cell_3}
     ##############################
     # edges of all states
-    Cell_0.bords = {Bord('0'): B2, Bord('1'): B2, Bord('2'): B2, Bord('3'): B2}
-    Cell_1.bords = {Bord('0'): B2, Bord('1'): B2, Bord('2'): B2, Bord('3'): B2}
-    Cell_2.bords = {Bord('0'): B2, Bord('1'): B2, Bord('2'): B2, Bord('3'): B2}
-    Cell_3.bords = {Bord('0'): B2, Bord('1'): B2, Bord('2'): B2, Bord('3'): B2}
-    Cell_4.bords = {Bord('0'): B2, Bord('1'): B2, Bord('2'): B2, Bord('3'): B2}
-    Cell_5.bords = {Bord('0'): B2, Bord('1'): B2, Bord('2'): B2, Bord('3'): B2}
+    Cell_0.bords = {Bord('0'): B2, Bord('1'): B2, Bord('2'): B2}
+    Cell_1.bords = {Bord('0'): B2, Bord('1'): B2, Bord('2'): B2}
+    Cell_2.bords = {Bord('0'): B2, Bord('1'): B2, Bord('2'): B2}
+    Cell_3.bords = {Bord('0'): B2, Bord('1'): B2, Bord('2'): B2}
     ##############################
     # subdivisions of all states
-    Cell_0.subs = {Sub('0'): Cell_1, Sub('1'): Cell_2, Sub('2'): Cell_3, Sub('3'): Cell_4, Sub('4'): Cell_5}
-    Cell_1.subs = {Sub('0'): Cell_0, Sub('1'): Cell_2, Sub('2'): Cell_3, Sub('3'): Cell_4, Sub('4'): Cell_5}
-    Cell_2.subs = {Sub('0'): Cell_0, Sub('1'): Cell_1, Sub('2'): Cell_3, Sub('3'): Cell_4, Sub('4'): Cell_5}
-    Cell_3.subs = {Sub('0'): Cell_0, Sub('1'): Cell_1, Sub('2'): Cell_2, Sub('3'): Cell_4, Sub('4'): Cell_5}
-    Cell_4.subs = {Sub('0'): Cell_0, Sub('1'): Cell_1, Sub('2'): Cell_2, Sub('3'): Cell_3, Sub('4'): Cell_5}
-    Cell_5.subs = {Sub('0'): Cell_0, Sub('1'): Cell_1, Sub('2'): Cell_2, Sub('3'): Cell_3, Sub('4'): Cell_4}
+    Cell_0.subs = {Sub('0'): Cell_1, Sub('1'): Cell_2, Sub('2'): Cell_3}
+    Cell_1.subs = {Sub('0'): Cell_0, Sub('1'): Cell_2, Sub('2'): Cell_3}
+    Cell_2.subs = {Sub('0'): Cell_0, Sub('1'): Cell_1, Sub('2'): Cell_3}
+    Cell_3.subs = {Sub('0'): Cell_0, Sub('1'): Cell_1, Sub('2'): Cell_2}
     ##############################
     # build intern of all states
     Cell_0.buildIntern()
     Cell_1.buildIntern()
     Cell_2.buildIntern()
     Cell_3.buildIntern()
-    Cell_4.buildIntern()
-    Cell_5.buildIntern()
     ##############################
     # spaces of all states
-    Cell_0.space = [Bord_('0'), Bord_('1'), Bord_('2'), Bord_('3')]
-    Cell_1.space = [Bord_('0'), Bord_('1'), Bord_('2'), Bord_('3')]
-    Cell_2.space = [Bord_('0'), Bord_('1'), Bord_('2'), Bord_('3')]
-    Cell_3.space = [Bord_('0'), Bord_('1'), Bord_('2'), Bord_('3')]
-    Cell_4.space = [Bord_('0'), Bord_('1'), Bord_('2'), Bord_('3')]
-    Cell_5.space = [Bord_('0'), Bord_('1'), Bord_('2'), Bord_('3')]
+    Cell_0.space = [Bord_('0'), Bord_('1'), Bord_('2')]
+    Cell_1.space = [Bord_('0'), Bord_('1'), Bord_('2')]
+    Cell_2.space = [Bord_('0'), Bord_('1'), Bord_('2')]
+    Cell_3.space = [Bord_('0'), Bord_('1'), Bord_('2')]
     ##############################
     # grid of all states
     Cell_0.addGrid(Bord)
     Cell_1.addGrid(Bord)
     Cell_2.addGrid(Bord)
     Cell_3.addGrid(Bord)
-    Cell_4.addGrid(Bord)
-    Cell_5.addGrid(Bord)
     ##############################
     # prim of all states
-    Cell_0.prim.elems = [Figure(2, [Bord_('0') + Sub('0') + Sub('0') + Bord('0'), Bord_('0') + Sub('0') + Sub('1') + Bord('0'), Bord_('0') + Sub('1') + Sub('0') + Bord('0'), Bord_('0') + Sub('1') + Sub('1') + Bord('0'), Bord_('1') + Sub('0') + Sub('0') + Bord('0'), Bord_('1') + Sub('0') + Sub('1') + Bord('0'), Bord_('1') + Sub('1') + Sub('0') + Bord('0'), Bord_('1') + Sub('1') + Sub('1') + Bord('0'), Bord_('2') + Sub('0') + Sub('0') + Bord('0'), Bord_('2') + Sub('0') + Sub('1') + Bord('0'), Bord_('2') + Sub('1') + Sub('0') + Bord('0'), Bord_('2') + Sub('1') + Sub('1') + Bord('0'), Bord_('3') + Sub('0') + Sub('0') + Bord('0'), Bord_('3') + Sub('0') + Sub('1') + Bord('0'), Bord_('3') + Sub('1') + Sub('0') + Bord('0'), Bord_('3') + Sub('1') + Sub('1') + Bord('0')])]
-    Cell_1.prim.elems = [Figure(2, [Bord_('0') + Sub('0') + Sub('0') + Bord('0'), Bord_('0') + Sub('0') + Sub('1') + Bord('0'), Bord_('0') + Sub('1') + Sub('0') + Bord('0'), Bord_('0') + Sub('1') + Sub('1') + Bord('0'), Bord_('1') + Sub('0') + Sub('0') + Bord('0'), Bord_('1') + Sub('0') + Sub('1') + Bord('0'), Bord_('1') + Sub('1') + Sub('0') + Bord('0'), Bord_('1') + Sub('1') + Sub('1') + Bord('0'), Bord_('2') + Sub('0') + Sub('0') + Bord('0'), Bord_('2') + Sub('0') + Sub('1') + Bord('0'), Bord_('2') + Sub('1') + Sub('0') + Bord('0'), Bord_('2') + Sub('1') + Sub('1') + Bord('0'), Bord_('3') + Sub('0') + Sub('0') + Bord('0'), Bord_('3') + Sub('0') + Sub('1') + Bord('0'), Bord_('3') + Sub('1') + Sub('0') + Bord('0'), Bord_('3') + Sub('1') + Sub('1') + Bord('0')])]
-    Cell_2.prim.elems = [Figure(2, [Bord_('0') + Sub('0') + Sub('0') + Bord('0'), Bord_('0') + Sub('0') + Sub('1') + Bord('0'), Bord_('0') + Sub('1') + Sub('0') + Bord('0'), Bord_('0') + Sub('1') + Sub('1') + Bord('0'), Bord_('1') + Sub('0') + Sub('0') + Bord('0'), Bord_('1') + Sub('0') + Sub('1') + Bord('0'), Bord_('1') + Sub('1') + Sub('0') + Bord('0'), Bord_('1') + Sub('1') + Sub('1') + Bord('0'), Bord_('2') + Sub('0') + Sub('0') + Bord('0'), Bord_('2') + Sub('0') + Sub('1') + Bord('0'), Bord_('2') + Sub('1') + Sub('0') + Bord('0'), Bord_('2') + Sub('1') + Sub('1') + Bord('0'), Bord_('3') + Sub('0') + Sub('0') + Bord('0'), Bord_('3') + Sub('0') + Sub('1') + Bord('0'), Bord_('3') + Sub('1') + Sub('0') + Bord('0'), Bord_('3') + Sub('1') + Sub('1') + Bord('0')])]
-    Cell_3.prim.elems = [Figure(2, [Bord_('0') + Sub('0') + Sub('0') + Bord('0'), Bord_('0') + Sub('0') + Sub('1') + Bord('0'), Bord_('0') + Sub('1') + Sub('0') + Bord('0'), Bord_('0') + Sub('1') + Sub('1') + Bord('0'), Bord_('1') + Sub('0') + Sub('0') + Bord('0'), Bord_('1') + Sub('0') + Sub('1') + Bord('0'), Bord_('1') + Sub('1') + Sub('0') + Bord('0'), Bord_('1') + Sub('1') + Sub('1') + Bord('0'), Bord_('2') + Sub('0') + Sub('0') + Bord('0'), Bord_('2') + Sub('0') + Sub('1') + Bord('0'), Bord_('2') + Sub('1') + Sub('0') + Bord('0'), Bord_('2') + Sub('1') + Sub('1') + Bord('0'), Bord_('3') + Sub('0') + Sub('0') + Bord('0'), Bord_('3') + Sub('0') + Sub('1') + Bord('0'), Bord_('3') + Sub('1') + Sub('0') + Bord('0'), Bord_('3') + Sub('1') + Sub('1') + Bord('0')])]
-    Cell_4.prim.elems = [Figure(2, [Bord_('0') + Sub('0') + Sub('0') + Bord('0'), Bord_('0') + Sub('0') + Sub('1') + Bord('0'), Bord_('0') + Sub('1') + Sub('0') + Bord('0'), Bord_('0') + Sub('1') + Sub('1') + Bord('0'), Bord_('1') + Sub('0') + Sub('0') + Bord('0'), Bord_('1') + Sub('0') + Sub('1') + Bord('0'), Bord_('1') + Sub('1') + Sub('0') + Bord('0'), Bord_('1') + Sub('1') + Sub('1') + Bord('0'), Bord_('2') + Sub('0') + Sub('0') + Bord('0'), Bord_('2') + Sub('0') + Sub('1') + Bord('0'), Bord_('2') + Sub('1') + Sub('0') + Bord('0'), Bord_('2') + Sub('1') + Sub('1') + Bord('0'), Bord_('3') + Sub('0') + Sub('0') + Bord('0'), Bord_('3') + Sub('0') + Sub('1') + Bord('0'), Bord_('3') + Sub('1') + Sub('0') + Bord('0'), Bord_('3') + Sub('1') + Sub('1') + Bord('0')])]
-    Cell_5.prim.elems = [Figure(2, [Bord_('0') + Sub('0') + Sub('0') + Bord('0'), Bord_('0') + Sub('0') + Sub('1') + Bord('0'), Bord_('0') + Sub('1') + Sub('0') + Bord('0'), Bord_('0') + Sub('1') + Sub('1') + Bord('0'), Bord_('1') + Sub('0') + Sub('0') + Bord('0'), Bord_('1') + Sub('0') + Sub('1') + Bord('0'), Bord_('1') + Sub('1') + Sub('0') + Bord('0'), Bord_('1') + Sub('1') + Sub('1') + Bord('0'), Bord_('2') + Sub('0') + Sub('0') + Bord('0'), Bord_('2') + Sub('0') + Sub('1') + Bord('0'), Bord_('2') + Sub('1') + Sub('0') + Bord('0'), Bord_('2') + Sub('1') + Sub('1') + Bord('0'), Bord_('3') + Sub('0') + Sub('0') + Bord('0'), Bord_('3') + Sub('0') + Sub('1') + Bord('0'), Bord_('3') + Sub('1') + Sub('0') + Bord('0'), Bord_('3') + Sub('1') + Sub('1') + Bord('0')])]
+    Cell_0.prim.elems = [Figure(2, [Bord_('0') + Sub('0') + Sub('0') + Bord('0'), Bord_('0') + Sub('0') + Sub('1') + Bord('0'), Bord_('0') + Sub('1') + Sub('0') + Bord('0'), Bord_('0') + Sub('1') + Sub('1') + Bord('0'), Bord_('1') + Sub('0') + Sub('0') + Bord('0'), Bord_('1') + Sub('0') + Sub('1') + Bord('0'), Bord_('1') + Sub('1') + Sub('0') + Bord('0'), Bord_('1') + Sub('1') + Sub('1') + Bord('0'), Bord_('2') + Sub('0') + Sub('0') + Bord('0'), Bord_('2') + Sub('0') + Sub('1') + Bord('0'), Bord_('2') + Sub('1') + Sub('0') + Bord('0'), Bord_('2') + Sub('1') + Sub('1') + Bord('0')])]
+    Cell_1.prim.elems = [Figure(2, [Bord_('0') + Sub('0') + Sub('0') + Bord('0'), Bord_('0') + Sub('0') + Sub('1') + Bord('0'), Bord_('0') + Sub('1') + Sub('0') + Bord('0'), Bord_('0') + Sub('1') + Sub('1') + Bord('0'), Bord_('1') + Sub('0') + Sub('0') + Bord('0'), Bord_('1') + Sub('0') + Sub('1') + Bord('0'), Bord_('1') + Sub('1') + Sub('0') + Bord('0'), Bord_('1') + Sub('1') + Sub('1') + Bord('0'), Bord_('2') + Sub('0') + Sub('0') + Bord('0'), Bord_('2') + Sub('0') + Sub('1') + Bord('0'), Bord_('2') + Sub('1') + Sub('0') + Bord('0'), Bord_('2') + Sub('1') + Sub('1') + Bord('0')])]
+    Cell_2.prim.elems = [Figure(2, [Bord_('0') + Sub('0') + Sub('0') + Bord('0'), Bord_('0') + Sub('0') + Sub('1') + Bord('0'), Bord_('0') + Sub('1') + Sub('0') + Bord('0'), Bord_('0') + Sub('1') + Sub('1') + Bord('0'), Bord_('1') + Sub('0') + Sub('0') + Bord('0'), Bord_('1') + Sub('0') + Sub('1') + Bord('0'), Bord_('1') + Sub('1') + Sub('0') + Bord('0'), Bord_('1') + Sub('1') + Sub('1') + Bord('0'), Bord_('2') + Sub('0') + Sub('0') + Bord('0'), Bord_('2') + Sub('0') + Sub('1') + Bord('0'), Bord_('2') + Sub('1') + Sub('0') + Bord('0'), Bord_('2') + Sub('1') + Sub('1') + Bord('0')])]
+    Cell_3.prim.elems = [Figure(2, [Bord_('0') + Sub('0') + Sub('0') + Bord('0'), Bord_('0') + Sub('0') + Sub('1') + Bord('0'), Bord_('0') + Sub('1') + Sub('0') + Bord('0'), Bord_('0') + Sub('1') + Sub('1') + Bord('0'), Bord_('1') + Sub('0') + Sub('0') + Bord('0'), Bord_('1') + Sub('0') + Sub('1') + Bord('0'), Bord_('1') + Sub('1') + Sub('0') + Bord('0'), Bord_('1') + Sub('1') + Sub('1') + Bord('0'), Bord_('2') + Sub('0') + Sub('0') + Bord('0'), Bord_('2') + Sub('0') + Sub('1') + Bord('0'), Bord_('2') + Sub('1') + Sub('0') + Bord('0'), Bord_('2') + Sub('1') + Sub('1') + Bord('0')])]
     ##############################
     # constraints of all states
     # incidence constraints
+    Cell_0(Bord('1') + Sub('0') + Permut('0'), Sub('0') + Bord('1'))
+    Cell_0(Bord('0') + Sub('1') + Permut('0'), Sub('0') + Bord('2'))
+    Cell_0(Bord('2') + Sub('0') + Permut('0'), Sub('1') + Bord('0'))
+    Cell_0(Bord('1') + Sub('1') + Permut('0'), Sub('1') + Bord('1'))
+    Cell_0(Bord('0') + Sub('0') + Permut('0'), Sub('2') + Bord('0'))
+    Cell_0(Bord('2') + Sub('1') + Permut('0'), Sub('2') + Bord('1'))
     # adjacency constraints
-    Cell_0(Sub('0') + Bord('0') + Bord('1'), Sub('4') + Bord('2') + Bord('1'))
-    Cell_0(Sub('0') + Bord('1') + Bord('1'), Sub('3') + Bord('2') + Bord('1'))
-    Cell_0(Sub('0') + Bord('3') + Bord('1'), Sub('2') + Bord('2') + Bord('1'))
-    Cell_0(Sub('1') + Bord('0') + Bord('1'), Sub('3') + Bord('0') + Bord('1'))
-    Cell_0(Sub('1') + Bord('1') + Bord('1'), Sub('4') + Bord('0') + Bord('1'))
-    Cell_0(Sub('1') + Bord('2') + Bord('1'), Sub('2') + Bord('0') + Bord('1'))
-    Cell_0(Sub('2') + Bord('1') + Bord('1'), Sub('4') + Bord('3') + Bord('1'))
-    Cell_0(Sub('3') + Bord('3') + Bord('1'), Sub('4') + Bord('1') + Bord('1'))
+    Cell_0(Sub('0') + Bord('0') + Bord('1'), Sub('1') + Bord('1') + Bord('1'))
+    Cell_0(Sub('0') + Bord('2') + Bord('1'), Sub('2') + Bord('2') + Bord('1'))
+    Cell_0(Sub('1') + Bord('2') + Bord('1'), Sub('2') + Bord('1') + Bord('1'))
     # edges adjacency constraints
     Cell_0(Bord('0') + Bord('1'), Bord('1') + Bord('0'))
     Cell_0(Bord('1') + Bord('1'), Bord('2') + Bord('0'))
-    Cell_0(Bord('2') + Bord('1'), Bord('3') + Bord('0'))
-    Cell_0(Bord('3') + Bord('1'), Bord('0') + Bord('0'))
+    Cell_0(Bord('2') + Bord('1'), Bord('0') + Bord('0'))
     # incidence constraints
+    Cell_1(Bord('2') + Sub('0') + Permut('0'), Sub('0') + Bord('0'))
+    Cell_1(Bord('1') + Sub('1') + Permut('0'), Sub('0') + Bord('1'))
+    Cell_1(Bord('1') + Sub('0') + Permut('0'), Sub('1') + Bord('1'))
+    Cell_1(Bord('0') + Sub('1') + Permut('0'), Sub('1') + Bord('2'))
+    Cell_1(Bord('2') + Sub('1') + Permut('0'), Sub('2') + Bord('0'))
+    Cell_1(Bord('0') + Sub('0') + Permut('0'), Sub('2') + Bord('2'))
     # adjacency constraints
-    Cell_1(Sub('0') + Bord('0') + Bord('1'), Sub('3') + Bord('1') + Bord('1'))
-    Cell_1(Sub('0') + Bord('1') + Bord('1'), Sub('1') + Bord('3') + Bord('1'))
-    Cell_1(Sub('0') + Bord('2') + Bord('1'), Sub('2') + Bord('3') + Bord('1'))
-    Cell_1(Sub('1') + Bord('0') + Bord('1'), Sub('3') + Bord('0') + Bord('1'))
-    Cell_1(Sub('1') + Bord('1') + Bord('1'), Sub('4') + Bord('0') + Bord('1'))
-    Cell_1(Sub('1') + Bord('2') + Bord('1'), Sub('2') + Bord('0') + Bord('1'))
-    Cell_1(Sub('2') + Bord('1') + Bord('1'), Sub('4') + Bord('3') + Bord('1'))
-    Cell_1(Sub('3') + Bord('3') + Bord('1'), Sub('4') + Bord('1') + Bord('1'))
+    Cell_1(Sub('0') + Bord('1') + Bord('1'), Sub('1') + Bord('0') + Bord('1'))
+    Cell_1(Sub('0') + Bord('2') + Bord('1'), Sub('2') + Bord('0') + Bord('1'))
+    Cell_1(Sub('1') + Bord('2') + Bord('1'), Sub('2') + Bord('1') + Bord('1'))
     # edges adjacency constraints
     Cell_1(Bord('0') + Bord('1'), Bord('1') + Bord('0'))
     Cell_1(Bord('1') + Bord('1'), Bord('2') + Bord('0'))
-    Cell_1(Bord('2') + Bord('1'), Bord('3') + Bord('0'))
-    Cell_1(Bord('3') + Bord('1'), Bord('0') + Bord('0'))
+    Cell_1(Bord('2') + Bord('1'), Bord('0') + Bord('0'))
     # incidence constraints
+    Cell_2(Bord('1') + Sub('0') + Permut('0'), Sub('0') + Bord('1'))
+    Cell_2(Bord('0') + Sub('1') + Permut('0'), Sub('0') + Bord('2'))
+    Cell_2(Bord('2') + Sub('0') + Permut('0'), Sub('1') + Bord('0'))
+    Cell_2(Bord('1') + Sub('1') + Permut('0'), Sub('1') + Bord('1'))
+    Cell_2(Bord('0') + Sub('0') + Permut('0'), Sub('2') + Bord('1'))
+    Cell_2(Bord('2') + Sub('1') + Permut('0'), Sub('2') + Bord('2'))
     # adjacency constraints
-    Cell_2(Sub('0') + Bord('0') + Bord('1'), Sub('3') + Bord('1') + Bord('1'))
-    Cell_2(Sub('0') + Bord('2') + Bord('1'), Sub('2') + Bord('3') + Bord('1'))
-    Cell_2(Sub('0') + Bord('3') + Bord('1'), Sub('1') + Bord('2') + Bord('1'))
-    Cell_2(Sub('1') + Bord('0') + Bord('1'), Sub('4') + Bord('2') + Bord('1'))
-    Cell_2(Sub('1') + Bord('1') + Bord('1'), Sub('3') + Bord('2') + Bord('1'))
-    Cell_2(Sub('1') + Bord('3') + Bord('1'), Sub('2') + Bord('2') + Bord('1'))
-    Cell_2(Sub('2') + Bord('1') + Bord('1'), Sub('4') + Bord('3') + Bord('1'))
-    Cell_2(Sub('3') + Bord('3') + Bord('1'), Sub('4') + Bord('1') + Bord('1'))
+    Cell_2(Sub('0') + Bord('0') + Bord('1'), Sub('1') + Bord('1') + Bord('1'))
+    Cell_2(Sub('0') + Bord('2') + Bord('1'), Sub('2') + Bord('0') + Bord('1'))
+    Cell_2(Sub('1') + Bord('2') + Bord('1'), Sub('2') + Bord('2') + Bord('1'))
     # edges adjacency constraints
     Cell_2(Bord('0') + Bord('1'), Bord('1') + Bord('0'))
     Cell_2(Bord('1') + Bord('1'), Bord('2') + Bord('0'))
-    Cell_2(Bord('2') + Bord('1'), Bord('3') + Bord('0'))
-    Cell_2(Bord('3') + Bord('1'), Bord('0') + Bord('0'))
+    Cell_2(Bord('2') + Bord('1'), Bord('0') + Bord('0'))
     # incidence constraints
+    Cell_3(Bord('0') + Sub('1') + Permut('0'), Sub('0') + Bord('0'))
+    Cell_3(Bord('1') + Sub('0') + Permut('0'), Sub('0') + Bord('2'))
+    Cell_3(Bord('2') + Sub('1') + Permut('0'), Sub('1') + Bord('0'))
+    Cell_3(Bord('0') + Sub('0') + Permut('0'), Sub('1') + Bord('2'))
+    Cell_3(Bord('1') + Sub('1') + Permut('0'), Sub('2') + Bord('0'))
+    Cell_3(Bord('2') + Sub('0') + Permut('0'), Sub('2') + Bord('2'))
     # adjacency constraints
-    Cell_3(Sub('0') + Bord('0') + Bord('1'), Sub('3') + Bord('1') + Bord('1'))
-    Cell_3(Sub('0') + Bord('1') + Bord('1'), Sub('2') + Bord('3') + Bord('1'))
-    Cell_3(Sub('0') + Bord('3') + Bord('1'), Sub('1') + Bord('2') + Bord('1'))
-    Cell_3(Sub('1') + Bord('0') + Bord('1'), Sub('4') + Bord('2') + Bord('1'))
-    Cell_3(Sub('1') + Bord('1') + Bord('1'), Sub('3') + Bord('2') + Bord('1'))
-    Cell_3(Sub('2') + Bord('0') + Bord('1'), Sub('3') + Bord('0') + Bord('1'))
-    Cell_3(Sub('2') + Bord('1') + Bord('1'), Sub('4') + Bord('0') + Bord('1'))
-    Cell_3(Sub('3') + Bord('3') + Bord('1'), Sub('4') + Bord('1') + Bord('1'))
+    Cell_3(Sub('0') + Bord('0') + Bord('1'), Sub('1') + Bord('1') + Bord('1'))
+    Cell_3(Sub('0') + Bord('1') + Bord('1'), Sub('2') + Bord('0') + Bord('1'))
+    Cell_3(Sub('1') + Bord('0') + Bord('1'), Sub('2') + Bord('1') + Bord('1'))
     # edges adjacency constraints
     Cell_3(Bord('0') + Bord('1'), Bord('1') + Bord('0'))
     Cell_3(Bord('1') + Bord('1'), Bord('2') + Bord('0'))
-    Cell_3(Bord('2') + Bord('1'), Bord('3') + Bord('0'))
-    Cell_3(Bord('3') + Bord('1'), Bord('0') + Bord('0'))
-    # incidence constraints
-    # adjacency constraints
-    Cell_4(Sub('0') + Bord('1') + Bord('1'), Sub('2') + Bord('3') + Bord('1'))
-    Cell_4(Sub('0') + Bord('2') + Bord('1'), Sub('3') + Bord('3') + Bord('1'))
-    Cell_4(Sub('0') + Bord('3') + Bord('1'), Sub('1') + Bord('2') + Bord('1'))
-    Cell_4(Sub('1') + Bord('0') + Bord('1'), Sub('4') + Bord('2') + Bord('1'))
-    Cell_4(Sub('1') + Bord('3') + Bord('1'), Sub('3') + Bord('2') + Bord('1'))
-    Cell_4(Sub('2') + Bord('1') + Bord('1'), Sub('4') + Bord('0') + Bord('1'))
-    Cell_4(Sub('2') + Bord('2') + Bord('1'), Sub('3') + Bord('0') + Bord('1'))
-    Cell_4(Sub('3') + Bord('1') + Bord('1'), Sub('4') + Bord('3') + Bord('1'))
-    # edges adjacency constraints
-    Cell_4(Bord('0') + Bord('1'), Bord('1') + Bord('0'))
-    Cell_4(Bord('1') + Bord('1'), Bord('2') + Bord('0'))
-    Cell_4(Bord('2') + Bord('1'), Bord('3') + Bord('0'))
-    Cell_4(Bord('3') + Bord('1'), Bord('0') + Bord('0'))
-    # incidence constraints
-    # adjacency constraints
-    Cell_5(Sub('0') + Bord('0') + Bord('1'), Sub('4') + Bord('1') + Bord('1'))
-    Cell_5(Sub('0') + Bord('1') + Bord('1'), Sub('2') + Bord('3') + Bord('1'))
-    Cell_5(Sub('0') + Bord('2') + Bord('1'), Sub('3') + Bord('3') + Bord('1'))
-    Cell_5(Sub('0') + Bord('3') + Bord('1'), Sub('1') + Bord('2') + Bord('1'))
-    Cell_5(Sub('1') + Bord('1') + Bord('1'), Sub('4') + Bord('2') + Bord('1'))
-    Cell_5(Sub('1') + Bord('3') + Bord('1'), Sub('3') + Bord('2') + Bord('1'))
-    Cell_5(Sub('2') + Bord('0') + Bord('1'), Sub('4') + Bord('0') + Bord('1'))
-    Cell_5(Sub('2') + Bord('2') + Bord('1'), Sub('3') + Bord('0') + Bord('1'))
-    # edges adjacency constraints
-    Cell_5(Bord('0') + Bord('1'), Bord('1') + Bord('0'))
-    Cell_5(Bord('1') + Bord('1'), Bord('2') + Bord('0'))
-    Cell_5(Bord('2') + Bord('1'), Bord('3') + Bord('0'))
-    Cell_5(Bord('3') + Bord('1'), Bord('0') + Bord('0'))
+    Cell_3(Bord('2') + Bord('1'), Bord('0') + Bord('0'))
     # constraints on init cells
-    init(Sub('0') + Bord('0') + Bord('1'), Sub('4') + Bord('1') + Bord('1'))
-    init(Sub('0') + Bord('1') + Bord('1'), Sub('2') + Bord('3') + Bord('1'))
-    init(Sub('0') + Bord('2') + Bord('1'), Sub('3') + Bord('3') + Bord('1'))
-    init(Sub('0') + Bord('3') + Bord('1'), Sub('1') + Bord('2') + Bord('1'))
-    init(Sub('1') + Bord('0') + Bord('1'), Sub('5') + Bord('2') + Bord('1'))
-    init(Sub('1') + Bord('1') + Bord('1'), Sub('4') + Bord('2') + Bord('1'))
-    init(Sub('1') + Bord('3') + Bord('1'), Sub('3') + Bord('2') + Bord('1'))
-    init(Sub('2') + Bord('0') + Bord('1'), Sub('4') + Bord('0') + Bord('1'))
-    init(Sub('2') + Bord('1') + Bord('1'), Sub('5') + Bord('0') + Bord('1'))
-    init(Sub('2') + Bord('2') + Bord('1'), Sub('3') + Bord('0') + Bord('1'))
-    init(Sub('3') + Bord('1') + Bord('1'), Sub('5') + Bord('3') + Bord('1'))
-    init(Sub('4') + Bord('3') + Bord('1'), Sub('5') + Bord('1') + Bord('1'))
+    init(Sub('0') + Bord('0') + Bord('1'), Sub('1') + Bord('1') + Bord('1'))
+    init(Sub('0') + Bord('1') + Bord('1'), Sub('2') + Bord('0') + Bord('1'))
+    init(Sub('0') + Bord('2') + Bord('1'), Sub('3') + Bord('0') + Bord('1'))
+    init(Sub('1') + Bord('0') + Bord('1'), Sub('2') + Bord('1') + Bord('1'))
+    init(Sub('1') + Bord('2') + Bord('1'), Sub('3') + Bord('2') + Bord('1'))
+    init(Sub('2') + Bord('2') + Bord('1'), Sub('3') + Bord('1') + Bord('1'))
     # control points
     return init
 

@@ -17,3 +17,7 @@ bool poly::Edge::operator==(const poly::Edge& other) const {
 he::Vertex* poly::Edge::HEVertex() const {
     return this->m_vertex;
 }
+
+std::string poly::Edge::toString() const {
+    return this->name() + " associated HE vertex : " + this->m_vertex->name().toStdString();
+}

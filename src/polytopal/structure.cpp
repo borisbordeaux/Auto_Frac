@@ -27,7 +27,11 @@ poly::Structure::Structure(he::Mesh const& mesh) : m_mesh(mesh) {
 }
 
 std::string poly::Structure::toString() const {
-    return this->m_mesh.toString().toStdString();
+    std::string res = this->m_mesh.toString().toStdString();
+    for (poly::Face const& f: this->m_faces) {
+        res += f.toString() + "\n";
+    }
+    return res;
 }
 
 std::string poly::Structure::adjacencies() const {
@@ -57,13 +61,14 @@ std::vector<poly::Face> const& poly::Structure::faces() const {
 }
 
 std::size_t poly::Structure::nbControlPointsOfFace(std::size_t indexFace) const {
-    return this->m_faces[indexFace].len();
+    return 2*this->m_faces[indexFace].len();
 }
 
 namespace poly {
 std::ostream& operator<<(std::ostream& os, poly::Structure const& structure) {
+    os << structure.m_mesh.toString().toStdString();
     for (poly::Face const& f: structure.m_faces) {
-        os << f << std::endl;
+        os << f << "\n";
     }
     os << structure.m_adj;
     return os;

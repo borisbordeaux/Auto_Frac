@@ -6,6 +6,7 @@
 namespace he {
 
 class HalfEdge;
+class Face;
 
 class Vertex {
 public:
@@ -72,6 +73,8 @@ public:
     QString name() const;
 
     [[nodiscard]] std::size_t degree() const;
+
+    [[nodiscard]] std::vector<he::Face*> getAllFacesAroundVertex(he::Face* f) const;
 
 private:
     //coordinates of this vertex

@@ -46,7 +46,7 @@ std::size_t poly::Face::len() const {
 std::vector<poly::Face> poly::Face::subdivisions() const {
     std::vector<poly::Face> res;
     bool writeConstraints = poly::Face::s_incidenceConstraints.find(this->name()) == s_incidenceConstraints.end();
-    for (he::Face* f: s_mesh->faces()) {
+    for (he::Face* f: Face::s_mesh->faces()) {
         if (this->m_face != f) {
             res.emplace_back(f);
         }
@@ -57,29 +57,35 @@ std::vector<poly::Face> poly::Face::subdivisions() const {
         for (std::size_t i = 0; i < res.size() - 1; ++i) { //for each fractal face
             for (std::size_t j = 0; j < res[i].constData().size(); ++j) { //for each edge
                 for (std::size_t k = i + 1; k < res.size(); ++k) { //for each other face
-                    if (i != k) {
-                        for (std::size_t l = 0; l < res[k].constData().size(); ++l) { //for each edge
-                            if (res[i].halfEdges()[j]->twin() == res[k].halfEdges()[l]) {
-                                addAdjacencyConstraint(*this, i, j, k, l);
+                    for (std::size_t l = 0; l < res[k].constData().size(); ++l) { //for each edge
+                        // if polytopal faces are adjacent, fractal faces will be adjacent
+                        if (res[i].halfEdges()[j]->twin() == res[k].halfEdges()[l]) {
+                            addAdjacencyConstraint(*this, i, j, k, l);
+                        }
+                    }
+                }
+            }
+        }
+
+        // incidence constraints
+        for (std::size_t i = 0; i < res.size(); ++i) { //for each fractal face subdivisions
+            for (std::size_t j = 0; j < res[i].constData().size(); ++j) { //for each edge of one subdivision
+                for (std::size_t k = 0; k < this->m_edges.size(); ++k) { //for each edge of current face
+                    //get all faces around vertex, with current face the last in the list
+                    std::vector orderedFacesAroundVertex = this->m_edges[k].HEVertex()->getAllFacesAroundVertex(this->m_face);
+
+                    //for each face that is around vertex
+                    for (std::size_t l = 0; l < orderedFacesAroundVertex.size() - 1; ++l) {
+                        if (res[i].m_face == orderedFacesAroundVertex[l]) {
+                            // same vertex represented is necessary condition but not enough
+                            if (res[i].m_edges[j].HEVertex() == this->m_edges[k].HEVertex()) {
+                                addIncidenceConstraint(*this, k, orderedFacesAroundVertex.size() - 2 - l, j, i);
                             }
                         }
                     }
                 }
             }
         }
-        //TODO: fix incidence constraints
-//        for (std::size_t i = 0; i < res.size() - 1; ++i) { //for each fractal face subdivisions
-//            for (std::size_t j = 0; j < res[i].constData().size(); ++j) { //for each edge of one subdivision
-//                for (std::size_t k = 0; k < this->m_edges.size(); ++k) { //for each edge of current face
-//                    for (std::size_t l = 0; l < this->m_edges[k].nbSubs(); ++l) { //for each subdivision of the edge of current face
-//                        // same vertex represented is necessary condition but not enough
-//                        if (res[i].m_edges[j].HEVertex() == this->m_edges[k].HEVertex()) {
-//                            addIncidenceConstraint(*this, k, l, j, i);
-//                        }
-//                    }
-//                }
-//            }
-//        }
     }
     return res;
 }
@@ -89,12 +95,24 @@ std::vector<poly::Edge> const& poly::Face::constData() const {
 }
 
 std::string poly::Face::toString() const {
-    return this->name();
+    std::string res = this->name();
+    for (poly::Edge const& e: this->m_edges) {
+        res += " -- " + e.toString();
+    }
+    return res;
 }
 
 namespace poly {
 std::ostream& operator<<(std::ostream& os, poly::Face const& face) {
-    return os << face.toString();
+    os << face.name() << " associated HEFace : " + face.m_face->name().toStdString() + "\nPolytope edges :\n";
+    for (poly::Edge const& edge: face.m_edges) {
+        os << edge.toString() + "\n";
+    }
+    os << "HE edges:\n";
+    for (he::HalfEdge* edge: face.m_halfEdges) {
+        os << edge->name().toStdString() + "\n";
+    }
+    return os;
 }
 }
 

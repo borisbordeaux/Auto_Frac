@@ -1,8 +1,7 @@
 #include "halfedge/vertex.h"
-
-#include <utility>
-
 #include "halfedge/halfedge.h"
+#include "halfedge/face.h"
+#include "utils/utils.h"
 
 he::Vertex::Vertex(float x, float y, float z, QString name) :
         m_x(x), m_y(y), m_z(z), m_halfEdge(nullptr), m_name(std::move(name)) {
@@ -54,4 +53,28 @@ std::size_t he::Vertex::degree() const {
         twin_next = twin_next->twin()->next();
     } while (he != twin_next);
     return res;
+}
+
+std::vector<he::Face*> he::Vertex::getAllFacesAroundVertex(he::Face* f) const {
+    std::vector<he::Face*> facesAroundVertex;
+
+    //fill all faces around vertex
+    he::HalfEdge* h = this->m_halfEdge;
+    he::HalfEdge* nxt = h;
+    do {
+        facesAroundVertex.push_back(nxt->face());
+        nxt = nxt->twin()->next();
+    } while (nxt != h);
+
+    //order faces around vertex to have the given face in last
+    std::vector<he::Face*> orderedFacesAroundVertex = facesAroundVertex;
+
+    //if given face is in the list of all faces around this vertex
+    if(std::find(facesAroundVertex.begin(), facesAroundVertex.end(),f) != facesAroundVertex.end()){
+        while (orderedFacesAroundVertex[orderedFacesAroundVertex.size() - 1] != f) {
+            orderedFacesAroundVertex = frac::utils::shiftVector(orderedFacesAroundVertex);
+        }
+    }
+
+    return orderedFacesAroundVertex;
 }

@@ -14,6 +14,7 @@ public:
     [[nodiscard]] std::size_t nbSubs() const;
     [[nodiscard]] he::Vertex* HEVertex() const;
     bool operator==(Edge const& other) const;
+    [[nodiscard]] std::string toString() const;
 private:
     frac::Edge m_edge;
     he::Vertex* m_vertex;
