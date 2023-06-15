@@ -104,7 +104,7 @@ std::string poly::Face::toString() const {
 
 namespace poly {
 std::ostream& operator<<(std::ostream& os, poly::Face const& face) {
-    os << face.name() << " associated HEFace : " + face.m_face->name().toStdString() + "\nPolytope edges :\n";
+    os << face.name() << " associated HEFace : " + face.m_face->name().toStdString() + "\nPolytopal edges :\n";
     for (poly::Edge const& edge: face.m_edges) {
         os << edge.toString() + "\n";
     }
@@ -117,16 +117,14 @@ std::ostream& operator<<(std::ostream& os, poly::Face const& face) {
 }
 
 bool poly::Face::operator==(const poly::Face& other) const {
-    //tests topology
-    return this->m_face == other.m_face;
+    if (this->len() != other.len()) {
+        return false;
+    }
+    return this->m_edges == other.m_edges;
 }
 
 poly::Edge const& poly::Face::operator[](std::size_t index) const {
     return this->m_edges[index];
-}
-
-he::Face* poly::Face::HEFace() const {
-    return this->m_face;
 }
 
 void poly::Face::reset() {

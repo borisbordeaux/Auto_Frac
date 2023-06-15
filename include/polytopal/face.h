@@ -18,13 +18,12 @@ namespace poly {
 class Face {
 public:
     explicit Face(he::Face* f);
-    std::string name() const;
-    std::size_t len() const;
+    [[nodiscard]] std::string name() const;
+    [[nodiscard]] std::size_t len() const;
 
     [[nodiscard]] std::vector<poly::Face> subdivisions() const;
     [[nodiscard]] std::vector<poly::Edge> const& constData() const;
     [[nodiscard]] std::string toString() const;
-    [[nodiscard]] he::Face* HEFace() const;
     [[nodiscard]] std::vector<he::HalfEdge*> halfEdges() const;
 
     poly::Edge const& operator[](std::size_t index) const;

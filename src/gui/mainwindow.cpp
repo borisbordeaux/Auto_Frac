@@ -56,11 +56,11 @@ MainWindow::~MainWindow() {
     info << s;
 
     try {
-        frac::StructurePrinter::exportStruct(s, false, "../result.py");
+        frac::StructurePrinter::exportStruct(s, false, "../output/result.py");
     } catch (std::runtime_error const& error) {
         info << error.what();
     }
-    info << "Finished, result in ../result.py";
+    info << "Finished, result in ../output/result.py";
 
     this->setInfo(info.str());
 }
@@ -397,7 +397,7 @@ void MainWindow::setInfo(std::string const& textInfo) {
 
         frac::FilePrinter::reset();
 
-        poly::StructurePrinter::exportStruct(structure, false, "../result_poly.py");
+        poly::StructurePrinter::exportStruct(structure, false, "../output/result_poly.py");
 
         std::cout.flush();
     }
