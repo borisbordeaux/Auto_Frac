@@ -13,7 +13,7 @@ enum class EdgeType {
 
 class Edge {
 public:
-    Edge(frac::Edge const& other);
+    Edge(frac::Edge const& other) = default;
     Edge(frac::EdgeType edgeType, unsigned int nbSubdivisions, unsigned int delay = 0);
     Edge& operator=(const frac::Edge& other) = default;
 

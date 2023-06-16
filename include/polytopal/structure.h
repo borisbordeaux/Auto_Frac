@@ -1,8 +1,8 @@
 #ifndef AUTOFRAC_POLY_STRUCTURE_H
 #define AUTOFRAC_POLY_STRUCTURE_H
 
-#include "halfedge/mesh.h"
 #include "face.h"
+#include "halfedge/mesh.h"
 #include "utils/uniquevector.h"
 
 namespace poly {
@@ -10,7 +10,7 @@ namespace poly {
 class Structure {
 public:
     explicit Structure(he::Mesh const& mesh);
-    std::string toString() const;
+    [[nodiscard]] std::string toString() const;
 
     void addAdjacency(std::size_t indexFace1, std::size_t indexEdgeFace1, std::size_t indexFace2, std::size_t indexEdgeFace2);
     [[nodiscard]] std::string adjacencies() const;

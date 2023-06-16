@@ -12,7 +12,7 @@ float he::Vertex::x() const {
     return m_x;
 }
 
-void he::Vertex::setX(float x) {
+[[maybe_unused]] void he::Vertex::setX(float x) {
     m_x = x;
 }
 
@@ -70,7 +70,7 @@ std::vector<he::Face*> he::Vertex::getAllFacesAroundVertex(he::Face* f) const {
     std::vector<he::Face*> orderedFacesAroundVertex = facesAroundVertex;
 
     //if given face is in the list of all faces around this vertex
-    if(std::find(facesAroundVertex.begin(), facesAroundVertex.end(),f) != facesAroundVertex.end()){
+    if (std::find(facesAroundVertex.begin(), facesAroundVertex.end(), f) != facesAroundVertex.end()) {
         while (orderedFacesAroundVertex[orderedFacesAroundVertex.size() - 1] != f) {
             orderedFacesAroundVertex = frac::utils::shiftVector(orderedFacesAroundVertex);
         }

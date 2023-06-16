@@ -15,23 +15,21 @@ class Face;
 
 class Mesh {
 public:
-    Mesh();
+    Mesh() = default;
     ~Mesh();
 
-    std::vector<he::Vertex*> vertices() const;
-    std::vector<he::HalfEdge*> halfEdges() const;
-    std::vector<he::Face*> faces() const;
+    [[nodiscard]] std::vector<he::Vertex*> const& vertices() const;
+    [[nodiscard]] std::vector<he::HalfEdge*> const& halfEdges() const;
+    [[nodiscard]] std::vector<he::Face*> const& faces() const;
 
     void append(he::Vertex* v);
     void append(he::HalfEdge* he);
     void append(he::Face* f);
     he::HalfEdge* findByName(const QString& name);
 
-    std::vector<he::Face*> adjacenciesOf(he::Face* f) const;
-
     void reset();
 
-    QString toString() const;
+    [[nodiscard]] QString toString() const;
 
 private:
     std::vector<he::Vertex*> m_vertices;

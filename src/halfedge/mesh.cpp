@@ -4,22 +4,19 @@
 #include "halfedge/halfedge.h"
 #include "halfedge/vertex.h"
 
-he::Mesh::Mesh() {
-}
-
 he::Mesh::~Mesh() {
     reset();
 }
 
-std::vector<he::Vertex*> he::Mesh::vertices() const {
+std::vector<he::Vertex*> const& he::Mesh::vertices() const {
     return m_vertices;
 }
 
-std::vector<he::HalfEdge*> he::Mesh::halfEdges() const {
+std::vector<he::HalfEdge*> const& he::Mesh::halfEdges() const {
     return m_halfEdges;
 }
 
-std::vector<he::Face*> he::Mesh::faces() const {
+std::vector<he::Face*> const& he::Mesh::faces() const {
     return m_faces;
 }
 
@@ -98,21 +95,5 @@ QString he::Mesh::toString() const {
     for (he::Vertex const* v: this->m_vertices) {
         res += v->name() + ", ";
     }
-    return res;
-}
-
-std::vector<he::Face*> he::Mesh::adjacenciesOf(he::Face* f) const {
-    std::vector<he::Face*> res;
-    he::HalfEdge* he = f->halfEdge();
-    he::HalfEdge* nxt = he;
-    do {
-        if (nxt->twin() != nullptr) {
-            if (nxt->twin()->face() != nullptr) {
-                res.push_back(nxt->twin()->face());
-            }
-        }
-        nxt = nxt->next();
-    } while (nxt != he);
-
     return res;
 }

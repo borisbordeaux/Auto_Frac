@@ -5,6 +5,9 @@
 
 #include "fractal/edge.h"
 #include "fractal/face.h"
+#include "glview.h"
+#include "halfedge/mesh.h"
+#include "model.h"
 
 namespace Ui {
 class MainWindow;
@@ -46,6 +49,7 @@ public slots:
     [[maybe_unused]] void slotOnConstraintFace2Changed(int value);
     [[maybe_unused]] void slotOnConstraintEdge2Changed(int value);
     [[maybe_unused]] void slotOpenOBJFile();
+    [[maybe_unused]] void slotChangeSelectionMode();
 
 private:
     struct Constraint {
@@ -64,6 +68,10 @@ private:
     void setError(std::string const& textError);
     void setInfo(std::string const& textInfo);
     Ui::MainWindow* ui;
+
+    he::Mesh m_mesh;
+    Model m_modelMesh;
+    GLView* m_view;
 };
 
 #endif

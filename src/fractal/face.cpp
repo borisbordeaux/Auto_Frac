@@ -8,7 +8,7 @@ std::map<std::string, std::string> frac::Face::s_incidenceConstraints;
 std::map<std::string, std::string> frac::Face::s_adjacencyConstraints;
 
 frac::Face::Face(std::vector<Edge> edges, unsigned int delay, frac::Edge const& adjEdge, frac::Edge const& gapEdge, frac::Edge const& reqEdge) :
-m_data(std::move(edges)), m_delay(delay), m_adjEdge(adjEdge), m_gapEdge(gapEdge), m_reqEdge(reqEdge), m_offset(0), m_firstInterior(-1) {
+        m_data(std::move(edges)), m_delay(delay), m_adjEdge(adjEdge), m_gapEdge(gapEdge), m_reqEdge(reqEdge), m_offset(0), m_firstInterior(-1) {
     for (Face const& f: s_existingFaces.data()) {
         if (*this == f) {
             this->m_name = f.m_name;

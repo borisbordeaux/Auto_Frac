@@ -9,17 +9,20 @@ set(CMAKE_AUTOUIC ON)
 
 set(CMAKE_PREFIX_PATH "$ENV{QT_PATH}")
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets OpenGLWidgets)
+
+qt_standard_project_setup()
 
 file(GLOB_RECURSE FILES "src/*.cpp")
 
 # add mainwindow.h file because Qt is weird
-add_executable(AutoFrac ${FILES} include/gui/mainwindow.h)
+add_executable(AutoFrac ${FILES} include/gui/mainwindow.h include/gui/glview.h)
 
 target_include_directories(AutoFrac PUBLIC include)
 
 target_link_libraries(AutoFrac PRIVATE Qt6::Core)
 target_link_libraries(AutoFrac PRIVATE Qt6::Gui)
 target_link_libraries(AutoFrac PRIVATE Qt6::Widgets)
+target_link_libraries(AutoFrac PRIVATE Qt6::OpenGLWidgets)
 
 target_compile_options(AutoFrac PRIVATE -Wall -Wextra -Wpedantic -Werror)

@@ -6,6 +6,7 @@
 namespace he {
 
 class HalfEdge;
+
 class Face;
 
 class Vertex {
@@ -22,43 +23,43 @@ public:
      * @brief getter
      * @return the x value of the vertex
      */
-    float x() const;
+    [[nodiscard]] float x() const;
 
     /**
      * @brief setter
      * @param x the x value of the vertex
      */
-    void setX(float x);
+    [[maybe_unused]] void setX(float x);
 
     /**
      * @brief getter
      * @return the y value of the vertex
      */
-    float y() const;
+    [[nodiscard]] float y() const;
 
     /**
      * @brief setter
      * @param y the y value of the vertex
      */
-    void setY(float y);
+    [[maybe_unused]] void setY(float y);
 
     /**
      * @brief getter
      * @return the z value of the vertex
      */
-    float z() const;
+    [[nodiscard]] float z() const;
 
     /**
      * @brief setter
      * @param z the z value of the vertex
      */
-    void setZ(float z);
+    [[maybe_unused]] void setZ(float z);
 
     /**
      * @brief getter
      * @return a half-edge from which this point is its origin
      */
-    he::HalfEdge* halfEdge();
+    [[maybe_unused]] he::HalfEdge* halfEdge();
 
     /**
      * @brief setter
@@ -70,7 +71,7 @@ public:
      * @brief getter
      * @return the name of this vertex
      */
-    QString name() const;
+    [[nodiscard]] QString name() const;
 
     [[nodiscard]] std::size_t degree() const;
 

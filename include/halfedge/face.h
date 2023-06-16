@@ -31,9 +31,9 @@ public:
      * @brief getter
      * @return the name of this face
      */
-    QString name() const;
+    [[nodiscard]] QString name() const;
 
-    std::size_t nbEdges() const;
+    [[nodiscard]] std::size_t nbEdges() const;
 
 private:
     //the name of the face

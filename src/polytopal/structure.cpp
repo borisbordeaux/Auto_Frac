@@ -61,7 +61,7 @@ std::vector<poly::Face> const& poly::Structure::faces() const {
 }
 
 std::size_t poly::Structure::nbControlPointsOfFace(std::size_t indexFace) const {
-    return 2*this->m_faces[indexFace].len();
+    return 2 * this->m_faces[indexFace].len();
 }
 
 namespace poly {

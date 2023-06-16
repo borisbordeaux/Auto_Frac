@@ -9,8 +9,8 @@ namespace frac {
 template<typename T>
 class UniqueVector {
 public:
-    void add(T const& elt);
-    std::size_t size() const;
+    [[maybe_unused]] void add(T const& elt);
+    [[nodiscard]] std::size_t size() const;
     T const& operator[](std::size_t index) const;
     std::vector<T> const& data() const;
     void clear();
@@ -30,7 +30,7 @@ std::vector<T> const& frac::UniqueVector<T>::data() const {
 }
 
 template<typename T>
-void frac::UniqueVector<T>::add(T const& elt) {
+[[maybe_unused]] void frac::UniqueVector<T>::add(T const& elt) {
     if (std::find(this->m_data.begin(), this->m_data.end(), elt) == this->m_data.end()) {
         this->m_data.emplace_back(elt);
     }

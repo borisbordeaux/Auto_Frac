@@ -17,6 +17,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->setupUi(this);
     this->updateEnablement();
     this->ui->label_log->setVisible(false);
+    this->m_view = new GLView(&m_modelMesh);
+    this->ui->verticalLayout_poly2D->addWidget(this->m_view);
 }
 
 MainWindow::~MainWindow() {
@@ -389,11 +391,13 @@ void MainWindow::setInfo(std::string const& textInfo) {
     if (file != "") {
         poly::Face::reset();
         std::cout << "[opening the file...] " << file.toStdString() << std::endl;
-        he::Mesh m;
-        he::reader::readOBJ(file, m);
+        this->m_mesh.reset();
+        he::reader::readOBJ(file, m_mesh);
         std::cout << "[finished]" << std::endl;
 
-        poly::Structure structure { m };
+        poly::Structure structure { m_mesh };
+        this->m_modelMesh.setMesh(&m_mesh);
+        this->m_view->meshChanged();
 
         frac::FilePrinter::reset();
 
@@ -401,4 +405,9 @@ void MainWindow::setInfo(std::string const& textInfo) {
 
         std::cout.flush();
     }
+}
+
+[[maybe_unused]] void MainWindow::slotChangeSelectionMode() {
+    this->m_view->changeSelectionMode();
+    this->ui->pushButton_changeSelectionMode->setText(this->m_view->selectionMode() == SelectionMode::FACES ? "Selection Mode: Faces" : "Selection Mode: Edges");
 }

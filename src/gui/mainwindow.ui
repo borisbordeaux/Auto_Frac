@@ -1435,19 +1435,59 @@ QListWidget {
        <attribute name="title">
         <string>Polytopal 2D</string>
        </attribute>
-       <widget class="QPushButton" name="pushButton_openOBJ">
-        <property name="geometry">
-         <rect>
-          <x>130</x>
-          <y>100</y>
-          <width>80</width>
-          <height>25</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>OpenOBJ</string>
-        </property>
-       </widget>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <layout class="QVBoxLayout" name="verticalLayout_poly2D">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_8">
+            <property name="sizeConstraint">
+             <enum>QLayout::SetMinimumSize</enum>
+            </property>
+            <item>
+             <spacer name="horizontalSpacer_12">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_changeSelectionMode">
+              <property name="text">
+               <string>Selection Mode : Faces</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_openOBJ">
+              <property name="text">
+               <string>Open OBJ File...</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_11">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="tab_3">
        <attribute name="title">
@@ -1464,7 +1504,7 @@ QListWidget {
      <x>0</x>
      <y>0</y>
      <width>1061</width>
-     <height>20</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
@@ -1894,8 +1934,8 @@ QListWidget {
    <slot>slotOpenOBJFile()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>181</x>
-     <y>177</y>
+     <x>651</x>
+     <y>544</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -1916,6 +1956,22 @@ QListWidget {
     <hint type="destinationlabel">
      <x>530</x>
      <y>507</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_changeSelectionMode</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotChangeSelectionMode()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>494</x>
+     <y>531</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>6</x>
+     <y>572</y>
     </hint>
    </hints>
   </connection>
@@ -1949,5 +2005,6 @@ QListWidget {
   <slot>slotOnConstraintFace2Changed(int)</slot>
   <slot>slotOnConstraintEdge2Changed(int)</slot>
   <slot>slotOpenOBJFile()</slot>
+  <slot>slotChangeSelectionMode()</slot>
  </slots>
 </ui>
