@@ -104,13 +104,9 @@ std::string poly::Face::toString() const {
 
 namespace poly {
 std::ostream& operator<<(std::ostream& os, poly::Face const& face) {
-    os << face.name() << " associated HEFace : " + face.m_face->name().toStdString() + "\nPolytopal edges :\n";
+    os << face.name() << " (associated half-edge face : " + face.m_face->name().toStdString() + ") ";
     for (poly::Edge const& edge: face.m_edges) {
-        os << edge.toString() + "\n";
-    }
-    os << "HE edges:\n";
-    for (he::HalfEdge* edge: face.m_halfEdges) {
-        os << edge->name().toStdString() + "\n";
+        os << " -- " << edge.toString();
     }
     return os;
 }
@@ -158,4 +154,8 @@ void poly::Face::addIncidenceConstraint(const poly::Face& face, unsigned int ind
     int s2 = static_cast<int>(indexSubFace);
     int b2 = static_cast<int>(indexSubFaceEdge);
     s_incidenceConstraints[face.name()] += "    " + face.name() + "(Bord('" + std::to_string(b1) + "') + Sub('" + std::to_string(s1) + "') + Permut('0'), Sub('" + std::to_string(s2) + "') + Bord('" + std::to_string(b2) + "'))\n";
+}
+
+he::Face* poly::Face::face() const {
+    return this->m_face;
 }

@@ -13,10 +13,11 @@
 #include <QtWidgets>
 #include <iostream>
 
-MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
+MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow), m_openedMesh(false) {
     ui->setupUi(this);
     this->updateEnablement();
-    this->ui->label_log->setVisible(false);
+    this->updateEnablementPoly();
+
     this->m_view = new GLView(&m_modelMesh);
     this->ui->verticalLayout_poly2D->addWidget(this->m_view);
 }
@@ -25,7 +26,7 @@ MainWindow::~MainWindow() {
     delete ui;
 }
 
-[[maybe_unused]] void MainWindow::slot1() {
+[[maybe_unused]] void MainWindow::slotGenerateScript() {
     frac::Face::reset();
     frac::FilePrinter::reset();
 
@@ -42,27 +43,25 @@ MainWindow::~MainWindow() {
         try {
             bool res = faces.at(c.Face1)[c.Edge1] == faces.at(c.Face2)[c.Edge2];
             if (!res) {
-                this->setError("Error on constraint " + std::to_string(i) + " : edges are different!");
+                this->setInfo("[Error] Constraint " + std::to_string(i) + " : edges are different!");
                 return;
             } else {
                 s.addAdjacency(c.Face1, c.Edge1, c.Face2, c.Edge2);
             }
         } catch (std::out_of_range const& error) {
-            this->setError("Error on constraint " + std::to_string(i) + " : faces or edges indices are not valid!");
+            this->setInfo("[Error] Constraint " + std::to_string(i) + " : faces or edges indices are not valid!");
             return;
         }
     }
 
     std::ostringstream info;
 
-    info << s;
-
     try {
-        frac::StructurePrinter::exportStruct(s, false, "../output/result.py");
+        frac::StructurePrinter::exportStruct(s, this->ui->checkBox_planarControlPoints->isChecked(), "../output/result.py");
     } catch (std::runtime_error const& error) {
         info << error.what();
     }
-    info << "Finished, result in ../output/result.py";
+    info << "[Finished] Result in ../output/result.py";
 
     this->setInfo(info.str());
 }
@@ -307,6 +306,12 @@ void MainWindow::updateEnablement() {
     this->ui->pushButton_generateScript->setEnabled(this->ui->listWidget_faces->currentRow() > -1);
 }
 
+void MainWindow::updateEnablementPoly() {
+    this->ui->pushButton_changeSelectionMode->setEnabled(this->m_openedMesh);
+    this->ui->pushButton_ExportAll->setEnabled(this->m_openedMesh);
+    this->ui->pushButton_ExportSelectedFace->setEnabled(this->m_openedMesh);
+}
+
 [[maybe_unused]] void MainWindow::slotAddConstraint() {
     this->ui->listWidget_constraints->addItem("0.0 / 1.0");
     this->ui->listWidget_constraints->setCurrentRow(this->ui->listWidget_constraints->count() - 1);
@@ -373,16 +378,8 @@ QString MainWindow::fromConstraint(const MainWindow::Constraint& constraint) {
     this->ui->listWidget_constraints->currentItem()->setText(MainWindow::fromConstraint(c));
 }
 
-void MainWindow::setError(std::string const& textError) {
-    this->ui->label_log->setStyleSheet("QLabel{background-color: #ff0000; color: #fff;}");
-    this->ui->label_log->setVisible(true);
-    this->ui->label_log->setText(textError.c_str());
-}
-
 void MainWindow::setInfo(std::string const& textInfo) {
-    this->ui->label_log->setStyleSheet("QLabel{background-color: #35a753; color: #fff;}");
-    this->ui->label_log->setVisible(true);
-    this->ui->label_log->setText(textInfo.c_str());
+    this->ui->statusBar->showMessage(textInfo.c_str(), 2000);
 }
 
 [[maybe_unused]] void MainWindow::slotOpenOBJFile() {
@@ -390,24 +387,53 @@ void MainWindow::setInfo(std::string const& textInfo) {
 
     if (file != "") {
         poly::Face::reset();
-        std::cout << "[opening the file...] " << file.toStdString() << std::endl;
         this->m_mesh.reset();
         he::reader::readOBJ(file, m_mesh);
-        std::cout << "[finished]" << std::endl;
-
-        poly::Structure structure { m_mesh };
         this->m_modelMesh.setMesh(&m_mesh);
         this->m_view->meshChanged();
-
-        frac::FilePrinter::reset();
-
-        poly::StructurePrinter::exportStruct(structure, false, "../output/result_poly.py");
-
-        std::cout.flush();
+        this->m_openedMesh = true;
+        this->updateEnablementPoly();
     }
 }
 
 [[maybe_unused]] void MainWindow::slotChangeSelectionMode() {
     this->m_view->changeSelectionMode();
     this->ui->pushButton_changeSelectionMode->setText(this->m_view->selectionMode() == SelectionMode::FACES ? "Selection Mode: Faces" : "Selection Mode: Edges");
+}
+
+[[maybe_unused]] void MainWindow::slotExportAllFaces() {
+    poly::Structure structure { m_mesh };
+    frac::FilePrinter::reset();
+
+    std::ostringstream info;
+
+    try {
+        poly::StructurePrinter::exportStruct(structure, this->ui->checkBox_polytopalPlanarControlPoints->isChecked(), "../output/result_poly.py");
+    } catch (std::runtime_error const& error) {
+        info << error.what();
+    }
+
+    info << "[Finished] Result in ../output/result_poly.py";
+    this->setInfo(info.str());
+}
+
+[[maybe_unused]] void MainWindow::slotExportSelectedFace() {
+    if (this->m_modelMesh.selectedFace() == nullptr) {
+        this->setInfo("[Error] You must select one face");
+        return;
+    }
+
+    poly::Structure structure { m_mesh, this->m_modelMesh.selectedFace() };
+    frac::FilePrinter::reset();
+
+    std::ostringstream info;
+
+    try {
+        poly::StructurePrinter::exportStruct(structure, this->ui->checkBox_polytopalPlanarControlPoints->isChecked(), "../output/result_poly.py");
+    } catch (std::runtime_error const& error) {
+        info << error.what();
+    }
+
+    info << "[Finished] Result in ../output/result_poly.py";
+    this->setInfo(info.str());
 }

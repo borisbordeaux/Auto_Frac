@@ -9,7 +9,7 @@ namespace poly {
 
 class Structure {
 public:
-    explicit Structure(he::Mesh const& mesh);
+    explicit Structure(he::Mesh const& mesh, he::Face* face = nullptr);
     [[nodiscard]] std::string toString() const;
 
     void addAdjacency(std::size_t indexFace1, std::size_t indexEdgeFace1, std::size_t indexFace2, std::size_t indexEdgeFace2);
@@ -17,7 +17,7 @@ public:
     [[nodiscard]] frac::UniqueVector<poly::Edge> allEdges() const;
     [[nodiscard]] frac::UniqueVector<poly::Face> allFaces() const;
 
-    [[nodiscard]] std::vector<poly::Face> const& faces() const;
+    [[nodiscard]] std::vector<poly::Face> faces() const;
 
     [[nodiscard]] std::size_t nbControlPointsOfFace(std::size_t indexFace) const;
 
@@ -28,6 +28,7 @@ private:
     he::Mesh const& m_mesh;
     std::vector<poly::Face> m_faces;
     std::string m_adj;
+    he::Face* m_selectedFace;
 };
 
 } // poly

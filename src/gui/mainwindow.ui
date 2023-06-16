@@ -1359,35 +1359,6 @@ QListWidget {
            </layout>
           </item>
           <item>
-           <spacer name="verticalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_log">
-            <property name="autoFillBackground">
-             <bool>false</bool>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">QLabel{background-color: #ff0000; color: #fff;}</string>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item>
            <layout class="QHBoxLayout" name="horizontalLayout_7">
             <item>
              <spacer name="horizontalSpacer_13">
@@ -1409,6 +1380,13 @@ QListWidget {
               </property>
               <property name="text">
                <string>Generate Script</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBox_planarControlPoints">
+              <property name="text">
+               <string>Planar Control Points</string>
               </property>
              </widget>
             </item>
@@ -1435,9 +1413,12 @@ QListWidget {
        <attribute name="title">
         <string>Polytopal 2D</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout">
-        <item row="0" column="0">
+       <layout class="QVBoxLayout" name="verticalLayout_7">
+        <item>
          <layout class="QVBoxLayout" name="verticalLayout_poly2D">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetMaximumSize</enum>
+          </property>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_8">
             <property name="sizeConstraint">
@@ -1471,6 +1452,27 @@ QListWidget {
              </widget>
             </item>
             <item>
+             <widget class="QPushButton" name="pushButton_ExportAll">
+              <property name="text">
+               <string>Export All Faces</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_ExportSelectedFace">
+              <property name="text">
+               <string>Export Selected Face</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBox_polytopalPlanarControlPoints">
+              <property name="text">
+               <string>Planar Control Points</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <spacer name="horizontalSpacer_11">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -1489,11 +1491,6 @@ QListWidget {
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_3">
-       <attribute name="title">
-        <string>Polytopal 3D</string>
-       </attribute>
-      </widget>
      </widget>
     </item>
    </layout>
@@ -1504,106 +1501,27 @@ QListWidget {
      <x>0</x>
      <y>0</y>
      <width>1061</width>
-     <height>22</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <resources/>
  <connections>
   <connection>
-   <sender>pushButton_generateScript</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slot1()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>578</x>
-     <y>993</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>227</x>
-     <y>108</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_addFace</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotAddFace()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>500</x>
-     <y>277</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>31</x>
-     <y>23</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_removeFace</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotRemoveFace()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>573</x>
-     <y>281</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>530</x>
-     <y>507</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>listWidget_edges</sender>
-   <signal>currentRowChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnEdgeSelected(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>218</x>
-     <y>581</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>530</x>
-     <y>507</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>comboBox_adjEdgeTopology</sender>
-   <signal>activated(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnFaceAdjTopologyChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>203</x>
-     <y>365</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>530</x>
-     <y>507</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_adjEdgeNbSubdivisions</sender>
+   <sender>spinBox_currentEdgeDelay</sender>
    <signal>valueChanged(int)</signal>
    <receiver>MainWindow</receiver>
-   <slot>slotOnFaceAdjNbSubdivisionsChanged(int)</slot>
+   <slot>slotOnSelectedEdgeDelayChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>203</x>
-     <y>394</y>
+     <x>637</x>
+     <y>575</y>
     </hint>
     <hint type="destinationlabel">
-     <x>530</x>
-     <y>507</y>
+     <x>1055</x>
+     <y>605</y>
     </hint>
    </hints>
   </connection>
@@ -1614,8 +1532,8 @@ QListWidget {
    <slot>slotOnFaceAdjDelayChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>237</x>
-     <y>447</y>
+     <x>238</x>
+     <y>432</y>
     </hint>
     <hint type="destinationlabel">
      <x>530</x>
@@ -1624,226 +1542,34 @@ QListWidget {
    </hints>
   </connection>
   <connection>
-   <sender>comboBox_gapEdgeTopology</sender>
-   <signal>activated(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnFaceGapTopologyChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>507</x>
-     <y>367</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>519</x>
-     <y>22</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_gapEdgeNbSubdivisions</sender>
+   <sender>spinBox_constraintFace1</sender>
    <signal>valueChanged(int)</signal>
    <receiver>MainWindow</receiver>
-   <slot>slotOnFaceGapNbSubdivisionsChanged(int)</slot>
+   <slot>slotOnConstraintFace1Changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>527</x>
-     <y>396</y>
+     <x>589</x>
+     <y>767</y>
     </hint>
     <hint type="destinationlabel">
-     <x>537</x>
-     <y>27</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_gapEdgeDelay</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnFaceGapDelayChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>538</x>
-     <y>447</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>621</x>
-     <y>21</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>comboBox_reqEdgeTopology</sender>
-   <signal>activated(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnFaceReqTopologyChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>809</x>
-     <y>363</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>650</x>
-     <y>22</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_reqEdgeNbSubdivisions</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnFaceReqNbSubdivisionsChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>840</x>
-     <y>415</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>678</x>
-     <y>28</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_reqEdgeDelay</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnFaceReqDelayChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>796</x>
-     <y>424</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1025</x>
-     <y>25</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_addEdge</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotAddEdge()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>184</x>
+     <x>1058</x>
      <y>680</y>
     </hint>
-    <hint type="destinationlabel">
-     <x>3</x>
-     <y>688</y>
-    </hint>
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_removeEdge</sender>
+   <sender>pushButton_changeSelectionMode</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>slotRemoveEdge()</slot>
+   <slot>slotChangeSelectionMode()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>246</x>
-     <y>680</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>5</x>
-     <y>732</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>comboBox_currentEdgeTopology</sender>
-   <signal>activated(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnSelectedEdgeTopologyChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>584</x>
-     <y>516</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>2</x>
-     <y>342</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_currentEdgeNbSubdivisions</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnSelectedEdgeNbSubdivisionsChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>605</x>
-     <y>545</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1054</x>
-     <y>530</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_currentEdgeDelay</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnSelectedEdgeDelayChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>637</x>
-     <y>592</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1055</x>
-     <y>605</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_faceDelay</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnFaceDelayChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1036</x>
-     <y>404</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1053</x>
-     <y>370</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_addConstraint</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotAddConstraint()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>241</x>
-     <y>928</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>4</x>
-     <y>849</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_removeConstraint</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotRemoveConstraint()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>327</x>
-     <y>928</y>
+     <x>345</x>
+     <y>306</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
-     <y>899</y>
+     <y>572</y>
     </hint>
    </hints>
   </connection>
@@ -1864,86 +1590,6 @@ QListWidget {
    </hints>
   </connection>
   <connection>
-   <sender>spinBox_constraintFace1</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnConstraintFace1Changed(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>586</x>
-     <y>771</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1058</x>
-     <y>680</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_constraintEdge1</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnConstraintEdge1Changed(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>586</x>
-     <y>803</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1057</x>
-     <y>725</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_constraintFace2</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnConstraintFace2Changed(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>586</x>
-     <y>844</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1056</x>
-     <y>773</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_constraintEdge2</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnConstraintEdge2Changed(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>586</x>
-     <y>876</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1057</x>
-     <y>848</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_openOBJ</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOpenOBJFile()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>651</x>
-     <y>544</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>7</x>
-     <y>196</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>listWidget_faces</sender>
    <signal>currentRowChanged(int)</signal>
    <receiver>MainWindow</receiver>
@@ -1960,24 +1606,408 @@ QListWidget {
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_changeSelectionMode</sender>
+   <sender>pushButton_removeFace</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>slotChangeSelectionMode()</slot>
+   <slot>slotRemoveFace()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>494</x>
-     <y>531</y>
+     <x>573</x>
+     <y>281</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>530</x>
+     <y>507</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_currentEdgeTopology</sender>
+   <signal>activated(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnSelectedEdgeTopologyChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>584</x>
+     <y>516</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>2</x>
+     <y>342</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_reqEdgeDelay</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnFaceReqDelayChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>796</x>
+     <y>424</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1025</x>
+     <y>25</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_adjEdgeTopology</sender>
+   <signal>activated(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnFaceAdjTopologyChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>203</x>
+     <y>365</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>530</x>
+     <y>507</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_constraintEdge2</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnConstraintEdge2Changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>589</x>
+     <y>863</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1057</x>
+     <y>848</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_adjEdgeNbSubdivisions</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnFaceAdjNbSubdivisionsChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>203</x>
+     <y>394</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>530</x>
+     <y>507</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_ExportAll</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotExportAllFaces()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>527</x>
+     <y>293</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>3</x>
+     <y>628</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>listWidget_edges</sender>
+   <signal>currentRowChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnEdgeSelected(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>218</x>
+     <y>581</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>530</x>
+     <y>507</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_generateScript</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotGenerateScript()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>502</x>
+     <y>993</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>227</x>
+     <y>108</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_faceDelay</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnFaceDelayChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1036</x>
+     <y>392</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1053</x>
+     <y>370</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_addEdge</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotAddEdge()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>184</x>
+     <y>680</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>3</x>
+     <y>688</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_reqEdgeTopology</sender>
+   <signal>activated(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnFaceReqTopologyChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>809</x>
+     <y>363</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>650</x>
+     <y>22</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_removeConstraint</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotRemoveConstraint()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>325</x>
+     <y>929</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
-     <y>572</y>
+     <y>899</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_ExportSelectedFace</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotExportSelectedFace()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>639</x>
+     <y>294</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1064</x>
+     <y>385</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_removeEdge</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotRemoveEdge()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>246</x>
+     <y>680</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>732</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_openOBJ</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOpenOBJFile()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>454</x>
+     <y>306</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>196</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_gapEdgeNbSubdivisions</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnFaceGapNbSubdivisionsChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>527</x>
+     <y>396</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>537</x>
+     <y>27</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_currentEdgeNbSubdivisions</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnSelectedEdgeNbSubdivisionsChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>605</x>
+     <y>545</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1054</x>
+     <y>530</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_gapEdgeDelay</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnFaceGapDelayChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>539</x>
+     <y>432</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>621</x>
+     <y>21</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_addConstraint</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotAddConstraint()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>239</x>
+     <y>929</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>849</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_reqEdgeNbSubdivisions</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnFaceReqNbSubdivisionsChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>839</x>
+     <y>403</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>678</x>
+     <y>28</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_addFace</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotAddFace()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>500</x>
+     <y>277</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>31</x>
+     <y>23</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_gapEdgeTopology</sender>
+   <signal>activated(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnFaceGapTopologyChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>507</x>
+     <y>367</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>519</x>
+     <y>22</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_constraintEdge1</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnConstraintEdge1Changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>589</x>
+     <y>796</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1057</x>
+     <y>725</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_constraintFace2</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnConstraintFace2Changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>589</x>
+     <y>834</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1056</x>
+     <y>773</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <slots>
-  <slot>slot1()</slot>
+  <slot>slotGenerateScript()</slot>
   <slot>slotAddFace()</slot>
   <slot>slotRemoveFace()</slot>
   <slot>slotOnFaceSelected(int)</slot>
@@ -2006,5 +2036,7 @@ QListWidget {
   <slot>slotOnConstraintEdge2Changed(int)</slot>
   <slot>slotOpenOBJFile()</slot>
   <slot>slotChangeSelectionMode()</slot>
+  <slot>slotExportAllFaces()</slot>
+  <slot>slotExportSelectedFace()</slot>
  </slots>
 </ui>

@@ -21,7 +21,7 @@ public:
     ~MainWindow() override;
 
 public slots:
-    [[maybe_unused]] void slot1();
+    [[maybe_unused]] void slotGenerateScript();
     [[maybe_unused]] void slotAddFace();
     [[maybe_unused]] void slotRemoveFace();
     [[maybe_unused]] void slotOnFaceSelected(int row);
@@ -50,6 +50,8 @@ public slots:
     [[maybe_unused]] void slotOnConstraintEdge2Changed(int value);
     [[maybe_unused]] void slotOpenOBJFile();
     [[maybe_unused]] void slotChangeSelectionMode();
+    [[maybe_unused]] void slotExportAllFaces();
+    [[maybe_unused]] void slotExportSelectedFace();
 
 private:
     struct Constraint {
@@ -65,13 +67,16 @@ private:
     [[nodiscard]] static QString fromConstraint(Constraint const& constraint);
 
     void updateEnablement();
-    void setError(std::string const& textError);
+    void updateEnablementPoly();
+
     void setInfo(std::string const& textInfo);
+
     Ui::MainWindow* ui;
 
     he::Mesh m_mesh;
     Model m_modelMesh;
     GLView* m_view;
+    bool m_openedMesh;
 };
 
 #endif

@@ -26,6 +26,7 @@ public:
     [[nodiscard]] std::vector<poly::Edge> const& constData() const;
     [[nodiscard]] std::string toString() const;
     [[nodiscard]] std::vector<he::HalfEdge*> halfEdges() const;
+    [[nodiscard]] he::Face* face() const;
 
     poly::Edge const& operator[](std::size_t index) const;
     friend std::ostream& operator<<(std::ostream& os, const poly::Face& face);

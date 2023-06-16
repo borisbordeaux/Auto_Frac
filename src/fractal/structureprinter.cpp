@@ -382,7 +382,6 @@ void frac::StructurePrinter::print_plan_control_points(const frac::Structure& st
         FilePrinter::append_nl("    for i in range(init.initMat[Sub_('" + std::to_string(index_face) + "')].n):");
         FilePrinter::append_nl("        init.initMat[Sub_('" + std::to_string(index_face) + "')][2, i].setTyp('Const')");
         FilePrinter::append_nl("");
-        index_face += 1;
     }
 }
 

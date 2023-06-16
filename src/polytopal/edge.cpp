@@ -19,5 +19,5 @@ he::Vertex* poly::Edge::HEVertex() const {
 }
 
 std::string poly::Edge::toString() const {
-    return this->name() + " associated HE vertex : " + this->m_vertex->name().toStdString();
+    return this->name() + " (" + this->m_vertex->name().toStdString() + ")";
 }
