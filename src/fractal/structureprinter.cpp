@@ -351,6 +351,25 @@ void frac::StructurePrinter::print_prim_of_cell(const frac::Face& cell) {
         }
     }
     FilePrinter::append_nl("])]");
+
+
+    frac::FilePrinter::append_nl("    " + cell.name() + ".prim.elems = [Figure(2, [");
+    for (std::size_t i = 0; i < cell.len(); ++i) {
+        if (cell[i].edgeType() == EdgeType::BEZIER && cell[i].delay() == 0) {
+            for (std::size_t j = 0; j < cell[i].nbSubdivisions(); ++j) {
+                if (cell[i].nbSubdivisions() > 2) {
+                    frac::FilePrinter::append_nl("        Bord_('" + std::to_string(i) + "') + Sub('" + std::to_string(j) + "') + Bord('0'),");
+                } else {
+                    for (std::size_t k = 0; k < cell[i].nbSubdivisions(); ++k) {
+                        frac::FilePrinter::append_nl("        Bord_('" + std::to_string(i) + "') + Sub('" + std::to_string(j) + "') + Sub('" + std::to_string(k) + "') + Bord('0'),");
+                    }
+                }
+            }
+        }else{
+            FilePrinter::append_nl("        Bord_('" + std::to_string(i) + "') + Bord('0'),");
+        }
+    }
+    frac::FilePrinter::append_nl("    ])]");
 }
 
 void frac::StructurePrinter::print_edge_adjacencies_of_cell(const frac::Face& cell) {
