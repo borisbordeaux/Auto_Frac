@@ -1,5 +1,6 @@
 #include "polytopal/structureprinter.h"
 
+#include "halfedge/face.h"
 #include "polytopal/face.h"
 #include "polytopal/structure.h"
 #include "utils/fileprinter.h"
@@ -219,15 +220,19 @@ void poly::StructurePrinter::print_space_of_cell(poly::Face const& cell) {
 }
 
 void poly::StructurePrinter::print_prim_of_cell(poly::Face const& cell) {
-    frac::FilePrinter::append("    " + cell.name() + ".prim.elems = [Figure(2, [");
+    frac::FilePrinter::append_nl("    " + cell.name() + ".prim.elems = [Figure(2, [");
     for (std::size_t i = 0; i < cell.len(); ++i) {
-        if (i == 0) {
-            frac::FilePrinter::append("Bord_('" + std::to_string(i) + "') + Sub('0') + Sub('0') + Bord('0'), Bord_('" + std::to_string(i) + "') + Sub('0') + Sub('1') + Bord('0'), Bord_('" + std::to_string(i) + "') + Sub('1') + Sub('0') + Bord('0'), Bord_('" + std::to_string(i) + "') + Sub('1') + Sub('1') + Bord('0')");
-        } else {
-            frac::FilePrinter::append(", Bord_('" + std::to_string(i) + "') + Sub('0') + Sub('0') + Bord('0'), Bord_('" + std::to_string(i) + "') + Sub('0') + Sub('1') + Bord('0'), Bord_('" + std::to_string(i) + "') + Sub('1') + Sub('0') + Bord('0'), Bord_('" + std::to_string(i) + "') + Sub('1') + Sub('1') + Bord('0')");
+        for (std::size_t j = 0; j < cell[i].nbSubs(); ++j) {
+            if (cell[i].nbSubs() > 2) {
+                frac::FilePrinter::append_nl("        Bord_('" + std::to_string(i) + "') + Sub('" + std::to_string(j) + "') + Bord('0'),");
+            } else {
+                for (std::size_t k = 0; k < cell[i].nbSubs(); ++k) {
+                    frac::FilePrinter::append_nl("        Bord_('" + std::to_string(i) + "') + Sub('" + std::to_string(j) + "') + Sub('" + std::to_string(k) + "') + Bord('0'),");
+                }
+            }
         }
     }
-    frac::FilePrinter::append_nl("])]");
+    frac::FilePrinter::append_nl("    ])]");
 }
 
 void poly::StructurePrinter::print_edge_adjacencies_of_cell(poly::Face const& cell) {
@@ -239,7 +244,7 @@ void poly::StructurePrinter::print_edge_adjacencies_of_cell(poly::Face const& ce
 void poly::StructurePrinter::print_plan_control_points(poly::Structure const& structure) {
     std::size_t max = structure.faces().size();
     for (std::size_t index_face = 0; index_face < max; ++index_face) {
-        std::size_t nb_pts = structure.nbControlPointsOfFace(index_face);
+        std::size_t nb_pts = structure.nbControlPointsOfFace(structure.faces()[index_face].face()->name().toUInt());
         frac::FilePrinter::append_nl("    init.initMat[Sub_('" + std::to_string(index_face) + "')] = FMat([");
         for (int j = 0; j < 3; ++j) {
             // x, y, z set to 0
