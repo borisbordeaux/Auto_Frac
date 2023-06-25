@@ -10,7 +10,6 @@ namespace poly {
 class Structure {
 public:
     explicit Structure(he::Mesh const& mesh, he::Face* face = nullptr);
-    [[nodiscard]] std::string toString() const;
 
     void addAdjacency(std::size_t indexFace1, std::size_t indexEdgeFace1, std::size_t indexFace2, std::size_t indexEdgeFace2);
     [[nodiscard]] std::string adjacencies() const;

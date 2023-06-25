@@ -28,14 +28,6 @@ poly::Structure::Structure(he::Mesh const& mesh, he::Face* face) : m_mesh(mesh),
     }
 }
 
-std::string poly::Structure::toString() const {
-    std::string res = this->m_mesh.toString().toStdString();
-    for (poly::Face const& f: this->m_faces) {
-        res += f.toString() + "\n";
-    }
-    return res;
-}
-
 std::string poly::Structure::adjacencies() const {
     return this->m_adj;
 }
