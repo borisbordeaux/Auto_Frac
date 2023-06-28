@@ -463,7 +463,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -1491,6 +1491,34 @@ QListWidget {
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tab_3">
+       <attribute name="title">
+        <string>Polytopal 3D</string>
+       </attribute>
+       <widget class="QPushButton" name="pushButton_openOBJ4">
+        <property name="geometry">
+         <rect>
+          <x>380</x>
+          <y>30</y>
+          <width>111</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Open OBJ4 File...</string>
+        </property>
+       </widget>
+       <widget class="QGraphicsView" name="graphicsView">
+        <property name="geometry">
+         <rect>
+          <x>50</x>
+          <y>60</y>
+          <width>850</width>
+          <height>850</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -1501,7 +1529,7 @@ QListWidget {
      <x>0</x>
      <y>0</y>
      <width>1061</width>
-     <height>20</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
@@ -1532,8 +1560,8 @@ QListWidget {
    <slot>slotOnFaceAdjDelayChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>238</x>
-     <y>432</y>
+     <x>237</x>
+     <y>448</y>
     </hint>
     <hint type="destinationlabel">
      <x>530</x>
@@ -1548,8 +1576,8 @@ QListWidget {
    <slot>slotOnConstraintFace1Changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>589</x>
-     <y>767</y>
+     <x>586</x>
+     <y>777</y>
     </hint>
     <hint type="destinationlabel">
      <x>1058</x>
@@ -1564,8 +1592,8 @@ QListWidget {
    <slot>slotChangeSelectionMode()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>345</x>
-     <y>306</y>
+     <x>355</x>
+     <y>533</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -1676,8 +1704,8 @@ QListWidget {
    <slot>slotOnConstraintEdge2Changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>589</x>
-     <y>863</y>
+     <x>586</x>
+     <y>882</y>
     </hint>
     <hint type="destinationlabel">
      <x>1057</x>
@@ -1708,8 +1736,8 @@ QListWidget {
    <slot>slotExportAllFaces()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>527</x>
-     <y>293</y>
+     <x>559</x>
+     <y>533</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -1740,8 +1768,8 @@ QListWidget {
    <slot>slotGenerateScript()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>502</x>
-     <y>993</y>
+     <x>503</x>
+     <y>971</y>
     </hint>
     <hint type="destinationlabel">
      <x>227</x>
@@ -1820,8 +1848,8 @@ QListWidget {
    <slot>slotExportSelectedFace()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>639</x>
-     <y>294</y>
+     <x>690</x>
+     <y>533</y>
     </hint>
     <hint type="destinationlabel">
      <x>1064</x>
@@ -1852,8 +1880,8 @@ QListWidget {
    <slot>slotOpenOBJFile()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>454</x>
-     <y>306</y>
+     <x>456</x>
+     <y>533</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -1900,8 +1928,8 @@ QListWidget {
    <slot>slotOnFaceGapDelayChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>539</x>
-     <y>432</y>
+     <x>538</x>
+     <y>448</y>
     </hint>
     <hint type="destinationlabel">
      <x>621</x>
@@ -1980,8 +2008,8 @@ QListWidget {
    <slot>slotOnConstraintEdge1Changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>589</x>
-     <y>796</y>
+     <x>586</x>
+     <y>809</y>
     </hint>
     <hint type="destinationlabel">
      <x>1057</x>
@@ -1996,12 +2024,28 @@ QListWidget {
    <slot>slotOnConstraintFace2Changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>589</x>
-     <y>834</y>
+     <x>586</x>
+     <y>850</y>
     </hint>
     <hint type="destinationlabel">
      <x>1056</x>
      <y>773</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_openOBJ4</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOpenOBJ4File()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>345</x>
+     <y>232</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>244</y>
     </hint>
    </hints>
   </connection>
@@ -2038,5 +2082,6 @@ QListWidget {
   <slot>slotChangeSelectionMode()</slot>
   <slot>slotExportAllFaces()</slot>
   <slot>slotExportSelectedFace()</slot>
+  <slot>slotOpenOBJ4File()</slot>
  </slots>
 </ui>

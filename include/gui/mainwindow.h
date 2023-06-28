@@ -2,12 +2,14 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QGraphicsScene>
 
 #include "fractal/edge.h"
 #include "fractal/face.h"
 #include "glview.h"
 #include "halfedge/mesh.h"
 #include "model.h"
+#include "graph/incidencegraph.h"
 
 namespace Ui {
 class MainWindow;
@@ -52,6 +54,7 @@ public slots:
     [[maybe_unused]] void slotChangeSelectionMode();
     [[maybe_unused]] void slotExportAllFaces();
     [[maybe_unused]] void slotExportSelectedFace();
+    [[maybe_unused]] void slotOpenOBJ4File();
 
 private:
     struct Constraint {
@@ -77,6 +80,10 @@ private:
     Model m_modelMesh;
     GLView* m_view;
     bool m_openedMesh;
+    graph::IncidenceGraph m_graph;
+
+    QGraphicsScene m_scene;
+    void displayGraph();
 };
 
 #endif

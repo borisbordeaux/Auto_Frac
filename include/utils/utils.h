@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <sstream>
 
 namespace frac::utils {
 
@@ -26,6 +27,16 @@ std::vector<T> shiftVector(std::vector<T> const& vec) {
     }
     res.emplace_back(vec[0]);
     return res;
+}
+
+inline std::vector<std::string> split(std::string const& str, char const& delimitor) {
+    std::vector<std::string> strings;
+    std::istringstream f(str);
+    std::string s;
+    while (std::getline(f, s, delimitor)) {
+        strings.push_back(s);
+    }
+    return strings;
 }
 
 }

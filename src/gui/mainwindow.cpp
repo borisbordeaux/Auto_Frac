@@ -3,6 +3,7 @@
 
 #include "fractal/structure.h"
 #include "fractal/structureprinter.h"
+#include "graph/vertex.h"
 #include "halfedge/face.h"
 #include "halfedge/mesh.h"
 #include "polytopal/structure.h"
@@ -11,6 +12,7 @@
 #include "utils/objreader.h"
 
 #include <QtWidgets>
+#include <QPen>
 #include <iostream>
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow), m_openedMesh(false) {
@@ -20,6 +22,14 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     this->m_view = new GLView(&m_modelMesh);
     this->ui->verticalLayout_poly2D->addWidget(this->m_view);
+    this->ui->graphicsView->setScene(&this->m_scene);
+    this->m_scene.setBackgroundBrush(Qt::white);
+    this->m_scene.setSceneRect(10., 10., 840., 840.);
+    auto* gl = new QOpenGLWidget();
+    QSurfaceFormat format;
+    format.setSamples(16);
+    gl->setFormat(format);
+    this->ui->graphicsView->setViewport(gl);
 }
 
 MainWindow::~MainWindow() {
@@ -436,4 +446,51 @@ void MainWindow::setInfo(std::string const& textInfo) {
 
     info << "[Finished] Result in ../output/result_poly.py";
     this->setInfo(info.str());
+}
+
+[[maybe_unused]] void MainWindow::slotOpenOBJ4File() {
+    QString file = QFileDialog::getOpenFileName(this, "Open an OBJ4 File...", "../obj", "OBJ4 Files (*.obj4)");
+
+    if (file != "") {
+        this->m_graph.reset();
+        graph::reader::readOBJ4(file, this->m_graph);
+        std::cout << this->m_graph << std::endl;
+    }
+
+    this->m_graph.updateVerticesPositions(static_cast<double>(this->ui->graphicsView->width()));
+
+    this->displayGraph();
+}
+
+void MainWindow::displayGraph() {
+    this->m_scene.clear();
+    double radius = 5.;
+    QPen pen;
+    pen.setWidth(10);
+    pen.setColor(Qt::black);
+    QPen penLine;
+    penLine.setWidth(1);
+    penLine.setColor(Qt::black);
+    for (auto const& v: this->m_graph.getVertices()) {
+        this->m_scene.addEllipse(v->getX() - radius, v->getY() - radius, 2. * radius, 2. * radius, pen);
+        for (auto const& p: v->getParents()) {
+            this->m_scene.addLine(v->getX(), v->getY(), p->getX(), p->getY(), penLine);
+        }
+    }
+    for (auto const& v: this->m_graph.getEdges()) {
+        this->m_scene.addEllipse(v->getX() - radius, v->getY() - radius, 2. * radius, 2. * radius, pen);
+        for (auto const& p: v->getParents()) {
+            this->m_scene.addLine(v->getX(), v->getY(), p->getX(), p->getY(), penLine);
+        }
+    }
+    for (auto const& v: this->m_graph.getFaces()) {
+        this->m_scene.addEllipse(v->getX() - radius, v->getY() - radius, 2. * radius, 2. * radius, pen);
+        for (auto const& p: v->getParents()) {
+            this->m_scene.addLine(v->getX(), v->getY(), p->getX(), p->getY(), penLine);
+        }
+    }
+    for (auto const& v: this->m_graph.getVolumes()) {
+        this->m_scene.addEllipse(v->getX() - radius, v->getY() - radius, 2. * radius, 2. * radius, pen);
+    }
+    this->m_scene.update();
 }

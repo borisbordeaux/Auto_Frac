@@ -2,6 +2,8 @@
 #include "halfedge/halfedge.h"
 #include "halfedge/face.h"
 #include "utils/utils.h"
+#include "graph/vertex.h"
+
 
 he::Vertex::Vertex(float x, float y, float z, QString name) :
         m_x(x), m_y(y), m_z(z), m_halfEdge(nullptr), m_name(std::move(name)) {
