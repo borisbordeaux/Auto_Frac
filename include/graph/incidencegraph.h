@@ -31,7 +31,7 @@ public:
     void reset();
     friend std::ostream& operator<<(std::ostream& os, const graph::IncidenceGraph& g);
 
-    void updateVerticesPositions(double availableWidth);
+    void updateVerticesPositions(int availableWidth);
 private:
     std::vector<graph::Vertex*> m_vertices;
     std::vector<graph::Vertex*> m_edges;

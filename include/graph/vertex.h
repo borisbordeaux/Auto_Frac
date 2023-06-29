@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+class VertexGraphicsItem;
+
 namespace graph {
 
 class Vertex {
@@ -19,17 +21,19 @@ public:
     void addParent(Vertex* v);
     void addChild(Vertex* v);
     friend std::ostream& operator<<(std::ostream& os, const graph::Vertex& face);
-    void setCenter(double centerX, double centerY);
-    [[nodiscard]] double getX() const;
-    [[nodiscard]] double getY() const;
+
+    void setCenter(int centerX, int centerY);
+    [[nodiscard]] int getX() const;
+    [[nodiscard]] int getY() const;
+
+    [[nodiscard]] VertexGraphicsItem* graphicsItem() const;
 private:
     std::string m_name;
     std::vector<Vertex*> m_parents;
     std::vector<Vertex*> m_children;
 
     //graphics info
-    double m_centerX;
-    double m_centerY;
+    VertexGraphicsItem* m_item;
 };
 
 } // graph

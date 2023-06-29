@@ -1,8 +1,12 @@
 #include "graph/vertex.h"
+#include "gui/vertexgraphicsitem.h"
 
-#include <utility>
+#include <ostream>
 
-graph::Vertex::Vertex(std::string name) : m_name(std::move(name)), m_centerX(0.0), m_centerY(0.0) {}
+graph::Vertex::Vertex(std::string name) : m_name(std::move(name)) {
+    this->m_item = new VertexGraphicsItem();
+    this->m_item->setVertex(this);
+}
 
 std::string const& graph::Vertex::getName() const {
     return this->m_name;
@@ -42,19 +46,30 @@ void graph::Vertex::addChild(graph::Vertex* v) {
 
 namespace graph {
 std::ostream& operator<<(std::ostream& os, const graph::Vertex& vertex) {
-    return os << vertex.m_name;
+    os << vertex.m_name << " - Parents : ";
+    for (auto const& p: vertex.getParents()) {
+        os << p->getName() << " - ";
+    }
+    os << "Children : ";
+    for (auto const& p: vertex.getChildren()) {
+        os << p->getName() << " - ";
+    }
+    return os;
 }
 }
 
-void graph::Vertex::setCenter(double centerX, double centerY) {
-    this->m_centerX = centerX;
-    this->m_centerY = centerY;
+void graph::Vertex::setCenter(int centerX, int centerY) {
+    this->m_item->setCenter(centerX, centerY);
 }
 
-double graph::Vertex::getX() const {
-    return this->m_centerX;
+int graph::Vertex::getX() const {
+    return this->m_item->getX();
 }
 
-double graph::Vertex::getY() const {
-    return this->m_centerY;
+int graph::Vertex::getY() const {
+    return this->m_item->getY();
+}
+
+VertexGraphicsItem* graph::Vertex::graphicsItem() const {
+    return this->m_item;
 }

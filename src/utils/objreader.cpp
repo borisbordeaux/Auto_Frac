@@ -126,26 +126,41 @@ void graph::reader::readOBJ4(const QString& filename, graph::IncidenceGraph& g) 
 
                 //for each vertex of the face
                 for (int i = 1; i < list.size(); i++) {
-                    //create vertex
-                    graph::Vertex* v = g.findVertexByName(list[i].toStdString());
-                    if (v == nullptr) {
-                        v = new graph::Vertex(std::to_string(g.getVerticesSize() + 1));
-                        g.addVertex(v);
+                    //create vertices
+                    graph::Vertex* v1 = g.findVertexByName(list[i].toStdString());
+                    if (v1 == nullptr) {
+                        v1 = new graph::Vertex(list[i].toStdString());
+                        g.addVertex(v1);
                     }
+
+                    int next = (i == list.size() - 1 ? 1 : i + 1);
+
+                    graph::Vertex* v2 = g.findVertexByName(list[next].toStdString());
+                    if (v2 == nullptr) {
+                        v2 = new graph::Vertex(std::to_string(g.getVerticesSize() + 1));
+                        g.addVertex(v2);
+                    }
+
                     //get the name of the edge
                     //an edge between vertex 0 and 3 will be named "0 3"
-                    int next = (i == list.size() - 1 ? 1 : i + 1);
-                    QString name = list[i] + " " + list[next];
+                    QString name = list[i].toInt() < list[next].toInt() ? list[i] + " " + list[next] : list[next] + " " + list[i];
 
                     //create edge
                     graph::Vertex* edge = g.findEdgeByName(name.toStdString());
                     if (edge == nullptr) {
                         edge = new graph::Vertex(name.toStdString());
                         g.addEdge(edge);
+                        v1->addParent(edge);
+                        v2->addParent(edge);
+                        if(list[i].toInt() < list[next].toInt()){
+                            edge->addChild(v1);
+                            edge->addChild(v2);
+                        }else{
+                            edge->addChild(v2);
+                            edge->addChild(v1);
+                        }
                     }
 
-                    v->addParent(edge);
-                    edge->addChild(v);
                     edge->addParent(f);
                     f->addChild(edge);
                 }

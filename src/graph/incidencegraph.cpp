@@ -104,49 +104,49 @@ void graph::IncidenceGraph::reset() {
 
 namespace graph {
 std::ostream& operator<<(std::ostream& os, const graph::IncidenceGraph& g) {
-    os << "Vertices : - ";
+    os << "Vertices :" << std::endl;
     for (auto* v: g.getVertices()) {
-        os << *v << " - ";
+        os << *v << std::endl;
     }
-    os << std::endl << "Edges : - ";
+    os << std::endl << "Edges :" << std::endl;
     for (auto* e: g.getEdges()) {
-        os << *e << " - ";
+        os << *e << std::endl;
     }
-    os << std::endl << "Faces : - ";
+    os << std::endl << "Faces :" << std::endl;
     for (auto* f: g.getFaces()) {
-        os << *f << " - ";
+        os << *f << std::endl;
     }
-    os << std::endl << "Volumes : - ";
+    os << std::endl << "Volumes :" << std::endl;
     for (auto* v: g.getVolumes()) {
-        os << *v << " - ";
+        os << *v << std::endl;
     }
     return os;
 }
 }
 
-void graph::IncidenceGraph::updateVerticesPositions(double availableWidth) {
+void graph::IncidenceGraph::updateVerticesPositions(int availableWidth) {
     for (std::size_t i = 0; i < this->m_vertices.size(); ++i) {
-        double s = availableWidth / (static_cast<double>(this->m_vertices.size()) + 1.);
-        double x = (static_cast<double>(i) + 1.) * s;
-        double y = 50.;
+        int s = availableWidth / (static_cast<int>(this->m_vertices.size()) + 1);
+        int x = (static_cast<int>(i) + 1) * s;
+        int y = 800.;
         this->m_vertices[i]->setCenter(x, y);
     }
     for (std::size_t i = 0; i < this->m_edges.size(); ++i) {
-        double s = availableWidth / (static_cast<double>(this->m_edges.size()) + 1.);
-        double x = (static_cast<double>(i) + 1.) * s;
-        double y = 300.;
+        int s = availableWidth / (static_cast<int>(this->m_edges.size()) + 1);
+        int x = (static_cast<int>(i) + 1) * s;
+        int y = 550.;
         this->m_edges[i]->setCenter(x, y);
     }
     for (std::size_t i = 0; i < this->m_faces.size(); ++i) {
-        double s = availableWidth / (static_cast<double>(this->m_faces.size()) + 1.);
-        double x = (static_cast<double>(i) + 1.) * s;
-        double y = 550.;
+        int s = availableWidth / (static_cast<int>(this->m_faces.size()) + 1);
+        int x = (static_cast<int>(i) + 1) * s;
+        int y = 300.;
         this->m_faces[i]->setCenter(x, y);
     }
     for (std::size_t i = 0; i < this->m_volumes.size(); ++i) {
-        double s = availableWidth / (static_cast<double>(this->m_volumes.size()) + 1.);
-        double x = (static_cast<double>(i) + 1.) * s;
-        double y = 800.;
+        int s = availableWidth / (static_cast<int>(this->m_volumes.size()) + 1);
+        int x = (static_cast<int>(i) + 1) * s;
+        int y = 50.;
         this->m_volumes[i]->setCenter(x, y);
     }
 }

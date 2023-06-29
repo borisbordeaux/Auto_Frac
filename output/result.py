@@ -64,7 +64,7 @@ def modele():
     Cell_0 = Etat('Cell_0', 0)
     ##############################
     # subd of init
-    init.subs = {Sub('0'): Cell_0, Sub('1'): Cell_0, Sub('2'): Cell_0, Sub('3'): Cell_0, Sub('4'): Cell_0, Sub('5'): Cell_0, Sub('6'): Cell_0, Sub('7'): Cell_0, Sub('8'): Cell_0, Sub('9'): Cell_0, Sub('10'): Cell_0, Sub('11'): Cell_0, Sub('12'): Cell_0, Sub('13'): Cell_0, Sub('14'): Cell_0, Sub('15'): Cell_0, Sub('16'): Cell_0, Sub('17'): Cell_0, Sub('18'): Cell_0}
+    init.subs = {Sub('0'): Cell_0}
     ##############################
     # edges of all states
     Cell_0.bords = {Bord('0'): C2, Bord('1'): B2, Bord('2'): C2, Bord('3'): B2, Bord('4'): C2, Bord('5'): B2}
@@ -83,6 +83,23 @@ def modele():
     ##############################
     # prim of all states
     Cell_0.prim.elems = [Figure(2, [Bord_('0') + Bord('0'), Bord_('1') + Sub('0') + Sub('0') + Bord('0'), Bord_('1') + Sub('0') + Sub('1') + Bord('0'), Bord_('1') + Sub('1') + Sub('0') + Bord('0'), Bord_('1') + Sub('1') + Sub('1') + Bord('0'), Bord_('2') + Bord('0'), Bord_('3') + Sub('0') + Sub('0') + Bord('0'), Bord_('3') + Sub('0') + Sub('1') + Bord('0'), Bord_('3') + Sub('1') + Sub('0') + Bord('0'), Bord_('3') + Sub('1') + Sub('1') + Bord('0'), Bord_('4') + Bord('0'), Bord_('5') + Sub('0') + Sub('0') + Bord('0'), Bord_('5') + Sub('0') + Sub('1') + Bord('0'), Bord_('5') + Sub('1') + Sub('0') + Bord('0'), Bord_('5') + Sub('1') + Sub('1') + Bord('0')])]
+    Cell_0.prim.elems = [Figure(2, [
+        Bord_('0') + Bord('0'),
+        Bord_('1') + Sub('0') + Sub('0') + Bord('0'),
+        Bord_('1') + Sub('0') + Sub('1') + Bord('0'),
+        Bord_('1') + Sub('1') + Sub('0') + Bord('0'),
+        Bord_('1') + Sub('1') + Sub('1') + Bord('0'),
+        Bord_('2') + Bord('0'),
+        Bord_('3') + Sub('0') + Sub('0') + Bord('0'),
+        Bord_('3') + Sub('0') + Sub('1') + Bord('0'),
+        Bord_('3') + Sub('1') + Sub('0') + Bord('0'),
+        Bord_('3') + Sub('1') + Sub('1') + Bord('0'),
+        Bord_('4') + Bord('0'),
+        Bord_('5') + Sub('0') + Sub('0') + Bord('0'),
+        Bord_('5') + Sub('0') + Sub('1') + Bord('0'),
+        Bord_('5') + Sub('1') + Sub('0') + Bord('0'),
+        Bord_('5') + Sub('1') + Sub('1') + Bord('0'),
+    ])]
     ##############################
     # constraints of all states
     # incidence constraints
@@ -114,6 +131,14 @@ def modele():
     Cell_0(Bord('5') + Bord('1'), Bord('0') + Bord('0'))
     # constraints on init cells
     # control points
+    init.initMat[Sub_('0')] = FMat([
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1]]).setTyp('Var')
+    for i in range(init.initMat[Sub_('0')].n):
+        init.initMat[Sub_('0')][2, i].setTyp('Const')
+
     return init
 
 
