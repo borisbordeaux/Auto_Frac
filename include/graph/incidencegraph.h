@@ -32,11 +32,14 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const graph::IncidenceGraph& g);
 
     void updateVerticesPositions(int availableWidth);
+    void sortVertices();
 private:
     std::vector<graph::Vertex*> m_vertices;
     std::vector<graph::Vertex*> m_edges;
     std::vector<graph::Vertex*> m_faces;
     std::vector<graph::Vertex*> m_volumes;
+
+    static void sortByName(std::vector<graph::Vertex*>& v);
 };
 
 } // graph

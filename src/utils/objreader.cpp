@@ -179,5 +179,6 @@ void graph::reader::readOBJ4(const QString& filename, graph::IncidenceGraph& g) 
             }
         }
         file.close();
+        g.sortVertices();
     }
 }

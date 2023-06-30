@@ -14,6 +14,8 @@ public:
     [[nodiscard]] std::string const& getName() const;
     [[nodiscard]] std::vector<Vertex*> const& getParents() const;
     [[nodiscard]] std::vector<Vertex*> const& getChildren() const;
+    [[nodiscard]] std::vector<Vertex*> & getParents();
+    [[nodiscard]] std::vector<Vertex*> & getChildren();
     [[nodiscard]] std::size_t getParentsSize() const;
     [[nodiscard]] std::size_t getChildrenSize() const;
     [[nodiscard]] Vertex* getParent(std::size_t index) const;

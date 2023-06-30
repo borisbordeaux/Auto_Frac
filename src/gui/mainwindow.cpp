@@ -469,26 +469,37 @@ void MainWindow::displayGraph() {
     QPen penLine;
     penLine.setWidth(1);
     penLine.setColor(Qt::black);
-    for (auto const& v: this->m_graph.getVertices()) {
-        this->m_scene.addItem(v->graphicsItem());
-        for (auto const& p: v->getParents()) {
+
+    //first draw lines
+    for (graph::Vertex* v: this->m_graph.getVertices()) {
+        for (graph::Vertex* p: v->getParents()) {
             this->m_scene.addLine(v->getX(), v->getY(), p->getX(), p->getY(), penLine);
         }
     }
-    for (auto const& v: this->m_graph.getEdges()) {
-        this->m_scene.addItem(v->graphicsItem());
-        for (auto const& p: v->getParents()) {
+    for (graph::Vertex* v: this->m_graph.getEdges()) {
+        for (graph::Vertex* p: v->getParents()) {
             this->m_scene.addLine(v->getX(), v->getY(), p->getX(), p->getY(), penLine);
         }
     }
-    for (auto const& v: this->m_graph.getFaces()) {
-        this->m_scene.addItem(v->graphicsItem());
-        for (auto const& p: v->getParents()) {
+    for (graph::Vertex* v: this->m_graph.getFaces()) {
+        for (graph::Vertex* p: v->getParents()) {
             this->m_scene.addLine(v->getX(), v->getY(), p->getX(), p->getY(), penLine);
         }
     }
-    for (auto const& v: this->m_graph.getVolumes()) {
+
+    // then draw vertices
+    for (graph::Vertex* v: this->m_graph.getVertices()) {
         this->m_scene.addItem(v->graphicsItem());
     }
+    for (graph::Vertex* v: this->m_graph.getEdges()) {
+        this->m_scene.addItem(v->graphicsItem());
+    }
+    for (graph::Vertex* v: this->m_graph.getFaces()) {
+        this->m_scene.addItem(v->graphicsItem());
+    }
+    for (graph::Vertex* v: this->m_graph.getVolumes()) {
+        this->m_scene.addItem(v->graphicsItem());
+    }
+
     this->m_scene.update();
 }

@@ -12,11 +12,19 @@ std::string const& graph::Vertex::getName() const {
     return this->m_name;
 }
 
-const std::vector<graph::Vertex*>& graph::Vertex::getParents() const {
+std::vector<graph::Vertex*> const& graph::Vertex::getParents() const {
     return this->m_parents;
 }
 
-const std::vector<graph::Vertex*>& graph::Vertex::getChildren() const {
+std::vector<graph::Vertex*> const& graph::Vertex::getChildren() const {
+    return this->m_children;
+}
+
+std::vector<graph::Vertex*>& graph::Vertex::getParents() {
+    return this->m_parents;
+}
+
+std::vector<graph::Vertex*>& graph::Vertex::getChildren() {
     return this->m_children;
 }
 

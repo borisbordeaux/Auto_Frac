@@ -150,3 +150,37 @@ void graph::IncidenceGraph::updateVerticesPositions(int availableWidth) {
         this->m_volumes[i]->setCenter(x, y);
     }
 }
+
+void graph::IncidenceGraph::sortVertices() {
+    //sort vertices of graph (by construction, only graph vertices that represents an edge need to be sorted
+    IncidenceGraph::sortByName(this->m_edges);
+
+    //sort parents of vertices
+    for(graph::Vertex *v : this->m_vertices){
+        IncidenceGraph::sortByName(v->getParents());
+    }
+
+    //sort parent and children of edges
+    for(graph::Vertex *v : this->m_edges){
+        IncidenceGraph::sortByName(v->getParents());
+        IncidenceGraph::sortByName(v->getChildren());
+    }
+
+    //sort parent and children of faces
+    for(graph::Vertex *v : this->m_faces){
+        IncidenceGraph::sortByName(v->getParents());
+        IncidenceGraph::sortByName(v->getChildren());
+    }
+
+    //sort children of volumes
+    for(graph::Vertex *v : this->m_volumes){
+        IncidenceGraph::sortByName(v->getParents());
+        IncidenceGraph::sortByName(v->getChildren());
+    }
+}
+
+void graph::IncidenceGraph::sortByName(std::vector<graph::Vertex*>& v) {
+    std::sort(v.begin(), v.end(), [&](graph::Vertex* v1, graph::Vertex* v2) -> bool {
+        return v1->getName().compare(v2->getName()) < 0;
+    });
+}

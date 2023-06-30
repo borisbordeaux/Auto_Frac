@@ -13,6 +13,12 @@ QRectF VertexGraphicsItem::boundingRect() const {
 
 void VertexGraphicsItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* /*option*/, QWidget* /*widget*/) {
     painter->fillRect(m_boundindRect, Qt::black);
+    QFont font;
+    font.setPointSize(10);
+    font.setBold(true);
+    painter->setFont(font);
+    painter->setPen(QColor(255,150,150));
+    painter->drawText(m_boundindRect, Qt::AlignHCenter | Qt::AlignVCenter ,m_vertex->getName().data());
 }
 
 void VertexGraphicsItem::setCenter(int centerX, int centerY) {
