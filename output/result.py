@@ -82,7 +82,6 @@ def modele():
     Cell_0.addGrid(Bord)
     ##############################
     # prim of all states
-    Cell_0.prim.elems = [Figure(2, [Bord_('0') + Bord('0'), Bord_('1') + Sub('0') + Sub('0') + Bord('0'), Bord_('1') + Sub('0') + Sub('1') + Bord('0'), Bord_('1') + Sub('1') + Sub('0') + Bord('0'), Bord_('1') + Sub('1') + Sub('1') + Bord('0'), Bord_('2') + Bord('0'), Bord_('3') + Sub('0') + Sub('0') + Bord('0'), Bord_('3') + Sub('0') + Sub('1') + Bord('0'), Bord_('3') + Sub('1') + Sub('0') + Bord('0'), Bord_('3') + Sub('1') + Sub('1') + Bord('0'), Bord_('4') + Bord('0'), Bord_('5') + Sub('0') + Sub('0') + Bord('0'), Bord_('5') + Sub('0') + Sub('1') + Bord('0'), Bord_('5') + Sub('1') + Sub('0') + Bord('0'), Bord_('5') + Sub('1') + Sub('1') + Bord('0')])]
     Cell_0.prim.elems = [Figure(2, [
         Bord_('0') + Bord('0'),
         Bord_('1') + Sub('0') + Sub('0') + Bord('0'),
@@ -131,6 +130,14 @@ def modele():
     Cell_0(Bord('5') + Bord('1'), Bord('0') + Bord('0'))
     # constraints on init cells
     # control points
+    init.initMat[Sub_('0')] = FMat([
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1]]).setTyp('Var')
+    for i in range(init.initMat[Sub_('0')].n):
+        init.initMat[Sub_('0')][2, i].setTyp('Const')
+
     return init
 
 

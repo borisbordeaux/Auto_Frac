@@ -336,23 +336,6 @@ void frac::StructurePrinter::print_space_of_cell(const frac::Face& cell) {
 }
 
 void frac::StructurePrinter::print_prim_of_cell(const frac::Face& cell) {
-    FilePrinter::append("    " + cell.name() + ".prim.elems = [Figure(2, [");
-    for (std::size_t i = 0; i < cell.len(); ++i) {
-        if (i == 0) {
-            if (cell[i].edgeType() == EdgeType::BEZIER && cell[i].delay() == 0) {
-                FilePrinter::append("Bord_('" + std::to_string(i) + "') + Sub('0') + Sub('0') + Bord('0'), Bord_('" + std::to_string(i) + "') + Sub('0') + Sub('1') + Bord('0'), Bord_('" + std::to_string(i) + "') + Sub('1') + Sub('0') + Bord('0'), Bord_('" + std::to_string(i) + "') + Sub('1') + Sub('1') + Bord('0')");
-            } else {
-                FilePrinter::append("Bord_('" + std::to_string(i) + "') + Bord('0')");
-            }
-        } else if (cell[i].edgeType() == EdgeType::BEZIER && cell[i].delay() == 0) {
-            FilePrinter::append(", Bord_('" + std::to_string(i) + "') + Sub('0') + Sub('0') + Bord('0'), Bord_('" + std::to_string(i) + "') + Sub('0') + Sub('1') + Bord('0'), Bord_('" + std::to_string(i) + "') + Sub('1') + Sub('0') + Bord('0'), Bord_('" + std::to_string(i) + "') + Sub('1') + Sub('1') + Bord('0')");
-        } else {
-            FilePrinter::append(", Bord_('" + std::to_string(i) + "') + Bord('0')");
-        }
-    }
-    FilePrinter::append_nl("])]");
-
-
     frac::FilePrinter::append_nl("    " + cell.name() + ".prim.elems = [Figure(2, [");
     for (std::size_t i = 0; i < cell.len(); ++i) {
         if (cell[i].edgeType() == EdgeType::BEZIER && cell[i].delay() == 0) {
