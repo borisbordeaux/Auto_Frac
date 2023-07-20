@@ -55,6 +55,7 @@ public slots:
     [[maybe_unused]] void slotExportAllFaces();
     [[maybe_unused]] void slotExportSelectedFace();
     [[maybe_unused]] void slotOpenOBJ4File();
+    [[maybe_unused]] void slotComputeFractalDimension();
 
 private:
     struct Constraint {

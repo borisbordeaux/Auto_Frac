@@ -1519,6 +1519,24 @@ QListWidget {
         </property>
        </widget>
       </widget>
+      <widget class="QWidget" name="tab_4">
+       <attribute name="title">
+        <string>Fractal Dimension</string>
+       </attribute>
+       <widget class="QPushButton" name="pushButton">
+        <property name="geometry">
+         <rect>
+          <x>320</x>
+          <y>130</y>
+          <width>161</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Choose and compute</string>
+        </property>
+       </widget>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -1529,7 +1547,7 @@ QListWidget {
      <x>0</x>
      <y>0</y>
      <width>1061</width>
-     <height>22</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>
@@ -1560,8 +1578,8 @@ QListWidget {
    <slot>slotOnFaceAdjDelayChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>237</x>
-     <y>448</y>
+     <x>238</x>
+     <y>433</y>
     </hint>
     <hint type="destinationlabel">
      <x>530</x>
@@ -1576,8 +1594,8 @@ QListWidget {
    <slot>slotOnConstraintFace1Changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>586</x>
-     <y>777</y>
+     <x>589</x>
+     <y>774</y>
     </hint>
     <hint type="destinationlabel">
      <x>1058</x>
@@ -1592,8 +1610,8 @@ QListWidget {
    <slot>slotChangeSelectionMode()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>355</x>
-     <y>533</y>
+     <x>345</x>
+     <y>529</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -1704,8 +1722,8 @@ QListWidget {
    <slot>slotOnConstraintEdge2Changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>586</x>
-     <y>882</y>
+     <x>589</x>
+     <y>870</y>
     </hint>
     <hint type="destinationlabel">
      <x>1057</x>
@@ -1736,8 +1754,8 @@ QListWidget {
    <slot>slotExportAllFaces()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>559</x>
-     <y>533</y>
+     <x>562</x>
+     <y>529</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -1768,7 +1786,7 @@ QListWidget {
    <slot>slotGenerateScript()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>503</x>
+     <x>502</x>
      <y>971</y>
     </hint>
     <hint type="destinationlabel">
@@ -1848,8 +1866,8 @@ QListWidget {
    <slot>slotExportSelectedFace()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>690</x>
-     <y>533</y>
+     <x>700</x>
+     <y>529</y>
     </hint>
     <hint type="destinationlabel">
      <x>1064</x>
@@ -1880,8 +1898,8 @@ QListWidget {
    <slot>slotOpenOBJFile()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>456</x>
-     <y>533</y>
+     <x>454</x>
+     <y>529</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -1928,8 +1946,8 @@ QListWidget {
    <slot>slotOnFaceGapDelayChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>538</x>
-     <y>448</y>
+     <x>539</x>
+     <y>433</y>
     </hint>
     <hint type="destinationlabel">
      <x>621</x>
@@ -2008,8 +2026,8 @@ QListWidget {
    <slot>slotOnConstraintEdge1Changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>586</x>
-     <y>809</y>
+     <x>589</x>
+     <y>803</y>
     </hint>
     <hint type="destinationlabel">
      <x>1057</x>
@@ -2024,8 +2042,8 @@ QListWidget {
    <slot>slotOnConstraintFace2Changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>586</x>
-     <y>850</y>
+     <x>589</x>
+     <y>841</y>
     </hint>
     <hint type="destinationlabel">
      <x>1056</x>
@@ -2040,12 +2058,28 @@ QListWidget {
    <slot>slotOpenOBJ4File()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>345</x>
-     <y>232</y>
+     <x>391</x>
+     <y>109</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
      <y>244</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotComputeFractalDimension()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>456</x>
+     <y>195</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1055</x>
+     <y>152</y>
     </hint>
    </hints>
   </connection>
@@ -2083,5 +2117,6 @@ QListWidget {
   <slot>slotExportAllFaces()</slot>
   <slot>slotExportSelectedFace()</slot>
   <slot>slotOpenOBJ4File()</slot>
+  <slot>slotComputeFractalDimension()</slot>
  </slots>
 </ui>

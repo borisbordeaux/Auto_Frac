@@ -11,10 +11,12 @@
 #include "polytopal/structureprinter.h"
 #include "utils/fileprinter.h"
 #include "utils/objreader.h"
+#include "utils/fractaldimension.h"
 
 #include <QtWidgets>
 #include <QPen>
 #include <iostream>
+#include <QImage>
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow), m_openedMesh(false) {
     ui->setupUi(this);
@@ -502,4 +504,13 @@ void MainWindow::displayGraph() {
     }
 
     this->m_scene.update();
+}
+
+[[maybe_unused]] void MainWindow::slotComputeFractalDimension() {
+    QString file = QFileDialog::getOpenFileName(this, "Open a PNG File...", "../img", "PNG Files (*.png)");
+
+    if (file != "") {
+        QImage image(file);
+        frac::utils::computeFractalDimension(image);
+    }
 }
