@@ -463,7 +463,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -1498,8 +1498,8 @@ QListWidget {
        <widget class="QPushButton" name="pushButton_openOBJ4">
         <property name="geometry">
          <rect>
-          <x>380</x>
-          <y>30</y>
+          <x>400</x>
+          <y>10</y>
           <width>111</width>
           <height>25</height>
          </rect>
@@ -1511,8 +1511,8 @@ QListWidget {
        <widget class="QGraphicsView" name="graphicsView">
         <property name="geometry">
          <rect>
-          <x>50</x>
-          <y>60</y>
+          <x>80</x>
+          <y>50</y>
           <width>850</width>
           <height>850</height>
          </rect>
@@ -1523,17 +1523,250 @@ QListWidget {
        <attribute name="title">
         <string>Fractal Dimension</string>
        </attribute>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="pushButton_computeFractalDim">
         <property name="geometry">
          <rect>
-          <x>320</x>
-          <y>130</y>
+          <x>423</x>
+          <y>10</y>
           <width>161</width>
           <height>23</height>
          </rect>
         </property>
         <property name="text">
-         <string>Choose and compute</string>
+         <string>Choose and compute...</string>
+        </property>
+       </widget>
+       <widget class="QGraphicsView" name="graphicsView_fractalDim">
+        <property name="geometry">
+         <rect>
+          <x>80</x>
+          <y>50</y>
+          <width>850</width>
+          <height>850</height>
+         </rect>
+        </property>
+        <property name="renderHints">
+         <set>QPainter::Antialiasing|QPainter::TextAntialiasing</set>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="spinBox_minUsefulBox">
+        <property name="geometry">
+         <rect>
+          <x>323</x>
+          <y>10</y>
+          <width>51</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="maximum">
+         <number>10</number>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_15">
+        <property name="geometry">
+         <rect>
+          <x>220</x>
+          <y>10</y>
+          <width>101</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Min useful box:</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_fractalDimension">
+        <property name="geometry">
+         <rect>
+          <x>743</x>
+          <y>10</y>
+          <width>111</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_14">
+        <property name="geometry">
+         <rect>
+          <x>623</x>
+          <y>10</y>
+          <width>111</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Fractal Dimension:</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tab_5">
+       <attribute name="title">
+        <string>Area and Perimeter</string>
+       </attribute>
+       <widget class="QLabel" name="label_perimeter">
+        <property name="geometry">
+         <rect>
+          <x>550</x>
+          <y>10</y>
+          <width>91</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_17">
+        <property name="geometry">
+         <rect>
+          <x>470</x>
+          <y>10</y>
+          <width>71</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {
+	color: darkgreen;
+}</string>
+        </property>
+        <property name="text">
+         <string>Perimeter: </string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_16">
+        <property name="geometry">
+         <rect>
+          <x>330</x>
+          <y>10</y>
+          <width>41</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {
+	color: blue;
+}</string>
+        </property>
+        <property name="text">
+         <string>Area: </string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_area">
+        <property name="geometry">
+         <rect>
+          <x>370</x>
+          <y>10</y>
+          <width>91</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButton_computeAreaPerimeter">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>10</y>
+          <width>161</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Choose and compute...</string>
+        </property>
+       </widget>
+       <widget class="QGraphicsView" name="graphicsView_stats">
+        <property name="geometry">
+         <rect>
+          <x>80</x>
+          <y>50</y>
+          <width>850</width>
+          <height>850</height>
+         </rect>
+        </property>
+        <property name="renderHints">
+         <set>QPainter::Antialiasing|QPainter::TextAntialiasing</set>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_displayContours">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>131</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Display contours</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_18">
+        <property name="geometry">
+         <rect>
+          <x>660</x>
+          <y>10</y>
+          <width>71</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {
+	color: blue;
+}</string>
+        </property>
+        <property name="text">
+         <string>Coef Area: </string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_19">
+        <property name="geometry">
+         <rect>
+          <x>830</x>
+          <y>10</y>
+          <width>101</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {
+	color: darkgreen;
+}</string>
+        </property>
+        <property name="text">
+         <string>Coef Perimeter: </string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_coefArea">
+        <property name="geometry">
+         <rect>
+          <x>730</x>
+          <y>10</y>
+          <width>91</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_coefPerimeter">
+        <property name="geometry">
+         <rect>
+          <x>930</x>
+          <y>10</y>
+          <width>91</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
         </property>
        </widget>
       </widget>
@@ -2058,8 +2291,8 @@ QListWidget {
    <slot>slotOpenOBJ4File()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>391</x>
-     <y>109</y>
+     <x>422</x>
+     <y>89</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -2068,18 +2301,34 @@ QListWidget {
    </hints>
   </connection>
   <connection>
-   <sender>pushButton</sender>
+   <sender>pushButton_computeFractalDim</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>slotComputeFractalDimension()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>456</x>
-     <y>195</y>
+     <x>594</x>
+     <y>87</y>
     </hint>
     <hint type="destinationlabel">
      <x>1055</x>
      <y>152</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_computeAreaPerimeter</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotComputeAreaPerimeter()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>359</x>
+     <y>69</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>337</x>
+     <y>-4</y>
     </hint>
    </hints>
   </connection>
@@ -2118,5 +2367,6 @@ QListWidget {
   <slot>slotExportSelectedFace()</slot>
   <slot>slotOpenOBJ4File()</slot>
   <slot>slotComputeFractalDimension()</slot>
+  <slot>slotComputeAreaPerimeter()</slot>
  </slots>
 </ui>

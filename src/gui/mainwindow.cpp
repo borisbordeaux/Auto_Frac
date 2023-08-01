@@ -11,12 +11,16 @@
 #include "polytopal/structureprinter.h"
 #include "utils/fileprinter.h"
 #include "utils/objreader.h"
-#include "utils/fractaldimension.h"
+#include "utils/measures.h"
+#include "gui/pointgraphicsitem.h"
 
 #include <QtWidgets>
 #include <QPen>
 #include <iostream>
-#include <QImage>
+
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow), m_openedMesh(false) {
     ui->setupUi(this);
@@ -28,11 +32,21 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->ui->graphicsView->setScene(&this->m_scene);
     this->m_scene.setBackgroundBrush(Qt::white);
     this->m_scene.setSceneRect(10., 10., 840., 840.);
-    auto* gl = new QOpenGLWidget();
-    QSurfaceFormat format;
-    format.setSamples(16);
-    gl->setFormat(format);
-    this->ui->graphicsView->setViewport(gl);
+
+    this->ui->graphicsView_fractalDim->setScene(&this->m_sceneFractalDim);
+    this->m_sceneFractalDim.setBackgroundBrush(Qt::white);
+    this->m_sceneFractalDim.setSceneRect(-3., -3., 20., 20.);
+
+    this->ui->graphicsView_fractalDim->scale(30, -30);
+    this->displayGridFractalDim();
+
+    this->ui->graphicsView_stats->setScene(&this->m_sceneAreaPerimeter);
+    this->m_sceneAreaPerimeter.setBackgroundBrush(Qt::white);
+
+    this->m_sceneAreaPerimeter.setSceneRect(-1., -2., 8., 8.);
+    this->ui->graphicsView_stats->scale(100, -100);
+
+    this->displayGridAreaPerimeter();
 }
 
 MainWindow::~MainWindow() {
@@ -510,7 +524,152 @@ void MainWindow::displayGraph() {
     QString file = QFileDialog::getOpenFileName(this, "Open a PNG File...", "../img", "PNG Files (*.png)");
 
     if (file != "") {
-        QImage image(file);
-        frac::utils::computeFractalDimension(image);
+        cv::destroyAllWindows();
+        cv::Mat img = cv::imread(file.toStdString(), cv::IMREAD_GRAYSCALE);
+        cv::threshold(img, img, 1, 255, cv::THRESH_BINARY);
+        cv::imshow("Image", img);
+        std::cout << "image size : " << img.size().width << " x " << img.size().height << std::endl;
+        this->m_sceneFractalDim.clear();
+        this->displayGridFractalDim();
+
+        std::vector<std::pair<int, int>> res = frac::utils::computeFractalDimension(img);
+
+        std::vector<std::pair<float, float>> logRes;
+        logRes.reserve(res.size());
+        int i = 2;
+        for (auto x: res) {
+            logRes.emplace_back(std::log(static_cast<float>(i)), std::log(static_cast<float>(x.first)));
+            //std::cout << std::log(static_cast<float>(x.first)) << " rects with normal size of " << 1.0f / static_cast<float>(i) << std::endl;
+            //std::cout << std::log(static_cast<float>(x.first)) << " rects with log size of " << std::log(1.0f / static_cast<float>(i)) << std::endl;
+            //std::cout << std::log(static_cast<float>(x.first)) << " rects with signed log size of " << -std::log(1.0f / static_cast<float>(i)) << std::endl;
+            i *= 2;
+        }
+
+        QPen pen;
+        pen.setWidthF(0.1);
+
+        int minUsefulTerm = std::min(this->ui->spinBox_minUsefulBox->value(), static_cast<int>(res.size()));
+        int current = 0;
+
+        for (auto p: logRes) {
+            if (current >= minUsefulTerm) {
+                pen.setBrush(Qt::blue);
+            } else {
+                pen.setBrush(Qt::black);
+            }
+            this->m_sceneFractalDim.addEllipse(p.first - 0.05, p.second - 0.05, 0.1, 0.1, pen);
+            current++;
+        }
+
+        pen.setBrush(Qt::red);
+        pen.setWidthF(0.03f);
+        auto iter = logRes.cbegin();
+        std::advance(iter, minUsefulTerm);
+        std::vector<std::pair<float, float>> vectorLinearReg { iter, logRes.cend() };
+        std::pair<float, float> regression = frac::utils::computeLinearRegression(vectorLinearReg);
+        this->m_sceneFractalDim.addLine(0.0, regression.second, 10.0, regression.second + 10.0 * regression.first, pen);
+
+        this->ui->label_fractalDimension->setText(QString::number(regression.first));
+    }
+}
+
+void MainWindow::displayGridFractalDim() {
+    QPen pen;
+    pen.setWidthF(0.1);
+    this->m_sceneFractalDim.addLine(-200.0, 0.0, 800.0, 0.0, pen); // x axis
+    this->m_sceneFractalDim.addLine(0.0, -200.0, 0.0, 800.0, pen); // y axis
+    pen.setWidthF(0.02);
+    float i = -10.0f;
+    float length = 30.0f;
+    while (i < 21.0f) {
+        i += 1.0f;
+        this->m_sceneFractalDim.addLine(i, -length, i, length, pen); // x axis
+        this->m_sceneFractalDim.addLine(-length, i, length, i, pen); // y axis
+    }
+}
+
+[[maybe_unused]] void MainWindow::slotComputeAreaPerimeter() {
+    QStringList files = QFileDialog::getOpenFileNames(this, "Open PNG Files...", "../img", "PNG Files (*.png)", nullptr);
+
+    int currentFile = 0;
+    if (!files.isEmpty()) {
+        this->m_sceneAreaPerimeter.clear();
+        this->displayGridAreaPerimeter();
+        cv::destroyAllWindows();
+    }
+
+    std::vector<std::pair<float, float>> vectorArea;
+    std::vector<std::pair<float, float>> vectorPerimeter;
+    QPen pen;
+
+    int firstArea = -1;
+    int firstPerimeter = -1;
+    for (QString const& file: files) {
+        cv::Mat img = cv::imread(file.toStdString(), cv::IMREAD_GRAYSCALE);
+        cv::threshold(img, img, 1, 255, cv::THRESH_BINARY);
+        cv::imshow("Image " + std::to_string(currentFile), img);
+
+        int area = frac::utils::computeArea(img);
+        int perimeter = frac::utils::computePerimeter(img, this->ui->checkBox_displayContours->isChecked() ? "contours " + std::to_string(currentFile) : "");
+        if (firstArea == -1) {
+            firstArea = area;
+        }
+        if(firstPerimeter == -1){
+            firstPerimeter = perimeter;
+        }
+
+        this->ui->label_perimeter->setText(std::to_string(perimeter).c_str());
+        this->ui->label_area->setText(std::to_string(area).c_str());
+
+        float size = 0.08f;
+        pen.setWidthF(size);
+        float y1 = static_cast<float>(area) / static_cast<float>(firstArea);
+        float y2 = static_cast<float>(perimeter) / static_cast<float>(firstPerimeter);
+        pen.setBrush(Qt::blue);
+        auto* itemArea = new PointGraphicsItem(static_cast<float>(currentFile), std::log(y1), size, this->ui->label_perimeter, this->ui->label_area, perimeter, area, pen);
+        this->m_sceneAreaPerimeter.addItem(itemArea);
+        //auto* itemAreaNotLog = new PointGraphicsItem(static_cast<float>(currentFile), y1, size, this->ui->label_perimeter, this->ui->label_area, perimeter, area, pen);
+        //this->m_sceneAreaPerimeter.addItem(itemAreaNotLog);
+        pen.setBrush(Qt::darkGreen);
+        auto* itemPerimeter = new PointGraphicsItem(static_cast<float>(currentFile), std::log(y2), size, this->ui->label_perimeter, this->ui->label_area, perimeter, area, pen);
+        this->m_sceneAreaPerimeter.addItem(itemPerimeter);
+        //auto* itemPerimeterNotLog = new PointGraphicsItem(static_cast<float>(currentFile), y2, size, this->ui->label_perimeter, this->ui->label_area, perimeter, area, pen);
+        //this->m_sceneAreaPerimeter.addItem(itemPerimeterNotLog);
+
+        vectorArea.emplace_back(currentFile, std::log(y1));
+        vectorPerimeter.emplace_back(currentFile, std::log(y2));
+
+        currentFile++;
+    }
+
+    pen.setWidthF(0.04f);
+    if (files.size() > 1) {
+        pen.setBrush(Qt::blue);
+        std::pair<float, float> regressionArea = frac::utils::computeLinearRegression(vectorArea);
+        this->m_sceneAreaPerimeter.addLine(0.0, regressionArea.second, 10.0, regressionArea.second + 10.0 * regressionArea.first, pen);
+        this->ui->label_coefArea->setText(std::to_string(std::exp(regressionArea.first)).c_str());
+
+        pen.setBrush(Qt::darkGreen);
+        std::pair<float, float> regressionPerimeter = frac::utils::computeLinearRegression(vectorPerimeter);
+        this->m_sceneAreaPerimeter.addLine(0.0, regressionPerimeter.second, 10.0, regressionPerimeter.second + 10.0 * regressionPerimeter.first, pen);
+        this->ui->label_coefPerimeter->setText(std::to_string(std::exp(regressionPerimeter.first)).c_str());
+    } else {
+        this->ui->label_coefArea->setText("");
+        this->ui->label_coefPerimeter->setText("");
+    }
+}
+
+void MainWindow::displayGridAreaPerimeter() {
+    QPen pen;
+    pen.setWidthF(0.02);
+    this->m_sceneAreaPerimeter.addLine(-200.0, 0.0, 800.0, 0.0, pen); // x axis
+    this->m_sceneAreaPerimeter.addLine(0.0, -200.0, 0.0, 800.0, pen); // y axis
+    pen.setWidthF(0.005);
+    float i = -10.0f;
+    float length = 10.0f;
+    while (i < 10.1f) {
+        i += 1.0f;
+        this->m_sceneAreaPerimeter.addLine(i, -length, i, length, pen); // x axis
+        this->m_sceneAreaPerimeter.addLine(-length, i, length, i, pen); // y axis
     }
 }

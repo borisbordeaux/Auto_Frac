@@ -56,6 +56,7 @@ public slots:
     [[maybe_unused]] void slotExportSelectedFace();
     [[maybe_unused]] void slotOpenOBJ4File();
     [[maybe_unused]] void slotComputeFractalDimension();
+    [[maybe_unused]] void slotComputeAreaPerimeter();
 
 private:
     struct Constraint {
@@ -85,6 +86,12 @@ private:
 
     QGraphicsScene m_scene;
     void displayGraph();
+
+    QGraphicsScene m_sceneFractalDim;
+    void displayGridFractalDim();
+
+    QGraphicsScene m_sceneAreaPerimeter;
+    void displayGridAreaPerimeter();
 };
 
 #endif
