@@ -57,6 +57,7 @@ public slots:
     [[maybe_unused]] void slotOpenOBJ4File();
     [[maybe_unused]] void slotComputeFractalDimension();
     [[maybe_unused]] void slotComputeAreaPerimeter();
+    [[maybe_unused]] void slotComputeImageDensity();
 
 private:
     struct Constraint {

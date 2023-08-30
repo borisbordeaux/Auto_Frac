@@ -463,7 +463,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>5</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -1770,6 +1770,24 @@ QListWidget {
         </property>
        </widget>
       </widget>
+      <widget class="QWidget" name="tab_6">
+       <attribute name="title">
+        <string>Density</string>
+       </attribute>
+       <widget class="QPushButton" name="pushButton_computeDensity">
+        <property name="geometry">
+         <rect>
+          <x>390</x>
+          <y>120</y>
+          <width>181</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Compute image density</string>
+        </property>
+       </widget>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -1780,7 +1798,7 @@ QListWidget {
      <x>0</x>
      <y>0</y>
      <width>1061</width>
-     <height>20</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
@@ -1811,8 +1829,8 @@ QListWidget {
    <slot>slotOnFaceAdjDelayChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>238</x>
-     <y>433</y>
+     <x>237</x>
+     <y>448</y>
     </hint>
     <hint type="destinationlabel">
      <x>530</x>
@@ -1827,8 +1845,8 @@ QListWidget {
    <slot>slotOnConstraintFace1Changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>589</x>
-     <y>774</y>
+     <x>586</x>
+     <y>777</y>
     </hint>
     <hint type="destinationlabel">
      <x>1058</x>
@@ -1955,8 +1973,8 @@ QListWidget {
    <slot>slotOnConstraintEdge2Changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>589</x>
-     <y>870</y>
+     <x>586</x>
+     <y>882</y>
     </hint>
     <hint type="destinationlabel">
      <x>1057</x>
@@ -1987,8 +2005,8 @@ QListWidget {
    <slot>slotExportAllFaces()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>562</x>
-     <y>529</y>
+     <x>559</x>
+     <y>533</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -2099,8 +2117,8 @@ QListWidget {
    <slot>slotExportSelectedFace()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>700</x>
-     <y>529</y>
+     <x>690</x>
+     <y>533</y>
     </hint>
     <hint type="destinationlabel">
      <x>1064</x>
@@ -2179,8 +2197,8 @@ QListWidget {
    <slot>slotOnFaceGapDelayChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>539</x>
-     <y>433</y>
+     <x>538</x>
+     <y>448</y>
     </hint>
     <hint type="destinationlabel">
      <x>621</x>
@@ -2259,8 +2277,8 @@ QListWidget {
    <slot>slotOnConstraintEdge1Changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>589</x>
-     <y>803</y>
+     <x>586</x>
+     <y>809</y>
     </hint>
     <hint type="destinationlabel">
      <x>1057</x>
@@ -2275,8 +2293,8 @@ QListWidget {
    <slot>slotOnConstraintFace2Changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>589</x>
-     <y>841</y>
+     <x>586</x>
+     <y>850</y>
     </hint>
     <hint type="destinationlabel">
      <x>1056</x>
@@ -2323,12 +2341,28 @@ QListWidget {
    <slot>slotComputeAreaPerimeter()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>359</x>
-     <y>69</y>
+     <x>321</x>
+     <y>92</y>
     </hint>
     <hint type="destinationlabel">
      <x>337</x>
      <y>-4</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_computeDensity</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotComputeImageDensity()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>423</x>
+     <y>160</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1053</x>
+     <y>355</y>
     </hint>
    </hints>
   </connection>
@@ -2368,5 +2402,6 @@ QListWidget {
   <slot>slotOpenOBJ4File()</slot>
   <slot>slotComputeFractalDimension()</slot>
   <slot>slotComputeAreaPerimeter()</slot>
+  <slot>slotComputeImageDensity()</slot>
  </slots>
 </ui>
