@@ -677,7 +677,7 @@ void MainWindow::displayGridAreaPerimeter() {
 }
 
 [[maybe_unused]] void MainWindow::slotComputeImageDensity() {
-    QString file = QFileDialog::getOpenFileName(this, "Open a PNG File...", "../img", "PNG Files (*.png)");
+    QString file = QFileDialog::getOpenFileName(this, "Open a PNG File...", "../img", "PNG Files (*.png)", nullptr, QFileDialog::DontUseNativeDialog);
 
     if (file != "") {
         cv::destroyAllWindows();
@@ -685,11 +685,11 @@ void MainWindow::displayGridAreaPerimeter() {
         cv::threshold(img, img, 1, 255, cv::THRESH_BINARY);
         cv::imshow("Image", img);
 
-        std::array<cv::Mat, 5> res;
-
         for (int i = 3; i < 13; i += 2) {
-            frac::utils::computeDensity(img, res[(i - 3) / 2], i);
-            cv::imshow("Image density, window size: " + std::to_string(i), res[(i - 3) / 2]);
+            cv::Mat res;
+            img.copyTo(res);
+            frac::utils::computeDensity(img, res, i);
+            cv::imshow("Image density, window size: " + std::to_string(i), res);
         }
     }
 }

@@ -2,6 +2,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui.hpp>
+#include <QVector3D>
 
 namespace frac::utils {
 std::vector<std::pair<int, int>> computeFractalDimension(cv::Mat const& img) {
@@ -91,17 +92,12 @@ std::pair<float, float> computeLinearRegression(std::vector<std::pair<float, flo
     return { A, B };
 }
 
-void computeDensity(const cv::Mat& img, cv::Mat& res, int size) {
-// copy the img
+void computeDensity(cv::Mat const& img, cv::Mat& res, int size) {
+    // copy the img
     img.copyTo(res);
 
-    // define the colors
-    int step = 256 / (size * size - 1);
-    std::vector<int> colors;
-    colors.reserve(size * size);
-    for (int i = 0; i < size * size; i++) {
-        colors[i] = i == 0 ? 0 : i * step - 1;
-    }
+    int colorMin = 0;
+    int colorMax = 255;
 
     for (int i = 0; i < img.size().width; i++) { // columns
         for (int j = 0; j < img.size().height; j++) { // lines
@@ -114,7 +110,7 @@ void computeDensity(const cv::Mat& img, cv::Mat& res, int size) {
                         }
                     }
                 }
-                res.at<uchar>(i, j) = colors[count];
+                res.at<uchar>(i, j) = colorMin + (count * colorMax) / (size * size);
             }
         }
     }
