@@ -591,7 +591,7 @@ void MainWindow::displayGridFractalDim() {
 }
 
 [[maybe_unused]] void MainWindow::slotComputeAreaPerimeter() {
-    QStringList files = QFileDialog::getOpenFileNames(this, "Open PNG Files...", "../img", "PNG Files (*.png)", nullptr);
+    QStringList files = QFileDialog::getOpenFileNames(this, "Open PNG Files...", "../img", "PNG Files (*.png)", nullptr, QFileDialog::DontUseNativeDialog);
 
     int currentFile = 0;
     if (!files.isEmpty()) {
@@ -628,15 +628,12 @@ void MainWindow::displayGridFractalDim() {
         float y1 = static_cast<float>(area) / static_cast<float>(firstArea);
         float y2 = static_cast<float>(perimeter) / static_cast<float>(firstPerimeter);
         pen.setBrush(Qt::blue);
-        auto* itemArea = new PointGraphicsItem(static_cast<float>(currentFile), std::log(y1), size, this->ui->label_perimeter, this->ui->label_area, perimeter, area, pen);
+        auto* itemArea = new PointGraphicsItem(static_cast<float>(currentFile), std::log(y1), size, this->ui->label_perimeter, this->ui->label_area, this->ui->label_porosity, perimeter, area, 1.0f - y1, pen);
         this->m_sceneAreaPerimeter.addItem(itemArea);
-        //auto* itemAreaNotLog = new PointGraphicsItem(static_cast<float>(currentFile), y1, size, this->ui->label_perimeter, this->ui->label_area, perimeter, area, pen);
-        //this->m_sceneAreaPerimeter.addItem(itemAreaNotLog);
+
         pen.setBrush(Qt::darkGreen);
-        auto* itemPerimeter = new PointGraphicsItem(static_cast<float>(currentFile), std::log(y2), size, this->ui->label_perimeter, this->ui->label_area, perimeter, area, pen);
+        auto* itemPerimeter = new PointGraphicsItem(static_cast<float>(currentFile), std::log(y2), size, this->ui->label_perimeter, this->ui->label_area, this->ui->label_porosity, perimeter, area, 1.0f - y1, pen);
         this->m_sceneAreaPerimeter.addItem(itemPerimeter);
-        //auto* itemPerimeterNotLog = new PointGraphicsItem(static_cast<float>(currentFile), y2, size, this->ui->label_perimeter, this->ui->label_area, perimeter, area, pen);
-        //this->m_sceneAreaPerimeter.addItem(itemPerimeterNotLog);
 
         vectorArea.emplace_back(currentFile, std::log(y1));
         vectorPerimeter.emplace_back(currentFile, std::log(y2));

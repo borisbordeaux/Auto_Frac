@@ -8,7 +8,7 @@ class QLabel;
 
 class PointGraphicsItem : public QGraphicsItem {
 public:
-    explicit PointGraphicsItem(float x, float y, float size,QLabel* labelPerimeter, QLabel* labelArea, int valuePerimeter, int valueArea, QPen pen);
+    explicit PointGraphicsItem(float x, float y, float size, QLabel* labelPerimeter, QLabel* labelArea, QLabel* labelPorosity, int valuePerimeter, int valueArea, float porosity, QPen pen);
 
     [[nodiscard]] QRectF boundingRect() const override;
 
@@ -21,8 +21,10 @@ private:
     QRectF m_boundindRect;
     QLabel* m_labelPerimeter;
     QLabel* m_labelArea;
+    QLabel* m_labelPorosity;
     int m_valuePerimeter;
     int m_valueArea;
+    float m_valuePorosity;
     QPen m_pen;
 };
 
