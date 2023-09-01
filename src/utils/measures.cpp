@@ -93,24 +93,21 @@ std::pair<float, float> computeLinearRegression(std::vector<std::pair<float, flo
 }
 
 void computeDensity(cv::Mat const& img, cv::Mat& res, int size) {
-    // copy the img
-    img.copyTo(res);
-
     int colorMin = 0;
     int colorMax = 255;
 
     for (int i = 0; i < img.size().width; i++) { // columns
         for (int j = 0; j < img.size().height; j++) { // lines
-            if (img.at<uchar>(i, j) == 255) {
+            if (img.at<uchar>(j, i) == 255) {
                 int count = 0;
                 for (int k = -(size - 1) / 2; k <= (size - 1) / 2; k++) {
                     for (int l = -(size - 1) / 2; l <= (size - 1) / 2; l++) {
-                        if ((i + k) >= 0 && (i + k) < img.size().width && (j + l) >= 0 && (j + l) < img.size().height && img.at<uchar>(i + k, j + l) == 255 && !(k == 0 && l == 0)) {
+                        if ((i + k) >= 0 && (i + k) < img.size().width && (j + l) >= 0 && (j + l) < img.size().height && img.at<uchar>(j + l, i + k) == 255) {
                             count++;
                         }
                     }
                 }
-                res.at<uchar>(i, j) = colorMin + (count * colorMax) / (size * size);
+                res.at<uchar>(j, i) = colorMin + (count * colorMax) / (size * size);
             }
         }
     }

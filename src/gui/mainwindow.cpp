@@ -609,7 +609,7 @@ void MainWindow::displayGridFractalDim() {
     for (QString const& file: files) {
         cv::Mat img = cv::imread(file.toStdString(), cv::IMREAD_GRAYSCALE);
         cv::threshold(img, img, 1, 255, cv::THRESH_BINARY);
-        cv::imshow("Image " + std::to_string(currentFile), img);
+        cv::imshow(std::string("Image ") + std::to_string(currentFile), img);
 
         int area = frac::utils::computeArea(img);
         int perimeter = frac::utils::computePerimeter(img, this->ui->checkBox_displayContours->isChecked() ? "contours " + std::to_string(currentFile) : "");
@@ -635,6 +635,8 @@ void MainWindow::displayGridFractalDim() {
         auto* itemPerimeter = new PointGraphicsItem(static_cast<float>(currentFile), std::log(y2), size, this->ui->label_perimeter, this->ui->label_area, this->ui->label_porosity, perimeter, area, 1.0f - y1, pen);
         this->m_sceneAreaPerimeter.addItem(itemPerimeter);
 
+        this->ui->label_porosity->setText(QString::number(1.0f - y1));
+
         vectorArea.emplace_back(currentFile, std::log(y1));
         vectorPerimeter.emplace_back(currentFile, std::log(y2));
 
@@ -655,6 +657,7 @@ void MainWindow::displayGridFractalDim() {
     } else {
         this->ui->label_coefArea->setText("");
         this->ui->label_coefPerimeter->setText("");
+        this->ui->label_porosity->setText("");
     }
 }
 
@@ -680,7 +683,7 @@ void MainWindow::displayGridAreaPerimeter() {
         cv::destroyAllWindows();
         cv::Mat img = cv::imread(file.toStdString(), cv::IMREAD_GRAYSCALE);
         cv::threshold(img, img, 1, 255, cv::THRESH_BINARY);
-        cv::imshow("Image", img);
+        cv::imshow(std::string("Image"), img);
 
         for (int i = 3; i < 13; i += 2) {
             cv::Mat res;
