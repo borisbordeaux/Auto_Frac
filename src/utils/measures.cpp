@@ -3,6 +3,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 #include <QVector3D>
+#include <thread>
 
 namespace frac::utils {
 std::vector<std::pair<int, int>> computeFractalDimension(cv::Mat const& img) {
@@ -92,25 +93,80 @@ std::pair<float, float> computeLinearRegression(std::vector<std::pair<float, flo
     return { A, B };
 }
 
-void computeDensity(cv::Mat const& img, cv::Mat& res, int size) {
-    int colorMin = 0;
-    int colorMax = 255;
+uchar interpolate(uchar colorMin, uchar colorMax, float percent) {
+    return static_cast<uchar>(static_cast<float>(colorMin) + percent * static_cast<float>(colorMax - colorMin));
+}
 
-    for (int i = 0; i < img.size().width; i++) { // columns
-        for (int j = 0; j < img.size().height; j++) { // lines
-            if (img.at<uchar>(j, i) == 255) {
-                int count = 0;
-                for (int k = -(size - 1) / 2; k <= (size - 1) / 2; k++) {
-                    for (int l = -(size - 1) / 2; l <= (size - 1) / 2; l++) {
-                        if ((i + k) >= 0 && (i + k) < img.size().width && (j + l) >= 0 && (j + l) < img.size().height && img.at<uchar>(j + l, i + k) == 255) {
-                            count++;
+void egalisationHistogramme(cv::Mat& img) {
+    uchar max = *std::max_element(img.begin<uchar>(), img.end<uchar>());
+    if (max < 255) {
+        std::for_each(img.begin<uchar>(), img.end<uchar>(), [&](uchar& val) {
+            val = (val * 255) / max;
+        });
+    }
+}
+
+void computeDensity(cv::Mat const& img, int size) {
+    cv::Mat res;
+    img.copyTo(res);
+    unsigned int nb_thread = std::thread::hardware_concurrency();
+
+    uchar colorMin { 0 };
+    uchar colorMax { 255 };
+
+    auto f = [&](unsigned int idxThread) {
+        int width = img.cols / static_cast<int>(nb_thread);
+        int realWidth = idxThread < nb_thread - 1 ? width : img.cols - static_cast<int>(idxThread) * width;
+        int begin = width * static_cast<int>(idxThread);
+        int end = begin + realWidth;
+        for (int i = begin; i < end; i++) { // columns
+            for (int j = 0; j < img.rows; j++) { // lines
+                if (img.at<uchar>(j, i) == 255) {
+                    int count = 0;
+                    for (int k = -(size - 1) / 2; k <= (size - 1) / 2; k++) {
+                        for (int l = -(size - 1) / 2; l <= (size - 1) / 2; l++) {
+                            if ((i + k) >= 0 && (i + k) < img.cols && (j + l) >= 0 && (j + l) < img.rows && img.at<uchar>(j + l, i + k) == 255) {
+                                count++;
+                            }
                         }
                     }
+                    float coef = static_cast<float>(count) / static_cast<float>(size * size);
+                    res.at<uchar>(j, i) = interpolate(colorMin, colorMax, coef);
                 }
-                res.at<uchar>(j, i) = colorMin + (count * colorMax) / (size * size);
             }
         }
+    };
+
+    std::vector<std::thread> ThreadVector;
+
+    for (unsigned int i = 0; i < nb_thread; i++) {
+        ThreadVector.emplace_back(f, i);
     }
+
+    for (auto& t: ThreadVector) {
+        t.join();
+    }
+
+    cv::Mat resNoEqualization;
+    res.copyTo(resNoEqualization);
+
+    egalisationHistogramme(res);
+
+
+    cv::applyColorMap(res, res, cv::COLORMAP_JET);
+    cv::applyColorMap(resNoEqualization, resNoEqualization, cv::COLORMAP_JET);
+
+    // the colormap set black value (background) to a darkblue RGB(0, 0, 128)
+    // we need to restore the black value to have a better view of the colors
+    // since it is stored in bgr format, we change the blue background by
+    // affecting the first value (blue) to the new value
+    cv::Mat mask;
+    cv::inRange(res, cv::Scalar(128, 0, 0), cv::Scalar(128, 0, 0), mask);
+    res.setTo(cv::Scalar(0, 0, 0), mask);
+    resNoEqualization.setTo(cv::Scalar(0, 0, 0), mask);
+
+    cv::imshow("Equalization w=" + std::to_string(size), res);
+    cv::imshow("No equalization w=" + std::to_string(size), resNoEqualization);
 }
 
 }

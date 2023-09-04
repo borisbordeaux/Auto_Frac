@@ -13,6 +13,7 @@
 #include "utils/objreader.h"
 #include "utils/measures.h"
 #include "gui/pointgraphicsitem.h"
+#include "computations/densitycomputation.h"
 
 #include <QtWidgets>
 #include <QPen>
@@ -49,6 +50,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->ui->graphicsView_stats->scale(100, -100);
 
     this->displayGridAreaPerimeter();
+
+    connect(this->ui->horizontalSlider_windowSize, SIGNAL(valueChanged(int)), this->ui->label_windowSize, SLOT(setNum(int)));
 }
 
 MainWindow::~MainWindow() {
@@ -680,16 +683,6 @@ void MainWindow::displayGridAreaPerimeter() {
     QString file = QFileDialog::getOpenFileName(this, "Open a PNG File...", "../img", "PNG Files (*.png)", nullptr, QFileDialog::DontUseNativeDialog);
 
     if (file != "") {
-        cv::destroyAllWindows();
-        cv::Mat img = cv::imread(file.toStdString(), cv::IMREAD_GRAYSCALE);
-        cv::threshold(img, img, 1, 255, cv::THRESH_BINARY);
-        cv::imshow(std::string("Image"), img);
-
-        for (int i = 3; i < 13; i += 2) {
-            cv::Mat res;
-            img.copyTo(res);
-            frac::utils::computeDensity(img, res, i);
-            cv::imshow("Image density, window size: " + std::to_string(i), res);
-        }
+        frac::DensityComputation::computeDensity(file, this->ui->horizontalSlider_windowSize->value());
     }
 }
