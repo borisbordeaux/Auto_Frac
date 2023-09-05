@@ -6,7 +6,7 @@ class QString;
 namespace frac {
 
 namespace DensityComputation {
-    void computeDensity(QString const& file, int value);
+    void computeDensity(QString const& file, int value, bool showAllImages);
 };
 
 } // frac

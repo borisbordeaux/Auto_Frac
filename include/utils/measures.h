@@ -25,7 +25,7 @@ int computePerimeter(cv::Mat const& img, std::string const& displayContoursWinNa
  */
 std::pair<float, float> computeLinearRegression(std::vector<std::pair<float, float>> const& values);
 
-void computeDensity(cv::Mat const& img, int size);
+void computeDensity(cv::Mat const& img, int size, bool showAllImages);
 }
 
 #endif //AUTOFRAC_MEASURES_H

@@ -7,6 +7,8 @@ frac::UniqueVector<frac::Face> frac::Face::s_existingFaces;
 std::map<std::string, std::string> frac::Face::s_incidenceConstraints;
 std::map<std::string, std::string> frac::Face::s_adjacencyConstraints;
 
+frac::AlgorithmSubdivision frac::Face::s_algorithm = frac::AlgorithmSubdivision::LinksSurroundDelay;
+
 frac::Face::Face(std::vector<Edge> edges, unsigned int delay, frac::Edge const& adjEdge, frac::Edge const& gapEdge, frac::Edge const& reqEdge) :
         m_data(std::move(edges)), m_delay(delay), m_adjEdge(adjEdge), m_gapEdge(gapEdge), m_reqEdge(reqEdge), m_offset(0), m_firstInterior(-1) {
     for (Face const& f: s_existingFaces.data()) {
@@ -61,157 +63,13 @@ void frac::Face::setFirstInterior(int index) {
 }
 
 std::vector<frac::Face> frac::Face::subdivisions() const {
-    std::vector<frac::Face> res;
-    bool writeConstraints = s_incidenceConstraints.find(this->name()) == s_incidenceConstraints.end();
-    if (m_delay == 0) {
-        for (std::size_t i = 0; i < this->len(); ++i) {
-            // foreach edge
-            frac::Edge current = (*this)[i];
-            if (current.isDelay()) {
-                // current edge has a delay so creation of one face
-                frac::Edge subFirst { current };
-                subFirst.decreaseDelay();
-                std::vector<frac::Edge> boundaries = { subFirst };
-                boundaries.push_back(this->m_adjEdge);
-                boundaries.push_back(this->m_gapEdge);
-                boundaries.push_back(this->m_adjEdge);
-                frac::Face c = Face(boundaries, 0, this->m_adjEdge, this->m_gapEdge, this->m_reqEdge);
-                c.setFirstInterior(1);
-                if (writeConstraints) {
-                    addIncidenceConstraint(*this, c, i, 0, 0, res.size());
-                }
-                res.push_back(c);
-            } else {
-                // current edge has not a delay, so we look at the edge before
-                std::size_t idx = static_cast<std::size_t>(utils::mod(static_cast<int>(i) - 1, static_cast<int>(this->len())));
-                if ((*this)[idx].isDelay()) {
-                    // the state before has a delay
-                    std::vector<frac::Edge> boundaries = { current };
-                    std::optional<frac::Edge> requiredEdge = edgeIfRequired(current, this->m_reqEdge);
-                    if (requiredEdge.has_value()) {
-                        boundaries.push_back(requiredEdge.value());
-                    }
-                    boundaries.push_back(this->m_adjEdge);
-                    boundaries.push_back(this->m_gapEdge);
-                    boundaries.push_back(this->m_adjEdge);
-                    frac::Face c = Face(boundaries, 0, this->m_adjEdge, this->m_gapEdge, this->m_reqEdge);
-                    c.setFirstInterior(static_cast<int>(boundaries.size() - 3));
-                    if (writeConstraints) {
-                        addIncidenceConstraint(*this, c, i, 0, 0, res.size());
-                    }
-                    res.push_back(c);
-                }
-
-                //creation of intermediate states
-                int nbIntermediateStates { static_cast<int>(current.nbSubdivisions()) - 2 };
-                for (int j = 0; j < nbIntermediateStates; j++) {
-                    std::vector<frac::Edge> boundaries = { current };
-                    std::optional<frac::Edge> requiredEdge = edgeIfRequired(current, this->m_reqEdge);
-                    if (requiredEdge.has_value()) {
-                        boundaries.push_back(requiredEdge.value());
-                    }
-                    int indexFirstInterior { static_cast<int>(boundaries.size()) };
-                    boundaries.push_back(this->m_adjEdge);
-                    boundaries.push_back(this->m_gapEdge);
-                    boundaries.push_back(this->m_adjEdge);
-                    if (requiredEdge.has_value()) {
-                        boundaries.push_back(requiredEdge.value());
-                    }
-                    frac::Face c = Face(boundaries, 0, this->m_adjEdge, this->m_gapEdge, this->m_reqEdge);
-                    c.setFirstInterior(indexFirstInterior);
-                    if (writeConstraints) {
-                        addIncidenceConstraint(*this, c, i, j + 1, 0, res.size());
-                    }
-                    res.push_back(c);
-                }
-
-                // creation of last state of the edge
-                frac::Edge next = (*this)[utils::mod(i + 1, this->len())];
-                if (next.isDelay()) {
-                    // if next edge has delay
-                    std::vector<frac::Edge> boundaries = { current };
-                    boundaries.push_back(this->m_adjEdge);
-                    boundaries.push_back(this->m_gapEdge);
-                    boundaries.push_back(this->m_adjEdge);
-                    std::optional<frac::Edge> requiredEdge = edgeIfRequired(current, this->m_reqEdge);
-                    if (requiredEdge.has_value()) {
-                        boundaries.push_back(requiredEdge.value());
-                    }
-                    frac::Face c = Face(boundaries, 0, this->m_adjEdge, this->m_gapEdge, this->m_reqEdge);
-                    c.setFirstInterior(1);
-                    if (writeConstraints) {
-                        addIncidenceConstraint(*this, c, i, nbIntermediateStates + 1, 0, res.size());
-                    }
-                    res.push_back(c);
-                } else {
-                    // if next edge has no delay
-                    std::vector<frac::Edge> boundaries = { current, next };
-                    std::optional<frac::Edge> requiredEdge = edgeIfRequired(next, this->m_reqEdge);
-                    if (requiredEdge.has_value()) {
-                        boundaries.push_back(requiredEdge.value());
-                    }
-                    int indexFirstInterior { static_cast<int>(boundaries.size()) };
-                    boundaries.push_back(this->m_adjEdge);
-                    boundaries.push_back(this->m_gapEdge);
-                    boundaries.push_back(this->m_adjEdge);
-                    std::optional<frac::Edge> secondRequiredEdge = edgeIfRequired(current, this->m_reqEdge);
-                    if (secondRequiredEdge.has_value()) {
-                        boundaries.push_back(secondRequiredEdge.value());
-                    }
-                    frac::Face c = Face(boundaries, 0, this->m_adjEdge, this->m_gapEdge, this->m_reqEdge);
-                    c.setFirstInterior(indexFirstInterior);
-                    if (writeConstraints) {
-                        addIncidenceConstraint(*this, c, i, nbIntermediateStates + 1, 0, res.size());
-                        addIncidenceConstraint(*this, c, frac::utils::mod(i + 1, this->len()), 0, 1, res.size());
-                    }
-                    res.push_back(c);
-                }
-            }
-        }
-        for (std::size_t i = 0; i < res.size(); ++i) {
-            frac::Face current = res[i];
-            frac::Face next = res[frac::utils::mod(i + 1, res.size())];
-            if (writeConstraints) {
-                addAdjacencyConstraint(*this, current, next, i, current.firstInterior(), frac::utils::mod(i + 1, res.size()), next.lastInterior());
-            }
-        }
-    } else {
-        // current face has delay
-        std::vector<frac::Edge> boundaries = {};
-        for (std::size_t i = 0; i < this->len(); ++i) {
-            // for each edge, we subdivide it and add it to the result face
-            frac::Edge edge = (*this)[i];
-            std::vector<Edge> subdivisionsEdge = edge.subdivisions(this->m_reqEdge);
-            for (frac::Edge const& e: subdivisionsEdge) {
-                boundaries.push_back(e);
-            }
-        }
-        frac::Face c = Face(boundaries, this->m_delay - 1, this->m_adjEdge, this->m_gapEdge, this->m_reqEdge);
-        // no adjacency constraints
-        // write incidence constraints
-        if (writeConstraints) {
-            int k = 0;
-            for (std::size_t i = 0; i < this->len(); ++i) {
-                frac::Edge edge { (*this)[i] };
-                unsigned int nbSubdivisionsEdge = edge.nbActualSubdivisions();
-                for (unsigned int j = 0; j < nbSubdivisionsEdge; ++j) {
-                    addIncidenceConstraint(*this, c, i, j, k, 0);
-                    if (edge.edgeType() == EdgeType::BEZIER) {
-                        k++;
-                    }
-                    if (edge.edgeType() == EdgeType::CANTOR) {
-                        if (edge.isDelay()) {
-                            k++;
-                        } else {
-                            k += (j != (nbSubdivisionsEdge - 1)) ? 3 : 1;
-                        }
-                    }
-                }
-            }
-        }
-        res.push_back(c);
+    switch (s_algorithm) {
+        case AlgorithmSubdivision::LinksSurroundDelay:
+            return this->subdivisionsSurroundDelay();
+        case AlgorithmSubdivision::LinksSurroundDelayAndBezier:
+            return this->subdivisionsSurroundDelayAndBezier();
     }
-    return res;
+    return {};
 }
 
 const frac::Edge& frac::Face::operator[](std::size_t index) const {
@@ -366,4 +224,321 @@ void frac::Face::setDelay(unsigned int delay) {
 
 unsigned int frac::Face::delay() const {
     return this->m_delay;
+}
+
+std::vector<frac::Face> frac::Face::subdivisionsSurroundDelay() const {
+    std::vector<frac::Face> res;
+    bool writeConstraints = s_incidenceConstraints.find(this->name()) == s_incidenceConstraints.end();
+    if (m_delay == 0) {
+        //if face has no delay
+        for (std::size_t i = 0; i < this->len(); ++i) {
+            // foreach edge
+            frac::Edge current = (*this)[i];
+            if (current.isDelay()) {
+                // current edge has a delay so creation of one face
+                frac::Edge subFirst { current };
+                subFirst.decreaseDelay();
+                std::vector<frac::Edge> boundaries = { subFirst };
+                boundaries.push_back(this->m_adjEdge);
+                boundaries.push_back(this->m_gapEdge);
+                boundaries.push_back(this->m_adjEdge);
+                frac::Face c = Face(boundaries, 0, this->m_adjEdge, this->m_gapEdge, this->m_reqEdge);
+                c.setFirstInterior(1);
+                if (writeConstraints) {
+                    addIncidenceConstraint(*this, c, i, 0, 0, res.size());
+                }
+                res.push_back(c);
+            } else {
+                // current edge has not a delay, so we look at the edge before
+                std::size_t idx = static_cast<std::size_t>(utils::mod(static_cast<int>(i) - 1, static_cast<int>(this->len())));
+                if ((*this)[idx].isDelay()) {
+                    // the edge before has a delay
+                    std::vector<frac::Edge> boundaries = { current };
+                    std::optional<frac::Edge> requiredEdge = edgeIfRequired(current, this->m_reqEdge);
+                    if (requiredEdge.has_value()) {
+                        boundaries.push_back(requiredEdge.value());
+                    }
+                    boundaries.push_back(this->m_adjEdge);
+                    boundaries.push_back(this->m_gapEdge);
+                    boundaries.push_back(this->m_adjEdge);
+                    frac::Face c = Face(boundaries, 0, this->m_adjEdge, this->m_gapEdge, this->m_reqEdge);
+                    c.setFirstInterior(static_cast<int>(boundaries.size() - 3));
+                    if (writeConstraints) {
+                        addIncidenceConstraint(*this, c, i, 0, 0, res.size());
+                    }
+                    res.push_back(c);
+                }
+
+                //creation of intermediate states
+                int nbIntermediateStates { static_cast<int>(current.nbSubdivisions()) - 2 };
+                for (int j = 0; j < nbIntermediateStates; j++) {
+                    std::vector<frac::Edge> boundaries = { current };
+                    std::optional<frac::Edge> requiredEdge = edgeIfRequired(current, this->m_reqEdge);
+                    if (requiredEdge.has_value()) {
+                        boundaries.push_back(requiredEdge.value());
+                    }
+                    int indexFirstInterior { static_cast<int>(boundaries.size()) };
+                    boundaries.push_back(this->m_adjEdge);
+                    boundaries.push_back(this->m_gapEdge);
+                    boundaries.push_back(this->m_adjEdge);
+                    if (requiredEdge.has_value()) {
+                        boundaries.push_back(requiredEdge.value());
+                    }
+                    frac::Face c = Face(boundaries, 0, this->m_adjEdge, this->m_gapEdge, this->m_reqEdge);
+                    c.setFirstInterior(indexFirstInterior);
+                    if (writeConstraints) {
+                        addIncidenceConstraint(*this, c, i, j + 1, 0, res.size());
+                    }
+                    res.push_back(c);
+                }
+
+                // creation of last state of the edge
+                frac::Edge next = (*this)[utils::mod(i + 1, this->len())];
+                if (next.isDelay()) {
+                    // if next edge has delay
+                    std::vector<frac::Edge> boundaries = { current };
+                    boundaries.push_back(this->m_adjEdge);
+                    boundaries.push_back(this->m_gapEdge);
+                    boundaries.push_back(this->m_adjEdge);
+                    std::optional<frac::Edge> requiredEdge = edgeIfRequired(current, this->m_reqEdge);
+                    if (requiredEdge.has_value()) {
+                        boundaries.push_back(requiredEdge.value());
+                    }
+                    frac::Face c = Face(boundaries, 0, this->m_adjEdge, this->m_gapEdge, this->m_reqEdge);
+                    c.setFirstInterior(1);
+                    if (writeConstraints) {
+                        addIncidenceConstraint(*this, c, i, nbIntermediateStates + 1, 0, res.size());
+                    }
+                    res.push_back(c);
+                } else {
+                    // if next edge has no delay
+                    std::vector<frac::Edge> boundaries = { current, next };
+                    std::optional<frac::Edge> requiredEdge = edgeIfRequired(next, this->m_reqEdge);
+                    if (requiredEdge.has_value()) {
+                        boundaries.push_back(requiredEdge.value());
+                    }
+                    int indexFirstInterior { static_cast<int>(boundaries.size()) };
+                    boundaries.push_back(this->m_adjEdge);
+                    boundaries.push_back(this->m_gapEdge);
+                    boundaries.push_back(this->m_adjEdge);
+                    std::optional<frac::Edge> secondRequiredEdge = edgeIfRequired(current, this->m_reqEdge);
+                    if (secondRequiredEdge.has_value()) {
+                        boundaries.push_back(secondRequiredEdge.value());
+                    }
+                    frac::Face c = Face(boundaries, 0, this->m_adjEdge, this->m_gapEdge, this->m_reqEdge);
+                    c.setFirstInterior(indexFirstInterior);
+                    if (writeConstraints) {
+                        addIncidenceConstraint(*this, c, i, nbIntermediateStates + 1, 0, res.size());
+                        addIncidenceConstraint(*this, c, frac::utils::mod(i + 1, this->len()), 0, 1, res.size());
+                    }
+                    res.push_back(c);
+                }
+            }
+        }
+        for (std::size_t i = 0; i < res.size(); ++i) {
+            frac::Face current = res[i];
+            frac::Face next = res[frac::utils::mod(i + 1, res.size())];
+            if (writeConstraints) {
+                addAdjacencyConstraint(*this, current, next, i, current.firstInterior(), frac::utils::mod(i + 1, res.size()), next.lastInterior());
+            }
+        }
+    } else {
+        // current face has delay
+        std::vector<frac::Edge> boundaries = {};
+        for (std::size_t i = 0; i < this->len(); ++i) {
+            // for each edge, we subdivide it and add it to the result face
+            frac::Edge edge = (*this)[i];
+            std::vector<Edge> subdivisionsEdge = edge.subdivisions(this->m_reqEdge);
+            for (frac::Edge const& e: subdivisionsEdge) {
+                boundaries.push_back(e);
+            }
+        }
+        frac::Face c = Face(boundaries, this->m_delay - 1, this->m_adjEdge, this->m_gapEdge, this->m_reqEdge);
+        // no adjacency constraints
+        // write incidence constraints
+        if (writeConstraints) {
+            int k = 0;
+            for (std::size_t i = 0; i < this->len(); ++i) {
+                frac::Edge edge { (*this)[i] };
+                unsigned int nbSubdivisionsEdge = edge.nbActualSubdivisions();
+                for (unsigned int j = 0; j < nbSubdivisionsEdge; ++j) {
+                    addIncidenceConstraint(*this, c, i, j, k, 0);
+                    if (edge.edgeType() == EdgeType::BEZIER) {
+                        k++;
+                    }
+                    if (edge.edgeType() == EdgeType::CANTOR) {
+                        if (edge.isDelay()) {
+                            k++;
+                        } else {
+                            k += (j != (nbSubdivisionsEdge - 1)) ? 3 : 1;
+                        }
+                    }
+                }
+            }
+        }
+        res.push_back(c);
+    }
+    return res;
+}
+
+std::vector<frac::Face> frac::Face::subdivisionsSurroundDelayAndBezier() const {
+    std::vector<frac::Face> res;
+    bool writeConstraints = s_incidenceConstraints.find(this->name()) == s_incidenceConstraints.end();
+    if (m_delay == 0) {
+        //if face has no delay
+        for (std::size_t i = 0; i < this->len(); ++i) {
+            // foreach edge
+            frac::Edge current = (*this)[i];
+            if (current.isDelay()) {
+                // current edge has a delay so creation of one face
+                // TODO: look at edges before and after to merge also with bezier
+                frac::Edge subFirst { current };
+                subFirst.decreaseDelay();
+                std::vector<frac::Edge> boundaries = { subFirst };
+                boundaries.push_back(this->m_adjEdge);
+                boundaries.push_back(this->m_gapEdge);
+                boundaries.push_back(this->m_adjEdge);
+                frac::Face c = Face(boundaries, 0, this->m_adjEdge, this->m_gapEdge, this->m_reqEdge);
+                c.setFirstInterior(1);
+                if (writeConstraints) {
+                    addIncidenceConstraint(*this, c, i, 0, 0, res.size());
+                }
+                res.push_back(c);
+            } else {
+                // current edge has not a delay, so we look at the edge before
+                // TODO: only if current edge is cantor
+                std::size_t idx = static_cast<std::size_t>(utils::mod(static_cast<int>(i) - 1, static_cast<int>(this->len())));
+                if ((*this)[idx].isDelay()) {
+                    // the edge before has a delay
+                    std::vector<frac::Edge> boundaries = { current };
+                    std::optional<frac::Edge> requiredEdge = edgeIfRequired(current, this->m_reqEdge);
+                    if (requiredEdge.has_value()) {
+                        boundaries.push_back(requiredEdge.value());
+                    }
+                    boundaries.push_back(this->m_adjEdge);
+                    boundaries.push_back(this->m_gapEdge);
+                    boundaries.push_back(this->m_adjEdge);
+                    frac::Face c = Face(boundaries, 0, this->m_adjEdge, this->m_gapEdge, this->m_reqEdge);
+                    c.setFirstInterior(static_cast<int>(boundaries.size() - 3));
+                    if (writeConstraints) {
+                        addIncidenceConstraint(*this, c, i, 0, 0, res.size());
+                    }
+                    res.push_back(c);
+                }
+
+                //creation of intermediate states
+                int nbIntermediateStates { static_cast<int>(current.nbSubdivisions()) - 2 };
+                for (int j = 0; j < nbIntermediateStates; j++) {
+                    std::vector<frac::Edge> boundaries = { current };
+                    std::optional<frac::Edge> requiredEdge = edgeIfRequired(current, this->m_reqEdge);
+                    if (requiredEdge.has_value()) {
+                        boundaries.push_back(requiredEdge.value());
+                    }
+                    int indexFirstInterior { static_cast<int>(boundaries.size()) };
+                    boundaries.push_back(this->m_adjEdge);
+                    boundaries.push_back(this->m_gapEdge);
+                    boundaries.push_back(this->m_adjEdge);
+                    if (requiredEdge.has_value()) {
+                        boundaries.push_back(requiredEdge.value());
+                    }
+                    frac::Face c = Face(boundaries, 0, this->m_adjEdge, this->m_gapEdge, this->m_reqEdge);
+                    c.setFirstInterior(indexFirstInterior);
+                    if (writeConstraints) {
+                        addIncidenceConstraint(*this, c, i, j + 1, 0, res.size());
+                    }
+                    res.push_back(c);
+                }
+
+                // creation of last state of the edge
+                frac::Edge next = (*this)[utils::mod(i + 1, this->len())];
+                if (next.isDelay()) {
+                    // if next edge has delay
+                    // TODO: if current edge is Cantor, surround delay edge
+                    std::vector<frac::Edge> boundaries = { current };
+                    boundaries.push_back(this->m_adjEdge);
+                    boundaries.push_back(this->m_gapEdge);
+                    boundaries.push_back(this->m_adjEdge);
+                    std::optional<frac::Edge> requiredEdge = edgeIfRequired(current, this->m_reqEdge);
+                    if (requiredEdge.has_value()) {
+                        boundaries.push_back(requiredEdge.value());
+                    }
+                    frac::Face c = Face(boundaries, 0, this->m_adjEdge, this->m_gapEdge, this->m_reqEdge);
+                    c.setFirstInterior(1);
+                    if (writeConstraints) {
+                        addIncidenceConstraint(*this, c, i, nbIntermediateStates + 1, 0, res.size());
+                    }
+                    res.push_back(c);
+                    // TODO: if current edge is Bezier, create subcell with subdivided delay edge
+                    //       and subdivided bezier edge but check also with the edge after the delay
+                    //       edge to merge also this one if it is bezier. If it is the case, increment i
+                    //       to skip the next delay edge since the subdivision is already created
+                } else {
+                    // if next edge has no delay
+                    std::vector<frac::Edge> boundaries = { current, next };
+                    std::optional<frac::Edge> requiredEdge = edgeIfRequired(next, this->m_reqEdge);
+                    if (requiredEdge.has_value()) {
+                        boundaries.push_back(requiredEdge.value());
+                    }
+                    int indexFirstInterior { static_cast<int>(boundaries.size()) };
+                    boundaries.push_back(this->m_adjEdge);
+                    boundaries.push_back(this->m_gapEdge);
+                    boundaries.push_back(this->m_adjEdge);
+                    std::optional<frac::Edge> secondRequiredEdge = edgeIfRequired(current, this->m_reqEdge);
+                    if (secondRequiredEdge.has_value()) {
+                        boundaries.push_back(secondRequiredEdge.value());
+                    }
+                    frac::Face c = Face(boundaries, 0, this->m_adjEdge, this->m_gapEdge, this->m_reqEdge);
+                    c.setFirstInterior(indexFirstInterior);
+                    if (writeConstraints) {
+                        addIncidenceConstraint(*this, c, i, nbIntermediateStates + 1, 0, res.size());
+                        addIncidenceConstraint(*this, c, frac::utils::mod(i + 1, this->len()), 0, 1, res.size());
+                    }
+                    res.push_back(c);
+                }
+            }
+        }
+        for (std::size_t i = 0; i < res.size(); ++i) {
+            frac::Face current = res[i];
+            frac::Face next = res[frac::utils::mod(i + 1, res.size())];
+            if (writeConstraints) {
+                addAdjacencyConstraint(*this, current, next, i, current.firstInterior(), frac::utils::mod(i + 1, res.size()), next.lastInterior());
+            }
+        }
+    } else {
+        // current face has delay
+        std::vector<frac::Edge> boundaries = {};
+        for (std::size_t i = 0; i < this->len(); ++i) {
+            // for each edge, we subdivide it and add it to the result face
+            frac::Edge edge = (*this)[i];
+            std::vector<Edge> subdivisionsEdge = edge.subdivisions(this->m_reqEdge);
+            for (frac::Edge const& e: subdivisionsEdge) {
+                boundaries.push_back(e);
+            }
+        }
+        frac::Face c = Face(boundaries, this->m_delay - 1, this->m_adjEdge, this->m_gapEdge, this->m_reqEdge);
+        // no adjacency constraints
+        // write incidence constraints
+        if (writeConstraints) {
+            int k = 0;
+            for (std::size_t i = 0; i < this->len(); ++i) {
+                frac::Edge edge { (*this)[i] };
+                unsigned int nbSubdivisionsEdge = edge.nbActualSubdivisions();
+                for (unsigned int j = 0; j < nbSubdivisionsEdge; ++j) {
+                    addIncidenceConstraint(*this, c, i, j, k, 0);
+                    if (edge.edgeType() == EdgeType::BEZIER) {
+                        k++;
+                    }
+                    if (edge.edgeType() == EdgeType::CANTOR) {
+                        if (edge.isDelay()) {
+                            k++;
+                        } else {
+                            k += (j != (nbSubdivisionsEdge - 1)) ? 3 : 1;
+                        }
+                    }
+                }
+            }
+        }
+        res.push_back(c);
+    }
+    return res;
 }

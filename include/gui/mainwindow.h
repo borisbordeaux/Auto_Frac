@@ -58,6 +58,9 @@ public slots:
     [[maybe_unused]] void slotComputeFractalDimension();
     [[maybe_unused]] void slotComputeAreaPerimeter();
     [[maybe_unused]] void slotComputeImageDensity();
+    void setImpairValuesSlider(int value);
+    [[maybe_unused]] void slotComputeNbCells();
+    [[maybe_unused]] void slotComputeNbLacunas();
 
 private:
     struct Constraint {
@@ -71,6 +74,7 @@ private:
     [[nodiscard]] static frac::Edge toEdge(QString const& edgeName);
     [[nodiscard]] static Constraint toConstraint(QString const& constraintText);
     [[nodiscard]] static QString fromConstraint(Constraint const& constraint);
+    [[nodiscard]] static int getNbCellsOfCell(frac::Face const& face, unsigned int level);
 
     void updateEnablement();
     void updateEnablementPoly();

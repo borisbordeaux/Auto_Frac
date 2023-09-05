@@ -10,6 +10,11 @@
 
 namespace frac {
 
+enum class AlgorithmSubdivision {
+    LinksSurroundDelay,
+    LinksSurroundDelayAndBezier
+};
+
 class Face {
 public:
     explicit Face(std::vector<frac::Edge> edges, unsigned int delay = 0, const frac::Edge& adjEdge = { frac::EdgeType::CANTOR, 2 }, const frac::Edge& gapEdge = { frac::EdgeType::BEZIER, 2 }, const frac::Edge& reqEdge = { frac::EdgeType::BEZIER, 2 });
@@ -44,6 +49,10 @@ public:
     static void reset();
 
 private:
+    [[nodiscard]] std::vector<frac::Face> subdivisionsSurroundDelay() const;
+    [[nodiscard]] std::vector<frac::Face> subdivisionsSurroundDelayAndBezier() const;
+
+private:
     std::vector<frac::Edge> m_data;
     unsigned int m_delay;
     frac::Edge m_adjEdge;
@@ -60,6 +69,8 @@ private:
 
     static int computeOffset(frac::Face const& face, frac::Face const& other);
     static std::optional<frac::Edge> edgeIfRequired(const frac::Edge& edge, const frac::Edge& reqEdge);
+
+    static AlgorithmSubdivision s_algorithm;
 };
 
 } // frac

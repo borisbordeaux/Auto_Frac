@@ -52,6 +52,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->displayGridAreaPerimeter();
 
     connect(this->ui->horizontalSlider_windowSize, SIGNAL(valueChanged(int)), this->ui->label_windowSize, SLOT(setNum(int)));
+    connect(this->ui->horizontalSlider_windowSize, SIGNAL(sliderMoved(int)), this, SLOT(setImpairValuesSlider(int)));
 }
 
 MainWindow::~MainWindow() {
@@ -683,6 +684,48 @@ void MainWindow::displayGridAreaPerimeter() {
     QString file = QFileDialog::getOpenFileName(this, "Open a PNG File...", "../img", "PNG Files (*.png)", nullptr, QFileDialog::DontUseNativeDialog);
 
     if (file != "") {
-        frac::DensityComputation::computeDensity(file, this->ui->horizontalSlider_windowSize->value());
+        frac::DensityComputation::computeDensity(file, this->ui->horizontalSlider_windowSize->value(), this->ui->checkBox_showDensityImages->isChecked());
+    }
+}
+
+void MainWindow::setImpairValuesSlider(int value) {
+    if (value % 2 == 0) {
+        this->ui->horizontalSlider_windowSize->setValue(value - 1);
+    }
+}
+
+[[maybe_unused]] void MainWindow::slotComputeNbCells() {
+    // create the structure
+    frac::Face::reset();
+    frac::FilePrinter::reset();
+
+    std::vector<frac::Face> faces;
+    for (int i = 0; i < this->ui->listWidget_faces->count(); ++i) {
+        faces.push_back(toFace(this->ui->listWidget_faces->item(i)->text()));
+    }
+
+    frac::Structure s { faces };
+
+    int nbCells = 0;
+    for (auto const& f: s.faces()) {
+        nbCells += MainWindow::getNbCellsOfCell(f, static_cast<unsigned int>(this->ui->spinBox_nbIterations->value()));
+    }
+
+    this->ui->label_nbCells->setNum(nbCells);
+}
+
+[[maybe_unused]] void MainWindow::slotComputeNbLacunas() {
+
+}
+
+int MainWindow::getNbCellsOfCell(frac::Face const& face, unsigned int level) {
+    if (level == 0) {
+        return 1;
+    } else {
+        int sum = 0;
+        for (frac::Face const& f: face.subdivisions()) {
+            sum += MainWindow::getNbCellsOfCell(f, level - 1);
+        }
+        return sum;
     }
 }
