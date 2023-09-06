@@ -19,6 +19,15 @@ inline T mod(T a, T b) {
 }
 
 template<typename T>
+inline T pow(T base, T up) {
+    if (up == static_cast<T>(0)) {
+        return static_cast<T>(1);
+    } else {
+        return base * pow(base, up - static_cast<T>(1));
+    }
+}
+
+template<typename T>
 std::vector<T> shiftVector(std::vector<T> const& vec) {
     std::vector<T> res;
     res.reserve(vec.size());

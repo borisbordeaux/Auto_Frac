@@ -14,6 +14,7 @@
 #include "utils/measures.h"
 #include "gui/pointgraphicsitem.h"
 #include "computations/densitycomputation.h"
+#include "utils/utils.h"
 
 #include <QtWidgets>
 #include <QPen>
@@ -27,6 +28,16 @@
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow), m_openedMesh(false) {
     ui->setupUi(this);
+
+    this->ui->listWidget_faces->addItem("C_2_1 - B_2_0 - C_2_1 - B_2_0 - C_2_1 - B_2_0 - C_2_0 - B_2_0 / C_2_0 - B_2_0 - B_2_0 / 0");
+    this->ui->listWidget_faces->addItem("C_2_1 - B_2_1 - C_2_1 - B_2_1 - C_2_1 - B_2_1 / C_2_0 - B_2_0 - B_2_0 / 1");
+    this->ui->listWidget_faces->addItem("C_2_0 - B_2_0 - C_2_0 - B_2_0 - C_2_0 - B_2_0 / C_2_0 - B_2_0 - B_2_0 / 0");
+    this->ui->listWidget_faces->setCurrentRow(this->ui->listWidget_faces->count() - 1);
+
+    this->ui->listWidget_constraints->addItem("0.2 / 1.0");
+    this->ui->listWidget_constraints->addItem("0.6 / 2.0");
+    this->ui->listWidget_constraints->setCurrentRow(this->ui->listWidget_constraints->count() - 1);
+
     this->updateEnablement();
     this->updateEnablementPoly();
 
@@ -335,6 +346,9 @@ void MainWindow::updateEnablement() {
     this->ui->spinBox_constraintFace2->setEnabled(this->ui->listWidget_constraints->count() > 0);
     this->ui->spinBox_constraintEdge1->setEnabled(this->ui->listWidget_constraints->count() > 0);
     this->ui->spinBox_constraintEdge2->setEnabled(this->ui->listWidget_constraints->count() > 0);
+    //compute cells and lacunas
+    this->ui->pushButton_computeNbCells->setEnabled(this->ui->listWidget_faces->count() > 0);
+    this->ui->pushButton_computeNbLacunas->setEnabled(this->ui->listWidget_faces->count() > 0);
     //button generation
     this->ui->pushButton_generateScript->setEnabled(this->ui->listWidget_faces->currentRow() > -1);
 }
@@ -706,26 +720,113 @@ void MainWindow::setImpairValuesSlider(int value) {
 
     frac::Structure s { faces };
 
-    int nbCells = 0;
+    std::size_t nbCells = 0;
     for (auto const& f: s.faces()) {
-        nbCells += MainWindow::getNbCellsOfCell(f, static_cast<unsigned int>(this->ui->spinBox_nbIterations->value()));
+        nbCells += MainWindow::getNbCellsOfCell(f, static_cast<std::size_t>(this->ui->spinBox_nbIterations->value()));
     }
 
-    this->ui->label_nbCells->setNum(nbCells);
+    this->ui->label_nbCells->setText(std::to_string(nbCells).c_str());
 }
 
 [[maybe_unused]] void MainWindow::slotComputeNbLacunas() {
+    // create the structure
+    frac::Face::reset();
+    frac::FilePrinter::reset();
 
+    std::vector<frac::Face> faces;
+    for (int i = 0; i < this->ui->listWidget_faces->count(); ++i) {
+        faces.push_back(toFace(this->ui->listWidget_faces->item(i)->text()));
+    }
+
+    frac::Structure s { faces };
+
+    double nbLacuna = 0;
+    for (auto const& f: s.faces()) {
+        nbLacuna += MainWindow::getNbLacunaOfCell(f, static_cast<std::size_t>(this->ui->spinBox_nbIterations->value()));
+    }
+    this->ui->label_nbLacunas->setText(std::to_string(nbLacuna).c_str());
 }
 
-int MainWindow::getNbCellsOfCell(frac::Face const& face, unsigned int level) {
+std::size_t MainWindow::getNbCellsOfCell(frac::Face const& face, std::size_t level) {
     if (level == 0) {
         return 1;
     } else {
-        int sum = 0;
-        for (frac::Face const& f: face.subdivisions()) {
-            sum += MainWindow::getNbCellsOfCell(f, level - 1);
+        std::size_t sum = 0;
+        bool allSameStateOfParent = true;
+        auto subs = face.subdivisions();
+        for (frac::Face const& f: subs) {
+            if (!(f == face)) {
+                allSameStateOfParent = false;
+            }
         }
-        return sum;
+        if (allSameStateOfParent) {
+            return frac::utils::pow(subs.size(), static_cast<std::size_t>(level));
+        } else {
+            for (frac::Face const& f: face.subdivisions()) {
+                sum += MainWindow::getNbCellsOfCell(f, level - 1);
+            }
+            return sum;
+        }
     }
+}
+
+double MainWindow::getNbLacunaOfCell(const frac::Face& face, std::size_t level) {
+    double sum = 0;
+    if (level == 1) {
+        if (face.delay() > 0) {
+            sum = 0.0;
+        } else {
+            sum = 1.0f; // 1 for the central lacuna
+            // then +0.5 for each lacuna due to cantor edges
+            for (frac::Edge const& e: face.constData()) {
+                if (e.edgeType() == frac::EdgeType::CANTOR) {
+                    // don't check if delay because actual subdivisions will do this for us
+                    sum += 0.5 * static_cast<double>(e.nbActualSubdivisions() - 1);
+                }
+            }
+        }
+    } else if (level > 1) {
+        //level 2 or more so compute lacunas of first iteration then iterate through subdivisions
+        if (face.delay() > 0) {
+            sum = 0.0;
+        } else {
+            sum = 1.0; // 1 for the central lacuna
+            // then +0.5 for each lacuna due to cantor edges
+            for (frac::Edge const& e: face.constData()) {
+                if (e.edgeType() == frac::EdgeType::CANTOR) {
+                    // don't check if delay because actual subdivisions will do this for us
+                    sum += 0.5 * static_cast<double>(e.nbActualSubdivisions() - 1);
+                }
+            }
+        }
+        bool allSameStateOfParent = true;
+        auto subs = face.subdivisions();
+        for (frac::Face const& f: subs) {
+            if (!(f == face)) {
+                allSameStateOfParent = false;
+            }
+        }
+        if (allSameStateOfParent) {
+            // it is the number of subdivisions of iter 1 (sum)
+            // multiplied by the sum of the number of subdivision
+            // to power of iteration for each iteration from 0 to level - 1
+            std::size_t nbsubs = subs.size();
+            double tot = 0;
+            for (std::size_t i = 0; i < level; i++) {
+                std::cout << "old tot is " << tot << std::endl;
+                tot += static_cast<double>(frac::utils::pow(nbsubs, i));
+                std::cout << "s^" << i << " is " << static_cast<double>(frac::utils::pow(nbsubs, i)) << std::endl;
+                std::cout << "new tot is " << tot << std::endl;
+            }
+            std::cout << "sum of all tot is " << tot << std::endl;
+            sum *= tot;
+            std::cout << "nb lacuna is " << sum << std::endl;
+        } else {
+            for (frac::Face const& f: subs) {
+                sum += MainWindow::getNbLacunaOfCell(f, level - 1);
+            }
+        }
+    }
+    // if level is 0 return 0, no lacuna while not subdivided
+    return sum;
 }

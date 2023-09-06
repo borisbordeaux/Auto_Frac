@@ -74,7 +74,8 @@ private:
     [[nodiscard]] static frac::Edge toEdge(QString const& edgeName);
     [[nodiscard]] static Constraint toConstraint(QString const& constraintText);
     [[nodiscard]] static QString fromConstraint(Constraint const& constraint);
-    [[nodiscard]] static int getNbCellsOfCell(frac::Face const& face, unsigned int level);
+    [[nodiscard]] static std::size_t getNbCellsOfCell(frac::Face const& face, std::size_t level);
+    [[nodiscard]] static double getNbLacunaOfCell(frac::Face const& face, std::size_t level);
 
     void updateEnablement();
     void updateEnablementPoly();
