@@ -4,6 +4,7 @@
 #include <map>
 #include <optional>
 #include <vector>
+#include <unordered_map>
 
 #include "fractal/edge.h"
 #include "utils/uniquevector.h"
@@ -17,6 +18,7 @@ enum class AlgorithmSubdivision {
 
 class Face {
 public:
+    Face() : Face(std::vector<frac::Edge> {}) {}
     explicit Face(std::vector<frac::Edge> edges, unsigned int delay = 0, const frac::Edge& adjEdge = { frac::EdgeType::CANTOR, 2 }, const frac::Edge& gapEdge = { frac::EdgeType::BEZIER, 2 }, const frac::Edge& reqEdge = { frac::EdgeType::BEZIER, 2 });
 
     [[nodiscard]] std::vector<frac::Edge> const& constData() const;
@@ -63,6 +65,8 @@ private:
     int m_firstInterior;
 
     static frac::UniqueVector<frac::Face> s_existingFaces;
+    // key is name of the cell (since it is unique)
+    static std::unordered_map<std::string, std::vector<frac::Face>> s_subdivisions;
 
     static void addAdjacencyConstraint(frac::Face const& face, frac::Face const& faceSub1, frac::Face const& faceSub2, unsigned int indexSubFace1, unsigned int indexBordFace1, unsigned int indexSubFace2, unsigned int indexBordFace2);
     static void addIncidenceConstraint(frac::Face const& face, frac::Face const& faceSub, unsigned int indexParentEdge, unsigned int indexSubEdge, unsigned int indexSubFaceEdge, unsigned int indexSubFace);

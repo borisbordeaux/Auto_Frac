@@ -6,6 +6,7 @@
 frac::UniqueVector<frac::Face> frac::Face::s_existingFaces;
 std::map<std::string, std::string> frac::Face::s_incidenceConstraints;
 std::map<std::string, std::string> frac::Face::s_adjacencyConstraints;
+std::unordered_map<std::string, std::vector<frac::Face>> frac::Face::s_subdivisions;
 
 frac::AlgorithmSubdivision frac::Face::s_algorithm = frac::AlgorithmSubdivision::LinksSurroundDelayAndBezier;
 
@@ -63,6 +64,9 @@ void frac::Face::setFirstInterior(int index) {
 }
 
 std::vector<frac::Face> frac::Face::subdivisions() const {
+    if (s_subdivisions.find(m_name) != s_subdivisions.end()) {
+        return s_subdivisions[m_name];
+    }
     switch (s_algorithm) {
         case AlgorithmSubdivision::LinksSurroundDelay:
             return this->subdivisionsSurroundDelay();
@@ -204,6 +208,7 @@ void frac::Face::reset() {
     Face::s_incidenceConstraints.clear();
     Face::s_adjacencyConstraints.clear();
     Face::s_existingFaces.clear();
+    Face::s_subdivisions.clear();
 }
 
 void frac::Face::setAdjEdge(frac::Edge const& edge) {
@@ -378,6 +383,7 @@ std::vector<frac::Face> frac::Face::subdivisionsSurroundDelay() const {
         }
         res.push_back(c);
     }
+    s_subdivisions[m_name] = res;
     return res;
 }
 
@@ -635,5 +641,6 @@ std::vector<frac::Face> frac::Face::subdivisionsSurroundDelayAndBezier() const {
         }
         res.push_back(c);
     }
+    s_subdivisions[m_name] = res;
     return res;
 }

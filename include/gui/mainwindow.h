@@ -74,8 +74,10 @@ private:
     [[nodiscard]] static frac::Edge toEdge(QString const& edgeName);
     [[nodiscard]] static Constraint toConstraint(QString const& constraintText);
     [[nodiscard]] static QString fromConstraint(Constraint const& constraint);
-    [[nodiscard]] static std::size_t getNbCellsOfCell(frac::Face const& face, std::size_t level);
-    [[nodiscard]] static double getNbLacunaOfCell(frac::Face const& face, std::size_t level);
+    [[nodiscard]] static std::size_t getNbCellsOfCell(std::string const& faceName, std::size_t level, std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>>& cacheSubdivisions);
+    [[nodiscard]] static double getNbLacunaOfCell(std::string const& faceName, std::size_t level, std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>>& cacheSubdivisions, std::unordered_map<std::string, double>& cacheLacunas);
+
+    std::map<frac::Face, std::map<frac::Face, int>> m_mapSubFaces;
 
     void updateEnablement();
     void updateEnablementPoly();

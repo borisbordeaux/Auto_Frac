@@ -15,6 +15,9 @@ public:
     std::vector<T> const& data() const;
     void clear();
 
+    auto begin() { return m_data.begin(); }
+    auto end() { return m_data.end(); }
+
 private:
     std::vector<T> m_data;
 };

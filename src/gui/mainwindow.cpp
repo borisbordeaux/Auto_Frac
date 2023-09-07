@@ -720,9 +720,25 @@ void MainWindow::setImpairValuesSlider(int value) {
 
     frac::Structure s { faces };
 
+    // need to store for each face the number of subdivisions and their type (their face)
+    std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>> cache;
+
+    for (frac::Face const& f: s.allFaces()) {
+        std::unordered_map<std::string, std::size_t> map;
+        // get the number of each kind of subdivision
+        for (frac::Face const& sub: f.subdivisions()) {
+            if (map.find(sub.name()) != map.end()) {
+                map[sub.name()]++;
+            } else {
+                map[sub.name()] = 1;
+            }
+        }
+        cache[f.name()] = map;
+    }
+
     std::size_t nbCells = 0;
     for (auto const& f: s.faces()) {
-        nbCells += MainWindow::getNbCellsOfCell(f, static_cast<std::size_t>(this->ui->spinBox_nbIterations->value()));
+        nbCells += MainWindow::getNbCellsOfCell(f.name(), static_cast<std::size_t>(this->ui->spinBox_nbIterations->value()), cache);
     }
 
     this->ui->label_nbCells->setText(std::to_string(nbCells).c_str());
@@ -740,93 +756,69 @@ void MainWindow::setImpairValuesSlider(int value) {
 
     frac::Structure s { faces };
 
-    double nbLacuna = 0;
+    // need to store for each face the number of subdivisions and their type (their face)
+    std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>> cacheSubdivisions;
+    std::unordered_map<std::string, double> cacheLacunas;
+
+    for (frac::Face const& f: s.allFaces()) {
+        // fill the cache subdivision
+        std::unordered_map<std::string, std::size_t> map;
+        // get the number of each kind of subdivision
+        for (frac::Face const& sub: f.subdivisions()) {
+            if (map.find(sub.name()) != map.end()) {
+                map[sub.name()]++;
+            } else {
+                map[sub.name()] = 1;
+            }
+        }
+        cacheSubdivisions[f.name()] = map;
+
+        // fill the cache lacunas
+        double nbLacunas = 0.0;
+        // if face have delay, it has no lacuna
+        if (f.delay() == 0) {
+            // if face have no delay, it has one central lacuna
+            nbLacunas = 1.0;
+            // then +0.5 for each lacuna due to cantor edges
+            for (frac::Edge const& e: f.constData()) {
+                if (e.edgeType() == frac::EdgeType::CANTOR) {
+                    // don't check if delay because actual subdivisions will do this for us
+                    nbLacunas += 0.5 * static_cast<double>(e.nbActualSubdivisions() - 1);
+                }
+            }
+        }
+        cacheLacunas[f.name()] = nbLacunas;
+    }
+
+    double nbLacuna = 0.0;
     for (auto const& f: s.faces()) {
-        nbLacuna += MainWindow::getNbLacunaOfCell(f, static_cast<std::size_t>(this->ui->spinBox_nbIterations->value()));
+        nbLacuna += MainWindow::getNbLacunaOfCell(f.name(), static_cast<std::size_t>(this->ui->spinBox_nbIterations->value()), cacheSubdivisions, cacheLacunas);
     }
     this->ui->label_nbLacunas->setText(std::to_string(nbLacuna).c_str());
 }
 
-std::size_t MainWindow::getNbCellsOfCell(frac::Face const& face, std::size_t level) {
+std::size_t MainWindow::getNbCellsOfCell(std::string const& faceName, std::size_t level, std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>>& cacheSubdivisions) {
     if (level == 0) {
         return 1;
     } else {
+        // level more than 0, so we need to iterate through cacheSubdivisions
         std::size_t sum = 0;
-        bool allSameStateOfParent = true;
-        auto subs = face.subdivisions();
-        for (frac::Face const& f: subs) {
-            if (!(f == face)) {
-                allSameStateOfParent = false;
-            }
+        for (auto const& val: cacheSubdivisions[faceName]) {
+            sum += val.second * MainWindow::getNbCellsOfCell(val.first, level - 1, cacheSubdivisions);
         }
-        if (allSameStateOfParent) {
-            return frac::utils::pow(subs.size(), static_cast<std::size_t>(level));
-        } else {
-            for (frac::Face const& f: face.subdivisions()) {
-                sum += MainWindow::getNbCellsOfCell(f, level - 1);
-            }
-            return sum;
-        }
+        return sum;
     }
 }
 
-double MainWindow::getNbLacunaOfCell(const frac::Face& face, std::size_t level) {
-    double sum = 0;
-    if (level == 1) {
-        if (face.delay() > 0) {
-            sum = 0.0;
-        } else {
-            sum = 1.0f; // 1 for the central lacuna
-            // then +0.5 for each lacuna due to cantor edges
-            for (frac::Edge const& e: face.constData()) {
-                if (e.edgeType() == frac::EdgeType::CANTOR) {
-                    // don't check if delay because actual subdivisions will do this for us
-                    sum += 0.5 * static_cast<double>(e.nbActualSubdivisions() - 1);
-                }
-            }
+double MainWindow::getNbLacunaOfCell(std::string const& faceName, std::size_t level, std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>>& cacheSubdivisions, std::unordered_map<std::string, double>& cacheLacunas) {
+    if (level == 0) {
+        return 0.0;
+    } else {
+        // level more than 0, so we need to iterate through cacheSubdivisions
+        double sum = cacheLacunas[faceName];
+        for (auto const& val: cacheSubdivisions[faceName]) {
+            sum += static_cast<double>(val.second) * MainWindow::getNbLacunaOfCell(val.first, level - 1, cacheSubdivisions, cacheLacunas);
         }
-    } else if (level > 1) {
-        //level 2 or more so compute lacunas of first iteration then iterate through subdivisions
-        if (face.delay() > 0) {
-            sum = 0.0;
-        } else {
-            sum = 1.0; // 1 for the central lacuna
-            // then +0.5 for each lacuna due to cantor edges
-            for (frac::Edge const& e: face.constData()) {
-                if (e.edgeType() == frac::EdgeType::CANTOR) {
-                    // don't check if delay because actual subdivisions will do this for us
-                    sum += 0.5 * static_cast<double>(e.nbActualSubdivisions() - 1);
-                }
-            }
-        }
-        bool allSameStateOfParent = true;
-        auto subs = face.subdivisions();
-        for (frac::Face const& f: subs) {
-            if (!(f == face)) {
-                allSameStateOfParent = false;
-            }
-        }
-        if (allSameStateOfParent) {
-            // it is the number of subdivisions of iter 1 (sum)
-            // multiplied by the sum of the number of subdivision
-            // to power of iteration for each iteration from 0 to level - 1
-            std::size_t nbsubs = subs.size();
-            double tot = 0;
-            for (std::size_t i = 0; i < level; i++) {
-                std::cout << "old tot is " << tot << std::endl;
-                tot += static_cast<double>(frac::utils::pow(nbsubs, i));
-                std::cout << "s^" << i << " is " << static_cast<double>(frac::utils::pow(nbsubs, i)) << std::endl;
-                std::cout << "new tot is " << tot << std::endl;
-            }
-            std::cout << "sum of all tot is " << tot << std::endl;
-            sum *= tot;
-            std::cout << "nb lacuna is " << sum << std::endl;
-        } else {
-            for (frac::Face const& f: subs) {
-                sum += MainWindow::getNbLacunaOfCell(f, level - 1);
-            }
-        }
+        return sum;
     }
-    // if level is 0 return 0, no lacuna while not subdivided
-    return sum;
 }
