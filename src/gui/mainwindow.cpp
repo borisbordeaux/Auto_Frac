@@ -547,6 +547,17 @@ void MainWindow::displayGraph() {
         cv::destroyAllWindows();
         cv::Mat img = cv::imread(file.toStdString(), cv::IMREAD_GRAYSCALE);
         cv::threshold(img, img, 1, 255, cv::THRESH_BINARY);
+
+        // resize image to make it squared
+        if (img.cols != img.rows) {
+            int max = std::max(img.cols, img.rows);
+            int top = (max - img.rows) / 2;
+            int bottom = (max - img.rows) - top;
+            int left = (max - img.cols) / 2;
+            int right = (max - img.cols) - left;
+            cv::copyMakeBorder(img, img, top, bottom, left, right, cv::BORDER_CONSTANT, cv::Scalar(0));
+        }
+
         cv::imshow("Image", img);
         std::cout << "image size : " << img.size().width << " x " << img.size().height << std::endl;
         this->m_sceneFractalDim.clear();
