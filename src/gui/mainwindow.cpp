@@ -62,8 +62,13 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     this->displayGridAreaPerimeter();
 
-    connect(this->ui->horizontalSlider_windowSize, SIGNAL(valueChanged(int)), this->ui->label_windowSize, SLOT(setNum(int)));
-    connect(this->ui->horizontalSlider_windowSize, SIGNAL(sliderMoved(int)), this, SLOT(setImpairValuesSlider(int)));
+    connect(this->ui->horizontalSlider_windowSize, &QSlider::valueChanged, this->ui->label_windowSize, qOverload<int>(&QLabel::setNum));
+    connect(this->ui->horizontalSlider_windowSize, &QSlider::sliderMoved, this, [&](int value) {
+        if (value % 2 == 0) {
+            this->ui->horizontalSlider_windowSize->setValue(value - 1);
+        }
+    });
+    connect(this->ui->spinBox_nbIterations, &QSpinBox::valueChanged, this, [&](int) { updateEnablement(); });
 }
 
 MainWindow::~MainWindow() {
@@ -349,6 +354,7 @@ void MainWindow::updateEnablement() {
     //compute cells and lacunas
     this->ui->pushButton_computeNbCells->setEnabled(this->ui->listWidget_faces->count() > 0);
     this->ui->pushButton_computeNbLacunas->setEnabled(this->ui->listWidget_faces->count() > 0);
+    this->ui->pushButton_computePorosity->setEnabled(this->ui->spinBox_nbIterations->value() > 1);
     //button generation
     this->ui->pushButton_generateScript->setEnabled(this->ui->listWidget_faces->currentRow() > -1);
 }
@@ -713,12 +719,6 @@ void MainWindow::displayGridAreaPerimeter() {
     }
 }
 
-void MainWindow::setImpairValuesSlider(int value) {
-    if (value % 2 == 0) {
-        this->ui->horizontalSlider_windowSize->setValue(value - 1);
-    }
-}
-
 [[maybe_unused]] void MainWindow::slotComputeNbCells() {
     // create the structure
     frac::Face::reset();
@@ -832,4 +832,71 @@ double MainWindow::getNbLacunaOfCell(std::string const& faceName, std::size_t le
         }
         return sum;
     }
+}
+
+[[maybe_unused]] void MainWindow::slotComputePorosityMetrics() {
+    // create the structure
+    frac::Face::reset();
+    frac::FilePrinter::reset();
+
+    std::vector<frac::Face> faces;
+    for (int i = 0; i < this->ui->listWidget_faces->count(); ++i) {
+        faces.push_back(toFace(this->ui->listWidget_faces->item(i)->text()));
+    }
+
+    frac::Structure s { faces };
+
+    // need to store for each face the number of subdivisions and their type (their face)
+    std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>> cacheSubdivisions;
+    std::unordered_map<std::string, double> cacheLacunas;
+
+    for (frac::Face const& f: s.allFaces()) {
+        // fill the cache subdivision
+        std::unordered_map<std::string, std::size_t> map;
+        // get the number of each kind of subdivision
+        for (frac::Face const& sub: f.subdivisions()) {
+            if (map.find(sub.name()) != map.end()) {
+                map[sub.name()]++;
+            } else {
+                map[sub.name()] = 1;
+            }
+        }
+        cacheSubdivisions[f.name()] = map;
+
+        // fill the cache lacunas
+        double nbLacunas = 0.0;
+        // if face have delay, it has no lacuna
+        if (f.delay() == 0) {
+            // if face have no delay, it has one central lacuna
+            nbLacunas = 1.0;
+            // then +0.5 for each lacuna due to cantor edges
+            for (frac::Edge const& e: f.constData()) {
+                if (e.edgeType() == frac::EdgeType::CANTOR) {
+                    // don't check if delay because actual subdivisions will do this for us
+                    nbLacunas += 0.5 * static_cast<double>(e.nbActualSubdivisions() - 1);
+                }
+            }
+        }
+        cacheLacunas[f.name()] = nbLacunas;
+    }
+
+    std::vector<std::pair<double, double>> values;
+
+    for (int i = 1; i <= this->ui->spinBox_nbIterations->value(); i++) {
+        double nbLacuna = 0.0;
+        std::size_t nbCells = 0;
+        for (auto const& f: s.faces()) {
+            nbLacuna += MainWindow::getNbLacunaOfCell(f.name(), static_cast<std::size_t>(i), cacheSubdivisions, cacheLacunas);
+            nbCells += MainWindow::getNbCellsOfCell(f.name(), static_cast<std::size_t>(i), cacheSubdivisions);
+        }
+        values.emplace_back(static_cast<double>(i), static_cast<double>(nbLacuna) / (static_cast<double>(nbCells) + static_cast<double>(nbLacuna)));
+    }
+
+    std::cout << "values are:" << std::endl;
+    for (auto const& val: values) {
+        std::cout << "x = " << val.first << " ; y = " << val.second << std::endl;
+    }
+
+    std::pair<double, double> reg = frac::utils::computeLinearRegression(values);
+    std::cout << "linear regression for all iterations: y = " << reg.first << "x + " << reg.second << std::endl;
 }

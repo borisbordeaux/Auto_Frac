@@ -23,7 +23,35 @@ int computePerimeter(cv::Mat const& img, std::string const& displayContoursWinNa
  * @param values each x and y coordinates
  * @return the values A and B of the line equation
  */
-std::pair<float, float> computeLinearRegression(std::vector<std::pair<float, float>> const& values);
+template<typename T>
+std::pair<T, T> computeLinearRegression(std::vector<std::pair<T, T>> const& values) {
+    T A = 0.0f;
+    T B = 0.0f;
+
+    T meanX = 0.0f;
+    T meanY = 0.0f;
+
+    for (auto const& val: values) {
+        meanX += val.first;
+        meanY += val.second;
+    }
+
+    meanX /= static_cast<T>(values.size());
+    meanY /= static_cast<T>(values.size());
+
+    T numerator = 0.0f;
+    T denominator = 0.0f;
+
+    for (auto const& val: values) {
+        numerator += (val.first - meanX) * (val.second - meanY);
+        denominator += (val.first - meanX) * (val.first - meanX);
+    }
+
+    A = numerator / denominator;
+    B = meanY - A * meanX;
+
+    return { A, B };
+}
 
 void computeDensity(cv::Mat const& img, int size, bool showAllImages);
 }

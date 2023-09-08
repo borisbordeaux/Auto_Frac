@@ -58,9 +58,9 @@ public slots:
     [[maybe_unused]] void slotComputeFractalDimension();
     [[maybe_unused]] void slotComputeAreaPerimeter();
     [[maybe_unused]] void slotComputeImageDensity();
-    void setImpairValuesSlider(int value);
     [[maybe_unused]] void slotComputeNbCells();
     [[maybe_unused]] void slotComputeNbLacunas();
+    [[maybe_unused]] void slotComputePorosityMetrics();
 
 private:
     struct Constraint {

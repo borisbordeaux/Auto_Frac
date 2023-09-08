@@ -64,35 +64,6 @@ int computePerimeter(const cv::Mat& img, std::string const& displayContoursWinNa
     return cv::countNonZero(eroded);
 }
 
-std::pair<float, float> computeLinearRegression(std::vector<std::pair<float, float>> const& values) {
-    float A = 0.0f;
-    float B = 0.0f;
-
-    float meanX = 0.0f;
-    float meanY = 0.0f;
-
-    for (auto const& val: values) {
-        meanX += val.first;
-        meanY += val.second;
-    }
-
-    meanX /= static_cast<float>(values.size());
-    meanY /= static_cast<float>(values.size());
-
-    float numerator = 0.0f;
-    float denominator = 0.0f;
-
-    for (auto const& val: values) {
-        numerator += (val.first - meanX) * (val.second - meanY);
-        denominator += (val.first - meanX) * (val.first - meanX);
-    }
-
-    A = numerator / denominator;
-    B = meanY - A * meanX;
-
-    return { A, B };
-}
-
 void normalizeMat(cv::Mat& img) {
     uchar max = *std::max_element(img.begin<uchar>(), img.end<uchar>());
     if (max < 255) {

@@ -1403,6 +1403,13 @@ QListWidget {
                 </property>
                </spacer>
               </item>
+              <item row="3" column="0">
+               <widget class="QPushButton" name="pushButton_computePorosity">
+                <property name="text">
+                 <string>Compute porosity metric</string>
+                </property>
+               </widget>
+              </item>
              </layout>
             </item>
            </layout>
@@ -1993,7 +2000,7 @@ QListWidget {
    <slot>slotOnConstraintFace1Changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>433</x>
+     <x>578</x>
      <y>790</y>
     </hint>
     <hint type="destinationlabel">
@@ -2121,7 +2128,7 @@ QListWidget {
    <slot>slotOnConstraintEdge2Changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>433</x>
+     <x>578</x>
      <y>895</y>
     </hint>
     <hint type="destinationlabel">
@@ -2425,7 +2432,7 @@ QListWidget {
    <slot>slotOnConstraintEdge1Changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>433</x>
+     <x>578</x>
      <y>822</y>
     </hint>
     <hint type="destinationlabel">
@@ -2441,7 +2448,7 @@ QListWidget {
    <slot>slotOnConstraintFace2Changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>433</x>
+     <x>578</x>
      <y>863</y>
     </hint>
     <hint type="destinationlabel">
@@ -2521,8 +2528,8 @@ QListWidget {
    <slot>slotComputeNbCells()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>859</x>
-     <y>787</y>
+     <x>747</x>
+     <y>797</y>
     </hint>
     <hint type="destinationlabel">
      <x>1051</x>
@@ -2537,12 +2544,28 @@ QListWidget {
    <slot>slotComputeNbLacunas()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>827</x>
-     <y>816</y>
+     <x>765</x>
+     <y>828</y>
     </hint>
     <hint type="destinationlabel">
      <x>1049</x>
      <y>921</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_computePorosity</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotComputePorosityMetrics()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>682</x>
+     <y>847</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1054</x>
+     <y>969</y>
     </hint>
    </hints>
   </connection>
@@ -2585,5 +2608,6 @@ QListWidget {
   <slot>slotComputeImageDensity()</slot>
   <slot>slotComputeNbCells()</slot>
   <slot>slotComputeNbLacunas()</slot>
+  <slot>slotComputePorosityMetrics()</slot>
  </slots>
 </ui>
