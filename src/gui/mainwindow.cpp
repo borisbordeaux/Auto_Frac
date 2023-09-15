@@ -569,16 +569,13 @@ void MainWindow::displayGraph() {
         this->m_sceneFractalDim.clear();
         this->displayGridFractalDim();
 
-        std::vector<std::pair<int, int>> res = frac::utils::computeFractalDimension(img);
+        std::vector<int> res = frac::utils::computeFractalDimension(img);
 
         std::vector<std::pair<float, float>> logRes;
         logRes.reserve(res.size());
         int i = 2;
         for (auto x: res) {
-            logRes.emplace_back(std::log(static_cast<float>(i)), std::log(static_cast<float>(x.first)));
-            //std::cout << std::log(static_cast<float>(x.first)) << " rects with normal size of " << 1.0f / static_cast<float>(i) << std::endl;
-            //std::cout << std::log(static_cast<float>(x.first)) << " rects with log size of " << std::log(1.0f / static_cast<float>(i)) << std::endl;
-            //std::cout << std::log(static_cast<float>(x.first)) << " rects with signed log size of " << -std::log(1.0f / static_cast<float>(i)) << std::endl;
+            logRes.emplace_back(std::log(static_cast<float>(i)), std::log(static_cast<float>(x)));
             i *= 2;
         }
 
@@ -588,6 +585,7 @@ void MainWindow::displayGraph() {
         int minUsefulTerm = std::min(this->ui->spinBox_minUsefulBox->value(), static_cast<int>(res.size()));
         int current = 0;
 
+        std::cout << "dim fractale" << std::endl;
         for (auto p: logRes) {
             if (current >= minUsefulTerm) {
                 pen.setBrush(Qt::blue);
@@ -596,6 +594,7 @@ void MainWindow::displayGraph() {
             }
             this->m_sceneFractalDim.addEllipse(p.first - 0.05, p.second - 0.05, 0.1, 0.1, pen);
             current++;
+            std::cout << p.first << " " << p.second << std::endl;
         }
 
         pen.setBrush(Qt::red);
@@ -692,7 +691,6 @@ void MainWindow::displayGridFractalDim() {
     } else {
         this->ui->label_coefArea->setText("");
         this->ui->label_coefPerimeter->setText("");
-        this->ui->label_porosity->setText("");
     }
 }
 
@@ -790,14 +788,15 @@ void MainWindow::displayGridAreaPerimeter() {
         if (f.delay() == 0) {
             // if face have no delay, it has one central lacuna
             nbLacunas = 1.0;
-            // then +0.5 for each lacuna due to cantor edges
-            for (frac::Edge const& e: f.constData()) {
-                if (e.edgeType() == frac::EdgeType::CANTOR) {
-                    // don't check if delay because actual subdivisions will do this for us
-                    nbLacunas += 0.5 * static_cast<double>(e.nbActualSubdivisions() - 1);
-                }
+        }
+        // then +0.5 for each lacuna due to cantor edges
+        for (frac::Edge const& e: f.constData()) {
+            if (e.edgeType() == frac::EdgeType::CANTOR) {
+                // don't check if delay on edge because actual subdivisions will do this for us
+                nbLacunas += 0.5 * static_cast<double>(e.nbActualSubdivisions() - 1);
             }
         }
+
         cacheLacunas[f.name()] = nbLacunas;
     }
 

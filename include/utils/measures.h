@@ -10,7 +10,7 @@ class Mat;
 
 namespace frac::utils {
 
-std::vector<std::pair<int, int>> computeFractalDimension(cv::Mat const& img);
+std::vector<int> computeFractalDimension(cv::Mat const& img);
 
 int computeArea(cv::Mat const& img);
 

@@ -6,9 +6,9 @@
 #include <thread>
 
 namespace frac::utils {
-std::vector<std::pair<int, int>> computeFractalDimension(cv::Mat const& img) {
+std::vector<int> computeFractalDimension(cv::Mat const& img) {
     int iter = 1;
-    std::vector<std::pair<int, int>> result;
+    std::vector<int> result;
     //define max size
     int maxSize = img.size().width;
     while (maxSize > 1) {
@@ -32,18 +32,10 @@ std::vector<std::pair<int, int>> computeFractalDimension(cv::Mat const& img) {
                 if (coverForm) {
                     nbOverlappingSquares++;
                 }
-
-                /*if (iter == 2) {
-                    cv::Rect rect { i * maxSize, j * maxSize, maxSize, maxSize };
-                    cv::Mat copy;
-                    img.copyTo(copy);
-                    cv::rectangle(copy, rect, cv::Scalar(0, 255, 0));
-                    cv::imshow("img " + std::to_string(iter) + "_" + std::to_string(i) + "_" + std::to_string(j), copy);
-                }*/
             }
         }
         //save each number into a vector
-        result.emplace_back(nbOverlappingSquares, maxSize);
+        result.emplace_back(nbOverlappingSquares);
     }
 
     return result;
@@ -149,10 +141,11 @@ void computeDensity(cv::Mat const& img, int size, bool showAllImages) {
     // since it is stored in bgr format, we change the blue background by
     // affecting the first value (blue) to the new value
     cv::Mat mask;
+    cv::Scalar backgroundColor(0, 0, 0);
     cv::inRange(res, cv::Scalar(128, 0, 0), cv::Scalar(128, 0, 0), mask);
-    res.setTo(cv::Scalar(0, 0, 0), mask);
+    res.setTo(backgroundColor, mask);
     if (showAllImages) {
-        resNoEqualization.setTo(cv::Scalar(0, 0, 0), mask);
+        resNoEqualization.setTo(backgroundColor, mask);
         cv::imshow("Colored not normalized, W=" + std::to_string(size), resNoEqualization);
     }
 
