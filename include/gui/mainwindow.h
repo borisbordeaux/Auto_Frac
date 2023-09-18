@@ -38,6 +38,7 @@ public slots:
     [[maybe_unused]] void slotOnFaceReqNbSubdivisionsChanged(int value);
     [[maybe_unused]] void slotOnFaceReqDelayChanged(int value);
     [[maybe_unused]] void slotOnFaceDelayChanged(int value);
+    [[maybe_unused]] void slotOnFaceAlgoChanged(int row);
     [[maybe_unused]] void slotAddEdge();
     [[maybe_unused]] void slotRemoveEdge();
     [[maybe_unused]] void slotOnSelectedEdgeTopologyChanged(int row);

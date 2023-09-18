@@ -578,7 +578,7 @@ QListWidget {
              <layout class="QHBoxLayout" name="horizontalLayout">
               <item>
                <layout class="QFormLayout" name="formLayout_3">
-                <item row="1" column="0">
+                <item row="2" column="0">
                  <widget class="QLabel" name="labelTopology_3">
                   <property name="minimumSize">
                    <size>
@@ -591,7 +591,7 @@ QListWidget {
                   </property>
                  </widget>
                 </item>
-                <item row="1" column="1">
+                <item row="2" column="1">
                  <widget class="QComboBox" name="comboBox_adjEdgeTopology">
                   <property name="enabled">
                    <bool>true</bool>
@@ -611,7 +611,7 @@ QListWidget {
                   </item>
                  </widget>
                 </item>
-                <item row="2" column="0">
+                <item row="3" column="0">
                  <widget class="QLabel" name="labelNumberOfSubdivisions_3">
                   <property name="minimumSize">
                    <size>
@@ -620,11 +620,11 @@ QListWidget {
                    </size>
                   </property>
                   <property name="text">
-                   <string>Number of subdivisions</string>
+                   <string>Number of sub-edges</string>
                   </property>
                  </widget>
                 </item>
-                <item row="2" column="1">
+                <item row="3" column="1">
                  <widget class="QSpinBox" name="spinBox_adjEdgeNbSubdivisions">
                   <property name="enabled">
                    <bool>true</bool>
@@ -634,7 +634,7 @@ QListWidget {
                   </property>
                  </widget>
                 </item>
-                <item row="3" column="0">
+                <item row="4" column="0">
                  <widget class="QLabel" name="labelDelay_3">
                   <property name="minimumSize">
                    <size>
@@ -647,14 +647,14 @@ QListWidget {
                   </property>
                  </widget>
                 </item>
-                <item row="3" column="1">
+                <item row="4" column="1">
                  <widget class="QSpinBox" name="spinBox_adjEdgeDelay">
                   <property name="enabled">
                    <bool>true</bool>
                   </property>
                  </widget>
                 </item>
-                <item row="0" column="0" colspan="2">
+                <item row="1" column="0" colspan="2">
                  <widget class="QLabel" name="label_3">
                   <property name="text">
                    <string>Adjacency Edge</string>
@@ -723,7 +723,7 @@ QListWidget {
                    </size>
                   </property>
                   <property name="text">
-                   <string>Number of subdivisions</string>
+                   <string>Number of sub-edges</string>
                   </property>
                  </widget>
                 </item>
@@ -787,7 +787,7 @@ QListWidget {
                 <item row="0" column="0" colspan="2">
                  <widget class="QLabel" name="label">
                   <property name="text">
-                   <string>Required Edge</string>
+                   <string>Mid Cantor Edge</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
@@ -836,7 +836,7 @@ QListWidget {
                    </size>
                   </property>
                   <property name="text">
-                   <string>Number of subdivisions</string>
+                   <string>Number of sub-edges</string>
                   </property>
                  </widget>
                 </item>
@@ -886,15 +886,15 @@ QListWidget {
                </spacer>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_9">
-                <item>
+               <layout class="QFormLayout" name="formLayout_7">
+                <item row="1" column="0">
                  <widget class="QLabel" name="label_13">
                   <property name="text">
                    <string>Delay</string>
                   </property>
                  </widget>
                 </item>
-                <item>
+                <item row="1" column="1">
                  <widget class="QSpinBox" name="spinBox_faceDelay">
                   <property name="enabled">
                    <bool>true</bool>
@@ -904,6 +904,42 @@ QListWidget {
                     <width>70</width>
                     <height>0</height>
                    </size>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="label_23">
+                  <property name="text">
+                   <string>Algo</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QComboBox" name="comboBox_algorithm">
+                  <item>
+                   <property name="text">
+                    <string>LinksSurroundDelay</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>LinksSurroundDelayAndBezier</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>LinksOnCorners</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+                <item row="0" column="0" colspan="2">
+                 <widget class="QLabel" name="label_24">
+                  <property name="text">
+                   <string>Cell settings</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
                   </property>
                  </widget>
                 </item>
@@ -1079,7 +1115,7 @@ QListWidget {
                  </size>
                 </property>
                 <property name="text">
-                 <string>Number of subdivisions</string>
+                 <string>Number of sub-edges</string>
                 </property>
                </widget>
               </item>
@@ -1390,7 +1426,7 @@ QListWidget {
                 </property>
                </widget>
               </item>
-              <item row="3" column="1">
+              <item row="4" column="1">
                <spacer name="horizontalSpacer_15">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -1403,11 +1439,47 @@ QListWidget {
                 </property>
                </spacer>
               </item>
-              <item row="3" column="0">
+              <item row="4" column="0">
                <widget class="QPushButton" name="pushButton_computePorosity">
                 <property name="text">
                  <string>Compute porosity metric</string>
                 </property>
+               </widget>
+              </item>
+              <item row="5" column="0" colspan="2">
+               <widget class="QTableWidget" name="tableWidget_TopoMetrics">
+                <property name="horizontalScrollBarPolicy">
+                 <enum>Qt::ScrollBarAlwaysOff</enum>
+                </property>
+                <property name="selectionMode">
+                 <enum>QAbstractItemView::NoSelection</enum>
+                </property>
+                <property name="cornerButtonEnabled">
+                 <bool>false</bool>
+                </property>
+                <property name="columnCount">
+                 <number>1</number>
+                </property>
+                <attribute name="horizontalHeaderVisible">
+                 <bool>true</bool>
+                </attribute>
+                <attribute name="horizontalHeaderCascadingSectionResizes">
+                 <bool>false</bool>
+                </attribute>
+                <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
+                 <bool>false</bool>
+                </attribute>
+                <attribute name="horizontalHeaderStretchLastSection">
+                 <bool>true</bool>
+                </attribute>
+                <attribute name="verticalHeaderStretchLastSection">
+                 <bool>false</bool>
+                </attribute>
+                <column>
+                 <property name="text">
+                  <string>R</string>
+                 </property>
+                </column>
                </widget>
               </item>
              </layout>
@@ -2016,8 +2088,8 @@ QListWidget {
    <slot>slotChangeSelectionMode()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>345</x>
-     <y>529</y>
+     <x>224</x>
+     <y>527</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -2080,8 +2152,8 @@ QListWidget {
    <slot>slotOnSelectedEdgeTopologyChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>584</x>
-     <y>516</y>
+     <x>634</x>
+     <y>542</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -2096,8 +2168,8 @@ QListWidget {
    <slot>slotOnFaceReqDelayChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>836</x>
-     <y>458</y>
+     <x>749</x>
+     <y>456</y>
     </hint>
     <hint type="destinationlabel">
      <x>1025</x>
@@ -2160,8 +2232,8 @@ QListWidget {
    <slot>slotExportAllFaces()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>556</x>
-     <y>544</y>
+     <x>467</x>
+     <y>527</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -2209,7 +2281,7 @@ QListWidget {
    <hints>
     <hint type="sourcelabel">
      <x>1030</x>
-     <y>415</y>
+     <y>393</y>
     </hint>
     <hint type="destinationlabel">
      <x>1053</x>
@@ -2240,8 +2312,8 @@ QListWidget {
    <slot>slotOnFaceReqTopologyChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>836</x>
-     <y>394</y>
+     <x>749</x>
+     <y>392</y>
     </hint>
     <hint type="destinationlabel">
      <x>650</x>
@@ -2272,8 +2344,8 @@ QListWidget {
    <slot>slotExportSelectedFace()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>687</x>
-     <y>544</y>
+     <x>570</x>
+     <y>527</y>
     </hint>
     <hint type="destinationlabel">
      <x>1064</x>
@@ -2304,8 +2376,8 @@ QListWidget {
    <slot>slotOpenOBJFile()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>453</x>
-     <y>544</y>
+     <x>367</x>
+     <y>527</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -2320,8 +2392,8 @@ QListWidget {
    <slot>slotOnFaceGapNbSubdivisionsChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>536</x>
-     <y>426</y>
+     <x>493</x>
+     <y>424</y>
     </hint>
     <hint type="destinationlabel">
      <x>537</x>
@@ -2336,8 +2408,8 @@ QListWidget {
    <slot>slotOnSelectedEdgeNbSubdivisionsChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>605</x>
-     <y>545</y>
+     <x>634</x>
+     <y>574</y>
     </hint>
     <hint type="destinationlabel">
      <x>1054</x>
@@ -2352,8 +2424,8 @@ QListWidget {
    <slot>slotOnFaceGapDelayChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>536</x>
-     <y>458</y>
+     <x>493</x>
+     <y>456</y>
     </hint>
     <hint type="destinationlabel">
      <x>621</x>
@@ -2384,8 +2456,8 @@ QListWidget {
    <slot>slotOnFaceReqNbSubdivisionsChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>836</x>
-     <y>426</y>
+     <x>749</x>
+     <y>424</y>
     </hint>
     <hint type="destinationlabel">
      <x>678</x>
@@ -2401,7 +2473,7 @@ QListWidget {
    <hints>
     <hint type="sourcelabel">
      <x>524</x>
-     <y>304</y>
+     <y>303</y>
     </hint>
     <hint type="destinationlabel">
      <x>31</x>
@@ -2416,8 +2488,8 @@ QListWidget {
    <slot>slotOnFaceGapTopologyChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>536</x>
-     <y>394</y>
+     <x>493</x>
+     <y>392</y>
     </hint>
     <hint type="destinationlabel">
      <x>519</x>
@@ -2569,6 +2641,22 @@ QListWidget {
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>comboBox_algorithm</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnFaceAlgoChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>990</x>
+     <y>414</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1051</x>
+     <y>441</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>slotGenerateScript()</slot>
@@ -2609,5 +2697,6 @@ QListWidget {
   <slot>slotComputeNbCells()</slot>
   <slot>slotComputeNbLacunas()</slot>
   <slot>slotComputePorosityMetrics()</slot>
+  <slot>slotOnFaceAlgoChanged(int)</slot>
  </slots>
 </ui>

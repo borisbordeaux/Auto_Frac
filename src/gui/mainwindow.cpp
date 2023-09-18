@@ -29,9 +29,9 @@
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow), m_openedMesh(false) {
     ui->setupUi(this);
 
-    this->ui->listWidget_faces->addItem("C_2_1 - B_2_0 - C_2_1 - B_2_0 - C_2_1 - B_2_0 - C_2_0 - B_2_0 / C_2_0 - B_2_0 - B_2_0 / 0");
-    this->ui->listWidget_faces->addItem("C_2_1 - B_2_1 - C_2_1 - B_2_1 - C_2_1 - B_2_1 / C_2_0 - B_2_0 - B_2_0 / 1");
-    this->ui->listWidget_faces->addItem("C_2_0 - B_2_0 - C_2_0 - B_2_0 - C_2_0 - B_2_0 / C_2_0 - B_2_0 - B_2_0 / 0");
+    this->ui->listWidget_faces->addItem("C_2_1 - B_2_0 - C_2_1 - B_2_0 - C_2_1 - B_2_0 - C_2_0 - B_2_0 / C_2_0 - B_2_0 - B_2_0 / 0 / 1");
+    this->ui->listWidget_faces->addItem("C_2_1 - B_2_1 - C_2_1 - B_2_1 - C_2_1 - B_2_1 / C_2_0 - B_2_0 - B_2_0 / 1 / 1");
+    this->ui->listWidget_faces->addItem("C_2_0 - B_2_0 - C_2_0 - B_2_0 - C_2_0 - B_2_0 / C_2_0 - B_2_0 - B_2_0 / 0 / 1");
     this->ui->listWidget_faces->setCurrentRow(this->ui->listWidget_faces->count() - 1);
 
     this->ui->listWidget_constraints->addItem("0.2 / 1.0");
@@ -143,11 +143,12 @@ frac::Face MainWindow::toFace(QString const& cellName) {
     frac::Edge gapEdge = MainWindow::toEdge(splitParamsNames[1]);
     frac::Edge reqEdge = MainWindow::toEdge(splitParamsNames[2]);
 
-    return frac::Face(edges, delay, adjEdge, gapEdge, reqEdge);
+    frac::AlgorithmSubdivision algo = static_cast<frac::AlgorithmSubdivision>(splitCellName[3].toUInt());
+    return frac::Face(edges, delay, adjEdge, gapEdge, reqEdge, algo);
 }
 
 [[maybe_unused]] void MainWindow::slotAddFace() {
-    this->ui->listWidget_faces->addItem("C_2_0 - B_2_0 - C_2_0 - B_2_0 - C_2_0 - B_2_0 / C_2_0 - B_2_0 - B_2_0 / 0");
+    this->ui->listWidget_faces->addItem("C_2_0 - B_2_0 - C_2_0 - B_2_0 - C_2_0 - B_2_0 / C_2_0 - B_2_0 - B_2_0 / 0 / 1");
     this->ui->listWidget_faces->setCurrentRow(this->ui->listWidget_faces->count() - 1);
     this->updateEnablement();
 }
@@ -164,6 +165,8 @@ frac::Face MainWindow::toFace(QString const& cellName) {
     frac::Face f = MainWindow::toFace(cellName);
     //delay
     this->ui->spinBox_faceDelay->setValue(static_cast<int>(f.delay()));
+    //algo
+    this->ui->comboBox_algorithm->setCurrentIndex(static_cast<int>(f.algo()));
     //adjEdge
     this->ui->comboBox_adjEdgeTopology->setCurrentIndex(f.adjEdge().edgeType() == frac::EdgeType::CANTOR ? 0 : 1);
     this->ui->spinBox_adjEdgeNbSubdivisions->setValue(static_cast<int>(f.adjEdge().nbSubdivisions()));
@@ -259,6 +262,12 @@ frac::Face MainWindow::toFace(QString const& cellName) {
 [[maybe_unused]] void MainWindow::slotOnFaceDelayChanged(int value) {
     frac::Face f = MainWindow::toFace(this->ui->listWidget_faces->currentItem()->text());
     f.setDelay(value);
+    this->ui->listWidget_faces->currentItem()->setText(f.toString().c_str());
+}
+
+[[maybe_unused]] void MainWindow::slotOnFaceAlgoChanged(int row) {
+    frac::Face f = MainWindow::toFace(this->ui->listWidget_faces->currentItem()->text());
+    f.setAlgo(static_cast<frac::AlgorithmSubdivision>(row));
     this->ui->listWidget_faces->currentItem()->setText(f.toString().c_str());
 }
 
@@ -879,8 +888,7 @@ double MainWindow::getNbLacunaOfCell(std::string const& faceName, std::size_t le
         cacheLacunas[f.name()] = nbLacunas;
     }
 
-    std::vector<std::pair<double, double>> values;
-
+    this->ui->tableWidget_TopoMetrics->setRowCount(this->ui->spinBox_nbIterations->value());
     for (int i = 1; i <= this->ui->spinBox_nbIterations->value(); i++) {
         double nbLacuna = 0.0;
         std::size_t nbCells = 0;
@@ -888,14 +896,10 @@ double MainWindow::getNbLacunaOfCell(std::string const& faceName, std::size_t le
             nbLacuna += MainWindow::getNbLacunaOfCell(f.name(), static_cast<std::size_t>(i), cacheSubdivisions, cacheLacunas);
             nbCells += MainWindow::getNbCellsOfCell(f.name(), static_cast<std::size_t>(i), cacheSubdivisions);
         }
-        values.emplace_back(static_cast<double>(i), static_cast<double>(nbLacuna) / (static_cast<double>(nbCells) + static_cast<double>(nbLacuna)));
+
+        QTableWidgetItem* widgetMetrics = new QTableWidgetItem();
+        widgetMetrics->setText(std::to_string(static_cast<double>(nbLacuna) / (static_cast<double>(nbCells) + static_cast<double>(nbLacuna))).c_str());
+        this->ui->tableWidget_TopoMetrics->setItem(i - 1, 0, widgetMetrics);
     }
 
-    std::cout << "values are:" << std::endl;
-    for (auto const& val: values) {
-        std::cout << "x = " << val.first << " ; y = " << val.second << std::endl;
-    }
-
-    std::pair<double, double> reg = frac::utils::computeLinearRegression(values);
-    std::cout << "linear regression for all iterations: y = " << reg.first << "x + " << reg.second << std::endl;
 }

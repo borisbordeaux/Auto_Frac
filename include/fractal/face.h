@@ -13,13 +13,14 @@ namespace frac {
 
 enum class AlgorithmSubdivision {
     LinksSurroundDelay,
-    LinksSurroundDelayAndBezier
+    LinksSurroundDelayAndBezier,
+    LinksOnCorners
 };
 
 class Face {
 public:
     Face() : Face(std::vector<frac::Edge> {}) {}
-    explicit Face(std::vector<frac::Edge> edges, unsigned int delay = 0, const frac::Edge& adjEdge = { frac::EdgeType::CANTOR, 2 }, const frac::Edge& gapEdge = { frac::EdgeType::BEZIER, 2 }, const frac::Edge& reqEdge = { frac::EdgeType::BEZIER, 2 });
+    explicit Face(std::vector<frac::Edge> edges, unsigned int delay = 0, const frac::Edge& adjEdge = { frac::EdgeType::CANTOR, 2 }, const frac::Edge& gapEdge = { frac::EdgeType::BEZIER, 2 }, const frac::Edge& reqEdge = { frac::EdgeType::BEZIER, 2 }, AlgorithmSubdivision algo = AlgorithmSubdivision::LinksSurroundDelayAndBezier);
 
     [[nodiscard]] std::vector<frac::Edge> const& constData() const;
     [[nodiscard]] std::vector<frac::Edge>& data();
@@ -32,11 +33,16 @@ public:
     [[nodiscard]] frac::Edge gapEdge() const;
     [[nodiscard]] frac::Edge reqEdge() const;
     [[nodiscard]] unsigned int delay() const;
+    [[nodiscard]] AlgorithmSubdivision algo() const;
+
+    std::optional<frac::Edge> edgeIfRequired(frac::Edge const& edge) const;
+
     void setAdjEdge(frac::Edge const& edge);
     void setGapEdge(frac::Edge const& edge);
     void setReqEdge(frac::Edge const& edge);
     void setDelay(unsigned int delay);
     void setFirstInterior(int index);
+    void setAlgo(AlgorithmSubdivision algo);
     [[nodiscard]] std::vector<frac::Face> subdivisions() const;
     [[nodiscard]] UniqueVector<frac::Face> allSubdivisions() const;
 
@@ -50,9 +56,11 @@ public:
     static std::map<std::string, std::string> s_adjacencyConstraints;
     static void reset();
 
-private:
-    [[nodiscard]] std::vector<frac::Face> subdivisionsSurroundDelay() const;
-    [[nodiscard]] std::vector<frac::Face> subdivisionsSurroundDelayAndBezier() const;
+    static void addAdjacencyConstraint(frac::Face const& face, frac::Face const& faceSub1, frac::Face const& faceSub2, unsigned int indexSubFace1, unsigned int indexBordFace1, unsigned int indexSubFace2, unsigned int indexBordFace2);
+    static void addIncidenceConstraint(frac::Face const& face, frac::Face const& faceSub, unsigned int indexParentEdge, unsigned int indexSubEdge, unsigned int indexSubFaceEdge, unsigned int indexSubFace);
+
+    // key is name of the cell (since it is unique)
+    static std::unordered_map<std::string, std::vector<frac::Face>> s_subdivisions;
 
 private:
     std::vector<frac::Edge> m_data;
@@ -63,18 +71,12 @@ private:
     std::string m_name;
     int m_offset;
     int m_firstInterior;
+    AlgorithmSubdivision m_algo;
 
     static frac::UniqueVector<frac::Face> s_existingFaces;
-    // key is name of the cell (since it is unique)
-    static std::unordered_map<std::string, std::vector<frac::Face>> s_subdivisions;
 
-    static void addAdjacencyConstraint(frac::Face const& face, frac::Face const& faceSub1, frac::Face const& faceSub2, unsigned int indexSubFace1, unsigned int indexBordFace1, unsigned int indexSubFace2, unsigned int indexBordFace2);
-    static void addIncidenceConstraint(frac::Face const& face, frac::Face const& faceSub, unsigned int indexParentEdge, unsigned int indexSubEdge, unsigned int indexSubFaceEdge, unsigned int indexSubFace);
 
     static int computeOffset(frac::Face const& face, frac::Face const& other);
-    static std::optional<frac::Edge> edgeIfRequired(const frac::Edge& edge, const frac::Edge& reqEdge);
-
-    static AlgorithmSubdivision s_algorithm;
 };
 
 } // frac
