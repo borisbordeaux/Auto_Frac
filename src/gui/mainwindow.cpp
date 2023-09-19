@@ -817,7 +817,7 @@ void MainWindow::displayGridAreaPerimeter() {
     for (auto const& f: s.faces()) {
         nbLacuna += MainWindow::getNbLacunaOfCell(f.name(), static_cast<std::size_t>(this->ui->spinBox_nbIterations->value()), cacheSubdivisions, cacheLacunas);
     }
-    this->ui->label_nbLacunas->setText(std::to_string(nbLacuna).c_str());
+    this->ui->label_nbLacunas->setText(QString::number(nbLacuna, 'f', 1));
 }
 
 std::size_t MainWindow::getNbCellsOfCell(std::string const& faceName, std::size_t level, std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>>& cacheSubdivisions) {
@@ -901,9 +901,15 @@ double MainWindow::getNbLacunaOfCell(std::string const& faceName, std::size_t le
             nbCells += MainWindow::getNbCellsOfCell(f.name(), static_cast<std::size_t>(i), cacheSubdivisions);
         }
 
-        QTableWidgetItem* widgetMetrics = new QTableWidgetItem();
-        widgetMetrics->setText(std::to_string(static_cast<double>(nbLacuna) / (static_cast<double>(nbCells) + static_cast<double>(nbLacuna))).c_str());
-        this->ui->tableWidget_TopoMetrics->setItem(i - 1, 0, widgetMetrics);
+        QTableWidgetItem* widgetL = new QTableWidgetItem();
+        QTableWidgetItem* widgetC = new QTableWidgetItem();
+        QTableWidgetItem* widgetR = new QTableWidgetItem();
+        widgetL->setText(QString::number(nbLacuna, 'f', 1));
+        widgetC->setText(QString::number(nbCells));
+        widgetR->setText(std::to_string(static_cast<double>(nbLacuna) / (static_cast<double>(nbCells) + static_cast<double>(nbLacuna))).c_str());
+        this->ui->tableWidget_TopoMetrics->setItem(i - 1, 0, widgetL);
+        this->ui->tableWidget_TopoMetrics->setItem(i - 1, 1, widgetC);
+        this->ui->tableWidget_TopoMetrics->setItem(i - 1, 2, widgetR);
     }
 
 }

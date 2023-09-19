@@ -1458,7 +1458,7 @@ QListWidget {
                  <bool>false</bool>
                 </property>
                 <property name="columnCount">
-                 <number>1</number>
+                 <number>3</number>
                 </property>
                 <attribute name="horizontalHeaderVisible">
                  <bool>true</bool>
@@ -1475,6 +1475,16 @@ QListWidget {
                 <attribute name="verticalHeaderStretchLastSection">
                  <bool>false</bool>
                 </attribute>
+                <column>
+                 <property name="text">
+                  <string>L</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>C</string>
+                 </property>
+                </column>
                 <column>
                  <property name="text">
                   <string>R</string>
