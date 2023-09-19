@@ -4,6 +4,7 @@
 #include <opencv2/highgui.hpp>
 #include <QVector3D>
 #include <thread>
+#include <iostream>
 
 namespace frac::utils {
 std::vector<int> computeFractalDimension(cv::Mat const& img) {
@@ -14,6 +15,9 @@ std::vector<int> computeFractalDimension(cv::Mat const& img) {
     while (maxSize > 1) {
         maxSize /= 2;
         iter *= 2;
+
+        std::cout << "sub image size is " << maxSize << std::endl;
+
         //compute number of squares overlapping the fractal
         int nbOverlappingSquares = 0;
         for (int i = 0; i < iter; i++) {
@@ -23,12 +27,8 @@ std::vector<int> computeFractalDimension(cv::Mat const& img) {
 
                 cv::Mat sub = img(rangeY, rangeX);
 
-                bool coverForm = false;
-                sub.forEach<cv::Point3_<uint8_t>>([&](cv::Point3_<uint8_t>& pixel, const int* /*position*/) -> void {
-                    if (pixel.x != 0 || pixel.y != 0 || pixel.z != 0) {
-                        coverForm = true;
-                    }
-                });
+                bool coverForm = cv::countNonZero(sub) != 0;
+
                 if (coverForm) {
                     nbOverlappingSquares++;
                 }

@@ -26,6 +26,8 @@
 
 #include <string>
 
+#include "NazaraUtils/Algorithm.hpp"
+
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow), m_openedMesh(false) {
     ui->setupUi(this);
 
@@ -556,16 +558,18 @@ void MainWindow::displayGraph() {
 }
 
 [[maybe_unused]] void MainWindow::slotComputeFractalDimension() {
-    QString file = QFileDialog::getOpenFileName(this, "Open a PNG File...", "../img", "PNG Files (*.png)");
+    QString file = QFileDialog::getOpenFileName(this, "Open a PNG File...", "../img", "PNG Files (*.png)", nullptr, QFileDialog::DontUseNativeDialog);
 
     if (file != "") {
         cv::destroyAllWindows();
         cv::Mat img = cv::imread(file.toStdString(), cv::IMREAD_GRAYSCALE);
         cv::threshold(img, img, 1, 255, cv::THRESH_BINARY);
 
+        std::cout << "image size : " << img.size().width << " x " << img.size().height << std::endl;
+
         // resize image to make it squared
-        if (img.cols != img.rows) {
-            int max = std::max(img.cols, img.rows);
+        if (img.cols != img.rows || !Nz::IsPow2(img.rows)) {
+            int max = Nz::RoundToPow2(std::max(img.cols, img.rows));
             int top = (max - img.rows) / 2;
             int bottom = (max - img.rows) - top;
             int left = (max - img.cols) / 2;
@@ -574,7 +578,7 @@ void MainWindow::displayGraph() {
         }
 
         cv::imshow("Image", img);
-        std::cout << "image size : " << img.size().width << " x " << img.size().height << std::endl;
+        std::cout << "image size for fractal dimension : " << img.size().width << " x " << img.size().height << std::endl;
         this->m_sceneFractalDim.clear();
         this->displayGridFractalDim();
 

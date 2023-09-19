@@ -20,6 +20,7 @@ file(GLOB_RECURSE FILES "src/*.cpp")
 add_executable(AutoFrac ${FILES} include/gui/mainwindow.h include/gui/glview.h)
 
 target_include_directories(AutoFrac PUBLIC include)
+target_include_directories(AutoFrac PUBLIC vendor/NazaraUtils/include)
 target_include_directories(AutoFrac PUBLIC ${OpenCV_INCLUDE_DIRS})
 
 target_link_libraries(AutoFrac PRIVATE Qt6::Core)
