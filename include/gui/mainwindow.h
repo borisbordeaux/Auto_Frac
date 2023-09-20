@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QGraphicsScene>
+#include <QChart>
 
 #include "fractal/edge.h"
 #include "fractal/face.h"
@@ -97,7 +98,7 @@ private:
     void displayGraph();
 
     QGraphicsScene m_sceneFractalDim;
-    void displayGridFractalDim();
+    QChart * m_chartFractalDim;
 
     QGraphicsScene m_sceneAreaPerimeter;
     void displayGridAreaPerimeter();

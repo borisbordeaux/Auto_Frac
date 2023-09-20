@@ -25,10 +25,11 @@
 #include <opencv2/imgproc.hpp>
 
 #include <string>
+#include <QScatterSeries>
 
 #include "NazaraUtils/Algorithm.hpp"
 
-MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow), m_openedMesh(false) {
+MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow), m_openedMesh(false), m_chartFractalDim(new QChart()) {
     ui->setupUi(this);
 
     this->ui->listWidget_faces->addItem("C_2_1 - B_2_0 - C_2_1 - B_2_0 - C_2_1 - B_2_0 - C_2_0 - B_2_0 / C_2_0 - B_2_0 - B_2_0 / 0 / 1");
@@ -50,11 +51,12 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->m_scene.setSceneRect(10., 10., 840., 840.);
 
     this->ui->graphicsView_fractalDim->setScene(&this->m_sceneFractalDim);
-    this->m_sceneFractalDim.setBackgroundBrush(Qt::white);
-    this->m_sceneFractalDim.setSceneRect(-3., -3., 20., 20.);
 
-    this->ui->graphicsView_fractalDim->scale(30, -30);
-    this->displayGridFractalDim();
+    m_chartFractalDim->setTheme(QChart::ChartTheme::ChartThemeDark);
+    m_chartFractalDim->legend()->hide();
+    m_chartFractalDim->setTitle("Simple line chart example");
+    m_chartFractalDim->setPreferredSize(845, 845);
+    m_sceneFractalDim.addItem(m_chartFractalDim);
 
     this->ui->graphicsView_stats->setScene(&this->m_sceneAreaPerimeter);
     this->m_sceneAreaPerimeter.setBackgroundBrush(Qt::white);
@@ -579,8 +581,13 @@ void MainWindow::displayGraph() {
 
         cv::imshow("Image", img);
         std::cout << "image size for fractal dimension : " << img.size().width << " x " << img.size().height << std::endl;
-        this->m_sceneFractalDim.clear();
-        this->displayGridFractalDim();
+
+        m_chartFractalDim->removeAllSeries();
+        QScatterSeries* series = new QScatterSeries();
+        QScatterSeries* seriesUnused = new QScatterSeries();
+
+        series->setColor(Qt::blue);
+        seriesUnused->setColor(Qt::black);
 
         std::vector<int> res = frac::utils::computeFractalDimension(img);
 
@@ -592,48 +599,33 @@ void MainWindow::displayGraph() {
             i *= 2;
         }
 
-        QPen pen;
-        pen.setWidthF(0.1);
-
         int minUsefulTerm = std::min(this->ui->spinBox_minUsefulBox->value(), static_cast<int>(res.size()));
         int current = 0;
 
         std::cout << "dim fractale" << std::endl;
         for (auto p: logRes) {
             if (current >= minUsefulTerm) {
-                pen.setBrush(Qt::blue);
+                series->append(p.first, p.second);
             } else {
-                pen.setBrush(Qt::black);
+                seriesUnused->append(p.first, p.second);
             }
-            this->m_sceneFractalDim.addEllipse(p.first - 0.05, p.second - 0.05, 0.1, 0.1, pen);
             current++;
             std::cout << p.first << " " << p.second << std::endl;
         }
 
-        pen.setBrush(Qt::red);
-        pen.setWidthF(0.03f);
-        auto iter = logRes.cbegin();
-        std::advance(iter, minUsefulTerm);
-        std::vector<std::pair<float, float>> vectorLinearReg { iter, logRes.cend() };
-        std::pair<float, float> regression = frac::utils::computeLinearRegression(vectorLinearReg);
-        this->m_sceneFractalDim.addLine(0.0, regression.second, 10.0, regression.second + 10.0 * regression.first, pen);
+        series->setBestFitLineVisible(true);
+        series->setBestFitLineColor(Qt::yellow);
+        m_chartFractalDim->addSeries(series);
+        m_chartFractalDim->addSeries(seriesUnused);
+        m_chartFractalDim->createDefaultAxes();
+        m_chartFractalDim->axes(Qt::Horizontal, series).first()->setMin(0);
+        m_chartFractalDim->axes(Qt::Vertical, series).first()->setMin(0);
 
-        this->ui->label_fractalDimension->setText(QString::number(regression.first));
-    }
-}
-
-void MainWindow::displayGridFractalDim() {
-    QPen pen;
-    pen.setWidthF(0.1);
-    this->m_sceneFractalDim.addLine(-200.0, 0.0, 800.0, 0.0, pen); // x axis
-    this->m_sceneFractalDim.addLine(0.0, -200.0, 0.0, 800.0, pen); // y axis
-    pen.setWidthF(0.02);
-    float i = -10.0f;
-    float length = 30.0f;
-    while (i < 21.0f) {
-        i += 1.0f;
-        this->m_sceneFractalDim.addLine(i, -length, i, length, pen); // x axis
-        this->m_sceneFractalDim.addLine(-length, i, length, i, pen); // y axis
+        bool ok;
+        QPair<qreal, qreal> eq = series->bestFitLineEquation(ok);
+        if (ok) {
+            this->ui->label_fractalDimension->setText(QString::number(eq.first));
+        }
     }
 }
 
