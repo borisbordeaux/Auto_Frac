@@ -43,7 +43,7 @@ void he::reader::readOBJ(QString const& filename, he::Mesh& mesh) {
                     //for each vertex of the face
                     for (int i = 1; i < list.size(); i++) {
                         //get the unique name of the half-edge
-                        //a half-edge between vertex 0 and 3 will be named "0 3"
+                        //for instance a half-edge between vertex 0 and 3 will be named "0 3"
                         int next = (i == list.size() - 1 ? 1 : i + 1);
                         QString name = list[i] + " " + list[next];
 
@@ -90,12 +90,15 @@ void he::reader::readOBJ(QString const& filename, he::Mesh& mesh) {
             QString name = he->name();
             QString nextBeginName = name.split(" ")[1];
 
-            for (std::size_t i = 1; i < mesh.vertices().size() + 1; i++) {
-                he::HalfEdge* other = mesh.findByName(nextBeginName + " " + QString::number(i));
+            if (mesh.vertices()[nextBeginName.toInt() - 1]->halfEdge()->face() == he->face()) {
+                he->setNext(mesh.vertices()[nextBeginName.toInt() - 1]->halfEdge());
+                mesh.vertices()[nextBeginName.toInt() - 1]->halfEdge()->setPrev(he);
+            }
 
-                if (other != nullptr && other->face() == he->face()) {
-                    he->setNext(other);
-                    other->setPrev(he);
+            for (he::HalfEdge* otherHalfEdge: mesh.vertices()[nextBeginName.toInt() - 1]->otherHalfEdges()) {
+                if (otherHalfEdge->face() == he->face()) {
+                    he->setNext(otherHalfEdge);
+                    otherHalfEdge->setPrev(he);
                 }
             }
         }
@@ -152,10 +155,10 @@ void graph::reader::readOBJ4(const QString& filename, graph::IncidenceGraph& g) 
                         g.addEdge(edge);
                         v1->addParent(edge);
                         v2->addParent(edge);
-                        if(list[i].toInt() < list[next].toInt()){
+                        if (list[i].toInt() < list[next].toInt()) {
                             edge->addChild(v1);
                             edge->addChild(v2);
-                        }else{
+                        } else {
                             edge->addChild(v2);
                             edge->addChild(v1);
                         }

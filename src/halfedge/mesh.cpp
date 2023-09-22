@@ -27,8 +27,6 @@ void he::Mesh::append(he::Vertex* v) {
 void he::Mesh::append(he::HalfEdge* he) {
     //append a half-edge to the mesh
     m_halfEdges.push_back(he);
-    //and to the map to enhance the finding
-    m_map[he->name()] = m_halfEdges.size() - 1;
 }
 
 void he::Mesh::append(Face* f) {
@@ -38,8 +36,16 @@ void he::Mesh::append(Face* f) {
 he::HalfEdge* he::Mesh::findByName(const QString& name) {
     he::HalfEdge* res = nullptr;
 
-    if (m_map.contains(name)) {
-        res = m_halfEdges.at(m_map[name]);
+    int i = name.split(" ")[0].toInt() - 1;
+    he::Vertex* v = m_vertices[i];
+    if (v->halfEdge() != nullptr && v->halfEdge()->name() == name) {
+        res = v->halfEdge();
+    } else {
+        for (he::HalfEdge* he: v->otherHalfEdges()) {
+            if (he->name() == name) {
+                res = he;
+            }
+        }
     }
 
     return res;
@@ -78,8 +84,6 @@ void he::Mesh::reset() {
 
     //clear the vector
     m_halfEdges.clear();
-    //clear the map
-    m_map.clear();
 }
 
 QString he::Mesh::toString() const {

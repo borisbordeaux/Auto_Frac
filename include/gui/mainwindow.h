@@ -98,10 +98,10 @@ private:
     void displayGraph();
 
     QGraphicsScene m_sceneFractalDim;
-    QChart * m_chartFractalDim;
+    QChart* m_chartFractalDim;
 
     QGraphicsScene m_sceneAreaPerimeter;
-    void displayGridAreaPerimeter();
+    QChart* m_chartAreaPerimeter;
 };
 
 #endif

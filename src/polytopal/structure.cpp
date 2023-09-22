@@ -2,7 +2,6 @@
 #include <halfedge/face.h>
 #include <halfedge/halfedge.h>
 #include <polytopal/face.h>
-#include <iostream>
 
 poly::Structure::Structure(he::Mesh const& mesh, he::Face* face) : m_mesh(mesh), m_selectedFace(face) {
     poly::Face::s_mesh = &this->m_mesh;
@@ -15,11 +14,9 @@ poly::Structure::Structure(he::Mesh const& mesh, he::Face* face) : m_mesh(mesh),
         for (std::size_t i = 0; i < m_faces.size() - 1; ++i) { //for each fractal face
             for (std::size_t j = 0; j < m_faces[i].constData().size(); ++j) { //for each edge
                 for (std::size_t k = i + 1; k < m_faces.size(); ++k) { //for each other face
-                    if (i != k) {
-                        for (std::size_t l = 0; l < m_faces[k].constData().size(); ++l) { //for each edge
-                            if (m_faces[i].halfEdges()[j]->twin() == m_faces[k].halfEdges()[l]) {
-                                addAdjacency(i, j, k, l);
-                            }
+                    for (std::size_t l = 0; l < m_faces[k].constData().size(); ++l) { //for each edge
+                        if (m_faces[i].halfEdges()[j]->twin() == m_faces[k].halfEdges()[l]) {
+                            addAdjacency(i, j, k, l);
                         }
                     }
                 }

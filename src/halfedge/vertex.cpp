@@ -39,7 +39,12 @@ he::HalfEdge* he::Vertex::halfEdge() {
 }
 
 void he::Vertex::setHalfEdge(he::HalfEdge* halfEdge) {
-    m_halfEdge = halfEdge;
+    if (m_halfEdge == nullptr) {
+        m_halfEdge = halfEdge;
+    } else {
+        this->addHalfEdge(m_halfEdge);
+        m_halfEdge = halfEdge;
+    }
 }
 
 QString he::Vertex::name() const {
@@ -47,14 +52,7 @@ QString he::Vertex::name() const {
 }
 
 std::size_t he::Vertex::degree() const {
-    std::size_t res { 1 };
-    he::HalfEdge* he = this->m_halfEdge;
-    he::HalfEdge* twin_next = he->twin()->next();
-    do {
-        res++;
-        twin_next = twin_next->twin()->next();
-    } while (he != twin_next);
-    return res;
+    return m_otherHalfEdges.size() + 1;
 }
 
 std::vector<he::Face*> he::Vertex::getAllFacesAroundVertex(he::Face* f) const {
@@ -79,4 +77,12 @@ std::vector<he::Face*> he::Vertex::getAllFacesAroundVertex(he::Face* f) const {
     }
 
     return orderedFacesAroundVertex;
+}
+
+void he::Vertex::addHalfEdge(he::HalfEdge* halfEdge) {
+    m_otherHalfEdges.append(halfEdge);
+}
+
+QVector<he::HalfEdge*>& he::Vertex::otherHalfEdges() {
+    return m_otherHalfEdges;
 }

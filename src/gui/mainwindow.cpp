@@ -12,7 +12,6 @@
 #include "utils/fileprinter.h"
 #include "utils/objreader.h"
 #include "utils/measures.h"
-#include "gui/pointgraphicsitem.h"
 #include "computations/densitycomputation.h"
 #include "utils/utils.h"
 
@@ -26,10 +25,11 @@
 
 #include <string>
 #include <QScatterSeries>
+#include <QValueAxis>
 
 #include "NazaraUtils/Algorithm.hpp"
 
-MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow), m_openedMesh(false), m_chartFractalDim(new QChart()) {
+MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow), m_openedMesh(false), m_chartFractalDim(new QChart()), m_chartAreaPerimeter(new QChart()) {
     ui->setupUi(this);
 
     this->ui->listWidget_faces->addItem("C_2_1 - B_2_0 - C_2_1 - B_2_0 - C_2_1 - B_2_0 - C_2_0 - B_2_0 / C_2_0 - B_2_0 - B_2_0 / 0 / 1");
@@ -44,27 +44,28 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->updateEnablement();
     this->updateEnablementPoly();
 
-    this->m_view = new GLView(&m_modelMesh);
-    this->ui->verticalLayout_poly2D->addWidget(this->m_view);
-    this->ui->graphicsView->setScene(&this->m_scene);
-    this->m_scene.setBackgroundBrush(Qt::white);
-    this->m_scene.setSceneRect(10., 10., 840., 840.);
+    m_view = new GLView(&m_modelMesh);
+    this->ui->verticalLayout_poly2D->addWidget(m_view);
+    this->ui->graphicsView->setScene(&m_scene);
+    m_scene.setBackgroundBrush(Qt::white);
+    m_scene.setSceneRect(10., 10., 840., 840.);
 
-    this->ui->graphicsView_fractalDim->setScene(&this->m_sceneFractalDim);
-
+    this->ui->graphicsView_fractalDim->setScene(&m_sceneFractalDim);
     m_chartFractalDim->setTheme(QChart::ChartTheme::ChartThemeDark);
     m_chartFractalDim->legend()->hide();
-    m_chartFractalDim->setTitle("Simple line chart example");
+    m_chartFractalDim->setTitle("Fractal Dimension");
     m_chartFractalDim->setPreferredSize(845, 845);
+    m_chartFractalDim->setAnimationOptions(QChart::AnimationOption::AllAnimations);
+    m_chartFractalDim->setAnimationDuration(1000);
     m_sceneFractalDim.addItem(m_chartFractalDim);
 
-    this->ui->graphicsView_stats->setScene(&this->m_sceneAreaPerimeter);
-    this->m_sceneAreaPerimeter.setBackgroundBrush(Qt::white);
-
-    this->m_sceneAreaPerimeter.setSceneRect(-1., -2., 8., 8.);
-    this->ui->graphicsView_stats->scale(100, -100);
-
-    this->displayGridAreaPerimeter();
+    this->ui->graphicsView_stats->setScene(&m_sceneAreaPerimeter);
+    m_chartAreaPerimeter->setTheme(QChart::ChartTheme::ChartThemeDark);
+    m_chartAreaPerimeter->setTitle("Area and Perimeter");
+    m_chartAreaPerimeter->setPreferredSize(845, 845);
+    m_chartAreaPerimeter->setAnimationOptions(QChart::AnimationOption::AllAnimations);
+    m_chartAreaPerimeter->setAnimationDuration(1000);
+    m_sceneAreaPerimeter.addItem(m_chartAreaPerimeter);
 
     connect(this->ui->horizontalSlider_windowSize, &QSlider::valueChanged, this->ui->label_windowSize, qOverload<int>(&QLabel::setNum));
     connect(this->ui->horizontalSlider_windowSize, &QSlider::sliderMoved, this, [&](int value) {
@@ -373,9 +374,9 @@ void MainWindow::updateEnablement() {
 }
 
 void MainWindow::updateEnablementPoly() {
-    this->ui->pushButton_changeSelectionMode->setEnabled(this->m_openedMesh);
-    this->ui->pushButton_ExportAll->setEnabled(this->m_openedMesh);
-    this->ui->pushButton_ExportSelectedFace->setEnabled(this->m_openedMesh);
+    this->ui->pushButton_changeSelectionMode->setEnabled(m_openedMesh);
+    this->ui->pushButton_ExportAll->setEnabled(m_openedMesh);
+    this->ui->pushButton_ExportSelectedFace->setEnabled(m_openedMesh);
 }
 
 [[maybe_unused]] void MainWindow::slotAddConstraint() {
@@ -453,18 +454,18 @@ void MainWindow::setInfo(std::string const& textInfo) {
 
     if (file != "") {
         poly::Face::reset();
-        this->m_mesh.reset();
+        m_mesh.reset();
         he::reader::readOBJ(file, m_mesh);
-        this->m_modelMesh.setMesh(&m_mesh);
-        this->m_view->meshChanged();
-        this->m_openedMesh = true;
+        m_modelMesh.setMesh(&m_mesh);
+        m_view->meshChanged();
+        m_openedMesh = true;
         this->updateEnablementPoly();
     }
 }
 
 [[maybe_unused]] void MainWindow::slotChangeSelectionMode() {
-    this->m_view->changeSelectionMode();
-    this->ui->pushButton_changeSelectionMode->setText(this->m_view->selectionMode() == SelectionMode::FACES ? "Selection Mode: Faces" : "Selection Mode: Edges");
+    m_view->changeSelectionMode();
+    this->ui->pushButton_changeSelectionMode->setText(m_view->selectionMode() == SelectionMode::FACES ? "Selection Mode: Faces" : "Selection Mode: Edges");
 }
 
 [[maybe_unused]] void MainWindow::slotExportAllFaces() {
@@ -484,12 +485,12 @@ void MainWindow::setInfo(std::string const& textInfo) {
 }
 
 [[maybe_unused]] void MainWindow::slotExportSelectedFace() {
-    if (this->m_modelMesh.selectedFace() == nullptr) {
+    if (m_modelMesh.selectedFace() == nullptr) {
         this->setInfo("[Error] You must select one face");
         return;
     }
 
-    poly::Structure structure { m_mesh, this->m_modelMesh.selectedFace() };
+    poly::Structure structure { m_mesh, m_modelMesh.selectedFace() };
     frac::FilePrinter::reset();
 
     std::ostringstream info;
@@ -508,55 +509,55 @@ void MainWindow::setInfo(std::string const& textInfo) {
     QString file = QFileDialog::getOpenFileName(this, "Open an OBJ4 File...", "../obj", "OBJ4 Files (*.obj4)");
 
     if (file != "") {
-        this->m_graph.reset();
-        graph::reader::readOBJ4(file, this->m_graph);
-        std::cout << this->m_graph << std::endl;
+        m_graph.reset();
+        graph::reader::readOBJ4(file, m_graph);
+        std::cout << m_graph << std::endl;
     }
 
-    this->m_graph.updateVerticesPositions(this->ui->graphicsView->width());
+    m_graph.updateVerticesPositions(this->ui->graphicsView->width());
 
     this->displayGraph();
 }
 
 void MainWindow::displayGraph() {
-    this->m_scene.clear();
+    m_scene.clear();
 
     QPen penLine;
     penLine.setWidth(1);
     penLine.setColor(Qt::black);
 
     //first draw lines
-    for (graph::Vertex* v: this->m_graph.getVertices()) {
+    for (graph::Vertex* v: m_graph.getVertices()) {
         for (graph::Vertex* p: v->getParents()) {
-            this->m_scene.addLine(v->getX(), v->getY(), p->getX(), p->getY(), penLine);
+            m_scene.addLine(v->getX(), v->getY(), p->getX(), p->getY(), penLine);
         }
     }
-    for (graph::Vertex* v: this->m_graph.getEdges()) {
+    for (graph::Vertex* v: m_graph.getEdges()) {
         for (graph::Vertex* p: v->getParents()) {
-            this->m_scene.addLine(v->getX(), v->getY(), p->getX(), p->getY(), penLine);
+            m_scene.addLine(v->getX(), v->getY(), p->getX(), p->getY(), penLine);
         }
     }
-    for (graph::Vertex* v: this->m_graph.getFaces()) {
+    for (graph::Vertex* v: m_graph.getFaces()) {
         for (graph::Vertex* p: v->getParents()) {
-            this->m_scene.addLine(v->getX(), v->getY(), p->getX(), p->getY(), penLine);
+            m_scene.addLine(v->getX(), v->getY(), p->getX(), p->getY(), penLine);
         }
     }
 
     // then draw vertices
-    for (graph::Vertex* v: this->m_graph.getVertices()) {
-        this->m_scene.addItem(v->graphicsItem());
+    for (graph::Vertex* v: m_graph.getVertices()) {
+        m_scene.addItem(v->graphicsItem());
     }
-    for (graph::Vertex* v: this->m_graph.getEdges()) {
-        this->m_scene.addItem(v->graphicsItem());
+    for (graph::Vertex* v: m_graph.getEdges()) {
+        m_scene.addItem(v->graphicsItem());
     }
-    for (graph::Vertex* v: this->m_graph.getFaces()) {
-        this->m_scene.addItem(v->graphicsItem());
+    for (graph::Vertex* v: m_graph.getFaces()) {
+        m_scene.addItem(v->graphicsItem());
     }
-    for (graph::Vertex* v: this->m_graph.getVolumes()) {
-        this->m_scene.addItem(v->graphicsItem());
+    for (graph::Vertex* v: m_graph.getVolumes()) {
+        m_scene.addItem(v->graphicsItem());
     }
 
-    this->m_scene.update();
+    m_scene.update();
 }
 
 [[maybe_unused]] void MainWindow::slotComputeFractalDimension() {
@@ -599,7 +600,8 @@ void MainWindow::displayGraph() {
             i *= 2;
         }
 
-        int minUsefulTerm = std::min(this->ui->spinBox_minUsefulBox->value(), static_cast<int>(res.size()));
+        int minUsefulTerm = std::min(this->ui->spinBox_minUsefulBox->value(), static_cast<int>(res.size()) - 2);
+        this->ui->spinBox_minUsefulBox->setValue(minUsefulTerm);
         int current = 0;
 
         std::cout << "dim fractale" << std::endl;
@@ -618,8 +620,17 @@ void MainWindow::displayGraph() {
         m_chartFractalDim->addSeries(series);
         m_chartFractalDim->addSeries(seriesUnused);
         m_chartFractalDim->createDefaultAxes();
-        m_chartFractalDim->axes(Qt::Horizontal, series).first()->setMin(0);
-        m_chartFractalDim->axes(Qt::Vertical, series).first()->setMin(0);
+        QValueAxis* xAxis = dynamic_cast<QValueAxis*>(m_chartFractalDim->axes(Qt::Horizontal, series).first());
+        QValueAxis* yAxis = dynamic_cast<QValueAxis*>(m_chartFractalDim->axes(Qt::Vertical, series).first());
+        int max = std::max(qRound(xAxis->max() + 1.0), qRound(yAxis->max() + 1.0));
+        xAxis->setRange(0, max);
+        xAxis->setTickInterval(1.0);
+        xAxis->setTickCount(max + 1);
+        xAxis->setTitleText("log(1/e)");
+        yAxis->setRange(0, max);
+        yAxis->setTickInterval(1.0);
+        yAxis->setTickCount(max + 1);
+        yAxis->setTitleText("log(Ne)");
 
         bool ok;
         QPair<qreal, qreal> eq = series->bestFitLineEquation(ok);
@@ -634,83 +645,84 @@ void MainWindow::displayGraph() {
 
     int currentFile = 0;
     if (!files.isEmpty()) {
-        this->m_sceneAreaPerimeter.clear();
-        this->displayGridAreaPerimeter();
         cv::destroyAllWindows();
-    }
+        m_chartAreaPerimeter->removeAllSeries();
+        QScatterSeries* seriesArea = new QScatterSeries();
+        QScatterSeries* seriesPerimeter = new QScatterSeries();
+        seriesArea->setName("Area");
+        seriesPerimeter->setName("Perimeter");
 
-    std::vector<std::pair<float, float>> vectorArea;
-    std::vector<std::pair<float, float>> vectorPerimeter;
-    QPen pen;
+        seriesArea->setColor(Qt::blue);
+        seriesPerimeter->setColor(Qt::darkGreen);
 
-    int firstArea = -1;
-    int firstPerimeter = -1;
-    for (QString const& file: files) {
-        cv::Mat img = cv::imread(file.toStdString(), cv::IMREAD_GRAYSCALE);
-        cv::threshold(img, img, 1, 255, cv::THRESH_BINARY);
-        cv::imshow(std::string("Image ") + std::to_string(currentFile), img);
+        std::vector<std::pair<float, float>> vectorArea;
+        std::vector<std::pair<float, float>> vectorPerimeter;
 
-        int area = frac::utils::computeArea(img);
-        int perimeter = frac::utils::computePerimeter(img, this->ui->checkBox_displayContours->isChecked() ? "contours " + std::to_string(currentFile) : "");
-        if (firstArea == -1) {
-            firstArea = area;
+        int firstArea = -1;
+        int firstPerimeter = -1;
+        for (QString const& file: files) {
+            cv::Mat img = cv::imread(file.toStdString(), cv::IMREAD_GRAYSCALE);
+            cv::threshold(img, img, 1, 255, cv::THRESH_BINARY);
+            cv::imshow(std::string("Image ") + std::to_string(currentFile), img);
+
+            int area = frac::utils::computeArea(img);
+            int perimeter = frac::utils::computePerimeter(img, this->ui->checkBox_displayContours->isChecked() ? "contours " + std::to_string(currentFile) : "");
+            if (firstArea == -1) {
+                firstArea = area;
+            }
+            if (firstPerimeter == -1) {
+                firstPerimeter = perimeter;
+            }
+
+            this->ui->label_perimeter->setText(std::to_string(perimeter).c_str());
+            this->ui->label_area->setText(std::to_string(area).c_str());
+
+            float y1 = static_cast<float>(area) / static_cast<float>(firstArea);
+            float y2 = static_cast<float>(perimeter) / static_cast<float>(firstPerimeter);
+
+            seriesArea->append(static_cast<float>(currentFile), std::log(y1));
+            seriesPerimeter->append(static_cast<float>(currentFile), std::log((y2)));
+
+            //auto* itemArea = new PointGraphicsItem(static_cast<float>(currentFile), std::log(y1), size, this->ui->label_perimeter, this->ui->label_area, this->ui->label_porosity, perimeter, area, 1.0f - y1, pen);
+            //auto* itemPerimeter = new PointGraphicsItem(static_cast<float>(currentFile), std::log(y2), size, this->ui->label_perimeter, this->ui->label_area, this->ui->label_porosity, perimeter, area, 1.0f - y1, pen);
+
+            this->ui->label_porosity->setText(QString::number(1.0f - y1));
+            currentFile++;
         }
-        if (firstPerimeter == -1) {
-            firstPerimeter = perimeter;
+
+        bool okArea;
+        bool okPerimeter;
+        QPair<qreal, qreal> areaReg = seriesArea->bestFitLineEquation(okArea);
+        QPair<qreal, qreal> perimeterReg = seriesPerimeter->bestFitLineEquation(okPerimeter);
+        if (okArea && okPerimeter) {
+            seriesArea->setBestFitLineColor(Qt::blue);
+            seriesArea->setBestFitLineVisible(true);
+            this->ui->label_coefArea->setText(std::to_string(std::exp(areaReg.first)).c_str());
+
+            seriesPerimeter->setBestFitLineColor(Qt::darkGreen);
+            seriesPerimeter->setBestFitLineVisible(true);
+            this->ui->label_coefPerimeter->setText(std::to_string(std::exp(perimeterReg.first)).c_str());
+        } else {
+            this->ui->label_coefArea->setText("");
+            this->ui->label_coefPerimeter->setText("");
         }
 
-        this->ui->label_perimeter->setText(std::to_string(perimeter).c_str());
-        this->ui->label_area->setText(std::to_string(area).c_str());
+        m_chartAreaPerimeter->addSeries(seriesArea);
+        m_chartAreaPerimeter->addSeries(seriesPerimeter);
+        m_chartAreaPerimeter->createDefaultAxes();
+        QValueAxis* xAxis = dynamic_cast<QValueAxis*>(m_chartAreaPerimeter->axes(Qt::Horizontal).first());
+        QValueAxis* yAxis = dynamic_cast<QValueAxis*>(m_chartAreaPerimeter->axes(Qt::Vertical).first());
+        int max = std::max(qRound(xAxis->max() + 1.0), qRound(yAxis->max() + 1.0));
+        int min = qRound(yAxis->min() - 1.0);
+        xAxis->setRange(-1, max);
+        xAxis->setTickInterval(1.0);
+        xAxis->setTickCount(max + 2);
+        xAxis->setTitleText("Iteration level");
 
-        float size = 0.08f;
-        pen.setWidthF(size);
-        float y1 = static_cast<float>(area) / static_cast<float>(firstArea);
-        float y2 = static_cast<float>(perimeter) / static_cast<float>(firstPerimeter);
-        pen.setBrush(Qt::blue);
-        auto* itemArea = new PointGraphicsItem(static_cast<float>(currentFile), std::log(y1), size, this->ui->label_perimeter, this->ui->label_area, this->ui->label_porosity, perimeter, area, 1.0f - y1, pen);
-        this->m_sceneAreaPerimeter.addItem(itemArea);
-
-        pen.setBrush(Qt::darkGreen);
-        auto* itemPerimeter = new PointGraphicsItem(static_cast<float>(currentFile), std::log(y2), size, this->ui->label_perimeter, this->ui->label_area, this->ui->label_porosity, perimeter, area, 1.0f - y1, pen);
-        this->m_sceneAreaPerimeter.addItem(itemPerimeter);
-
-        this->ui->label_porosity->setText(QString::number(1.0f - y1));
-
-        vectorArea.emplace_back(currentFile, std::log(y1));
-        vectorPerimeter.emplace_back(currentFile, std::log(y2));
-
-        currentFile++;
-    }
-
-    pen.setWidthF(0.04f);
-    if (files.size() > 1) {
-        pen.setBrush(Qt::blue);
-        std::pair<float, float> regressionArea = frac::utils::computeLinearRegression(vectorArea);
-        this->m_sceneAreaPerimeter.addLine(0.0, regressionArea.second, 10.0, regressionArea.second + 10.0 * regressionArea.first, pen);
-        this->ui->label_coefArea->setText(std::to_string(std::exp(regressionArea.first)).c_str());
-
-        pen.setBrush(Qt::darkGreen);
-        std::pair<float, float> regressionPerimeter = frac::utils::computeLinearRegression(vectorPerimeter);
-        this->m_sceneAreaPerimeter.addLine(0.0, regressionPerimeter.second, 10.0, regressionPerimeter.second + 10.0 * regressionPerimeter.first, pen);
-        this->ui->label_coefPerimeter->setText(std::to_string(std::exp(regressionPerimeter.first)).c_str());
-    } else {
-        this->ui->label_coefArea->setText("");
-        this->ui->label_coefPerimeter->setText("");
-    }
-}
-
-void MainWindow::displayGridAreaPerimeter() {
-    QPen pen;
-    pen.setWidthF(0.02);
-    this->m_sceneAreaPerimeter.addLine(-200.0, 0.0, 800.0, 0.0, pen); // x axis
-    this->m_sceneAreaPerimeter.addLine(0.0, -200.0, 0.0, 800.0, pen); // y axis
-    pen.setWidthF(0.005);
-    float i = -10.0f;
-    float length = 10.0f;
-    while (i < 10.1f) {
-        i += 1.0f;
-        this->m_sceneAreaPerimeter.addLine(i, -length, i, length, pen); // x axis
-        this->m_sceneAreaPerimeter.addLine(-length, i, length, i, pen); // y axis
+        yAxis->setRange(min, max - 1);
+        yAxis->setTickInterval(1.0);
+        yAxis->setTickCount(max - min);
+        yAxis->setTitleText("log(change in %)");
     }
 }
 

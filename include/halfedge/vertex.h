@@ -2,6 +2,7 @@
 #define AUTOFRAC_HE_VERTEX_H
 
 #include <QString>
+#include <QVector>
 
 namespace he {
 
@@ -77,11 +78,17 @@ public:
 
     [[nodiscard]] std::vector<he::Face*> getAllFacesAroundVertex(he::Face* f) const;
 
+    void addHalfEdge(he::HalfEdge* halfEdge);
+    QVector<he::HalfEdge*>& otherHalfEdges();
+
+
 private:
     //coordinates of this vertex
     float m_x, m_y, m_z;
-    //a half-edge from which this point is its origin
+    //a half-edge from which this point is the origin
     he::HalfEdge* m_halfEdge;
+    //all other half-edges from which this point is the origin
+    QVector<he::HalfEdge*> m_otherHalfEdges;
     //name of the vertex
     QString m_name;
 };

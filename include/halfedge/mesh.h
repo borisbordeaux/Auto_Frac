@@ -1,7 +1,7 @@
 #ifndef AUTOFRAC_HE_MESH_H
 #define AUTOFRAC_HE_MESH_H
 
-#include <QMap>
+#include <QHash>
 #include <QString>
 #include <vector>
 
@@ -35,10 +35,6 @@ private:
     std::vector<he::Vertex*> m_vertices;
     std::vector<he::HalfEdge*> m_halfEdges;
     std::vector<he::Face*> m_faces;
-
-    //to enhance the finding of one half-edge by its name
-    //we store each half-edge using their unique name
-    QMap<QString, int> m_map;
 };
 
 } // poly
