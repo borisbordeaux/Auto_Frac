@@ -59,3 +59,7 @@ QString he::HalfEdge::name() const {
 void he::HalfEdge::setName(QString const& name) {
     m_name = name;
 }
+
+float he::HalfEdge::length() const {
+    return (m_next->origin()->pos() - m_origin->pos()).length();
+}

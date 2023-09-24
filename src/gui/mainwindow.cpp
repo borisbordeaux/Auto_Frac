@@ -620,8 +620,8 @@ void MainWindow::displayGraph() {
         m_chartFractalDim->addSeries(series);
         m_chartFractalDim->addSeries(seriesUnused);
         m_chartFractalDim->createDefaultAxes();
-        QValueAxis* xAxis = dynamic_cast<QValueAxis*>(m_chartFractalDim->axes(Qt::Horizontal, series).first());
-        QValueAxis* yAxis = dynamic_cast<QValueAxis*>(m_chartFractalDim->axes(Qt::Vertical, series).first());
+        QValueAxis * xAxis = dynamic_cast<QValueAxis*>(m_chartFractalDim->axes(Qt::Horizontal, series).first());
+        QValueAxis * yAxis = dynamic_cast<QValueAxis*>(m_chartFractalDim->axes(Qt::Vertical, series).first());
         int max = std::max(qRound(xAxis->max() + 1.0), qRound(yAxis->max() + 1.0));
         xAxis->setRange(0, max);
         xAxis->setTickInterval(1.0);
@@ -640,89 +640,92 @@ void MainWindow::displayGraph() {
     }
 }
 
-[[maybe_unused]] void MainWindow::slotComputeAreaPerimeter() {
-    QStringList files = QFileDialog::getOpenFileNames(this, "Open PNG Files...", "../img", "PNG Files (*.png)", nullptr, QFileDialog::DontUseNativeDialog);
-
+void MainWindow::computeAreaPerimeter(QStringList const& files) {
     int currentFile = 0;
+    m_chartAreaPerimeter->removeAllSeries();
+    QScatterSeries* seriesArea = new QScatterSeries();
+    QScatterSeries* seriesPerimeter = new QScatterSeries();
+    seriesArea->setName("Area");
+    seriesPerimeter->setName("Perimeter");
+
+    seriesArea->setColor(Qt::blue);
+    seriesPerimeter->setColor(Qt::darkGreen);
+
+    std::vector<std::pair<float, float>> vectorArea;
+    std::vector<std::pair<float, float>> vectorPerimeter;
+
+    float firstArea = -1;
+    float firstPerimeter = -1;
+    for (QString const& file: files) {
+        float area = frac::utils::computeArea(file);
+        float perimeter = frac::utils::computePerimeter(file);
+        if (firstArea < 0.0f) {
+            firstArea = area;
+        }
+        if (firstPerimeter < 0.0f) {
+            firstPerimeter = perimeter;
+        }
+
+        this->ui->label_perimeter->setText(std::to_string(perimeter).c_str());
+        this->ui->label_area->setText(std::to_string(area).c_str());
+
+        float y1 = area / firstArea;
+        float y2 = perimeter / firstPerimeter;
+
+        seriesArea->append(static_cast<float>(currentFile), std::log(y1));
+        seriesPerimeter->append(static_cast<float>(currentFile), std::log((y2)));
+
+        this->ui->label_porosity->setText(QString::number(1.0f - y1));
+        currentFile++;
+    }
+
+    bool okArea;
+    bool okPerimeter;
+    QPair<qreal, qreal> areaReg = seriesArea->bestFitLineEquation(okArea);
+    QPair<qreal, qreal> perimeterReg = seriesPerimeter->bestFitLineEquation(okPerimeter);
+    if (okArea && okPerimeter) {
+        seriesArea->setBestFitLineColor(Qt::blue);
+        seriesArea->setBestFitLineVisible(true);
+        this->ui->label_coefArea->setText(std::to_string(std::exp(areaReg.first)).c_str());
+
+        seriesPerimeter->setBestFitLineColor(Qt::darkGreen);
+        seriesPerimeter->setBestFitLineVisible(true);
+        this->ui->label_coefPerimeter->setText(std::to_string(std::exp(perimeterReg.first)).c_str());
+    } else {
+        this->ui->label_coefArea->setText("");
+        this->ui->label_coefPerimeter->setText("");
+    }
+
+    m_chartAreaPerimeter->addSeries(seriesArea);
+    m_chartAreaPerimeter->addSeries(seriesPerimeter);
+    m_chartAreaPerimeter->createDefaultAxes();
+    QValueAxis * xAxis = dynamic_cast<QValueAxis*>(m_chartAreaPerimeter->axes(Qt::Horizontal).first());
+    QValueAxis * yAxis = dynamic_cast<QValueAxis*>(m_chartAreaPerimeter->axes(Qt::Vertical).first());
+    int max = std::max(qRound(xAxis->max() + 1.0), qRound(yAxis->max() + 1.0));
+    int min = qRound(yAxis->min() - 1.0);
+    xAxis->setRange(-1, max);
+    xAxis->setTickInterval(1.0);
+    xAxis->setTickCount(max + 2);
+    xAxis->setTitleText("Iteration level");
+
+    yAxis->setRange(min, max - 1);
+    yAxis->setTickInterval(1.0);
+    yAxis->setTickCount(max - min);
+    yAxis->setTitleText("log(change in %)");
+}
+
+[[maybe_unused]] void MainWindow::slotComputeAreaPerimeterPNG() {
+    QStringList files = QFileDialog::getOpenFileNames(this, "Open PNG Files...", "../img", "PNG Files (*.png)", nullptr, QFileDialog::DontUseNativeDialog);
     if (!files.isEmpty()) {
         cv::destroyAllWindows();
-        m_chartAreaPerimeter->removeAllSeries();
-        QScatterSeries* seriesArea = new QScatterSeries();
-        QScatterSeries* seriesPerimeter = new QScatterSeries();
-        seriesArea->setName("Area");
-        seriesPerimeter->setName("Perimeter");
+        this->computeAreaPerimeter(files);
+    }
+}
 
-        seriesArea->setColor(Qt::blue);
-        seriesPerimeter->setColor(Qt::darkGreen);
-
-        std::vector<std::pair<float, float>> vectorArea;
-        std::vector<std::pair<float, float>> vectorPerimeter;
-
-        int firstArea = -1;
-        int firstPerimeter = -1;
-        for (QString const& file: files) {
-            cv::Mat img = cv::imread(file.toStdString(), cv::IMREAD_GRAYSCALE);
-            cv::threshold(img, img, 1, 255, cv::THRESH_BINARY);
-            cv::imshow(std::string("Image ") + std::to_string(currentFile), img);
-
-            int area = frac::utils::computeArea(img);
-            int perimeter = frac::utils::computePerimeter(img, this->ui->checkBox_displayContours->isChecked() ? "contours " + std::to_string(currentFile) : "");
-            if (firstArea == -1) {
-                firstArea = area;
-            }
-            if (firstPerimeter == -1) {
-                firstPerimeter = perimeter;
-            }
-
-            this->ui->label_perimeter->setText(std::to_string(perimeter).c_str());
-            this->ui->label_area->setText(std::to_string(area).c_str());
-
-            float y1 = static_cast<float>(area) / static_cast<float>(firstArea);
-            float y2 = static_cast<float>(perimeter) / static_cast<float>(firstPerimeter);
-
-            seriesArea->append(static_cast<float>(currentFile), std::log(y1));
-            seriesPerimeter->append(static_cast<float>(currentFile), std::log((y2)));
-
-            //auto* itemArea = new PointGraphicsItem(static_cast<float>(currentFile), std::log(y1), size, this->ui->label_perimeter, this->ui->label_area, this->ui->label_porosity, perimeter, area, 1.0f - y1, pen);
-            //auto* itemPerimeter = new PointGraphicsItem(static_cast<float>(currentFile), std::log(y2), size, this->ui->label_perimeter, this->ui->label_area, this->ui->label_porosity, perimeter, area, 1.0f - y1, pen);
-
-            this->ui->label_porosity->setText(QString::number(1.0f - y1));
-            currentFile++;
-        }
-
-        bool okArea;
-        bool okPerimeter;
-        QPair<qreal, qreal> areaReg = seriesArea->bestFitLineEquation(okArea);
-        QPair<qreal, qreal> perimeterReg = seriesPerimeter->bestFitLineEquation(okPerimeter);
-        if (okArea && okPerimeter) {
-            seriesArea->setBestFitLineColor(Qt::blue);
-            seriesArea->setBestFitLineVisible(true);
-            this->ui->label_coefArea->setText(std::to_string(std::exp(areaReg.first)).c_str());
-
-            seriesPerimeter->setBestFitLineColor(Qt::darkGreen);
-            seriesPerimeter->setBestFitLineVisible(true);
-            this->ui->label_coefPerimeter->setText(std::to_string(std::exp(perimeterReg.first)).c_str());
-        } else {
-            this->ui->label_coefArea->setText("");
-            this->ui->label_coefPerimeter->setText("");
-        }
-
-        m_chartAreaPerimeter->addSeries(seriesArea);
-        m_chartAreaPerimeter->addSeries(seriesPerimeter);
-        m_chartAreaPerimeter->createDefaultAxes();
-        QValueAxis* xAxis = dynamic_cast<QValueAxis*>(m_chartAreaPerimeter->axes(Qt::Horizontal).first());
-        QValueAxis* yAxis = dynamic_cast<QValueAxis*>(m_chartAreaPerimeter->axes(Qt::Vertical).first());
-        int max = std::max(qRound(xAxis->max() + 1.0), qRound(yAxis->max() + 1.0));
-        int min = qRound(yAxis->min() - 1.0);
-        xAxis->setRange(-1, max);
-        xAxis->setTickInterval(1.0);
-        xAxis->setTickCount(max + 2);
-        xAxis->setTitleText("Iteration level");
-
-        yAxis->setRange(min, max - 1);
-        yAxis->setTickInterval(1.0);
-        yAxis->setTickCount(max - min);
-        yAxis->setTitleText("log(change in %)");
+[[maybe_unused]] void MainWindow::slotComputeAreaPerimeterOBJ() {
+    QStringList files = QFileDialog::getOpenFileNames(this, "Open OBJ Files...", "../img", "OBJ Files (*.obj)", nullptr);//, QFileDialog::DontUseNativeDialog);
+    if (!files.isEmpty()) {
+        this->computeAreaPerimeter(files);
     }
 }
 

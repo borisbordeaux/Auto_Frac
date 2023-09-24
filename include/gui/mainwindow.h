@@ -58,7 +58,8 @@ public slots:
     [[maybe_unused]] void slotExportSelectedFace();
     [[maybe_unused]] void slotOpenOBJ4File();
     [[maybe_unused]] void slotComputeFractalDimension();
-    [[maybe_unused]] void slotComputeAreaPerimeter();
+    [[maybe_unused]] void slotComputeAreaPerimeterPNG();
+    [[maybe_unused]] void slotComputeAreaPerimeterOBJ();
     [[maybe_unused]] void slotComputeImageDensity();
     [[maybe_unused]] void slotComputeNbCells();
     [[maybe_unused]] void slotComputeNbLacunas();
@@ -71,31 +72,30 @@ private:
         std::size_t Face2;
         std::size_t Edge2;
     };
-
+private:
     [[nodiscard]] static frac::Face toFace(QString const& cellName);
     [[nodiscard]] static frac::Edge toEdge(QString const& edgeName);
     [[nodiscard]] static Constraint toConstraint(QString const& constraintText);
     [[nodiscard]] static QString fromConstraint(Constraint const& constraint);
     [[nodiscard]] static std::size_t getNbCellsOfCell(std::string const& faceName, std::size_t level, std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>>& cacheSubdivisions);
     [[nodiscard]] static double getNbLacunaOfCell(std::string const& faceName, std::size_t level, std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>>& cacheSubdivisions, std::unordered_map<std::string, double>& cacheLacunas);
-
-    std::map<frac::Face, std::map<frac::Face, int>> m_mapSubFaces;
-
+    void computeAreaPerimeter(QStringList const& files);
     void updateEnablement();
     void updateEnablementPoly();
-
     void setInfo(std::string const& textInfo);
+    void displayGraph();
+
+private:
+    std::map<frac::Face, std::map<frac::Face, int>> m_mapSubFaces;
 
     Ui::MainWindow* ui;
-
     he::Mesh m_mesh;
     Model m_modelMesh;
     GLView* m_view;
     bool m_openedMesh;
-    graph::IncidenceGraph m_graph;
 
+    graph::IncidenceGraph m_graph;
     QGraphicsScene m_scene;
-    void displayGraph();
 
     QGraphicsScene m_sceneFractalDim;
     QChart* m_chartFractalDim;

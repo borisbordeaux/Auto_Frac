@@ -48,22 +48,22 @@ void Model::updateDataEdge() {
     //set ID to 1, 0 is for the background
     //because for selection, we will compute
     //the highest value in a little area
-    //the get the ID
+    //to get the ID
     int ID = 1;
 
     //for each halfedge
     for (he::HalfEdge* he: m_mesh->halfEdges()) {
         //we will display a line
-        float x1 = he->origin()->x();
-        float y1 = he->origin()->y();
-        float z1 = he->origin()->z();
+        float x1 = he->origin()->pos().x();
+        float y1 = he->origin()->pos().y();
+        float z1 = he->origin()->pos().z();
 
-        float x2 = he->next()->origin()->x();
-        float y2 = he->next()->origin()->y();
-        float z2 = he->next()->origin()->z();
+        float x2 = he->next()->origin()->pos().x();
+        float y2 = he->next()->origin()->pos().y();
+        float z2 = he->next()->origin()->pos().z();
 
-        add(QVector3D(x1, y1, z1), ID, (ID == m_selectedEdge) ? 1.0 : -1.0);
-        add(QVector3D(x2, y2, z2), ID, (ID == m_selectedEdge) ? 1.0 : -1.0);
+        add(QVector3D(x1, y1, z1), static_cast<float>(ID), (ID == m_selectedEdge) ? 1.0 : -1.0);
+        add(QVector3D(x2, y2, z2), static_cast<float>(ID), (ID == m_selectedEdge) ? 1.0 : -1.0);
 
         //going to the next halfedge
         //we increment the ID
@@ -188,26 +188,26 @@ void Model::addFace(he::Face* f, int ID) {
     }
 
     //we set the origin of the triangles
-    float x1 = he->origin()->x();
-    float y1 = he->origin()->y();
-    float z1 = he->origin()->z();
+    float x1 = he->origin()->pos().x();
+    float y1 = he->origin()->pos().y();
+    float z1 = he->origin()->pos().z();
 
     //then we can triangulate the face
     //using the origin and the other vertices
     for (int i = 0; i < nbHe - 2; i++) {
-        float x2 = he->next()->origin()->x();
-        float y2 = he->next()->origin()->y();
-        float z2 = he->next()->origin()->z();
+        float x2 = he->next()->origin()->pos().x();
+        float y2 = he->next()->origin()->pos().y();
+        float z2 = he->next()->origin()->pos().z();
 
-        float x3 = he->next()->next()->origin()->x();
-        float y3 = he->next()->next()->origin()->y();
-        float z3 = he->next()->next()->origin()->z();
+        float x3 = he->next()->next()->origin()->pos().x();
+        float y3 = he->next()->next()->origin()->pos().y();
+        float z3 = he->next()->next()->origin()->pos().z();
 
         //if the face is selected, we will
         //throw 1.0 and -1.0 otherwise
         float isSelected = ID == m_selectedFace ? 1.0f : -1.0f;
 
-        triangle(x1, y1, z1, x2, y2, z2, x3, y3, z3, ID, isSelected);
+        triangle(x1, y1, z1, x2, y2, z2, x3, y3, z3, static_cast<float>(ID), isSelected);
 
         he = he->next();
     }

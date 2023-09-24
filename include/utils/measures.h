@@ -4,17 +4,28 @@
 #include <vector>
 #include <string>
 
+class QString;
+
 namespace cv {
 class Mat;
+}
+
+namespace he {
+class Mesh;
 }
 
 namespace frac::utils {
 
 std::vector<int> computeFractalDimension(cv::Mat const& img);
 
-int computeArea(cv::Mat const& img);
+float computeArea(QString const& filename);
+float computePerimeter(QString const& filename);
 
-int computePerimeter(cv::Mat const& img, std::string const& displayContoursWinName);
+float computeArea(cv::Mat const& img);
+float computeArea(he::Mesh const& mesh);
+
+float computePerimeter(cv::Mat const& img);
+float computePerimeter(he::Mesh const& mesh);
 
 /**
  * Compute linear regression (term A in equation y = Ax + B) <br/>
@@ -24,7 +35,7 @@ int computePerimeter(cv::Mat const& img, std::string const& displayContoursWinNa
  * @return the values A and B of the line equation
  */
 template<typename T>
-std::pair<T, T> computeLinearRegression(std::vector<std::pair<T, T>> const& values) {
+[[maybe_unused]] std::pair<T, T> computeLinearRegression(std::vector<std::pair<T, T>> const& values) {
     T A = 0.0f;
     T B = 0.0f;
 

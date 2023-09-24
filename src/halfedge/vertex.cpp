@@ -6,32 +6,12 @@
 
 
 he::Vertex::Vertex(float x, float y, float z, QString name) :
-        m_x(x), m_y(y), m_z(z), m_halfEdge(nullptr), m_name(std::move(name)) {
+        m_pos(x,y,z), m_halfEdge(nullptr), m_name(std::move(name)) {
 
 }
 
-float he::Vertex::x() const {
-    return m_x;
-}
-
-[[maybe_unused]] void he::Vertex::setX(float x) {
-    m_x = x;
-}
-
-float he::Vertex::y() const {
-    return m_y;
-}
-
-void he::Vertex::setY(float y) {
-    m_y = y;
-}
-
-float he::Vertex::z() const {
-    return m_z;
-}
-
-void he::Vertex::setZ(float z) {
-    m_z = z;
+QVector3D he::Vertex::pos() const {
+    return m_pos;
 }
 
 he::HalfEdge* he::Vertex::halfEdge() {

@@ -2,6 +2,7 @@
 #define AUTOFRAC_HE_FACE_H
 
 #include <QString>
+#include <QVector3D>
 
 namespace he {
 
@@ -33,7 +34,15 @@ public:
      */
     [[nodiscard]] QString name() const;
 
+    /**
+	 * @brief compute the normal of the face
+	 * @return the normalized normal of the face
+	 */
+    QVector3D computeNormal();
+
     [[nodiscard]] std::size_t nbEdges() const;
+
+    [[nodiscard]] float area();
 
 private:
     //the name of the face

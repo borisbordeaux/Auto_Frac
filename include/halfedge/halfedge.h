@@ -90,6 +90,8 @@ public:
      */
     [[maybe_unused]] void setName(const QString& name);
 
+    float length() const;
+
 private:
     he::Vertex* m_origin;
     he::Face* m_face;

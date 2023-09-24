@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QVector>
+#include <QVector3D>
 
 namespace he {
 
@@ -22,39 +23,9 @@ public:
 
     /**
      * @brief getter
-     * @return the x value of the vertex
+     * @return the position of this vertex
      */
-    [[nodiscard]] float x() const;
-
-    /**
-     * @brief setter
-     * @param x the x value of the vertex
-     */
-    [[maybe_unused]] void setX(float x);
-
-    /**
-     * @brief getter
-     * @return the y value of the vertex
-     */
-    [[nodiscard]] float y() const;
-
-    /**
-     * @brief setter
-     * @param y the y value of the vertex
-     */
-    [[maybe_unused]] void setY(float y);
-
-    /**
-     * @brief getter
-     * @return the z value of the vertex
-     */
-    [[nodiscard]] float z() const;
-
-    /**
-     * @brief setter
-     * @param z the z value of the vertex
-     */
-    [[maybe_unused]] void setZ(float z);
+    [[nodiscard]] QVector3D pos() const;
 
     /**
      * @brief getter
@@ -84,7 +55,7 @@ public:
 
 private:
     //coordinates of this vertex
-    float m_x, m_y, m_z;
+    QVector3D m_pos;
     //a half-edge from which this point is the origin
     he::HalfEdge* m_halfEdge;
     //all other half-edges from which this point is the origin
