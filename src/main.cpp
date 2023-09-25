@@ -11,7 +11,7 @@ int main(int argc, char* argv[]) {
 #ifndef Q_OS_ANDROID
     fmt.setSamples(16);
 #endif
-    fmt.setVersion(3, 3);
+    fmt.setVersion(4,6);
     fmt.setProfile(QSurfaceFormat::CoreProfile);
     fmt.setSwapInterval(1);
     QSurfaceFormat::setDefaultFormat(fmt);

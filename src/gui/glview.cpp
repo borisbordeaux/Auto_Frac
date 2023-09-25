@@ -60,12 +60,6 @@ void GLView::setYRotation(int angle) {
     m_yRot = angle;
 }
 
-void GLView::setZRotation(int angle) {
-    //normalize the angle and set it to the z rotation
-    qNormalizeAngle(angle);
-    m_zRot = angle;
-}
-
 void GLView::changeSelectionMode() {
     this->m_model->setSelected(-1);
     this->m_model->setEdgeSelected(-1);
@@ -274,8 +268,8 @@ void GLView::mousePressEvent(QMouseEvent* event) {
 
 void GLView::mouseMoveEvent(QMouseEvent* event) {
     //compute rotations
-    int dx = event->position().x() - m_lastPos.x();
-    int dy = event->position().y() - m_lastPos.y();
+    int dx = event->position().toPoint().x() - m_lastPos.x();
+    int dy = event->position().toPoint().y() - m_lastPos.y();
 
     if (event->buttons() & Qt::LeftButton) {
         setXRotation(m_xRot + dy);
@@ -283,8 +277,8 @@ void GLView::mouseMoveEvent(QMouseEvent* event) {
     }
 
     if (event->buttons() & Qt::RightButton) {
-        setZRotation(m_zRot - dx);
-        setYRotation(m_yRot + dy);
+        m_translateX += dx;
+        m_translateY += dy;
     }
 
     m_lastPos = event->pos();
@@ -329,7 +323,7 @@ void GLView::computeMVMatrices() {
     //and we set the right orientation of the world
     m_world.rotate(m_xRot / 2.0f, 1, 0, 0);
     m_world.rotate(m_yRot / 2.0f, 0, 1, 0);
-    m_world.rotate(m_zRot / 2.0f, 0, 0, 1);
+    m_world.translate(m_translateX / 10.0f, m_translateY / 10.0f);
 }
 
 void GLView::clickFaceManagement() {

@@ -31,4 +31,4 @@ target_link_libraries(AutoFrac PRIVATE Qt6::Charts)
 
 target_link_libraries(AutoFrac PRIVATE ${OpenCV_LIBS})
 
-target_compile_options(AutoFrac PRIVATE -Wall -Wextra -Wpedantic -Werror)
+target_compile_options(AutoFrac PRIVATE -Wall -Wextra -Werror)

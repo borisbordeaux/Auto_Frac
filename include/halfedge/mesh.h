@@ -25,7 +25,7 @@ public:
     void append(he::Vertex* v);
     void append(he::HalfEdge* he);
     void append(he::Face* f);
-    he::HalfEdge* findByName(const QString& name);
+    he::HalfEdge* findByName(QString const& name);
 
     void reset();
 

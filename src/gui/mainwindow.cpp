@@ -701,16 +701,17 @@ void MainWindow::computeAreaPerimeter(QStringList const& files) {
     m_chartAreaPerimeter->createDefaultAxes();
     QValueAxis * xAxis = dynamic_cast<QValueAxis*>(m_chartAreaPerimeter->axes(Qt::Horizontal).first());
     QValueAxis * yAxis = dynamic_cast<QValueAxis*>(m_chartAreaPerimeter->axes(Qt::Vertical).first());
-    int max = std::max(qRound(xAxis->max() + 1.0), qRound(yAxis->max() + 1.0));
-    int min = qRound(yAxis->min() - 1.0);
-    xAxis->setRange(-1, max);
+    int maxX = qRound(xAxis->max()) + 1;
+    int maxY = qCeil(yAxis->max());
+    int minY = qFloor(yAxis->min());
+    xAxis->setRange(-1, maxX);
     xAxis->setTickInterval(1.0);
-    xAxis->setTickCount(max + 2);
+    xAxis->setTickCount(maxX + 2);
     xAxis->setTitleText("Iteration level");
 
-    yAxis->setRange(min, max - 1);
+    yAxis->setRange(minY, maxY);
     yAxis->setTickInterval(1.0);
-    yAxis->setTickCount(max - min);
+    yAxis->setTickCount(maxY - minY + 1);
     yAxis->setTitleText("log(change in %)");
 }
 
@@ -723,7 +724,7 @@ void MainWindow::computeAreaPerimeter(QStringList const& files) {
 }
 
 [[maybe_unused]] void MainWindow::slotComputeAreaPerimeterOBJ() {
-    QStringList files = QFileDialog::getOpenFileNames(this, "Open OBJ Files...", "../img", "OBJ Files (*.obj)", nullptr);//, QFileDialog::DontUseNativeDialog);
+    QStringList files = QFileDialog::getOpenFileNames(this, "Open OBJ Files...", "../obj", "OBJ Files (*.obj)", nullptr);//, QFileDialog::DontUseNativeDialog);
     if (!files.isEmpty()) {
         this->computeAreaPerimeter(files);
     }

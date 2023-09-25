@@ -132,7 +132,7 @@ static const char* fragmentShaderSourceEdge =
 
 //vertex shader for faces
 static const char* vertexShaderSource =
-        "#version 330 core\n"
+        "#version 460 core\n"
         "in vec4 vertex;\n"
         "in vec3 normal;\n"
         "in float ID;\n"
@@ -154,7 +154,7 @@ static const char* vertexShaderSource =
 
 //fragment shader for faces
 static const char* fragmentShaderSource =
-        "#version 330 core\n"
+        "#version 460 core\n"
         "in highp vec3 vert;\n"
         "in highp vec3 vertNormal;\n"
         "in highp float pickingColor;\n"

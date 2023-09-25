@@ -50,14 +50,6 @@ public:
     void setYRotation(int angle);
 
     /**
-     * @brief setter, the angle has to be twice its
-     * value in degree because of precision when
-     * using the mouse
-     * @param angle the angle in degree about its Z axis
-     */
-    void setZRotation(int angle);
-
-    /**
      * @brief setter, set the selection mode for item picking
      * @param mode the mode to set
      */
@@ -98,7 +90,8 @@ private:
     //rotation of the model
     int m_xRot = 0;
     int m_yRot = 0;
-    int m_zRot = 0;
+    int m_translateX = 0;
+    int m_translateY = 0;
 
     //the last position of the mouse
     //used for rotation
