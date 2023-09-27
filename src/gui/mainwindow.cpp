@@ -718,15 +718,17 @@ void MainWindow::computeAreaPerimeter(QStringList const& files) {
     yAxis->setTitleText("log(change in %)");
 
     // add events on click
-    connect(seriesArea, &QScatterSeries::clicked, this, [&, vectorArea, vectorPerimeter](QPointF point){
+    connect(seriesArea, &QScatterSeries::clicked, this, [&, vectorArea, vectorPerimeter, firstArea](QPointF point){
         int iter = qRound(point.x());
         this->ui->label_area->setText(std::to_string(vectorArea[iter]).c_str());
         this->ui->label_perimeter->setText(std::to_string(vectorPerimeter[iter]).c_str());
+        this->ui->label_porosity->setText(QString::number(1.0f - (vectorArea[iter] / firstArea)));
     });
-    connect(seriesPerimeter, &QScatterSeries::clicked, this, [&, vectorPerimeter, vectorArea](QPointF point){
+    connect(seriesPerimeter, &QScatterSeries::clicked, this, [&, vectorPerimeter, vectorArea, firstArea](QPointF point){
         int iter = qRound(point.x());
         this->ui->label_perimeter->setText(std::to_string(vectorPerimeter[iter]).c_str());
         this->ui->label_area->setText(std::to_string(vectorArea[iter]).c_str());
+        this->ui->label_porosity->setText(QString::number(1.0f - (vectorArea[iter] / firstArea)));
     });
 }
 
