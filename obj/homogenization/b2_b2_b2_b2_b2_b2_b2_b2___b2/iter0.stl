@@ -1,0 +1,58 @@
+solid /home/boris/Bureau/rawad/b2_b2_b2_b2___b2/iter0.stl
+	facet normal	0	-0	-1
+		outer loop
+			vertex	-5	10	0
+			vertex	5	10	0
+			vertex	0	0	0
+		endloop
+	endfacet
+	facet normal	0	-0	-1
+		outer loop
+			vertex	5	10	0
+			vertex	10	5	0
+			vertex	0	0	0
+		endloop
+	endfacet
+	facet normal	-0	-0	-1
+		outer loop
+			vertex	10	5	0
+			vertex	10	-5	0
+			vertex	0	0	0
+		endloop
+	endfacet
+	facet normal	-0	0	-1
+		outer loop
+			vertex	10	-5	0
+			vertex	5	-10	0
+			vertex	0	0	0
+		endloop
+	endfacet
+	facet normal	0	0	-1
+		outer loop
+			vertex	5	-10	0
+			vertex	-5	-10	0
+			vertex	0	0	0
+		endloop
+	endfacet
+	facet normal	0	0	-1
+		outer loop
+			vertex	-5	-10	0
+			vertex	-10	-5	0
+			vertex	0	0	0
+		endloop
+	endfacet
+	facet normal	0	0	-1
+		outer loop
+			vertex	-10	-5	0
+			vertex	-10	5	0
+			vertex	0	0	0
+		endloop
+	endfacet
+	facet normal	0	0	-1
+		outer loop
+			vertex	-10	5	0
+			vertex	-5	10	0
+			vertex	0	0	0
+		endloop
+	endfacet
+endsolid /home/boris/Bureau/rawad/b2_b2_b2_b2___b2/iter0.stl

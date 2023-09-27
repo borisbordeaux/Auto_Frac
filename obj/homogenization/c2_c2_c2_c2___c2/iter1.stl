@@ -1,0 +1,198 @@
+solid /home/boris/Bureau/rawad/c2_c2_c2_c2___c2/iter1.stl
+	facet normal	0	-0	1
+		outer loop
+			vertex	3.33334	-10	0
+			vertex	10	-10	0
+			vertex	4.75738	-4.87819	0
+		endloop
+	endfacet
+	facet normal	0	-0	1
+		outer loop
+			vertex	10	-10	0
+			vertex	10	-3.33334	0
+			vertex	4.75738	-4.87819	0
+		endloop
+	endfacet
+	facet normal	0	0	1
+		outer loop
+			vertex	10	-3.33334	0
+			vertex	7.91508	-0.11795	0
+			vertex	4.75738	-4.87819	0
+		endloop
+	endfacet
+	facet normal	0	0	1
+		outer loop
+			vertex	7.91508	-0.11795	0
+			vertex	2.00254	-0.11794	0
+			vertex	4.75738	-4.87819	0
+		endloop
+	endfacet
+	facet normal	0	0	1
+		outer loop
+			vertex	2.00254	-0.11794	0
+			vertex	-0.01268	-2.47536	0
+			vertex	4.75738	-4.87819	0
+		endloop
+	endfacet
+	facet normal	-0	0	1
+		outer loop
+			vertex	-0.01268	-2.47536	0
+			vertex	0.06336	-8.10273	0
+			vertex	4.75738	-4.87819	0
+		endloop
+	endfacet
+	facet normal	-0	0	1
+		outer loop
+			vertex	0.06336	-8.10273	0
+			vertex	3.33334	-10	0
+			vertex	4.75738	-4.87819	0
+		endloop
+	endfacet
+	facet normal	0	-0	1
+		outer loop
+			vertex	10	3.33334	0
+			vertex	10	10	0
+			vertex	4.74281	4.67708	0
+		endloop
+	endfacet
+	facet normal	0	0	1
+		outer loop
+			vertex	10	10	0
+			vertex	3.33334	10	0
+			vertex	4.74281	4.67708	0
+		endloop
+	endfacet
+	facet normal	0	0	1
+		outer loop
+			vertex	3.33334	10	0
+			vertex	0.09448	7.72585	0
+			vertex	4.74281	4.67708	0
+		endloop
+	endfacet
+	facet normal	-0	0	1
+		outer loop
+			vertex	0.09448	7.72585	0
+			vertex	-0.14576	1.91628	0
+			vertex	4.74281	4.67708	0
+		endloop
+	endfacet
+	facet normal	-0	0	1
+		outer loop
+			vertex	-0.14576	1.91628	0
+			vertex	2.00254	-0.11794	0
+			vertex	4.74281	4.67708	0
+		endloop
+	endfacet
+	facet normal	-0	-0	1
+		outer loop
+			vertex	2.00254	-0.11794	0
+			vertex	7.91508	-0.11795	0
+			vertex	4.74281	4.67708	0
+		endloop
+	endfacet
+	facet normal	0	-0	1
+		outer loop
+			vertex	7.91508	-0.11795	0
+			vertex	10	3.33334	0
+			vertex	4.74281	4.67708	0
+		endloop
+	endfacet
+	facet normal	0	0	1
+		outer loop
+			vertex	-3.33334	10	0
+			vertex	-10	10	0
+			vertex	-4.84618	4.6961	0
+		endloop
+	endfacet
+	facet normal	-0	0	1
+		outer loop
+			vertex	-10	10	0
+			vertex	-10	3.33334	0
+			vertex	-4.84618	4.6961	0
+		endloop
+	endfacet
+	facet normal	-0	0	1
+		outer loop
+			vertex	-10	3.33334	0
+			vertex	-8.24461	-0.00388	0
+			vertex	-4.84618	4.6961	0
+		endloop
+	endfacet
+	facet normal	-0	-0	1
+		outer loop
+			vertex	-8.24461	-0.00388	0
+			vertex	-2.29404	-0.09892	0
+			vertex	-4.84618	4.6961	0
+		endloop
+	endfacet
+	facet normal	0	-0	1
+		outer loop
+			vertex	-2.29404	-0.09892	0
+			vertex	-0.14576	1.91628	0
+			vertex	-4.84618	4.6961	0
+		endloop
+	endfacet
+	facet normal	0	-0	1
+		outer loop
+			vertex	-0.14576	1.91628	0
+			vertex	0.09448	7.72585	0
+			vertex	-4.84618	4.6961	0
+		endloop
+	endfacet
+	facet normal	0	0	1
+		outer loop
+			vertex	0.09448	7.72585	0
+			vertex	-3.33334	10	0
+			vertex	-4.84618	4.6961	0
+		endloop
+	endfacet
+	facet normal	-0	0	1
+		outer loop
+			vertex	-10	-3.33334	0
+			vertex	-10	-10	0
+			vertex	-4.83162	-4.85918	0
+		endloop
+	endfacet
+	facet normal	0	-0	1
+		outer loop
+			vertex	-10	-10	0
+			vertex	-3.33334	-10	0
+			vertex	-4.83162	-4.85918	0
+		endloop
+	endfacet
+	facet normal	0	-0	1
+		outer loop
+			vertex	-3.33334	-10	0
+			vertex	0.06336	-8.10273	0
+			vertex	-4.83162	-4.85918	0
+		endloop
+	endfacet
+	facet normal	0	0	1
+		outer loop
+			vertex	0.06336	-8.10273	0
+			vertex	-0.01268	-2.47536	0
+			vertex	-4.83162	-4.85918	0
+		endloop
+	endfacet
+	facet normal	0	0	1
+		outer loop
+			vertex	-0.01268	-2.47536	0
+			vertex	-2.29404	-0.09892	0
+			vertex	-4.83162	-4.85918	0
+		endloop
+	endfacet
+	facet normal	0	0	1
+		outer loop
+			vertex	-2.29404	-0.09892	0
+			vertex	-8.24461	-0.00388	0
+			vertex	-4.83162	-4.85918	0
+		endloop
+	endfacet
+	facet normal	0	0	1
+		outer loop
+			vertex	-8.24461	-0.00388	0
+			vertex	-10	-3.33334	0
+			vertex	-4.83162	-4.85918	0
+		endloop
+	endfacet
+endsolid /home/boris/Bureau/rawad/c2_c2_c2_c2___c2/iter1.stl

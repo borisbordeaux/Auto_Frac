@@ -1,0 +1,282 @@
+solid /home/boris/Bureau/rawad/b2_b2_b2_b2___b2/iter1.stl
+	facet normal	0	-0	-1
+		outer loop
+			vertex	0	10	0
+			vertex	5	10	0
+			vertex	2.79838	6.50255	0
+		endloop
+	endfacet
+	facet normal	-0	-0	-1
+		outer loop
+			vertex	5	10	0
+			vertex	6.25	6.25	0
+			vertex	2.79838	6.50255	0
+		endloop
+	endfacet
+	facet normal	-0	0	-1
+		outer loop
+			vertex	6.25	6.25	0
+			vertex	2.64305	2.5728	0
+			vertex	2.79838	6.50255	0
+		endloop
+	endfacet
+	facet normal	0	0	-1
+		outer loop
+			vertex	2.64305	2.5728	0
+			vertex	0.098863	3.68993	0
+			vertex	2.79838	6.50255	0
+		endloop
+	endfacet
+	facet normal	0	0	-1
+		outer loop
+			vertex	0.098863	3.68993	0
+			vertex	0	10	0
+			vertex	2.79838	6.50255	0
+		endloop
+	endfacet
+	facet normal	0	-0	-1
+		outer loop
+			vertex	6.25	6.25	0
+			vertex	10	5	0
+			vertex	6.50487	2.77632	0
+		endloop
+	endfacet
+	facet normal	-0	-0	-1
+		outer loop
+			vertex	10	5	0
+			vertex	10	0	0
+			vertex	6.50487	2.77632	0
+		endloop
+	endfacet
+	facet normal	0	0	-1
+		outer loop
+			vertex	10	0	0
+			vertex	3.63131	0.058823	0
+			vertex	6.50487	2.77632	0
+		endloop
+	endfacet
+	facet normal	0	0	-1
+		outer loop
+			vertex	3.63131	0.058823	0
+			vertex	2.64305	2.5728	0
+			vertex	6.50487	2.77632	0
+		endloop
+	endfacet
+	facet normal	0	0	-1
+		outer loop
+			vertex	2.64305	2.5728	0
+			vertex	6.25	6.25	0
+			vertex	6.50487	2.77632	0
+		endloop
+	endfacet
+	facet normal	-0	-0	-1
+		outer loop
+			vertex	10	0	0
+			vertex	10	-5	0
+			vertex	6.48545	-2.74351	0
+		endloop
+	endfacet
+	facet normal	-0	0	-1
+		outer loop
+			vertex	10	-5	0
+			vertex	6.25	-6.25	0
+			vertex	6.48545	-2.74351	0
+		endloop
+	endfacet
+	facet normal	0	0	-1
+		outer loop
+			vertex	6.25	-6.25	0
+			vertex	2.54592	-2.52638	0
+			vertex	6.48545	-2.74351	0
+		endloop
+	endfacet
+	facet normal	0	0	-1
+		outer loop
+			vertex	2.54592	-2.52638	0
+			vertex	3.63131	0.058823	0
+			vertex	6.48545	-2.74351	0
+		endloop
+	endfacet
+	facet normal	0	-0	-1
+		outer loop
+			vertex	3.63131	0.058823	0
+			vertex	10	0	0
+			vertex	6.48545	-2.74351	0
+		endloop
+	endfacet
+	facet normal	-0	0	-1
+		outer loop
+			vertex	6.25	-6.25	0
+			vertex	5	-10	0
+			vertex	2.75922	-6.46974	0
+		endloop
+	endfacet
+	facet normal	0	0	-1
+		outer loop
+			vertex	5	-10	0
+			vertex	0	-10	0
+			vertex	2.75922	-6.46974	0
+		endloop
+	endfacet
+	facet normal	0	0	-1
+		outer loop
+			vertex	0	-10	0
+			vertex	0.000187	-3.5723	0
+			vertex	2.75922	-6.46974	0
+		endloop
+	endfacet
+	facet normal	0	0	-1
+		outer loop
+			vertex	0.000187	-3.5723	0
+			vertex	2.54592	-2.52638	0
+			vertex	2.75922	-6.46974	0
+		endloop
+	endfacet
+	facet normal	0	-0	-1
+		outer loop
+			vertex	2.54592	-2.52638	0
+			vertex	6.25	-6.25	0
+			vertex	2.75922	-6.46974	0
+		endloop
+	endfacet
+	facet normal	0	0	-1
+		outer loop
+			vertex	0	-10	0
+			vertex	-5	-10	0
+			vertex	-2.76101	-6.46146	0
+		endloop
+	endfacet
+	facet normal	0	0	-1
+		outer loop
+			vertex	-5	-10	0
+			vertex	-6.25	-6.25	0
+			vertex	-2.76101	-6.46146	0
+		endloop
+	endfacet
+	facet normal	0	-0	-1
+		outer loop
+			vertex	-6.25	-6.25	0
+			vertex	-2.55524	-2.485	0
+			vertex	-2.76101	-6.46146	0
+		endloop
+	endfacet
+	facet normal	0	-0	-1
+		outer loop
+			vertex	-2.55524	-2.485	0
+			vertex	0.000187	-3.5723	0
+			vertex	-2.76101	-6.46146	0
+		endloop
+	endfacet
+	facet normal	-0	0	-1
+		outer loop
+			vertex	0.000187	-3.5723	0
+			vertex	0	-10	0
+			vertex	-2.76101	-6.46146	0
+		endloop
+	endfacet
+	facet normal	0	0	-1
+		outer loop
+			vertex	-6.25	-6.25	0
+			vertex	-10	-5	0
+			vertex	-6.4675	-2.75102	0
+		endloop
+	endfacet
+	facet normal	0	0	-1
+		outer loop
+			vertex	-10	-5	0
+			vertex	-10	0	0
+			vertex	-6.4675	-2.75102	0
+		endloop
+	endfacet
+	facet normal	0	-0	-1
+		outer loop
+			vertex	-10	0	0
+			vertex	-3.53226	-0.02011	0
+			vertex	-6.4675	-2.75102	0
+		endloop
+	endfacet
+	facet normal	0	-0	-1
+		outer loop
+			vertex	-3.53226	-0.02011	0
+			vertex	-2.55524	-2.485	0
+			vertex	-6.4675	-2.75102	0
+		endloop
+	endfacet
+	facet normal	-0	0	-1
+		outer loop
+			vertex	-2.55524	-2.485	0
+			vertex	-6.25	-6.25	0
+			vertex	-6.4675	-2.75102	0
+		endloop
+	endfacet
+	facet normal	0	0	-1
+		outer loop
+			vertex	-10	0	0
+			vertex	-10	5	0
+			vertex	-6.4103	2.79846	0
+		endloop
+	endfacet
+	facet normal	0	-0	-1
+		outer loop
+			vertex	-10	5	0
+			vertex	-6.25	6.25	0
+			vertex	-6.4103	2.79846	0
+		endloop
+	endfacet
+	facet normal	-0	-0	-1
+		outer loop
+			vertex	-6.25	6.25	0
+			vertex	-2.26926	2.76243	0
+			vertex	-6.4103	2.79846	0
+		endloop
+	endfacet
+	facet normal	-0	0	-1
+		outer loop
+			vertex	-2.26926	2.76243	0
+			vertex	-3.53226	-0.02011	0
+			vertex	-6.4103	2.79846	0
+		endloop
+	endfacet
+	facet normal	0	0	-1
+		outer loop
+			vertex	-3.53226	-0.02011	0
+			vertex	-10	0	0
+			vertex	-6.4103	2.79846	0
+		endloop
+	endfacet
+	facet normal	0	0	-1
+		outer loop
+			vertex	-6.25	6.25	0
+			vertex	-5	10	0
+			vertex	-2.68408	6.54047	0
+		endloop
+	endfacet
+	facet normal	0	-0	-1
+		outer loop
+			vertex	-5	10	0
+			vertex	0	10	0
+			vertex	-2.68408	6.54047	0
+		endloop
+	endfacet
+	facet normal	-0	-0	-1
+		outer loop
+			vertex	0	10	0
+			vertex	0.098863	3.68993	0
+			vertex	-2.68408	6.54047	0
+		endloop
+	endfacet
+	facet normal	-0	0	-1
+		outer loop
+			vertex	0.098863	3.68993	0
+			vertex	-2.26926	2.76243	0
+			vertex	-2.68408	6.54047	0
+		endloop
+	endfacet
+	facet normal	0	0	-1
+		outer loop
+			vertex	-2.26926	2.76243	0
+			vertex	-6.25	6.25	0
+			vertex	-2.68408	6.54047	0
+		endloop
+	endfacet
+endsolid /home/boris/Bureau/rawad/b2_b2_b2_b2___b2/iter1.stl

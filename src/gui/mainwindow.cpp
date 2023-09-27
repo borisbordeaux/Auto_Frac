@@ -651,8 +651,8 @@ void MainWindow::computeAreaPerimeter(QStringList const& files) {
     seriesArea->setColor(Qt::blue);
     seriesPerimeter->setColor(Qt::darkGreen);
 
-    std::vector<std::pair<float, float>> vectorArea;
-    std::vector<std::pair<float, float>> vectorPerimeter;
+    std::vector<float> vectorArea;
+    std::vector<float> vectorPerimeter;
 
     float firstArea = -1;
     float firstPerimeter = -1;
@@ -671,6 +671,9 @@ void MainWindow::computeAreaPerimeter(QStringList const& files) {
 
         float y1 = area / firstArea;
         float y2 = perimeter / firstPerimeter;
+
+        vectorArea.push_back(area);
+        vectorPerimeter.push_back(perimeter);
 
         seriesArea->append(static_cast<float>(currentFile), std::log(y1));
         seriesPerimeter->append(static_cast<float>(currentFile), std::log((y2)));
@@ -713,6 +716,18 @@ void MainWindow::computeAreaPerimeter(QStringList const& files) {
     yAxis->setTickInterval(1.0);
     yAxis->setTickCount(maxY - minY + 1);
     yAxis->setTitleText("log(change in %)");
+
+    // add events on click
+    connect(seriesArea, &QScatterSeries::clicked, this, [&, vectorArea, vectorPerimeter](QPointF point){
+        int iter = qRound(point.x());
+        this->ui->label_area->setText(std::to_string(vectorArea[iter]).c_str());
+        this->ui->label_perimeter->setText(std::to_string(vectorPerimeter[iter]).c_str());
+    });
+    connect(seriesPerimeter, &QScatterSeries::clicked, this, [&, vectorPerimeter, vectorArea](QPointF point){
+        int iter = qRound(point.x());
+        this->ui->label_perimeter->setText(std::to_string(vectorPerimeter[iter]).c_str());
+        this->ui->label_area->setText(std::to_string(vectorArea[iter]).c_str());
+    });
 }
 
 [[maybe_unused]] void MainWindow::slotComputeAreaPerimeterPNG() {

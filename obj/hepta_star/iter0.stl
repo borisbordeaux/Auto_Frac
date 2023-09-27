@@ -1,0 +1,51 @@
+solid /home/boris/Documents/modeleur/glassner/InterfaceBCIFS/src/PythonFiles/exp/AutoFrac/obj/hepta_star/iter0.stl
+	facet normal	0	0	1
+		outer loop
+			vertex	2.19798	-0.437767	0
+			vertex	1.19771	0.22668	0
+			vertex	1.00794	-1.14732	0
+		endloop
+	endfacet
+	facet normal	0	0	1
+		outer loop
+			vertex	1.19771	0.22668	0
+			vertex	0.056489	-0.144971	0
+			vertex	1.00794	-1.14732	0
+		endloop
+	endfacet
+	facet normal	-0	0	1
+		outer loop
+			vertex	0.056489	-0.144971	0
+			vertex	-0.370975	-1.27083	0
+			vertex	1.00794	-1.14732	0
+		endloop
+	endfacet
+	facet normal	-0	0	1
+		outer loop
+			vertex	-0.370975	-1.27083	0
+			vertex	0.240983	-2.30454	0
+			vertex	1.00794	-1.14732	0
+		endloop
+	endfacet
+	facet normal	-0	-0	1
+		outer loop
+			vertex	0.240983	-2.30454	0
+			vertex	1.43248	-2.46511	0
+			vertex	1.00794	-1.14732	0
+		endloop
+	endfacet
+	facet normal	0	-0	1
+		outer loop
+			vertex	1.43248	-2.46511	0
+			vertex	2.30087	-1.63467	0
+			vertex	1.00794	-1.14732	0
+		endloop
+	endfacet
+	facet normal	0	0	1
+		outer loop
+			vertex	2.30087	-1.63467	0
+			vertex	2.19798	-0.437767	0
+			vertex	1.00794	-1.14732	0
+		endloop
+	endfacet
+endsolid /home/boris/Documents/modeleur/glassner/InterfaceBCIFS/src/PythonFiles/exp/AutoFrac/obj/hepta_star/iter0.stl
