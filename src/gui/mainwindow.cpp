@@ -567,6 +567,7 @@ void MainWindow::displayGraph() {
         cv::destroyAllWindows();
         cv::Mat img = cv::imread(file.toStdString(), cv::IMREAD_GRAYSCALE);
         cv::threshold(img, img, 1, 255, cv::THRESH_BINARY);
+        cv::imshow("Image", img);
 
         std::cout << "image size : " << img.size().width << " x " << img.size().height << std::endl;
 
@@ -580,7 +581,6 @@ void MainWindow::displayGraph() {
             cv::copyMakeBorder(img, img, top, bottom, left, right, cv::BORDER_CONSTANT, cv::Scalar(0));
         }
 
-        cv::imshow("Image", img);
         std::cout << "image size for fractal dimension : " << img.size().width << " x " << img.size().height << std::endl;
 
         m_chartFractalDim->removeAllSeries();
@@ -600,19 +600,26 @@ void MainWindow::displayGraph() {
             i *= 2;
         }
 
-        int minUsefulTerm = std::min(this->ui->spinBox_minUsefulBox->value(), static_cast<int>(res.size()) - 2);
+        int maxUsefulTerm = std::min(this->ui->spinBox_maxUsefulBox->value(), static_cast<int>(res.size()));
+        if (maxUsefulTerm == 0) {
+            maxUsefulTerm = static_cast<int>(res.size());
+        } else {
+            if (maxUsefulTerm == 1) { maxUsefulTerm = 2; }
+            this->ui->spinBox_maxUsefulBox->setValue(maxUsefulTerm);
+        }
+        int minUsefulTerm = std::min(this->ui->spinBox_minUsefulBox->value(), maxUsefulTerm - 2);
         this->ui->spinBox_minUsefulBox->setValue(minUsefulTerm);
         int current = 0;
 
         std::cout << "dim fractale" << std::endl;
         for (auto p: logRes) {
-            if (current >= minUsefulTerm) {
+            if (current >= minUsefulTerm && current < maxUsefulTerm) {
                 series->append(p.first, p.second);
+                std::cout << p.first << " " << p.second << std::endl;
             } else {
                 seriesUnused->append(p.first, p.second);
             }
             current++;
-            std::cout << p.first << " " << p.second << std::endl;
         }
 
         series->setBestFitLineVisible(true);
@@ -636,6 +643,7 @@ void MainWindow::displayGraph() {
         QPair<qreal, qreal> eq = series->bestFitLineEquation(ok);
         if (ok) {
             this->ui->label_fractalDimension->setText(QString::number(eq.first));
+            std::cout << eq.first << "x + " << eq.second << std::endl;
         }
     }
 }
@@ -718,13 +726,13 @@ void MainWindow::computeAreaPerimeter(QStringList const& files) {
     yAxis->setTitleText("log(change in %)");
 
     // add events on click
-    connect(seriesArea, &QScatterSeries::clicked, this, [&, vectorArea, vectorPerimeter, firstArea](QPointF point){
+    connect(seriesArea, &QScatterSeries::clicked, this, [&, vectorArea, vectorPerimeter, firstArea](QPointF point) {
         int iter = qRound(point.x());
         this->ui->label_area->setText(std::to_string(vectorArea[iter]).c_str());
         this->ui->label_perimeter->setText(std::to_string(vectorPerimeter[iter]).c_str());
         this->ui->label_porosity->setText(QString::number(1.0f - (vectorArea[iter] / firstArea)));
     });
-    connect(seriesPerimeter, &QScatterSeries::clicked, this, [&, vectorPerimeter, vectorArea, firstArea](QPointF point){
+    connect(seriesPerimeter, &QScatterSeries::clicked, this, [&, vectorPerimeter, vectorArea, firstArea](QPointF point) {
         int iter = qRound(point.x());
         this->ui->label_perimeter->setText(std::to_string(vectorPerimeter[iter]).c_str());
         this->ui->label_area->setText(std::to_string(vectorArea[iter]).c_str());
