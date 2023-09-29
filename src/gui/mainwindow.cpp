@@ -738,6 +738,21 @@ void MainWindow::computeAreaPerimeter(QStringList const& files) {
         this->ui->label_area->setText(std::to_string(vectorArea[iter]).c_str());
         this->ui->label_porosity->setText(QString::number(1.0f - (vectorArea[iter] / firstArea)));
     });
+
+    // temp cout for python script
+    std::cout << "area [";
+    for (float v: vectorArea) {
+        std::cout << std::log(v / firstArea) << ", ";
+    }
+    std::cout << "]" << std::endl;
+    std::cout << areaReg.first << "x + " << areaReg.second << std::endl;
+
+    std::cout << "perimeter [";
+    for (float v: vectorPerimeter) {
+        std::cout << std::log(v / firstPerimeter) << ", ";
+    }
+    std::cout << "]" << std::endl;
+    std::cout << perimeterReg.first << "x + " << perimeterReg.second << std::endl;
 }
 
 [[maybe_unused]] void MainWindow::slotComputeAreaPerimeterPNG() {
