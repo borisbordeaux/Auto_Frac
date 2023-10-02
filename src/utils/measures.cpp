@@ -185,15 +185,16 @@ void computeDensity(cv::Mat const& img, int size, bool showAllImages) {
     }
 
     // set colormap jet to have an image in red when the pixel is white and in blue when it is black
-    cv::applyColorMap(res, res, cv::COLORMAP_JET);
+    cv::applyColorMap(res, res, cv::COLORMAP_TURBO);
 
     // the colormap set black value (background) to a darkblue RGB(0, 0, 128)
     // we need to restore the black value to have a better view of the colors
     // since it is stored in bgr format, we change the blue background by
     // affecting the first value (blue) to the new value
     cv::Mat mask;
-    cv::Scalar backgroundColor(0, 0, 0);
-    cv::inRange(res, cv::Scalar(128, 0, 0), cv::Scalar(128, 0, 0), mask);
+    cv::threshold(img,mask, 1, 255, cv::THRESH_BINARY_INV);
+    cv::Scalar backgroundColor(128,128,128);
+    cv::imshow("mask", mask);
     res.setTo(backgroundColor, mask);
     if (showAllImages) {
         resNoEqualization.setTo(backgroundColor, mask);

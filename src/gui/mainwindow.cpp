@@ -723,7 +723,7 @@ void MainWindow::computeAreaPerimeter(QStringList const& files) {
     yAxis->setRange(minY, maxY);
     yAxis->setTickInterval(1.0);
     yAxis->setTickCount(maxY - minY + 1);
-    yAxis->setTitleText("log(change in %)");
+    yAxis->setTitleText("log(A_i/A_0) or log(P_i/P_0)");
 
     // add events on click
     connect(seriesArea, &QScatterSeries::clicked, this, [&, vectorArea, vectorPerimeter, firstArea](QPointF point) {
@@ -740,18 +740,32 @@ void MainWindow::computeAreaPerimeter(QStringList const& files) {
     });
 
     // temp cout for python script
-    std::cout << "area [";
+    std::cout << "area log [";
     for (float v: vectorArea) {
         std::cout << std::log(v / firstArea) << ", ";
     }
     std::cout << "]" << std::endl;
+
+    std::cout << "area not log [";
+    for (float v: vectorArea) {
+        std::cout << v / firstArea << ", ";
+    }
+    std::cout << "]" << std::endl;
+
     std::cout << areaReg.first << "x + " << areaReg.second << std::endl;
 
-    std::cout << "perimeter [";
+    std::cout << "perimeter log [";
     for (float v: vectorPerimeter) {
         std::cout << std::log(v / firstPerimeter) << ", ";
     }
     std::cout << "]" << std::endl;
+
+    std::cout << "perimeter not log [";
+    for (float v: vectorPerimeter) {
+        std::cout << v / firstPerimeter << ", ";
+    }
+    std::cout << "]" << std::endl;
+
     std::cout << perimeterReg.first << "x + " << perimeterReg.second << std::endl;
 }
 
