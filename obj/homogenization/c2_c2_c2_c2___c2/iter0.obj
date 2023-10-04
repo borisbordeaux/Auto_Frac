@@ -1,13 +1,3 @@
-# Blender v3.1.2 OBJ File: ''
-# www.blender.org
-o iter0_iter0.004
-v -10.000000 0.000000 10.000000
-v 10.000000 0.000000 10.000000
-v 0.000000 0.000000 0.000000
-v 10.000000 0.000000 -10.000000
-v -10.000000 0.000000 -10.000000
-s off
-f 1 2 3
-f 2 4 3
-f 4 5 3
-f 5 1 3
+version https://git-lfs.github.com/spec/v1
+oid sha256:14a2d9da6f43ede409a460767938ed4eaebc02c94a43fe827910ac700f9a9418
+size 261
