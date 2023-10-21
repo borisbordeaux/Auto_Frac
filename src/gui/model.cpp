@@ -6,20 +6,30 @@
 #include "halfedge/vertex.h"
 
 void Model::updateData() {
-    if (m_mesh == nullptr) { return; }
-    //we add data using triangles
-    int nbTriangle = findNbOfTriangle();
-
-    //for each triangle, there are 3 vertices
-    int nbOfAdd = 3 * nbTriangle;
     //the amount of data of the polyhedron
     m_count = 0;
     m_data.clear();
+
+    updateDataFaces();
+
+    updateDataSphere();
+
+    updateDataEdge();
+}
+
+void Model::updateDataFaces() {
+    if (m_mesh == nullptr) { return; }
+    //we add data using triangles
+    int nbTriangle = findNbOfTriangle(m_mesh);
+
+    //for each triangle, there are 3 vertices
+    int nbOfAdd = 3 * nbTriangle;
+
     //we resize the data for rapidity
     m_data.resize(nbOfAdd * 8);
 
     //set the ID to 0
-    int ID = 0;
+    int ID = 1;
 
     //for each face
     for (he::Face* f: m_mesh->faces()) {
@@ -28,13 +38,32 @@ void Model::updateData() {
         //we increment the ID
         ID++;
     }
+}
 
-    //after each face is computed
-    //we can update the data of the edges
-    updateDataEdge();
+void Model::updateDataSphere() {
+    if (m_sphereMesh == nullptr) { return; }
+    //we add data using triangles
+    int nbTriangle = findNbOfTriangle(m_sphereMesh);
+
+    //for each triangle, there are 3 vertices
+    int nbOfAdd = 3 * nbTriangle;
+    //the amount of data of the polyhedron
+    //m_count = 0;
+    //m_data.clear();
+    //we resize the data for rapidity
+    m_data.resize(m_data.size() + nbOfAdd * 8);
+
+    //set the ID to -2
+    int ID = -2;
+
+    //for each face
+    for (he::Face* f: m_sphereMesh->faces()) {
+        addFace(f, ID);
+    }
 }
 
 void Model::updateDataEdge() {
+    if (m_mesh == nullptr) { return; }
     //the number of edges
     int nbOfEdges = findNbOfEdges();
     //for each edge, there are 2 vertices
@@ -42,32 +71,14 @@ void Model::updateDataEdge() {
     //the amount of data of the edges
     m_countEdge = 0;
     m_dataEdge.clear();
-    //we resize the date for rapidity
-    m_dataEdge.resize(nbOfAdd * 5);
-
-    //set ID to 1, 0 is for the background
-    //because for selection, we will compute
-    //the highest value in a little area
-    //to get the ID
-    int ID = 1;
+    //we resize the data for rapidity
+    m_dataEdge.resize(nbOfAdd * 3);
 
     //for each halfedge
     for (he::HalfEdge* he: m_mesh->halfEdges()) {
         //we will display a line
-        float x1 = he->origin()->pos().x();
-        float y1 = he->origin()->pos().y();
-        float z1 = he->origin()->pos().z();
-
-        float x2 = he->next()->origin()->pos().x();
-        float y2 = he->next()->origin()->pos().y();
-        float z2 = he->next()->origin()->pos().z();
-
-        add(QVector3D(x1, y1, z1), static_cast<float>(ID), (ID == m_selectedEdge) ? 1.0 : -1.0);
-        add(QVector3D(x2, y2, z2), static_cast<float>(ID), (ID == m_selectedEdge) ? 1.0 : -1.0);
-
-        //going to the next halfedge
-        //we increment the ID
-        ID++;
+        add(he->origin()->pos());
+        add(he->next()->origin()->pos());
     }
 }
 
@@ -90,36 +101,32 @@ void Model::add(const QVector3D& v, const QVector3D& n, float ID, float isSelect
     m_count += 8;
 }
 
-void Model::add(const QVector3D& v, float ID, float isSelected) {
+void Model::add(const QVector3D& v) {
     //add to the end of the data already added
     float* p = m_dataEdge.data() + m_countEdge;
     //the coordinates of the vertex
     *p++ = v.x();
     *p++ = v.y();
     *p++ = v.z();
-    //the ID of the edge
-    *p++ = ID;
-    //whether the edge is selected or not
-    *p++ = isSelected;
     //we update the amount of data
-    m_countEdge += 5;
+    m_countEdge += 3;
 }
 
-void Model::triangle(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float ID, float isSelected) {
+void Model::triangle(QVector3D const& pos1, QVector3D const& pos2, QVector3D const& pos3, float ID, float isSelected) {
     //compute the normal of the triangle
-    QVector3D n = QVector3D::normal(QVector3D(x2 - x1, y2 - y1, z2 - z1), QVector3D(x3 - x2, y3 - y2, z3 - z2));
+    QVector3D n = QVector3D::normal(pos2 - pos1, pos3 - pos2);
 
     //add the vertices to the data
-    add(QVector3D(x1, y1, z1), n, ID, isSelected);
-    add(QVector3D(x2, y2, z2), n, ID, isSelected);
-    add(QVector3D(x3, y3, z3), n, ID, isSelected);
+    add(pos1, n, ID, isSelected);
+    add(pos2, n, ID, isSelected);
+    add(pos3, n, ID, isSelected);
 }
 
-int Model::findNbOfTriangle() const {
+int Model::findNbOfTriangle(he::Mesh* mesh) const {
     int nb = 0;
 
     //for each face
-    for (he::Face* f: m_mesh->faces()) {
+    for (he::Face* f: mesh->faces()) {
         //we find the number of vertices of the face
         int nbVertices = 1;
         he::HalfEdge* he = f->halfEdge();
@@ -144,9 +151,8 @@ int Model::findNbOfEdges() const {
 
 void Model::setMesh(he::Mesh* mesh) {
     m_mesh = mesh;
-    //reset the selected face and edge
+    //reset the selected face
     setSelected(-1);
-    setEdgeSelected(-1);
     updateData();
 }
 
@@ -168,14 +174,6 @@ int Model::indexSelectedFace() const {
     return res;
 }
 
-void Model::setEdgeSelected(int edgeIndex) {
-    m_selectedEdge = edgeIndex;
-}
-
-int Model::selectedEdge() const {
-    return m_selectedEdge;
-}
-
 void Model::addFace(he::Face* f, int ID) {
     //we compute the number of halfedges
     he::HalfEdge* he = f->halfEdge();
@@ -188,27 +186,25 @@ void Model::addFace(he::Face* f, int ID) {
     }
 
     //we set the origin of the triangles
-    float x1 = he->origin()->pos().x();
-    float y1 = he->origin()->pos().y();
-    float z1 = he->origin()->pos().z();
+    QVector3D pos1 = he->origin()->pos();
 
     //then we can triangulate the face
     //using the origin and the other vertices
     for (int i = 0; i < nbHe - 2; i++) {
-        float x2 = he->next()->origin()->pos().x();
-        float y2 = he->next()->origin()->pos().y();
-        float z2 = he->next()->origin()->pos().z();
-
-        float x3 = he->next()->next()->origin()->pos().x();
-        float y3 = he->next()->next()->origin()->pos().y();
-        float z3 = he->next()->next()->origin()->pos().z();
+        QVector3D pos2 = he->next()->origin()->pos();
+        QVector3D pos3 = he->next()->next()->origin()->pos();
 
         //if the face is selected, we will
         //throw 1.0 and -1.0 otherwise
         float isSelected = ID == m_selectedFace ? 1.0f : -1.0f;
 
-        triangle(x1, y1, z1, x2, y2, z2, x3, y3, z3, static_cast<float>(ID), isSelected);
+        triangle(pos1, pos2, pos3, static_cast<float>(ID), isSelected);
 
         he = he->next();
     }
+}
+
+void Model::setSphereMesh(he::Mesh* mesh) {
+    m_sphereMesh = mesh;
+    updateData();
 }

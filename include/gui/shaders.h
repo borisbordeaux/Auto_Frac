@@ -1,259 +1,84 @@
 #ifndef SHADERS_H
 #define SHADERS_H
 
-#include <qglobal.h>
-
-#ifdef Q_OS_ANDROID
 //vertex shader for faces
-static const char* vertexShaderSource =
-    "#version 320 es\n"
-    "in vec4 vertex;\n"
-    "in vec3 normal;\n"
-    "in float ID;\n"
-    "in float isSelected;\n"
-    "out vec3 vert;\n"
-    "out vec3 vertNormal;\n"
-    "out float pickingColor;\n"
-    "out float selected;\n"
-    "uniform mat4 projMatrix;\n"
-    "uniform mat4 mvMatrix;\n"
-    "uniform mat3 normalMatrix;\n"
-    "void main() {\n"
-    "   vert = vertex.xyz;\n"
-    "   vertNormal = normalMatrix * normal;\n"
-    "   pickingColor = ID/255.0;\n"
-    "   selected = isSelected;\n"
-    "   gl_Position = projMatrix * mvMatrix * vertex;\n"
-    "}\n";
+static const char* vertexShaderSource = R"(
+#version 460 core
+in vec4 vertex;
+in vec3 normal;
+in float ID;
+in float isSelected;
+out vec3 vert;
+out vec3 vertNormal;
+out float pickingColor;
+out float selected;
+uniform mat4 projMatrix;
+uniform mat4 mvMatrix;
+uniform mat3 normalMatrix;
+void main() {
+    vert = vertex.xyz;
+    vertNormal = normalMatrix * normal;
+    pickingColor = ID/255.0;
+    selected = isSelected;
+    gl_Position = projMatrix * mvMatrix * vertex;
+}
+)";
 
 //fragment shader for faces
-static const char* fragmentShaderSource =
-    "#version 320 es\n"
-    "in highp vec3 vert;\n"
-    "in highp vec3 vertNormal;\n"
-    "in highp float pickingColor;\n"
-    "in highp float selected;\n"
-    "out highp vec4 fragColor;\n"
-    "uniform highp vec3 lightPos;\n"
-    "uniform highp vec3 cameraPosition;\n"
-    "uniform highp mat4 model;\n"
-    "uniform bool isPicking;\n"
-    "void main() {\n"
-    "   if(!isPicking){\n"
-    "      if(selected < 0.0){\n"
-    "         highp vec3 fragVertModel = (model*vec4(vert, 1.0)).xyz;\n"
-    "         highp vec3 fragNormalModel = vertNormal;\n"
-    "         highp vec3 L = normalize(lightPos - fragVertModel);\n"
-    "         highp float diffuse = abs(dot(fragNormalModel, L));\n"
-    "         highp vec3 R = reflect(-L, fragNormalModel);\n"
-    "         highp vec3 V = normalize(cameraPosition - fragVertModel);\n"
-    "         highp float RV = max(dot(R,V), 0.0);\n"
-    "         highp float specular = pow(RV, 100.0);\n"
-    "         highp vec3 specularColor = specular * vec3(0.3,0.3,0.6);\n"
-    "         highp vec3 color = vec3(0.4, 0.4, 1.0);\n"
-    "         highp vec3 ambientColor = 0.6 * color;\n"
-    "         highp vec3 diffuseColor = diffuse * color;\n"
-    "         fragColor = vec4(clamp(specularColor+ambientColor+diffuseColor, 0.0, 1.0), 1.0);\n"
-    "      }else{\n"
-    "         fragColor = vec4(1.0, 0.3, 0.3, 1.0);\n"
-    "      }\n"
-    "   }else{\n"
-    "      fragColor = vec4(pickingColor, pickingColor, pickingColor, 1.0);\n"
-    "   }\n"
-    "}\n";
+static const char* fragmentShaderSource = R"(
+#version 460 core
+in highp vec3 vert;
+in highp vec3 vertNormal;
+in highp float pickingColor;
+in highp float selected;
+out highp vec4 fragColor;
+uniform highp vec3 lightPos;
+uniform highp vec3 cameraPosition;
+uniform highp mat4 model;
+uniform bool isPicking;
+void main() {
+   if(!isPicking){
+      if(selected < 0.0){
+         highp vec3 fragVertModel = (model*vec4(vert, 1.0)).xyz;
+         highp vec3 fragNormalModel = vertNormal;
+         highp vec3 L = normalize(lightPos - fragVertModel);
+         highp float diffuse = abs(dot(fragNormalModel, L));
+         highp vec3 R = reflect(-L, fragNormalModel);
+         highp vec3 V = normalize(cameraPosition - fragVertModel);
+         highp float RV = max(dot(R,V), 0.0);
+         highp float specular = pow(RV, 100.0);
+         highp vec3 specularColor = specular * vec3(0.3,0.3,0.6);
+         highp vec3 color = vec3(0.4, 0.4, 1.0);
+         highp vec3 ambientColor = 0.6 * color;
+         highp vec3 diffuseColor = diffuse * color;
+         fragColor = vec4(clamp(specularColor+ambientColor+diffuseColor, 0.0, 1.0), 1.0);
+      }else{
+         fragColor = vec4(1.0, 0.3, 0.3, 1.0);
+      }
+   }else{
+      fragColor = vec4(pickingColor, pickingColor, pickingColor, 1.0);
+   }
+}
+)";
 
 //vertex shaders for edges
-static const char* vertexShaderSourceEdge =
-    "#version 320 es\n"
-    "in highp vec4 vertex;\n"
-    "in highp float ID;\n"
-    "in highp float isSelected;\n"
-    "out highp vec4 pickingColor;\n"
-    "out highp float selected;\n"
-    "uniform highp mat4 projMatrix;\n"
-    "uniform highp mat4 mvMatrix;\n"
-    "void main() {\n"
-    "   int r = 0;\n"
-    "   int g = 0;\n"
-    "   int b = 0;\n"
-    "   int a = 0;\n"
-    "   int id = int(ID);\n"
-    "   if(id >= 255){\n"
-    "      id -= 255;\n"
-    "      r = 255;\n"
-    "   }else{\n"
-    "      r = id;\n"
-    "      id = 0;\n"
-    "   }\n"
-    "   if(id >= 255){\n"
-    "      id -= 255;\n"
-    "      g = 255;\n"
-    "   }else{\n"
-    "      g = id;\n"
-    "      id = 0;\n"
-    "   }\n"
-    "   if(id >= 255){\n"
-    "      id -= 255;\n"
-    "      b = 255;\n"
-    "   }else{\n"
-    "      b = id;\n"
-    "      id = 0;\n"
-    "   }\n"
-    "   if(id >= 255){\n"
-    "      id -= 255;\n"
-    "      a = 255;\n"
-    "   }else{\n"
-    "      a = id;\n"
-    "      id = 0;\n"
-    "   }\n"
-    "   pickingColor = vec4(float(r)/255.0, float(g)/255.0, float(b)/255.0, float(a)/255.0);\n"
-    "   selected = isSelected;\n"
-    "       gl_Position = projMatrix * mvMatrix * vertex;\n"
-    "}\n";
+static const char* vertexShaderSourceEdge = R"(
+#version 460 core
+in highp vec4 vertex;
+uniform highp mat4 projMatrix;
+uniform highp mat4 mvMatrix;
+void main() {
+    gl_Position = projMatrix * mvMatrix * vertex;
+}
+)";
 
 //fragment shader for edges
-static const char* fragmentShaderSourceEdge =
-    "#version 320 es\n"
-    "in highp vec4 pickingColor;\n"
-    "in highp float selected;\n"
-    "out highp vec4 fragColor;\n"
-    "uniform bool isPickingEdge;\n"
-    "void main() {\n"
-    "   if(!isPickingEdge)\n"
-    "       if(selected < 0.0)\n"
-    "           fragColor = vec4(0.0, 0.0, 0.0, 1.0);\n"
-    "       else\n"
-    "           fragColor = vec4(1.0, 1.0, 1.0, 1.0);\n"
-    "   else\n"
-    "       fragColor = pickingColor;\n"
-    "}\n";
-
-#else
-
-//vertex shader for faces
-static const char* vertexShaderSource =
-        "#version 460 core\n"
-        "in vec4 vertex;\n"
-        "in vec3 normal;\n"
-        "in float ID;\n"
-        "in float isSelected;\n"
-        "out vec3 vert;\n"
-        "out vec3 vertNormal;\n"
-        "out float pickingColor;\n"
-        "out float selected;\n"
-        "uniform mat4 projMatrix;\n"
-        "uniform mat4 mvMatrix;\n"
-        "uniform mat3 normalMatrix;\n"
-        "void main() {\n"
-        "   vert = vertex.xyz;\n"
-        "   vertNormal = normalMatrix * normal;\n"
-        "   pickingColor = ID/255.0;\n"
-        "   selected = isSelected;\n"
-        "   gl_Position = projMatrix * mvMatrix * vertex;\n"
-        "}\n";
-
-//fragment shader for faces
-static const char* fragmentShaderSource =
-        "#version 460 core\n"
-        "in highp vec3 vert;\n"
-        "in highp vec3 vertNormal;\n"
-        "in highp float pickingColor;\n"
-        "in highp float selected;\n"
-        "out highp vec4 fragColor;\n"
-        "uniform highp vec3 lightPos;\n"
-        "uniform highp vec3 cameraPosition;\n"
-        "uniform highp mat4 model;\n"
-        "uniform bool isPicking;\n"
-        "void main() {\n"
-        "   if(!isPicking){\n"
-        "      if(selected < 0.0){\n"
-        "         highp vec3 fragVertModel = (model*vec4(vert, 1.0)).xyz;\n"
-        "         highp vec3 fragNormalModel = vertNormal;\n"
-        "         highp vec3 L = normalize(lightPos - fragVertModel);\n"
-        "         highp float diffuse = abs(dot(fragNormalModel, L));\n"
-        "         highp vec3 R = reflect(-L, fragNormalModel);\n"
-        "         highp vec3 V = normalize(cameraPosition - fragVertModel);\n"
-        "         highp float RV = max(dot(R,V), 0.0);\n"
-        "         highp float specular = pow(RV, 100.0);\n"
-        "         highp vec3 specularColor = specular * vec3(0.3,0.3,0.6);\n"
-        "         highp vec3 color = vec3(0.4, 0.4, 1.0);\n"
-        "         highp vec3 ambientColor = 0.6 * color;\n"
-        "         highp vec3 diffuseColor = diffuse * color;\n"
-        "         fragColor = vec4(clamp(specularColor+ambientColor+diffuseColor, 0.0, 1.0), 1.0);\n"
-        "      }else{\n"
-        "         fragColor = vec4(1.0, 0.3, 0.3, 1.0);\n"
-        "      }\n"
-        "   }else{\n"
-        "      fragColor = vec4(pickingColor, pickingColor, pickingColor, 1.0);\n"
-        "   }\n"
-        "}\n";
-
-//vertex shaders for edges
-static const char* vertexShaderSourceEdge =
-        "#version 330 core\n"
-        "in highp vec4 vertex;\n"
-        "in highp float ID;\n"
-        "in highp float isSelected;\n"
-        "out highp vec4 pickingColor;\n"
-        "out highp float selected;\n"
-        "uniform highp mat4 projMatrix;\n"
-        "uniform highp mat4 mvMatrix;\n"
-        "void main() {\n"
-        "   int r = 0;\n"
-        "   int g = 0;\n"
-        "   int b = 0;\n"
-        "   int a = 0;\n"
-        "   int id = int(ID);\n"
-        "   if(id >= 255){\n"
-        "      id -= 255;\n"
-        "      r = 255;\n"
-        "   }else{\n"
-        "      r = id;\n"
-        "      id = 0;\n"
-        "   }\n"
-        "   if(id >= 255){\n"
-        "      id -= 255;\n"
-        "      g = 255;\n"
-        "   }else{\n"
-        "      g = id;\n"
-        "      id = 0;\n"
-        "   }\n"
-        "   if(id >= 255){\n"
-        "      id -= 255;\n"
-        "      b = 255;\n"
-        "   }else{\n"
-        "      b = id;\n"
-        "      id = 0;\n"
-        "   }\n"
-        "   if(id >= 255){\n"
-        "      id -= 255;\n"
-        "      a = 255;\n"
-        "   }else{\n"
-        "      a = id;\n"
-        "      id = 0;\n"
-        "   }\n"
-        "   pickingColor = vec4(r/255.0,g/255.0,b/255.0,a/255.0);\n"
-        "   selected = isSelected;\n"
-        "       gl_Position = projMatrix * mvMatrix * vertex;\n"
-        "}\n";
-
-//fragment shader for edges
-static const char* fragmentShaderSourceEdge =
-        "#version 330 core\n"
-        "in highp vec4 pickingColor;\n"
-        "in highp float selected;\n"
-        "out highp vec4 fragColor;\n"
-        "uniform bool isPickingEdge;\n"
-        "void main() {\n"
-        "   if(!isPickingEdge)\n"
-        "       if(selected < 0.0)\n"
-        "           fragColor = vec4(0.0, 0.0, 0.0, 1.0);\n"
-        "       else\n"
-        "           fragColor = vec4(1.0, 1.0, 1.0, 1.0);\n"
-        "   else\n"
-        "       fragColor = pickingColor;\n"
-        "}\n";
-
-#endif // Q_OS_ANDROID
+static const char* fragmentShaderSourceEdge = R"(
+#version 460 core
+out highp vec4 fragColor;
+void main() {
+    fragColor = vec4(0.0, 0.0, 0.0, 1.0);
+}
+)";
 
 #endif // SHADERS_H

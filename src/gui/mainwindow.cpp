@@ -382,7 +382,6 @@ void MainWindow::updateEnablement() {
 }
 
 void MainWindow::updateEnablementPoly() {
-    this->ui->pushButton_changeSelectionMode->setEnabled(m_openedMesh);
     this->ui->pushButton_ExportAll->setEnabled(m_openedMesh);
     this->ui->pushButton_ExportSelectedFace->setEnabled(m_openedMesh);
 }
@@ -469,11 +468,6 @@ void MainWindow::setInfo(std::string const& textInfo) {
         m_openedMesh = true;
         this->updateEnablementPoly();
     }
-}
-
-[[maybe_unused]] void MainWindow::slotChangeSelectionMode() {
-    m_view->changeSelectionMode();
-    this->ui->pushButton_changeSelectionMode->setText(m_view->selectionMode() == SelectionMode::FACES ? "Selection Mode: Faces" : "Selection Mode: Edges");
 }
 
 [[maybe_unused]] void MainWindow::slotExportAllFaces() {
@@ -635,8 +629,8 @@ void MainWindow::displayGraph() {
         m_chartFractalDim->addSeries(series);
         m_chartFractalDim->addSeries(seriesUnused);
         m_chartFractalDim->createDefaultAxes();
-        QValueAxis * xAxis = dynamic_cast<QValueAxis*>(m_chartFractalDim->axes(Qt::Horizontal, series).first());
-        QValueAxis * yAxis = dynamic_cast<QValueAxis*>(m_chartFractalDim->axes(Qt::Vertical, series).first());
+        QValueAxis* xAxis = dynamic_cast<QValueAxis*>(m_chartFractalDim->axes(Qt::Horizontal, series).first());
+        QValueAxis* yAxis = dynamic_cast<QValueAxis*>(m_chartFractalDim->axes(Qt::Vertical, series).first());
         int max = std::max(qRound(xAxis->max() + 1.0), qRound(yAxis->max() + 1.0));
         xAxis->setRange(0, max);
         xAxis->setTickInterval(1.0);
@@ -718,8 +712,8 @@ void MainWindow::computeAreaPerimeter(QStringList const& files) {
     m_chartAreaPerimeter->addSeries(seriesArea);
     m_chartAreaPerimeter->addSeries(seriesPerimeter);
     m_chartAreaPerimeter->createDefaultAxes();
-    QValueAxis * xAxis = dynamic_cast<QValueAxis*>(m_chartAreaPerimeter->axes(Qt::Horizontal).first());
-    QValueAxis * yAxis = dynamic_cast<QValueAxis*>(m_chartAreaPerimeter->axes(Qt::Vertical).first());
+    QValueAxis* xAxis = dynamic_cast<QValueAxis*>(m_chartAreaPerimeter->axes(Qt::Horizontal).first());
+    QValueAxis* yAxis = dynamic_cast<QValueAxis*>(m_chartAreaPerimeter->axes(Qt::Vertical).first());
     int maxX = qRound(xAxis->max()) + 1;
     int maxY = qCeil(yAxis->max());
     int minY = qFloor(yAxis->min());
@@ -981,5 +975,22 @@ double MainWindow::getNbLacunaOfCell(std::string const& faceName, std::size_t le
         this->ui->tableWidget_TopoMetrics->setItem(i - 1, 1, widgetC);
         this->ui->tableWidget_TopoMetrics->setItem(i - 1, 2, widgetR);
     }
+}
 
+[[maybe_unused]] void MainWindow::slotDisplayUnitSphereChanged() {
+    if (this->ui->checkBox_displayUnitSphere->isChecked()) {
+        if (m_sphereMesh.vertices().empty()) {
+            he::reader::readOBJ("../obj/unit_sphere.obj", m_sphereMesh);
+        }
+        m_modelMesh.setSphereMesh(&m_sphereMesh);
+    } else {
+        m_modelMesh.setSphereMesh(nullptr);
+    }
+    m_view->meshChanged();
+}
+
+[[maybe_unused]] void MainWindow::slotCanonizeMesh() {
+    frac::Canonizer::canonizeMesh(m_mesh);
+    m_modelMesh.updateData();
+    m_view->meshChanged();
 }

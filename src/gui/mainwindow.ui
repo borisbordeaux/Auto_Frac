@@ -1576,9 +1576,16 @@ QListWidget {
              </spacer>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButton_changeSelectionMode">
+             <widget class="QCheckBox" name="checkBox_displayUnitSphere">
               <property name="text">
-               <string>Selection Mode : Faces</string>
+               <string>Display unit sphere</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_canonizeMesh">
+              <property name="text">
+               <string>Canonize Mesh</string>
               </property>
              </widget>
             </item>
@@ -2071,7 +2078,7 @@ QListWidget {
      <x>0</x>
      <y>0</y>
      <width>1055</width>
-     <height>22</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>
@@ -2124,22 +2131,6 @@ QListWidget {
     <hint type="destinationlabel">
      <x>1058</x>
      <y>680</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_changeSelectionMode</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotChangeSelectionMode()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>224</x>
-     <y>527</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>6</x>
-     <y>572</y>
     </hint>
    </hints>
   </connection>
@@ -2278,8 +2269,8 @@ QListWidget {
    <slot>slotExportAllFaces()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>467</x>
-     <y>527</y>
+     <x>609</x>
+     <y>541</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -2390,8 +2381,8 @@ QListWidget {
    <slot>slotExportSelectedFace()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>570</x>
-     <y>527</y>
+     <x>747</x>
+     <y>541</y>
     </hint>
     <hint type="destinationlabel">
      <x>1064</x>
@@ -2422,8 +2413,8 @@ QListWidget {
    <slot>slotOpenOBJFile()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>367</x>
-     <y>527</y>
+     <x>501</x>
+     <y>541</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -2719,6 +2710,38 @@ QListWidget {
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>checkBox_displayUnitSphere</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotDisplayUnitSphereChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>277</x>
+     <y>526</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>6</x>
+     <y>541</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_canonizeMesh</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotCanonizeMesh()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>334</x>
+     <y>532</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>428</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>slotGenerateScript()</slot>
@@ -2761,5 +2784,7 @@ QListWidget {
   <slot>slotComputePorosityMetrics()</slot>
   <slot>slotOnFaceAlgoChanged(int)</slot>
   <slot>slotComputeAreaPerimeterOBJ()</slot>
+  <slot>slotDisplayUnitSphereChanged()</slot>
+  <slot>slotCanonizeMesh()</slot>
  </slots>
 </ui>

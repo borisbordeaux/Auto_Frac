@@ -28,6 +28,12 @@ public:
     [[nodiscard]] QVector3D pos() const;
 
     /**
+     * setter
+     * @param pos the new position of the vertex
+     */
+    void setPos(QVector3D const& pos);
+
+    /**
      * @brief getter
      * @return a half-edge from which this point is its origin
      */

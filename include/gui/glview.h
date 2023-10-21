@@ -15,11 +15,6 @@ namespace he {
 class Face;
 }
 
-//to switch between face selection or edges selection
-enum SelectionMode {
-    FACES, EDGES
-};
-
 class GLView : public QOpenGLWidget, protected QOpenGLFunctions {
 Q_OBJECT
 
@@ -27,7 +22,6 @@ public:
     /**
      * @brief Construct an OpenGL widget that will draw a Model
      * @param model the model that has to be drawn
-     * @param netControler the net controler used to control the net
      * @param parent the parent of this widget
      */
     explicit GLView(Model* model, QWidget* parent = nullptr);
@@ -48,18 +42,6 @@ public:
      * @param angle the angle in degree about its Y axis
      */
     void setYRotation(int angle);
-
-    /**
-     * @brief setter, set the selection mode for item picking
-     * @param mode the mode to set
-     */
-    void changeSelectionMode();
-
-    /**
-     * getter
-     * @return the current selection mode
-     */
-    [[nodiscard]] SelectionMode selectionMode() const;
 
     /**
      * @brief indicates that the mesh changed, so we have
@@ -84,8 +66,6 @@ private:
     void computeMVMatrices();
     //manage face selection
     void clickFaceManagement();
-    //manage edge selection
-    void clickEdgeManagement();
 
     //rotation of the model
     int m_xRot = 0;
@@ -99,12 +79,13 @@ private:
 
     //OpenGL stuff for rendering
     QOpenGLVertexArrayObject m_vao;
+    QOpenGLVertexArrayObject m_vaoEdge;
     QOpenGLBuffer m_vbo;
     QOpenGLBuffer m_vboEdge;
     QOpenGLShaderProgram* m_program = nullptr;
     QOpenGLShaderProgram* m_programEdge = nullptr;
 
-    //location of the differents variables in the GPU
+    //location of the different variables in the GPU
     int m_projMatrixLoc = 0;
     int m_mvMatrixLoc = 0;
     int m_normalMatrixLoc = 0;
@@ -135,9 +116,6 @@ private:
     bool m_clicked = false;
     QPoint m_clickPos;
     QSize m_screenSize;
-
-    //used for selection
-    SelectionMode m_selectionMode = FACES;
 };
 
 #endif // GLVIEW_H

@@ -53,7 +53,6 @@ public slots:
     [[maybe_unused]] void slotOnConstraintFace2Changed(int value);
     [[maybe_unused]] void slotOnConstraintEdge2Changed(int value);
     [[maybe_unused]] void slotOpenOBJFile();
-    [[maybe_unused]] void slotChangeSelectionMode();
     [[maybe_unused]] void slotExportAllFaces();
     [[maybe_unused]] void slotExportSelectedFace();
     [[maybe_unused]] void slotOpenOBJ4File();
@@ -64,6 +63,8 @@ public slots:
     [[maybe_unused]] void slotComputeNbCells();
     [[maybe_unused]] void slotComputeNbLacunas();
     [[maybe_unused]] void slotComputePorosityMetrics();
+    [[maybe_unused]] void slotDisplayUnitSphereChanged();
+    [[maybe_unused]] void slotCanonizeMesh();
 
 private:
     struct Constraint {
@@ -90,6 +91,7 @@ private:
 
     Ui::MainWindow* ui;
     he::Mesh m_mesh;
+    he::Mesh m_sphereMesh;
     Model m_modelMesh;
     GLView* m_view;
     bool m_openedMesh;
