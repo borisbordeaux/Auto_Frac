@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QGraphicsScene>
 #include <QChart>
+#include <QTimer>
 
 #include "fractal/edge.h"
 #include "fractal/face.h"
@@ -65,6 +66,7 @@ public slots:
     [[maybe_unused]] void slotComputePorosityMetrics();
     [[maybe_unused]] void slotDisplayUnitSphereChanged();
     [[maybe_unused]] void slotCanonizeMesh();
+    void canonicalizeStep();
 
 private:
     struct Constraint {
@@ -104,6 +106,8 @@ private:
 
     QGraphicsScene m_sceneAreaPerimeter;
     QChart* m_chartAreaPerimeter;
+
+    QTimer m_timerCanonicalize;
 };
 
 #endif

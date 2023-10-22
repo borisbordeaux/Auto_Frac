@@ -1,5 +1,5 @@
-#ifndef AUTOFRAC_DENSITYCOMPUTATION_H
-#define AUTOFRAC_DENSITYCOMPUTATION_H
+#ifndef AUTOFRAC_COMPUTATION_H
+#define AUTOFRAC_COMPUTATION_H
 
 namespace he {
 class Mesh;
@@ -10,7 +10,7 @@ class QString;
 namespace frac {
 
 namespace DensityComputation {
-    void computeDensity(QString const& file, int value, bool showAllImages);
+void computeDensity(QString const& file, int value, bool showAllImages);
 };
 
 namespace Canonizer {
@@ -21,9 +21,15 @@ namespace Canonizer {
  * - All faces are planar
  * @param m the mesh to canonize
  */
-    void canonizeMesh(he::Mesh &m);
+void canonicalizeMesh(he::Mesh& m);
+
+/**
+ * Recenters the mesh around the origin
+ * @param m the mesh to recenter
+ */
+void setMeshToOrigin(he::Mesh& m);
 }
 
 } // frac
 
-#endif //AUTOFRAC_DENSITYCOMPUTATION_H
+#endif //AUTOFRAC_COMPUTATION_H

@@ -1585,7 +1585,7 @@ QListWidget {
             <item>
              <widget class="QPushButton" name="pushButton_canonizeMesh">
               <property name="text">
-               <string>Canonize Mesh</string>
+               <string>Canonicalize Mesh</string>
               </property>
              </widget>
             </item>

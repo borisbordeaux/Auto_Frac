@@ -12,7 +12,7 @@
 #include "utils/fileprinter.h"
 #include "utils/objreader.h"
 #include "utils/measures.h"
-#include "computations/densitycomputation.h"
+#include "computations/computation.h"
 #include "utils/utils.h"
 
 #include <QtWidgets>
@@ -82,6 +82,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
         }
     });
     connect(this->ui->spinBox_nbIterations, &QSpinBox::valueChanged, this, [&](int) { updateEnablement(); });
+
+    connect(&m_timerCanonicalize, &QTimer::timeout, this, &MainWindow::canonicalizeStep);
 }
 
 MainWindow::~MainWindow() {
@@ -990,7 +992,30 @@ double MainWindow::getNbLacunaOfCell(std::string const& faceName, std::size_t le
 }
 
 [[maybe_unused]] void MainWindow::slotCanonizeMesh() {
-    frac::Canonizer::canonizeMesh(m_mesh);
+    if (!m_mesh.vertices().empty()){
+        frac::Canonizer::setMeshToOrigin(m_mesh);
+        m_timerCanonicalize.start(0);
+    }
+}
+
+void MainWindow::canonicalizeStep() {
+    std::vector<QVector3D> oldPos;
+    for (auto const& v: m_mesh.vertices())
+        oldPos.push_back(v->pos());
+
+    frac::Canonizer::canonicalizeMesh(m_mesh);
     m_modelMesh.updateData();
     m_view->meshChanged();
+
+    float maxError = 0.0f;
+    for (size_t i = 0; i < m_mesh.vertices().size(); i++) {
+        float error = (m_mesh.vertices()[i]->pos() - oldPos[i]).length();
+        if (error > maxError) {
+            maxError = error;
+        }
+    }
+    if (maxError < 0.00001) {
+        this->setInfo("stopped at error of " + std::to_string(maxError));
+        m_timerCanonicalize.stop();
+    }
 }

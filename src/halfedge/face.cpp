@@ -26,8 +26,7 @@ QVector3D he::Face::computeNormal() {
     QVector3D p3 = this->halfEdge()->next()->next()->origin()->pos();
 
     //then compute the normal of the vectors created using the taken points
-    return QVector3D::normal(QVector3D(p2.x() - p1.x(), p2.y() - p1.y(), p2.z() - p1.z()),
-                             QVector3D(p3.x() - p2.x(), p3.y() - p2.y(), p3.z() - p2.z()));
+    return QVector3D::normal(p2 - p1, p3 - p2);
 }
 
 std::size_t he::Face::nbEdges() const {
