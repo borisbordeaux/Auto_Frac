@@ -15,8 +15,9 @@
 #endif
 
 GLView::GLView(Model* model, QWidget* parent) :
-        QOpenGLWidget(parent), m_model(model) {
-}
+        QOpenGLWidget(parent),
+        m_camera(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.1f, 25.0f, qDegreesToRadians(0.0f), qDegreesToRadians(0.0f)),
+        m_model(model) {}
 
 GLView::~GLView() {
     //destroy the programs
@@ -37,28 +38,6 @@ GLView::~GLView() {
     }
 }
 
-static void qNormalizeAngle(int& angle) {
-    //normalize the angle
-    while (angle < 0) {
-        angle += 360 * 2;
-    }
-
-    while (angle > 360 * 2) {
-        angle -= 360 * 2;
-    }
-}
-
-void GLView::setXRotation(int angle) {
-    //normalize the angle and set it to the x rotation
-    qNormalizeAngle(angle);
-    m_xRot = angle;
-}
-
-void GLView::setYRotation(int angle) {
-    //normalize the angle and set it to the y rotation
-    qNormalizeAngle(angle);
-    m_yRot = angle;
-}
 
 void GLView::meshChanged() {
     //------for the faces------//
@@ -175,19 +154,17 @@ void GLView::paintGL() {
     m_vboEdge.write(0, m_model->constDataEdge(), m_model->countEdge() * sizeof(GLfloat));
     m_vboEdge.release();
 
-    //compute camera and world matrices
-    computeMVMatrices();
-
     //get normal matrix of the world
     QMatrix3x3 normalMatrix = m_world.normalMatrix();
 
     //set values for uniforms
     m_program->bind();
     m_program->setUniformValue(m_projMatrixLoc, m_proj);
-    m_program->setUniformValue(m_mvMatrixLoc, m_camera * m_world);
+    m_program->setUniformValue(m_mvMatrixLoc, m_camera.getViewMatrix() * m_world);
     m_program->setUniformValue(m_normalMatrixLoc, normalMatrix);
-    m_program->setUniformValue(m_cameraPosLoc, m_cameraPos);
+    m_program->setUniformValue(m_cameraPosLoc, m_camera.getEye());
     m_program->setUniformValue(m_modelMatrixLoc, m_world);
+    m_program->setUniformValue(m_lightPosLoc, m_camera.getEye());
 
     //click management
     if (m_clicked) {
@@ -211,15 +188,17 @@ void GLView::paintGL() {
 
     //camera translate to set lines
     //in front of the polyhedron
-    float transCam = qMax(m_cameraDistance / 1000.0f, 0.001f);
+    //float transCam = qMax(m_cameraDistance / 1000.0f, 0.001f);
 
     //the translation is done in the direction of the camera position and where it looks
-    m_camera.translate(transCam * (m_cameraPos - m_cameraLookAt).normalized());
+    //m_camera.translate(transCam * (m_cameraPos - m_cameraLookAt).normalized());
+    m_camera.zoom(0.001f);
 
     //set uniforms
     m_programEdge->setUniformValue(m_projMatrixLocEdge, m_proj);
-    m_programEdge->setUniformValue(m_mvMatrixLocEdge, m_camera * m_world);
-    m_camera.translate(-transCam * (m_cameraPos - m_cameraLookAt).normalized());
+    m_programEdge->setUniformValue(m_mvMatrixLocEdge, m_camera.getViewMatrix() * m_world);
+    m_camera.zoom(-0.001f);
+    //m_camera.translate(-transCam * (m_cameraPos - m_cameraLookAt).normalized());
 
     //draw edges
     //for compatibility
@@ -239,24 +218,29 @@ void GLView::resizeGL(int w, int h) {
 
 
 void GLView::mousePressEvent(QMouseEvent* event) {
-    //update the mouse positions
-    m_lastPos = event->pos();
-    m_clickPos = event->pos();
+    if (event->button() & Qt::MouseButton::LeftButton || event->button() & Qt::MouseButton::RightButton) {
+        //update the mouse positions
+        m_lastPos = event->pos().toPointF();
+        m_clickPos = event->pos();
+    } else if (event->button() & Qt::MouseButton::MiddleButton) {
+        m_camera.reset({ 0, 0, 0 }, 8.0f, 0.0f, 0.0f);
+        update();
+    }
 }
 
 void GLView::mouseMoveEvent(QMouseEvent* event) {
     //compute rotations
-    int dx = event->position().toPoint().x() - m_lastPos.x();
-    int dy = event->position().toPoint().y() - m_lastPos.y();
+    qreal dx = event->position().x() - m_lastPos.x();
+    qreal dy = event->position().toPoint().y() - m_lastPos.y();
 
     if (event->buttons() & Qt::LeftButton) {
-        setXRotation(m_xRot + dy);
-        setYRotation(m_yRot + dx);
+        m_camera.rotateAzimuth(static_cast<float>(dx / this->size().toSizeF().width() * 4.0));
+        m_camera.rotatePolar(static_cast<float>(dy / this->size().toSizeF().height() * 2.0));
     }
 
     if (event->buttons() & Qt::RightButton) {
-        m_translateX += dx;
-        m_translateY += dy;
+        m_camera.moveHorizontal(static_cast<float>(-dx) / 100.0f);
+        m_camera.moveVertical(static_cast<float>(dy) / 100.0f);
     }
 
     m_lastPos = event->pos();
@@ -269,39 +253,22 @@ void GLView::wheelEvent(QWheelEvent* event) {
     //compute new distance of camera from object
     float val = (float) event->angleDelta().y() / 500.0f;
 
-    if (m_cameraDistance - val > 0.0f) {
-        m_cameraDistance -= val;
-        m_camera.translate(0.0f, 0.0f, (float) event->angleDelta().y() / 500.0f);
+    this->m_camera.zoom(val);
 
-        //update if the distance changed
-        update();
-    }
+    update();
 }
 
 void GLView::mouseReleaseEvent(QMouseEvent* event) {
-    QVector2D v(event->pos() - m_clickPos);
+    if (event->button() & Qt::MouseButton::LeftButton) {
+        QVector2D v(event->pos() - m_clickPos);
 
-    //if there was a click
-    if (v.length() < 5.0f) {
-        //then will do the edge or face selection
-        m_clicked = true;
-        update();
+        //if there was a click
+        if (v.length() < 5.0f) {
+            //then will do the face selection
+            m_clicked = true;
+            update();
+        }
     }
-}
-
-void GLView::computeMVMatrices() {
-    m_world.setToIdentity();
-    m_camera.setToIdentity();
-
-    //otherwise the camera will be at its default state
-    m_cameraPos = QVector3D(0.0f, 0.0f, m_cameraDistance);
-    m_cameraLookAt = QVector3D(0.0f, 0.0f, 0.0f);
-    m_camera.lookAt(m_cameraPos, m_cameraLookAt, QVector3D(0.0f, 1.0f, 0.0f));
-
-    //and we set the right orientation of the world
-    m_world.rotate(m_xRot / 2.0f, 1, 0, 0);
-    m_world.rotate(m_yRot / 2.0f, 0, 1, 0);
-    m_world.translate(m_translateX / 10.0f, m_translateY / 10.0f);
 }
 
 void GLView::clickFaceManagement() {

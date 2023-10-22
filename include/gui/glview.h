@@ -6,6 +6,7 @@
 #include <QtOpenGL/QOpenGLBuffer>
 #include <QtOpenGL/QOpenGLVertexArrayObject>
 #include <QtOpenGLWidgets/QOpenGLWidget>
+#include "gui/camera.h"
 
 class QOpenGLShaderProgram;
 
@@ -28,22 +29,6 @@ public:
     ~GLView() override;
 
     /**
-     * @brief setter, the angle has to be twice its
-     * value in degree because of precision when
-     * using the mouse
-     * @param angle the angle in degree about its X axis
-     */
-    void setXRotation(int angle);
-
-    /**
-     * @brief setter, the angle has to be twice its
-     * value in degree because of precision when
-     * using the mouse
-     * @param angle the angle in degree about its Y axis
-     */
-    void setYRotation(int angle);
-
-    /**
      * @brief indicates that the mesh changed, so we have
      * to reallocate memory and resend data to the GPU
      */
@@ -62,20 +47,15 @@ protected:
     void mouseReleaseEvent(QMouseEvent* event) override;
 
 private:
-    //compute matrices for the rendering
-    void computeMVMatrices();
     //manage face selection
     void clickFaceManagement();
 
     //rotation of the model
-    int m_xRot = 0;
-    int m_yRot = 0;
-    int m_translateX = 0;
-    int m_translateY = 0;
+    Camera m_camera;
 
     //the last position of the mouse
     //used for rotation
-    QPoint m_lastPos;
+    QPointF m_lastPos;
 
     //OpenGL stuff for rendering
     QOpenGLVertexArrayObject m_vao;
@@ -101,13 +81,7 @@ private:
 
     //matrices for rendering
     QMatrix4x4 m_proj;
-    QMatrix4x4 m_camera;
     QMatrix4x4 m_world;
-
-    //camera position
-    QVector3D m_cameraPos;
-    QVector3D m_cameraLookAt;
-    float m_cameraDistance = 6.0;
 
     //the model that will be displayed
     Model* m_model;
