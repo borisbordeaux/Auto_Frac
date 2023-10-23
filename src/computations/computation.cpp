@@ -3,6 +3,7 @@
 #include "computations/computation.h"
 #include "utils/measures.h"
 #include <QString>
+#include <QHash>
 
 #include "halfedge/mesh.h"
 #include "halfedge/vertex.h"
@@ -90,6 +91,7 @@ void planarize(he::Face* f) {
 
 void tangentify(he::Mesh& m) {
     std::vector<he::HalfEdge*> alreadyTreated;
+    QHash<he::Vertex*, QVector3D> transforms;
 
     for (he::HalfEdge* he: m.halfEdges()) {
         if (std::find(alreadyTreated.begin(), alreadyTreated.end(), he) == alreadyTreated.end()) {
@@ -97,15 +99,28 @@ void tangentify(he::Mesh& m) {
             he::Vertex* p2 = he->next()->origin();
             QVector3D closest = closestPoint(p1->pos(), p2->pos());
 
-            // difference between
+            // difference between the closest point and the sphere
             float l = 1.0f - closest.length();
             QVector3D c = closest * l * 0.3f;
-            p1->setPos(p1->pos() + c);
-            p2->setPos(p2->pos() + c);
+
+            if (!transforms.contains(p1)) {
+                transforms[p1] = p1->pos();
+            }
+            if (!transforms.contains(p2)) {
+                transforms[p2] = p2->pos();
+            }
+
+            transforms[p1] = transforms[p1] + c;
+            transforms[p2] = transforms[p2] + c;
 
             alreadyTreated.push_back(he->twin());
         }
     }
+
+    for (std::pair<he::Vertex*, QVector3D> p: transforms.asKeyValueRange()) {
+        p.first->setPos(p.second);
+    }
+
 }
 
 void recenter(he::Mesh& m) {

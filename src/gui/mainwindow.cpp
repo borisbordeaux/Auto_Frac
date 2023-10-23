@@ -1007,14 +1007,14 @@ void MainWindow::canonicalizeStep() {
     m_modelMesh.updateData();
     m_view->meshChanged();
 
-    float maxError = 0.0f;
+    float maxError = -1.0f;
     for (size_t i = 0; i < m_mesh.vertices().size(); i++) {
         float error = (m_mesh.vertices()[i]->pos() - oldPos[i]).length();
         if (error > maxError) {
             maxError = error;
         }
     }
-    if (maxError < 0.00001) {
+    if (maxError < 0.00001f) {
         this->setInfo("stopped at error of " + std::to_string(maxError));
         m_timerCanonicalize.stop();
     }
