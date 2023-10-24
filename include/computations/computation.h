@@ -1,6 +1,8 @@
 #ifndef AUTOFRAC_COMPUTATION_H
 #define AUTOFRAC_COMPUTATION_H
 
+#include "polytopal/circle.h"
+
 namespace he {
 class Mesh;
 }
@@ -28,6 +30,10 @@ void canonicalizeMesh(he::Mesh& m);
  * @param m the mesh to recenter
  */
 void setMeshToOrigin(he::Mesh& m);
+}
+
+namespace PolyCircle {
+std::vector<poly::Circle> computeIlluminatedCircles(he::Mesh const& m);
 }
 
 } // frac

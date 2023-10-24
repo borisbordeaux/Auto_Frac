@@ -4,6 +4,7 @@
 #include "utils/measures.h"
 #include <QString>
 #include <QHash>
+#include <QDebug>
 
 #include "halfedge/mesh.h"
 #include "halfedge/vertex.h"
@@ -166,4 +167,23 @@ void frac::Canonizer::canonicalizeMesh(he::Mesh& m) {
     tangentify(m);
     recenter(m);
     planarize(m);
+}
+
+std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCircles(const he::Mesh& m) {
+    std::vector<poly::Circle> res;
+
+    for (he::Vertex* v: m.vertices()) {
+        qDebug() << "sommet" << v->pos();
+        QList<he::HalfEdge*> otherHE = v->otherHalfEdges();
+        if (otherHE.size() > 1) {
+            QVector3D v1 = closestPoint(v->pos(), v->halfEdge()->next()->origin()->pos());
+            QVector3D v2 = closestPoint(otherHE[0]->origin()->pos(), otherHE[0]->next()->origin()->pos());
+            QVector3D v3 = closestPoint(otherHE[1]->origin()->pos(), otherHE[1]->next()->origin()->pos());
+            qDebug() << "points nearest" << v1 << ", " << v2 << " and " << v3;
+            res.emplace_back(v1, v2, v3);
+        }
+        break;
+    }
+
+    return res;
 }

@@ -1576,6 +1576,13 @@ QListWidget {
              </spacer>
             </item>
             <item>
+             <widget class="QPushButton" name="pushButton">
+              <property name="text">
+               <string>Display Area Circles</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QCheckBox" name="checkBox_displayUnitSphere">
               <property name="text">
                <string>Display unit sphere</string>
@@ -2078,7 +2085,7 @@ QListWidget {
      <x>0</x>
      <y>0</y>
      <width>1055</width>
-     <height>20</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
@@ -2109,8 +2116,8 @@ QListWidget {
    <slot>slotOnFaceAdjDelayChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>238</x>
-     <y>429</y>
+     <x>237</x>
+     <y>437</y>
     </hint>
     <hint type="destinationlabel">
      <x>530</x>
@@ -2125,8 +2132,8 @@ QListWidget {
    <slot>slotOnConstraintFace1Changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>581</x>
-     <y>737</y>
+     <x>578</x>
+     <y>742</y>
     </hint>
     <hint type="destinationlabel">
      <x>1058</x>
@@ -2221,8 +2228,8 @@ QListWidget {
    <slot>slotOnFaceAdjTopologyChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>238</x>
-     <y>371</y>
+     <x>237</x>
+     <y>373</y>
     </hint>
     <hint type="destinationlabel">
      <x>530</x>
@@ -2237,8 +2244,8 @@ QListWidget {
    <slot>slotOnConstraintEdge2Changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>581</x>
-     <y>833</y>
+     <x>578</x>
+     <y>847</y>
     </hint>
     <hint type="destinationlabel">
      <x>1057</x>
@@ -2253,8 +2260,8 @@ QListWidget {
    <slot>slotOnFaceAdjNbSubdivisionsChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>238</x>
-     <y>400</y>
+     <x>237</x>
+     <y>405</y>
     </hint>
     <hint type="destinationlabel">
      <x>530</x>
@@ -2541,8 +2548,8 @@ QListWidget {
    <slot>slotOnConstraintEdge1Changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>581</x>
-     <y>766</y>
+     <x>578</x>
+     <y>774</y>
     </hint>
     <hint type="destinationlabel">
      <x>1057</x>
@@ -2557,8 +2564,8 @@ QListWidget {
    <slot>slotOnConstraintFace2Changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>581</x>
-     <y>804</y>
+     <x>578</x>
+     <y>815</y>
     </hint>
     <hint type="destinationlabel">
      <x>1056</x>
@@ -2637,8 +2644,8 @@ QListWidget {
    <slot>slotComputeNbCells()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>756</x>
-     <y>744</y>
+     <x>747</x>
+     <y>749</y>
     </hint>
     <hint type="destinationlabel">
      <x>1051</x>
@@ -2653,8 +2660,8 @@ QListWidget {
    <slot>slotComputeNbLacunas()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>773</x>
-     <y>773</y>
+     <x>765</x>
+     <y>780</y>
     </hint>
     <hint type="destinationlabel">
      <x>1049</x>
@@ -2669,8 +2676,8 @@ QListWidget {
    <slot>slotComputePorosityMetrics()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>754</x>
-     <y>808</y>
+     <x>745</x>
+     <y>817</y>
     </hint>
     <hint type="destinationlabel">
      <x>1054</x>
@@ -2733,12 +2740,28 @@ QListWidget {
    <slot>slotCanonizeMesh()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>334</x>
-     <y>532</y>
+     <x>472</x>
+     <y>544</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
      <y>428</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotDisplayAreaCircles()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>150</x>
+     <y>527</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>495</y>
     </hint>
    </hints>
   </connection>
@@ -2786,5 +2809,6 @@ QListWidget {
   <slot>slotComputeAreaPerimeterOBJ()</slot>
   <slot>slotDisplayUnitSphereChanged()</slot>
   <slot>slotCanonizeMesh()</slot>
+  <slot>slotDisplayAreaCircles()</slot>
  </slots>
 </ui>

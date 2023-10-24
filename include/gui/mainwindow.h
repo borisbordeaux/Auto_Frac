@@ -67,6 +67,7 @@ public slots:
     [[maybe_unused]] void slotDisplayUnitSphereChanged();
     [[maybe_unused]] void slotCanonizeMesh();
     void canonicalizeStep();
+    [[maybe_unused]] void slotDisplayAreaCircles();
 
 private:
     struct Constraint {
@@ -76,12 +77,12 @@ private:
         std::size_t Edge2;
     };
 private:
-    [[nodiscard]] static frac::Face toFace(QString const& cellName);
-    [[nodiscard]] static frac::Edge toEdge(QString const& edgeName);
-    [[nodiscard]] static Constraint toConstraint(QString const& constraintText);
-    [[nodiscard]] static QString fromConstraint(Constraint const& constraint);
-    [[nodiscard]] static std::size_t getNbCellsOfCell(std::string const& faceName, std::size_t level, std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>>& cacheSubdivisions);
-    [[nodiscard]] static double getNbLacunaOfCell(std::string const& faceName, std::size_t level, std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>>& cacheSubdivisions, std::unordered_map<std::string, double>& cacheLacunas);
+    static frac::Face toFace(QString const& cellName);
+    static frac::Edge toEdge(QString const& edgeName);
+    static Constraint toConstraint(QString const& constraintText);
+    static QString fromConstraint(Constraint const& constraint);
+    static std::size_t getNbCellsOfCell(std::string const& faceName, std::size_t level, std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>>& cacheSubdivisions);
+    static double getNbLacunaOfCell(std::string const& faceName, std::size_t level, std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>>& cacheSubdivisions, std::unordered_map<std::string, double>& cacheLacunas);
     void computeAreaPerimeter(QStringList const& files);
     void updateEnablement();
     void updateEnablementPoly();

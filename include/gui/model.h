@@ -3,6 +3,7 @@
 
 #include <QVector>
 #include <QVector3D>
+#include "polytopal/circle.h" //temp
 
 namespace he {
 class Face;
@@ -10,12 +11,16 @@ class Face;
 class Mesh;
 }
 
+/*namespace poly {
+class Circle;
+}*/
+
 class Model {
 public:
     /**
      * @brief Construct a Model based on a mesh
      */
-    Model() = default;
+    Model();
 
     /**
      * @brief getter
@@ -67,6 +72,7 @@ public:
     void updateDataFaces();
     void updateDataEdge();
     void updateDataSphere();
+    void updateDataCircles();
 
     /**
      * @brief setter
@@ -75,6 +81,8 @@ public:
      */
     void setMesh(he::Mesh* mesh);
     void setSphereMesh(he::Mesh* mesh);
+    void addCircle(poly::Circle const& circle);
+    void resetCircles();
 
     /**
      * @brief set the selected face index
@@ -136,17 +144,18 @@ private:
      * @brief getter
      * @return the number of triangles of the polyhedron
      */
-    [[nodiscard]] int findNbOfTriangle(he::Mesh* mesh) const;
+    static int findNbOfTriangle(he::Mesh* mesh);
 
     /**
      * @brief getter
      * @return the number of edges
      */
-    [[nodiscard]] int findNbOfEdges() const;
+    int findNbOfEdges() const;
 
     //the data of this model
     QVector<float> m_data;
     QVector<float> m_dataEdge;
+    QVector<float> m_dataCircles;
 
     //the amount of data
     int m_count = 0;
@@ -155,6 +164,8 @@ private:
     //the mesh the model is based on
     he::Mesh* m_mesh = nullptr;
     he::Mesh* m_sphereMesh = nullptr;
+
+    QVector<poly::Circle> m_circles;
 
     //the index of the selected face
     int m_selectedFace = -1;

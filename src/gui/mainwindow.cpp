@@ -992,7 +992,7 @@ double MainWindow::getNbLacunaOfCell(std::string const& faceName, std::size_t le
 }
 
 [[maybe_unused]] void MainWindow::slotCanonizeMesh() {
-    if (!m_mesh.vertices().empty()){
+    if (!m_mesh.vertices().empty()) {
         frac::Canonizer::setMeshToOrigin(m_mesh);
         m_timerCanonicalize.start(0);
     }
@@ -1000,8 +1000,9 @@ double MainWindow::getNbLacunaOfCell(std::string const& faceName, std::size_t le
 
 void MainWindow::canonicalizeStep() {
     std::vector<QVector3D> oldPos;
-    for (auto const& v: m_mesh.vertices())
+    for (auto const& v: m_mesh.vertices()) {
         oldPos.push_back(v->pos());
+    }
 
     frac::Canonizer::canonicalizeMesh(m_mesh);
     m_modelMesh.updateData();
@@ -1017,5 +1018,18 @@ void MainWindow::canonicalizeStep() {
     if (maxError < 0.00001f) {
         this->setInfo("stopped at error of " + std::to_string(maxError));
         m_timerCanonicalize.stop();
+    }
+}
+
+void MainWindow::slotDisplayAreaCircles() {
+    if (!m_mesh.vertices().empty()) {
+        m_modelMesh.resetCircles();
+        //suppose the mesh is canonicalized
+        std::vector<poly::Circle> circles = frac::PolyCircle::computeIlluminatedCircles(m_mesh);
+        for (poly::Circle const& c: circles) {
+            m_modelMesh.addCircle(c);
+        }
+        m_modelMesh.updateData();
+        m_view->meshChanged();
     }
 }

@@ -16,7 +16,7 @@
 
 GLView::GLView(Model* model, QWidget* parent) :
         QOpenGLWidget(parent),
-        m_camera(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.1f, 25.0f, qDegreesToRadians(0.0f), qDegreesToRadians(0.0f)),
+        m_camera(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.1f, 25.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)),
         m_model(model) {}
 
 GLView::~GLView() {
@@ -223,7 +223,7 @@ void GLView::mousePressEvent(QMouseEvent* event) {
         m_lastPos = event->pos().toPointF();
         m_clickPos = event->pos();
     } else if (event->button() & Qt::MouseButton::MiddleButton) {
-        m_camera.reset({ 0, 0, 0 }, 8.0f, 0.0f, 0.0f);
+        m_camera.reset({ 0, 0, 0 }, 8.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f));
         update();
     }
 }
