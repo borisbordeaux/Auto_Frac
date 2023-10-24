@@ -5,7 +5,6 @@
 #include "halfedge/mesh.h"
 #include "halfedge/vertex.h"
 #include "polytopal/circle.h"
-#include <QDebug>
 
 void Model::updateData() {
     //the amount of data of the polyhedron
@@ -88,7 +87,7 @@ void Model::updateDataSphere() {
 
 void Model::updateDataCircles() {
     //the number of edges
-    int nbOfEdges = (360+2) * static_cast<int>(m_circles.size());
+    int nbOfEdges = (360) * static_cast<int>(m_circles.size());
     //for each edge, there are 2 vertices
     int nbOfAdd = 2 * nbOfEdges;
     m_dataEdge.resize(m_dataEdge.size() + nbOfAdd * 3);
@@ -109,10 +108,12 @@ void Model::updateDataCircles() {
                 add(first);
             }
         }
+        /*add(c.center());
+        add(c.axisX() + c.center());
         add(c.center());
-        add(c.axisX()+c.center());
+        add(c.axisY() + c.center());
         add(c.center());
-        add(c.axisY()+c.center());
+        add(QVector3D::crossProduct(c.axisX(), c.axisY()) + c.center());*/
     }
 }
 
@@ -249,12 +250,4 @@ void Model::setSphereMesh(he::Mesh* mesh) {
 
 [[maybe_unused]] void Model::resetCircles() {
     m_circles.clear();
-}
-
-Model::Model() {
-    //m_circles.emplace_back(QVector3D { 1, 0, 0 }, QVector3D { 0, 1, 1 }, QVector3D { -1, 0, 0 });
-    //m_circles.emplace_back(QVector3D { 1, 0, 0 }, QVector3D { 0, 1, 0 }, QVector3D { 0, 0, 1 });
-    //qDebug() << "cercle de centre" << m_circles[0].center() << "de rayon" << m_circles[0].radius() << "avec axe X" << m_circles[0].axisX() << "et axe Y" << m_circles[0].axisY();
-    m_circles.emplace_back(QVector3D { 1, 1, 1 }, QVector3D { 1, 0, 0 }, QVector3D { 0, 1, 0 }, 1.0f);
-    //m_circles.emplace_back(QVector3D { -0.5, -0.5, 0 }, QVector3D { 0, -0.5, -0.5 }, QVector3D { -0.5, 0, -0.5 });
 }

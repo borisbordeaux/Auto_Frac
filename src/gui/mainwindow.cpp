@@ -465,6 +465,7 @@ void MainWindow::setInfo(std::string const& textInfo) {
         poly::Face::reset();
         m_mesh.reset();
         he::reader::readOBJ(file, m_mesh);
+        m_modelMesh.resetCircles();
         m_modelMesh.setMesh(&m_mesh);
         m_view->meshChanged();
         m_openedMesh = true;
@@ -1021,7 +1022,7 @@ void MainWindow::canonicalizeStep() {
     }
 }
 
-void MainWindow::slotDisplayAreaCircles() {
+[[maybe_unused]] void MainWindow::slotDisplayAreaCircles() {
     if (!m_mesh.vertices().empty()) {
         m_modelMesh.resetCircles();
         //suppose the mesh is canonicalized

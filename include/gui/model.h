@@ -3,7 +3,6 @@
 
 #include <QVector>
 #include <QVector3D>
-#include "polytopal/circle.h" //temp
 
 namespace he {
 class Face;
@@ -11,16 +10,16 @@ class Face;
 class Mesh;
 }
 
-/*namespace poly {
+namespace poly {
 class Circle;
-}*/
+}
 
 class Model {
 public:
     /**
      * @brief Construct a Model based on a mesh
      */
-    Model();
+    Model() = default;
 
     /**
      * @brief getter
