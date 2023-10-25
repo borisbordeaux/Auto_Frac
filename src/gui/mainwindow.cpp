@@ -29,7 +29,7 @@
 
 #include "NazaraUtils/Algorithm.hpp"
 
-MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow), m_openedMesh(false), m_chartFractalDim(new QChart()), m_chartAreaPerimeter(new QChart()) {
+MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow), m_openedMesh(false), m_chartFractalDim(new QChart()), m_chartAreaPerimeter(new QChart()), m_inversionLevel(0) {
     ui->setupUi(this);
 
     //this->ui->listWidget_faces->addItem("C_2_1 - B_2_0 - C_2_1 - B_2_0 - C_2_1 - B_2_0 - C_2_0 - B_2_0 / C_2_0 - B_2_0 - B_2_0 / 0 / 1");
@@ -463,6 +463,7 @@ void MainWindow::setInfo(std::string const& textInfo) {
 
     if (file != "") {
         this->ui->checkBox_displayMesh->setChecked(true);
+        m_inversionLevel = 0;
         poly::Face::reset();
         m_mesh.reset();
         he::reader::readOBJ(file, m_mesh);
@@ -634,8 +635,8 @@ void MainWindow::displayGraph() {
         m_chartFractalDim->addSeries(series);
         m_chartFractalDim->addSeries(seriesUnused);
         m_chartFractalDim->createDefaultAxes();
-        QValueAxis* xAxis = dynamic_cast<QValueAxis*>(m_chartFractalDim->axes(Qt::Horizontal, series).first());
-        QValueAxis* yAxis = dynamic_cast<QValueAxis*>(m_chartFractalDim->axes(Qt::Vertical, series).first());
+        QValueAxis * xAxis = dynamic_cast<QValueAxis*>(m_chartFractalDim->axes(Qt::Horizontal, series).first());
+        QValueAxis * yAxis = dynamic_cast<QValueAxis*>(m_chartFractalDim->axes(Qt::Vertical, series).first());
         int max = std::max(qRound(xAxis->max() + 1.0), qRound(yAxis->max() + 1.0));
         xAxis->setRange(0, max);
         xAxis->setTickInterval(1.0);
@@ -717,8 +718,8 @@ void MainWindow::computeAreaPerimeter(QStringList const& files) {
     m_chartAreaPerimeter->addSeries(seriesArea);
     m_chartAreaPerimeter->addSeries(seriesPerimeter);
     m_chartAreaPerimeter->createDefaultAxes();
-    QValueAxis* xAxis = dynamic_cast<QValueAxis*>(m_chartAreaPerimeter->axes(Qt::Horizontal).first());
-    QValueAxis* yAxis = dynamic_cast<QValueAxis*>(m_chartAreaPerimeter->axes(Qt::Vertical).first());
+    QValueAxis * xAxis = dynamic_cast<QValueAxis*>(m_chartAreaPerimeter->axes(Qt::Horizontal).first());
+    QValueAxis * yAxis = dynamic_cast<QValueAxis*>(m_chartAreaPerimeter->axes(Qt::Vertical).first());
     int maxX = qRound(xAxis->max()) + 1;
     int maxY = qCeil(yAxis->max());
     int minY = qFloor(yAxis->min());
@@ -1026,18 +1027,17 @@ void MainWindow::canonicalizeStep() {
 
 [[maybe_unused]] void MainWindow::slotDisplayAreaCircles() {
     if (!m_mesh.vertices().empty()) {
+        m_inversionLevel = 0;
         m_modelMesh.resetCircles();
         //suppose the mesh is canonicalized
-        std::vector<poly::Circle> circles = frac::PolyCircle::computeIlluminatedCircles(m_mesh, this->ui->checkBox_projectCircles->isChecked());
-        std::vector<poly::Circle> circlesDual = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh, this->ui->checkBox_projectCircles->isChecked());
+        m_circles = frac::PolyCircle::computeIlluminatedCircles(m_mesh, this->ui->checkBox_projectCircles->isChecked());
+        m_circlesDual = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh, this->ui->checkBox_projectCircles->isChecked());
 
-        frac::PolyCircle::computeInversions(circles, circlesDual);
-
-        for (poly::Circle const& c: circles) {
+        for (poly::Circle const& c: m_circles) {
             m_modelMesh.addCircle(c);
         }
 
-        for (poly::Circle const& c: circlesDual) {
+        for (poly::Circle const& c: m_circlesDual) {
             m_modelMesh.addCircleDual(c);
         }
 
@@ -1052,6 +1052,48 @@ void MainWindow::canonicalizeStep() {
     } else {
         m_modelMesh.setMesh(nullptr);
     }
+    m_modelMesh.updateData();
+    m_view->meshChanged();
+}
+
+[[maybe_unused]] void MainWindow::slotIncreaseInversion() {
+    m_inversionLevel++;
+    //suppose the mesh is canonicalized
+    m_circles = frac::PolyCircle::computeIlluminatedCircles(m_mesh, this->ui->checkBox_projectCircles->isChecked());
+    for (int i = 0; i < m_inversionLevel; i++)
+        frac::PolyCircle::computeInversions(m_circles, m_circlesDual);
+
+    m_modelMesh.resetCircles();
+
+    for (poly::Circle const& c: m_circles) {
+        m_modelMesh.addCircle(c);
+    }
+
+    for (poly::Circle const& c: m_circlesDual) {
+        m_modelMesh.addCircleDual(c);
+    }
+
+    m_modelMesh.updateData();
+    m_view->meshChanged();
+}
+
+[[maybe_unused]] void MainWindow::slotDecreaseInversion() {
+    m_inversionLevel = std::max(0, m_inversionLevel - 1);
+    //suppose the mesh is canonicalized
+    m_circles = frac::PolyCircle::computeIlluminatedCircles(m_mesh, this->ui->checkBox_projectCircles->isChecked());
+    for (int i = 0; i < m_inversionLevel; i++)
+        frac::PolyCircle::computeInversions(m_circles, m_circlesDual);
+
+    m_modelMesh.resetCircles();
+
+    for (poly::Circle const& c: m_circles) {
+        m_modelMesh.addCircle(c);
+    }
+
+    for (poly::Circle const& c: m_circlesDual) {
+        m_modelMesh.addCircleDual(c);
+    }
+
     m_modelMesh.updateData();
     m_view->meshChanged();
 }

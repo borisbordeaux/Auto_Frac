@@ -69,6 +69,8 @@ public slots:
     void canonicalizeStep();
     [[maybe_unused]] void slotDisplayAreaCircles();
     [[maybe_unused]] void slotDisplayMeshClicked();
+    [[maybe_unused]] void slotIncreaseInversion();
+    [[maybe_unused]] void slotDecreaseInversion();
 
 private:
     struct Constraint {
@@ -110,6 +112,10 @@ private:
     QChart* m_chartAreaPerimeter;
 
     QTimer m_timerCanonicalize;
+
+    std::vector<poly::Circle> m_circles;
+    std::vector<poly::Circle> m_circlesDual;
+    int m_inversionLevel;
 };
 
 #endif

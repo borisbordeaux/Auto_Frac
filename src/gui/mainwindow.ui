@@ -463,7 +463,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -1576,6 +1576,32 @@ QListWidget {
              </spacer>
             </item>
             <item>
+             <widget class="QPushButton" name="pushButton_2">
+              <property name="maximumSize">
+               <size>
+                <width>40</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>+</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_3">
+              <property name="maximumSize">
+               <size>
+                <width>40</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>-</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QCheckBox" name="checkBox_projectCircles">
               <property name="text">
                <string>Project Circles</string>
@@ -2102,7 +2128,7 @@ QListWidget {
      <x>0</x>
      <y>0</y>
      <width>1055</width>
-     <height>22</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>
@@ -2133,8 +2159,8 @@ QListWidget {
    <slot>slotOnFaceAdjDelayChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>237</x>
-     <y>437</y>
+     <x>238</x>
+     <y>429</y>
     </hint>
     <hint type="destinationlabel">
      <x>530</x>
@@ -2149,8 +2175,8 @@ QListWidget {
    <slot>slotOnConstraintFace1Changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>578</x>
-     <y>742</y>
+     <x>581</x>
+     <y>737</y>
     </hint>
     <hint type="destinationlabel">
      <x>1058</x>
@@ -2245,8 +2271,8 @@ QListWidget {
    <slot>slotOnFaceAdjTopologyChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>237</x>
-     <y>373</y>
+     <x>238</x>
+     <y>371</y>
     </hint>
     <hint type="destinationlabel">
      <x>530</x>
@@ -2261,8 +2287,8 @@ QListWidget {
    <slot>slotOnConstraintEdge2Changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>578</x>
-     <y>847</y>
+     <x>581</x>
+     <y>833</y>
     </hint>
     <hint type="destinationlabel">
      <x>1057</x>
@@ -2277,8 +2303,8 @@ QListWidget {
    <slot>slotOnFaceAdjNbSubdivisionsChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>237</x>
-     <y>405</y>
+     <x>238</x>
+     <y>400</y>
     </hint>
     <hint type="destinationlabel">
      <x>530</x>
@@ -2293,8 +2319,8 @@ QListWidget {
    <slot>slotExportAllFaces()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>717</x>
-     <y>544</y>
+     <x>820</x>
+     <y>541</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -2405,7 +2431,7 @@ QListWidget {
    <slot>slotExportSelectedFace()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>747</x>
+     <x>928</x>
      <y>541</y>
     </hint>
     <hint type="destinationlabel">
@@ -2437,8 +2463,8 @@ QListWidget {
    <slot>slotOpenOBJFile()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>631</x>
-     <y>544</y>
+     <x>734</x>
+     <y>541</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -2565,8 +2591,8 @@ QListWidget {
    <slot>slotOnConstraintEdge1Changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>578</x>
-     <y>774</y>
+     <x>581</x>
+     <y>766</y>
     </hint>
     <hint type="destinationlabel">
      <x>1057</x>
@@ -2581,8 +2607,8 @@ QListWidget {
    <slot>slotOnConstraintFace2Changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>578</x>
-     <y>815</y>
+     <x>581</x>
+     <y>804</y>
     </hint>
     <hint type="destinationlabel">
      <x>1056</x>
@@ -2661,8 +2687,8 @@ QListWidget {
    <slot>slotComputeNbCells()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>747</x>
-     <y>749</y>
+     <x>756</x>
+     <y>744</y>
     </hint>
     <hint type="destinationlabel">
      <x>1051</x>
@@ -2677,8 +2703,8 @@ QListWidget {
    <slot>slotComputeNbLacunas()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>765</x>
-     <y>780</y>
+     <x>773</x>
+     <y>773</y>
     </hint>
     <hint type="destinationlabel">
      <x>1049</x>
@@ -2693,8 +2719,8 @@ QListWidget {
    <slot>slotComputePorosityMetrics()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>745</x>
-     <y>817</y>
+     <x>754</x>
+     <y>808</y>
     </hint>
     <hint type="destinationlabel">
      <x>1054</x>
@@ -2741,8 +2767,8 @@ QListWidget {
    <slot>slotDisplayUnitSphereChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>277</x>
-     <y>526</y>
+     <x>451</x>
+     <y>540</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -2757,8 +2783,8 @@ QListWidget {
    <slot>slotCanonizeMesh()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>472</x>
-     <y>544</y>
+     <x>648</x>
+     <y>541</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -2773,8 +2799,8 @@ QListWidget {
    <slot>slotDisplayAreaCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>150</x>
-     <y>527</y>
+     <x>332</x>
+     <y>541</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -2789,12 +2815,44 @@ QListWidget {
    <slot>slotDisplayMeshClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>404</x>
-     <y>538</y>
+     <x>560</x>
+     <y>540</y>
     </hint>
     <hint type="destinationlabel">
      <x>1048</x>
      <y>754</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotIncreaseInversion()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>56</x>
+     <y>539</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>601</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_3</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotDecreaseInversion()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>98</x>
+     <y>527</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>578</y>
     </hint>
    </hints>
   </connection>
@@ -2844,5 +2902,7 @@ QListWidget {
   <slot>slotCanonizeMesh()</slot>
   <slot>slotDisplayAreaCircles()</slot>
   <slot>slotDisplayMeshClicked()</slot>
+  <slot>slotIncreaseInversion()</slot>
+  <slot>slotDecreaseInversion()</slot>
  </slots>
 </ui>

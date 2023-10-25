@@ -154,17 +154,26 @@ void project(QVector3D& point) {
     point.setZ(0.0f);
 }
 
-QVector3D inversion(QVector3D const& /*point*/, poly::Circle const& /*circleInv*/) {
-    return { 0, 0, 0 };
+QVector3D inversion(QVector3D const& point, poly::Circle const& circleInv) {
+    QVector3D OA = point - circleInv.center();
+    QVector3D OB = OA.normalized() * (circleInv.radius() * circleInv.radius() / OA.length());
+    return circleInv.center() + OB;
 }
 
 poly::Circle inversion(poly::Circle const& circleToInv, poly::Circle const& circleInv) {
     QVector3D p1 = circleToInv.center();
     p1.setX(p1.x() + circleToInv.radius());
 
-    QVector3D cInv = inversion(circleToInv.center(), circleInv);
+    QVector3D p2 = circleToInv.center();
+    p2.setY(p2.y() + circleToInv.radius());
+
+    QVector3D p3 = circleToInv.center();
+    p3.setX(p3.x() - circleToInv.radius());
+
     QVector3D p1Inv = inversion(p1, circleInv);
-    return { cInv, circleToInv.axisX(), circleToInv.axisY(), (cInv - p1Inv).length() };
+    QVector3D p2Inv = inversion(p2, circleInv);
+    QVector3D p3Inv = inversion(p3, circleInv);
+    return { p1Inv, p2Inv, p3Inv };
 }
 
 }
@@ -235,16 +244,14 @@ std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCirclesDual(he::Me
     return res;
 }
 
-void frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circlesToInverse, std::vector<poly::Circle> const& circlesInvertive) {
+void frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circlesToInverse, std::vector<poly::Circle>& circlesInvertive) {
     std::vector<poly::Circle> res;
-    res.reserve(circlesToInverse.size() * (circlesInvertive.size() + 1));
+    res.reserve(circlesToInverse.size() * circlesInvertive.size());
     for (poly::Circle const& cToInv: circlesToInverse) {
         for (poly::Circle const& cInv: circlesInvertive) {
+            //TODO: check if the circle is orthogonal to the invertion circle, since it will remain the same, we have to avoid the computation
             res.push_back(inversion(cToInv, cInv));
         }
     }
-
-    //circlesToInverse.insert();
-    res.insert(res.end(), circlesToInverse.begin(), circlesToInverse.end());
-    circlesToInverse.swap(res);
+    circlesToInverse.insert(circlesToInverse.end(), res.begin(), res.end());
 }

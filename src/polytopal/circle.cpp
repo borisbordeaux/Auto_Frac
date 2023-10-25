@@ -3,7 +3,7 @@
 
 namespace poly {
 
-Circle::Circle(QVector3D const& center, QVector3D const& axisX, QVector3D const& axisY, float radius) : m_center(center), m_axisX(axisX), m_axisY(axisY), m_radius(radius) {}
+Circle::Circle(QVector3D const& center, float radius, QVector3D const& axisX, QVector3D const& axisY) : m_center(center), m_radius(radius), m_axisX(axisX), m_axisY(axisY) {}
 
 Circle::Circle(QVector3D const& P1, QVector3D const& P2, QVector3D const& P3) {
     //find new base
