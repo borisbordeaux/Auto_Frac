@@ -147,6 +147,26 @@ void planarize(he::Mesh& m) {
         planarize(f);
     }
 }
+
+void project(QVector3D& point) {
+    point.setX(point.x() / (1.0f - point.z()));
+    point.setY(point.y() / (1.0f - point.z()));
+    point.setZ(0.0f);
+}
+
+QVector3D inversion(QVector3D const& /*point*/, poly::Circle const& /*circleInv*/) {
+    return { 0, 0, 0 };
+}
+
+poly::Circle inversion(poly::Circle const& circleToInv, poly::Circle const& circleInv) {
+    QVector3D p1 = circleToInv.center();
+    p1.setX(p1.x() + circleToInv.radius());
+
+    QVector3D cInv = inversion(circleToInv.center(), circleInv);
+    QVector3D p1Inv = inversion(p1, circleInv);
+    return { cInv, circleToInv.axisX(), circleToInv.axisY(), (cInv - p1Inv).length() };
+}
+
 }
 
 void frac::Canonizer::setMeshToOrigin(he::Mesh& m) {
@@ -169,7 +189,7 @@ void frac::Canonizer::canonicalizeMesh(he::Mesh& m) {
     planarize(m);
 }
 
-std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCircles(const he::Mesh& m) {
+std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCircles(const he::Mesh& m, bool projected) {
     std::vector<poly::Circle> res;
 
     for (he::Vertex* v: m.vertices()) {
@@ -178,9 +198,53 @@ std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCircles(const he::
             QVector3D v1 = closestPoint(v->pos(), v->halfEdge()->next()->origin()->pos());
             QVector3D v2 = closestPoint(otherHE[0]->origin()->pos(), otherHE[0]->next()->origin()->pos());
             QVector3D v3 = closestPoint(otherHE[1]->origin()->pos(), otherHE[1]->next()->origin()->pos());
+
+            if (projected) {
+                project(v1);
+                project(v2);
+                project(v3);
+            }
+
             res.emplace_back(v1, v2, v3);
         }
     }
 
     return res;
+}
+
+std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCirclesDual(he::Mesh const& m, bool projected) {
+    std::vector<poly::Circle> res;
+
+    for (he::Face* f: m.faces()) {
+        std::vector<he::HalfEdge*> allHE = f->allHalfEdges();
+        if (allHE.size() > 2) {
+            QVector3D v1 = closestPoint(allHE[0]->origin()->pos(), allHE[0]->next()->origin()->pos());
+            QVector3D v2 = closestPoint(allHE[1]->origin()->pos(), allHE[1]->next()->origin()->pos());
+            QVector3D v3 = closestPoint(allHE[2]->origin()->pos(), allHE[2]->next()->origin()->pos());
+
+            if (projected) {
+                project(v1);
+                project(v2);
+                project(v3);
+            }
+
+            res.emplace_back(v1, v2, v3);
+        }
+    }
+
+    return res;
+}
+
+void frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circlesToInverse, std::vector<poly::Circle> const& circlesInvertive) {
+    std::vector<poly::Circle> res;
+    res.reserve(circlesToInverse.size() * (circlesInvertive.size() + 1));
+    for (poly::Circle const& cToInv: circlesToInverse) {
+        for (poly::Circle const& cInv: circlesInvertive) {
+            res.push_back(inversion(cToInv, cInv));
+        }
+    }
+
+    //circlesToInverse.insert();
+    res.insert(res.end(), circlesToInverse.begin(), circlesToInverse.end());
+    circlesToInverse.swap(res);
 }

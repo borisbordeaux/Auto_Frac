@@ -68,6 +68,7 @@ public slots:
     [[maybe_unused]] void slotCanonizeMesh();
     void canonicalizeStep();
     [[maybe_unused]] void slotDisplayAreaCircles();
+    [[maybe_unused]] void slotDisplayMeshClicked();
 
 private:
     struct Constraint {

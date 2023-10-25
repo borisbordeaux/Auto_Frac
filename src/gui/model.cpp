@@ -87,7 +87,7 @@ void Model::updateDataSphere() {
 
 void Model::updateDataCircles() {
     //the number of edges
-    int nbOfEdges = (360) * static_cast<int>(m_circles.size());
+    int nbOfEdges = 360 * static_cast<int>(m_circles.size()) + 180 * static_cast<int>(m_circlesDual.size());
     //for each edge, there are 2 vertices
     int nbOfAdd = 2 * nbOfEdges;
     m_dataEdge.resize(m_dataEdge.size() + nbOfAdd * 3);
@@ -95,9 +95,9 @@ void Model::updateDataCircles() {
     for (poly::Circle const& c: m_circles) {
         for (int i = 0; i < 360; i++) {
             float alpha = qDegreesToRadians(static_cast<float>(i));
-            float x = c.center().x() + c.radius() * qCos(alpha) * c.axisX().x() + c.radius() * qSin(alpha) * c.axisY().x();
-            float y = c.center().y() + c.radius() * qCos(alpha) * c.axisX().y() + c.radius() * qSin(alpha) * c.axisY().y();
-            float z = c.center().z() + c.radius() * qCos(alpha) * c.axisX().z() + c.radius() * qSin(alpha) * c.axisY().z();
+            float x = c.center().x() + c.radius() * std::cos(alpha) * c.axisX().x() + c.radius() * std::sin(alpha) * c.axisY().x();
+            float y = c.center().y() + c.radius() * std::cos(alpha) * c.axisX().y() + c.radius() * std::sin(alpha) * c.axisY().y();
+            float z = c.center().z() + c.radius() * std::cos(alpha) * c.axisX().z() + c.radius() * std::sin(alpha) * c.axisY().z();
             if (i == 0) {
                 first = { x, y, z };
             } else {
@@ -108,12 +108,16 @@ void Model::updateDataCircles() {
                 add(first);
             }
         }
-        /*add(c.center());
-        add(c.axisX() + c.center());
-        add(c.center());
-        add(c.axisY() + c.center());
-        add(c.center());
-        add(QVector3D::crossProduct(c.axisX(), c.axisY()) + c.center());*/
+    }
+
+    for (poly::Circle const& c: m_circlesDual) {
+        for (int i = 0; i < 360; i++) {
+            float alpha = qDegreesToRadians(static_cast<float>(i));
+            float x = c.center().x() + c.radius() * std::cos(alpha) * c.axisX().x() + c.radius() * std::sin(alpha) * c.axisY().x();
+            float y = c.center().y() + c.radius() * std::cos(alpha) * c.axisX().y() + c.radius() * std::sin(alpha) * c.axisY().y();
+            float z = c.center().z() + c.radius() * std::cos(alpha) * c.axisX().z() + c.radius() * std::sin(alpha) * c.axisY().z();
+            add({ x, y, z });
+        }
     }
 }
 
@@ -188,7 +192,6 @@ void Model::setMesh(he::Mesh* mesh) {
     m_mesh = mesh;
     //reset the selected face
     setSelected(-1);
-    updateData();
 }
 
 void Model::setSelected(int faceIndex) {
@@ -244,10 +247,15 @@ void Model::setSphereMesh(he::Mesh* mesh) {
     updateData();
 }
 
-[[maybe_unused]] void Model::addCircle(poly::Circle const& circle) {
+void Model::addCircle(poly::Circle const& circle) {
     m_circles.push_back(circle);
 }
 
-[[maybe_unused]] void Model::resetCircles() {
+void Model::addCircleDual(poly::Circle const& circle) {
+    m_circlesDual.push_back(circle);
+}
+
+void Model::resetCircles() {
     m_circles.clear();
+    m_circlesDual.clear();
 }

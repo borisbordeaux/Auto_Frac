@@ -32,7 +32,7 @@ public:
      * @brief getter
      * @return the name of this face
      */
-    [[nodiscard]] QString name() const;
+    QString name() const;
 
     /**
 	 * @brief compute the normal of the face
@@ -40,9 +40,11 @@ public:
 	 */
     QVector3D computeNormal();
 
-    [[nodiscard]] std::size_t nbEdges() const;
+    std::size_t nbEdges() const;
 
-    [[nodiscard]] float area();
+    std::vector<he::HalfEdge*> allHalfEdges() const;
+
+    float area();
 
 private:
     //the name of the face

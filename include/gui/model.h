@@ -81,6 +81,7 @@ public:
     void setMesh(he::Mesh* mesh);
     void setSphereMesh(he::Mesh* mesh);
     void addCircle(poly::Circle const& circle);
+    void addCircleDual(poly::Circle const& circle);
     void resetCircles();
 
     /**
@@ -165,6 +166,7 @@ private:
     he::Mesh* m_sphereMesh = nullptr;
 
     QVector<poly::Circle> m_circles;
+    QVector<poly::Circle> m_circlesDual;
 
     //the index of the selected face
     int m_selectedFace = -1;

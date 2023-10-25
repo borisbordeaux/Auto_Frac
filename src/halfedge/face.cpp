@@ -42,6 +42,19 @@ std::size_t he::Face::nbEdges() const {
     return res;
 }
 
+std::vector<he::HalfEdge*> he::Face::allHalfEdges() const {
+    std::vector<he::HalfEdge*> res;
+
+    he::HalfEdge* he = this->m_halfEdge;
+    he::HalfEdge* heNxt = he;
+    do {
+        res.push_back(heNxt);
+        heNxt = heNxt->next();
+    } while (heNxt != he);
+
+    return res;
+}
+
 float he::Face::area() {
     // compute the new basis
     QVector3D axeX = (m_halfEdge->next()->origin()->pos() - m_halfEdge->origin()->pos()).normalized();

@@ -1576,51 +1576,68 @@ QListWidget {
              </spacer>
             </item>
             <item>
+             <widget class="QCheckBox" name="checkBox_projectCircles">
+              <property name="text">
+               <string>Project Circles</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QPushButton" name="pushButton">
               <property name="text">
-               <string>Display Area Circles</string>
+               <string>Display Circles</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QCheckBox" name="checkBox_displayUnitSphere">
               <property name="text">
-               <string>Display unit sphere</string>
+               <string>Display Sphere</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBox_displayMesh">
+              <property name="text">
+               <string>Display Mesh</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QPushButton" name="pushButton_canonizeMesh">
               <property name="text">
-               <string>Canonicalize Mesh</string>
+               <string>Canonicalize</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QPushButton" name="pushButton_openOBJ">
               <property name="text">
-               <string>Open OBJ File...</string>
+               <string>Open OBJ...</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QPushButton" name="pushButton_ExportAll">
               <property name="text">
-               <string>Export All Faces</string>
+               <string>Export All</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QPushButton" name="pushButton_ExportSelectedFace">
               <property name="text">
-               <string>Export Selected Face</string>
+               <string>Export Selected</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QCheckBox" name="checkBox_polytopalPlanarControlPoints">
               <property name="text">
-               <string>Planar Control Points</string>
+               <string>Planar CP</string>
               </property>
              </widget>
             </item>
@@ -2276,8 +2293,8 @@ QListWidget {
    <slot>slotExportAllFaces()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>609</x>
-     <y>541</y>
+     <x>717</x>
+     <y>544</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -2420,8 +2437,8 @@ QListWidget {
    <slot>slotOpenOBJFile()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>501</x>
-     <y>541</y>
+     <x>631</x>
+     <y>544</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -2765,6 +2782,22 @@ QListWidget {
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>checkBox_displayMesh</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotDisplayMeshClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>404</x>
+     <y>538</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1048</x>
+     <y>754</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>slotGenerateScript()</slot>
@@ -2810,5 +2843,6 @@ QListWidget {
   <slot>slotDisplayUnitSphereChanged()</slot>
   <slot>slotCanonizeMesh()</slot>
   <slot>slotDisplayAreaCircles()</slot>
+  <slot>slotDisplayMeshClicked()</slot>
  </slots>
 </ui>

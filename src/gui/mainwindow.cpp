@@ -462,11 +462,13 @@ void MainWindow::setInfo(std::string const& textInfo) {
     QString file = QFileDialog::getOpenFileName(this, "Open an OBJ File...", "../obj", "OBJ Files (*.obj)");
 
     if (file != "") {
+        this->ui->checkBox_displayMesh->setChecked(true);
         poly::Face::reset();
         m_mesh.reset();
         he::reader::readOBJ(file, m_mesh);
         m_modelMesh.resetCircles();
         m_modelMesh.setMesh(&m_mesh);
+        m_modelMesh.updateData();
         m_view->meshChanged();
         m_openedMesh = true;
         this->updateEnablementPoly();
@@ -1026,11 +1028,30 @@ void MainWindow::canonicalizeStep() {
     if (!m_mesh.vertices().empty()) {
         m_modelMesh.resetCircles();
         //suppose the mesh is canonicalized
-        std::vector<poly::Circle> circles = frac::PolyCircle::computeIlluminatedCircles(m_mesh);
+        std::vector<poly::Circle> circles = frac::PolyCircle::computeIlluminatedCircles(m_mesh, this->ui->checkBox_projectCircles->isChecked());
+        std::vector<poly::Circle> circlesDual = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh, this->ui->checkBox_projectCircles->isChecked());
+
+        frac::PolyCircle::computeInversions(circles, circlesDual);
+
         for (poly::Circle const& c: circles) {
             m_modelMesh.addCircle(c);
         }
+
+        for (poly::Circle const& c: circlesDual) {
+            m_modelMesh.addCircleDual(c);
+        }
+
         m_modelMesh.updateData();
         m_view->meshChanged();
     }
+}
+
+[[maybe_unused]] void MainWindow::slotDisplayMeshClicked() {
+    if (this->ui->checkBox_displayMesh->isChecked()) {
+        m_modelMesh.setMesh(&m_mesh);
+    } else {
+        m_modelMesh.setMesh(nullptr);
+    }
+    m_modelMesh.updateData();
+    m_view->meshChanged();
 }
