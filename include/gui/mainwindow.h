@@ -115,7 +115,9 @@ private:
 
     std::vector<poly::Circle> m_circles;
     std::vector<poly::Circle> m_circlesDual;
+
     int m_inversionLevel;
+    std::size_t m_circlesIndex;
 };
 
 #endif

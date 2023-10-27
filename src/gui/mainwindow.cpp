@@ -84,6 +84,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this->ui->spinBox_nbIterations, &QSpinBox::valueChanged, this, [&](int) { updateEnablement(); });
 
     connect(&m_timerCanonicalize, &QTimer::timeout, this, &MainWindow::canonicalizeStep);
+
+    m_circlesIndex = 0;
 }
 
 MainWindow::~MainWindow() {
@@ -1028,6 +1030,7 @@ void MainWindow::canonicalizeStep() {
 [[maybe_unused]] void MainWindow::slotDisplayAreaCircles() {
     if (!m_mesh.vertices().empty()) {
         m_inversionLevel = 0;
+        m_circlesIndex = 0;
         m_modelMesh.resetCircles();
         //suppose the mesh is canonicalized
         m_circles = frac::PolyCircle::computeIlluminatedCircles(m_mesh, this->ui->checkBox_projectCircles->isChecked());
@@ -1059,18 +1062,15 @@ void MainWindow::canonicalizeStep() {
 [[maybe_unused]] void MainWindow::slotIncreaseInversion() {
     m_inversionLevel++;
     //suppose the mesh is canonicalized
-    m_circles = frac::PolyCircle::computeIlluminatedCircles(m_mesh, this->ui->checkBox_projectCircles->isChecked());
-    for (int i = 0; i < m_inversionLevel; i++)
-        frac::PolyCircle::computeInversions(m_circles, m_circlesDual);
+    std::size_t index = m_circlesIndex;
+    m_circlesIndex = m_circles.size();
+    qDebug() << "current index" << index;
+    qDebug() << "new index" << m_circlesIndex;
 
-    m_modelMesh.resetCircles();
+    frac::PolyCircle::computeInversions(m_circles, m_circlesDual, index);
 
-    for (poly::Circle const& c: m_circles) {
-        m_modelMesh.addCircle(c);
-    }
-
-    for (poly::Circle const& c: m_circlesDual) {
-        m_modelMesh.addCircleDual(c);
+    for (std::size_t i = index; i != m_circles.size(); i++) {
+        m_modelMesh.addCircle(m_circles[i]);
     }
 
     m_modelMesh.updateData();
@@ -1078,22 +1078,9 @@ void MainWindow::canonicalizeStep() {
 }
 
 [[maybe_unused]] void MainWindow::slotDecreaseInversion() {
-    m_inversionLevel = std::max(0, m_inversionLevel - 1);
-    //suppose the mesh is canonicalized
-    m_circles = frac::PolyCircle::computeIlluminatedCircles(m_mesh, this->ui->checkBox_projectCircles->isChecked());
-    for (int i = 0; i < m_inversionLevel; i++)
-        frac::PolyCircle::computeInversions(m_circles, m_circlesDual);
-
-    m_modelMesh.resetCircles();
-
-    for (poly::Circle const& c: m_circles) {
-        m_modelMesh.addCircle(c);
+    int inversionLevel = std::max(m_inversionLevel - 1, 0);
+    this->slotDisplayAreaCircles();
+    for (int i = 0; i < inversionLevel; i++) {
+        this->slotIncreaseInversion();
     }
-
-    for (poly::Circle const& c: m_circlesDual) {
-        m_modelMesh.addCircleDual(c);
-    }
-
-    m_modelMesh.updateData();
-    m_view->meshChanged();
 }

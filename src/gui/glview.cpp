@@ -44,7 +44,7 @@ void GLView::meshChanged() {
     m_vao.bind();
     m_vbo.bind();
     //allocate necessary memory
-    m_vbo.allocate(nullptr, m_model->count() * sizeof(GLfloat));
+    m_vbo.allocate(m_model->constData(), m_model->count() * sizeof(GLfloat));
 
     //enable enough attrib array for all the data of the mesh's vertices
     glEnableVertexAttribArray(0);
@@ -67,7 +67,7 @@ void GLView::meshChanged() {
     m_vaoEdge.bind();
     m_vboEdge.bind();
     //allocate necessary memory
-    m_vboEdge.allocate(nullptr, m_model->countEdge() * sizeof(GLfloat));
+    m_vboEdge.allocate(m_model->constDataEdge(), m_model->countEdge() * sizeof(GLfloat));
 
     //enable enough attrib array for all the data of the edge's vertex
     glEnableVertexAttribArray(0);
@@ -100,7 +100,8 @@ void GLView::initializeGL() {
     m_vboEdge.create();
 
     //background
-    glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+    //glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
     //init shader for mesh
     m_program = new QOpenGLShaderProgram();
@@ -145,14 +146,14 @@ void GLView::initializeGL() {
 
 void GLView::paintGL() {
     //write mesh data
-    m_vbo.bind();
+    /*m_vbo.bind();
     m_vbo.write(0, m_model->constData(), m_model->count() * sizeof(GLfloat));
     m_vbo.release();
 
     //write edge data
     m_vboEdge.bind();
     m_vboEdge.write(0, m_model->constDataEdge(), m_model->countEdge() * sizeof(GLfloat));
-    m_vboEdge.release();
+    m_vboEdge.release();*/
 
     //get normal matrix of the world
     QMatrix3x3 normalMatrix = m_world.normalMatrix();
@@ -315,7 +316,8 @@ void GLView::clickFaceManagement() {
     m_program->setUniformValue(m_isPickingLoc, false);
 
     //reset color
-    glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+    //glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
     //enable multisample
     glEnable(GL_MULTISAMPLE);

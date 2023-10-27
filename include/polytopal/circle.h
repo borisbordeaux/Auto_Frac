@@ -13,6 +13,8 @@ public:
     const QVector3D& axisX() const;
     const QVector3D& axisY() const;
     float radius() const;
+
+    bool static orthogonalCircles(Circle const& c1, Circle const& c2);
 private:
     QVector3D m_center;
     float m_radius;

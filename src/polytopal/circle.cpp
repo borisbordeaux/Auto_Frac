@@ -52,4 +52,10 @@ float Circle::radius() const {
     return m_radius;
 }
 
+bool Circle::orthogonalCircles(const Circle& c1, const Circle& c2) {
+    float e = 0.01f;
+    // OO'^2 == R^2 + R'^2 -> pythagore
+    return abs(c1.radius() * c1.radius() + c2.radius() * c2.radius() - (c1.center() - c2.center()).lengthSquared()) < e;
+}
+
 } // poly
