@@ -173,7 +173,7 @@ poly::Circle inversion(poly::Circle const& circleToInv, poly::Circle const& circ
     QVector3D p1Inv = inversion(p1, circleInv);
     QVector3D p2Inv = inversion(p2, circleInv);
     QVector3D p3Inv = inversion(p3, circleInv);
-    return { p1Inv, p2Inv, p3Inv };
+    return { p1Inv, p2Inv, p3Inv, &circleInv };
 }
 
 }
@@ -250,7 +250,7 @@ void frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circlesToInv
     int count = 0;
     for (std::size_t i = index; i != circlesToInverse.size(); i++) {
         for (poly::Circle const& cInv: circlesInvertive) {
-            if (!poly::Circle::orthogonalCircles(circlesToInverse[i], cInv)) {
+            if (circlesToInverse[i].inversionCircle() != &cInv && !poly::Circle::orthogonalCircles(circlesToInverse[i], cInv)) {
                 res.push_back(inversion(circlesToInverse[i], cInv));
                 count++;
             }
