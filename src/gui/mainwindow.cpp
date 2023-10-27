@@ -456,8 +456,8 @@ QString MainWindow::fromConstraint(const MainWindow::Constraint& constraint) {
     this->ui->listWidget_constraints->currentItem()->setText(MainWindow::fromConstraint(c));
 }
 
-void MainWindow::setInfo(std::string const& textInfo) {
-    this->ui->statusBar->showMessage(textInfo.c_str(), 2000);
+void MainWindow::setInfo(std::string const& textInfo, int timeoutMs) {
+    this->ui->statusBar->showMessage(textInfo.c_str(), timeoutMs);
 }
 
 [[maybe_unused]] void MainWindow::slotOpenOBJFile() {
@@ -637,8 +637,8 @@ void MainWindow::displayGraph() {
         m_chartFractalDim->addSeries(series);
         m_chartFractalDim->addSeries(seriesUnused);
         m_chartFractalDim->createDefaultAxes();
-        QValueAxis * xAxis = dynamic_cast<QValueAxis*>(m_chartFractalDim->axes(Qt::Horizontal, series).first());
-        QValueAxis * yAxis = dynamic_cast<QValueAxis*>(m_chartFractalDim->axes(Qt::Vertical, series).first());
+        QValueAxis* xAxis = dynamic_cast<QValueAxis*>(m_chartFractalDim->axes(Qt::Horizontal, series).first());
+        QValueAxis* yAxis = dynamic_cast<QValueAxis*>(m_chartFractalDim->axes(Qt::Vertical, series).first());
         int max = std::max(qRound(xAxis->max() + 1.0), qRound(yAxis->max() + 1.0));
         xAxis->setRange(0, max);
         xAxis->setTickInterval(1.0);
@@ -720,8 +720,8 @@ void MainWindow::computeAreaPerimeter(QStringList const& files) {
     m_chartAreaPerimeter->addSeries(seriesArea);
     m_chartAreaPerimeter->addSeries(seriesPerimeter);
     m_chartAreaPerimeter->createDefaultAxes();
-    QValueAxis * xAxis = dynamic_cast<QValueAxis*>(m_chartAreaPerimeter->axes(Qt::Horizontal).first());
-    QValueAxis * yAxis = dynamic_cast<QValueAxis*>(m_chartAreaPerimeter->axes(Qt::Vertical).first());
+    QValueAxis* xAxis = dynamic_cast<QValueAxis*>(m_chartAreaPerimeter->axes(Qt::Horizontal).first());
+    QValueAxis* yAxis = dynamic_cast<QValueAxis*>(m_chartAreaPerimeter->axes(Qt::Vertical).first());
     int maxX = qRound(xAxis->max()) + 1;
     int maxY = qCeil(yAxis->max());
     int minY = qFloor(yAxis->min());
@@ -1064,10 +1064,10 @@ void MainWindow::canonicalizeStep() {
     //suppose the mesh is canonicalized
     std::size_t index = m_circlesIndex;
     m_circlesIndex = m_circles.size();
-    qDebug() << "current index" << index;
-    qDebug() << "new index" << m_circlesIndex;
 
-    frac::PolyCircle::computeInversions(m_circles, m_circlesDual, index);
+    std::size_t nbInversions = frac::PolyCircle::computeInversions(m_circles, m_circlesDual, index);
+
+    this->setInfo(std::to_string(nbInversions) + " inversions", 4000);
 
     for (std::size_t i = index; i != m_circles.size(); i++) {
         m_modelMesh.addCircle(m_circles[i]);

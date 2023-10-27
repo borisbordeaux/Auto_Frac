@@ -244,10 +244,10 @@ std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCirclesDual(he::Me
     return res;
 }
 
-void frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circlesToInverse, std::vector<poly::Circle>& circlesInvertive, std::size_t index) {
+std::size_t frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circlesToInverse, std::vector<poly::Circle>& circlesInvertive, std::size_t index) {
     std::vector<poly::Circle> res;
     res.reserve(circlesToInverse.size() * circlesInvertive.size());
-    int count = 0;
+    std::size_t count = 0;
     for (std::size_t i = index; i != circlesToInverse.size(); i++) {
         for (poly::Circle const& cInv: circlesInvertive) {
             if (circlesToInverse[i].inversionCircle() != &cInv && !poly::Circle::orthogonalCircles(circlesToInverse[i], cInv)) {
@@ -257,5 +257,5 @@ void frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circlesToInv
         }
     }
     circlesToInverse.insert(circlesToInverse.end(), res.begin(), res.end());
-    qDebug() << count << "inversions";
+    return count;
 }

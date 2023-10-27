@@ -89,7 +89,7 @@ private:
     void computeAreaPerimeter(QStringList const& files);
     void updateEnablement();
     void updateEnablementPoly();
-    void setInfo(std::string const& textInfo);
+    void setInfo(std::string const& textInfo, int timeoutMs = 2000);
     void displayGraph();
 
 private:
