@@ -2122,16 +2122,6 @@ QListWidget {
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1055</width>
-     <height>20</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <resources/>
@@ -2856,6 +2846,22 @@ QListWidget {
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>checkBox_projectCircles</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotProjectCirclesClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>165</x>
+     <y>532</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>6</x>
+     <y>391</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>slotGenerateScript()</slot>
@@ -2904,5 +2910,6 @@ QListWidget {
   <slot>slotDisplayMeshClicked()</slot>
   <slot>slotIncreaseInversion()</slot>
   <slot>slotDecreaseInversion()</slot>
+  <slot>slotProjectCirclesClicked()</slot>
  </slots>
 </ui>

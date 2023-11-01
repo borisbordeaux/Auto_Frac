@@ -148,32 +148,70 @@ void planarize(he::Mesh& m) {
     }
 }
 
-void project(QVector3D& point) {
+void projectToPlan(QVector3D& point) {
     point.setX(point.x() / (1.0f - point.z()));
     point.setY(point.y() / (1.0f - point.z()));
     point.setZ(0.0f);
 }
 
-QVector3D inversion(QVector3D const& point, poly::Circle const& circleInv) {
+void projectToPlan(poly::Circle& circle) {
+    QVector3D p1 = circle.center() + circle.radius() * circle.axisX();
+    QVector3D p2 = circle.center() - circle.radius() * circle.axisX();
+    QVector3D p3 = circle.center() + circle.radius() * circle.axisY();
+    projectToPlan(p1);
+    projectToPlan(p2);
+    projectToPlan(p3);
+    circle.from3Points(p1, p2, p3);
+}
+
+[[maybe_unused]] void projectToSphere(QVector3D& point) {
+    float denom = 1.0f + point.x() * point.x() + point.y() * point.y();
+    point.setX(2.0f * point.x() / denom);
+    point.setY(2.0f * point.y() / denom);
+    point.setZ((denom - 2.0f) / denom);
+}
+
+[[maybe_unused]] void projectToSphere(poly::Circle& circle) {
+    QVector3D p1 = circle.center() + circle.radius() * circle.axisX();
+    QVector3D p2 = circle.center() - circle.radius() * circle.axisX();
+    QVector3D p3 = circle.center() + circle.radius() * circle.axisY();
+    projectToSphere(p1);
+    projectToSphere(p2);
+    projectToSphere(p3);
+    circle.from3Points(p1, p2, p3);
+}
+
+[[maybe_unused]] QVector3D inversion(QVector3D const& point, poly::Circle const& circleInv) {
     QVector3D OA = point - circleInv.center();
     QVector3D OB = OA.normalized() * (circleInv.radius() * circleInv.radius() / OA.length());
     return circleInv.center() + OB;
 }
 
-poly::Circle inversion(poly::Circle const& circleToInv, poly::Circle const& circleInv) {
+[[maybe_unused]] poly::Circle inversion(poly::Circle const& circleToInv, poly::Circle const& circleInv) {
+    // inverts 2 points of the circle that are on a diameter, then construct the
+    // circle whose center is the middle of the 2 inverted points
+    // and whose radius is half the distance of the 2 inverted points
     QVector3D p1 = circleToInv.center();
-    p1.setX(p1.x() + circleToInv.radius());
+    QVector3D dir = (circleToInv.center() - circleInv.center());
+
+    // normalize direction, if both circles share their center,
+    // then the direction is arbitrary the X axis
+    if (qFuzzyIsNull(dir.lengthSquared())) {
+        dir = { 1.0f, 0.0f, 0.0f };
+    } else {
+        dir.normalize();
+    }
+    p1 += circleToInv.radius() * dir;
 
     QVector3D p2 = circleToInv.center();
-    p2.setY(p2.y() + circleToInv.radius());
-
-    QVector3D p3 = circleToInv.center();
-    p3.setX(p3.x() - circleToInv.radius());
+    p2 -= circleToInv.radius() * dir;
 
     QVector3D p1Inv = inversion(p1, circleInv);
     QVector3D p2Inv = inversion(p2, circleInv);
-    QVector3D p3Inv = inversion(p3, circleInv);
-    return { p1Inv, p2Inv, p3Inv, &circleInv };
+
+    QVector3D vecRadius = (p2Inv - p1Inv) / 2.0f;
+
+    return { p1Inv + vecRadius, vecRadius.length(), &circleInv };
 }
 
 }
@@ -209,9 +247,9 @@ std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCircles(const he::
             QVector3D v3 = closestPoint(otherHE[1]->origin()->pos(), otherHE[1]->next()->origin()->pos());
 
             if (projected) {
-                project(v1);
-                project(v2);
-                project(v3);
+                projectToPlan(v1);
+                projectToPlan(v2);
+                projectToPlan(v3);
             }
 
             res.emplace_back(v1, v2, v3);
@@ -232,9 +270,9 @@ std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCirclesDual(he::Me
             QVector3D v3 = closestPoint(allHE[2]->origin()->pos(), allHE[2]->next()->origin()->pos());
 
             if (projected) {
-                project(v1);
-                project(v2);
-                project(v3);
+                projectToPlan(v1);
+                projectToPlan(v2);
+                projectToPlan(v3);
             }
 
             res.emplace_back(v1, v2, v3);
@@ -244,18 +282,43 @@ std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCirclesDual(he::Me
     return res;
 }
 
-std::size_t frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circlesToInverse, std::vector<poly::Circle>& circlesInvertive, std::size_t index) {
+std::size_t frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circlesToInverse, std::vector<poly::Circle>& circlesInvertive, std::size_t index, bool projected) {
     std::vector<poly::Circle> res;
     res.reserve(circlesToInverse.size() * circlesInvertive.size());
     std::size_t count = 0;
+
+    if (!projected) {
+        // project circles to do inversion in plan, we will later reproject to sphere
+        for (poly::Circle& cInv: circlesInvertive) {
+            projectToPlan(cInv);
+        }
+        for (std::size_t i = index; i != circlesToInverse.size(); i++) {
+            projectToPlan(circlesToInverse[i]);
+        }
+    }
+
+    //inversion always in plan
     for (std::size_t i = index; i != circlesToInverse.size(); i++) {
         for (poly::Circle const& cInv: circlesInvertive) {
-            if (circlesToInverse[i].inversionCircle() != &cInv && !poly::Circle::orthogonalCircles(circlesToInverse[i], cInv)) {
+            if (circlesToInverse[i].inversionCircle() != &cInv && !poly::Circle::areOrthogonalCircles(circlesToInverse[i], cInv)) {
                 res.push_back(inversion(circlesToInverse[i], cInv));
                 count++;
             }
         }
     }
+
+    circlesToInverse.reserve(circlesToInverse.size() + res.size());
     circlesToInverse.insert(circlesToInverse.end(), res.begin(), res.end());
+
+    //reproject to sphere if needed
+    if (!projected) {
+        for (poly::Circle& cInv: circlesInvertive) {
+            projectToSphere(cInv);
+        }
+        for (std::size_t i = index; i != circlesToInverse.size(); i++) {
+            projectToSphere(circlesToInverse[i]);
+        }
+    }
+
     return count;
 }

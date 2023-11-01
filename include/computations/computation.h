@@ -35,7 +35,7 @@ void setMeshToOrigin(he::Mesh& m);
 namespace PolyCircle {
 std::vector<poly::Circle> computeIlluminatedCircles(he::Mesh const& m, bool projected = false);
 std::vector<poly::Circle> computeIlluminatedCirclesDual(he::Mesh const& m, bool projected = false);
-std::size_t computeInversions(std::vector<poly::Circle>& circlesToInverse, std::vector<poly::Circle>& circlesInvertive, std::size_t index);
+std::size_t computeInversions(std::vector<poly::Circle>& circlesToInverse, std::vector<poly::Circle>& circlesInvertive, std::size_t index, bool projected);
 }
 
 } // frac

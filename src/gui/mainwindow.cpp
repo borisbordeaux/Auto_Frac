@@ -461,13 +461,17 @@ void MainWindow::setInfo(std::string const& textInfo, int timeoutMs) {
 }
 
 [[maybe_unused]] void MainWindow::slotOpenOBJFile() {
+    m_view->stopAnimation();
     QString file = QFileDialog::getOpenFileName(this, "Open an OBJ File...", "../obj", "OBJ Files (*.obj)");
 
     if (file != "") {
         this->ui->checkBox_displayMesh->setChecked(true);
         m_inversionLevel = 0;
+        m_circlesIndex = 0;
         poly::Face::reset();
         m_mesh.reset();
+        m_circles.clear();
+        m_circlesDual.clear();
         he::reader::readOBJ(file, m_mesh);
         m_modelMesh.resetCircles();
         m_modelMesh.setMesh(&m_mesh);
@@ -1032,16 +1036,21 @@ void MainWindow::canonicalizeStep() {
         m_inversionLevel = 0;
         m_circlesIndex = 0;
         m_modelMesh.resetCircles();
-        //suppose the mesh is canonicalized
-        m_circles = frac::PolyCircle::computeIlluminatedCircles(m_mesh, this->ui->checkBox_projectCircles->isChecked());
-        m_circlesDual = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh, this->ui->checkBox_projectCircles->isChecked());
 
-        for (poly::Circle const& c: m_circles) {
-            m_modelMesh.addCircle(c);
-        }
+        if (m_circles.empty()) {
+            m_circles = frac::PolyCircle::computeIlluminatedCircles(m_mesh, this->ui->checkBox_projectCircles->isChecked());
+            m_circlesDual = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh, this->ui->checkBox_projectCircles->isChecked());
 
-        for (poly::Circle const& c: m_circlesDual) {
-            m_modelMesh.addCircleDual(c);
+            for (poly::Circle const& c: m_circles) {
+                m_modelMesh.addCircle(c);
+            }
+
+            for (poly::Circle const& c: m_circlesDual) {
+                m_modelMesh.addCircleDual(c);
+            }
+        } else {
+            m_circles.clear();
+            m_circlesDual.clear();
         }
 
         m_modelMesh.updateData();
@@ -1060,14 +1069,14 @@ void MainWindow::canonicalizeStep() {
 }
 
 [[maybe_unused]] void MainWindow::slotIncreaseInversion() {
+    if (m_circles.empty()) { return; }
     m_inversionLevel++;
-    //suppose the mesh is canonicalized
+
     std::size_t index = m_circlesIndex;
     m_circlesIndex = m_circles.size();
 
-    std::size_t nbInversions = frac::PolyCircle::computeInversions(m_circles, m_circlesDual, index);
-
-    this->setInfo(std::to_string(nbInversions) + " inversions", 4000);
+    //write circles in m_circles
+    std::size_t nbInversions = frac::PolyCircle::computeInversions(m_circles, m_circlesDual, index, this->ui->checkBox_projectCircles->isChecked());
 
     for (std::size_t i = index; i != m_circles.size(); i++) {
         m_modelMesh.addCircle(m_circles[i]);
@@ -1075,12 +1084,63 @@ void MainWindow::canonicalizeStep() {
 
     m_modelMesh.updateData();
     m_view->meshChanged();
+
+    this->setInfo(std::to_string(nbInversions) + " inversions, " + std::to_string(m_circles.size()) + " circles in total", 4000);
 }
 
 [[maybe_unused]] void MainWindow::slotDecreaseInversion() {
+    if (m_circles.empty()) { return; }
     int inversionLevel = std::max(m_inversionLevel - 1, 0);
-    this->slotDisplayAreaCircles();
-    for (int i = 0; i < inversionLevel; i++) {
-        this->slotIncreaseInversion();
+
+    m_inversionLevel = 0;
+    m_circlesIndex = 0;
+    m_modelMesh.resetCircles();
+
+    m_circles = frac::PolyCircle::computeIlluminatedCircles(m_mesh, this->ui->checkBox_projectCircles->isChecked());
+    m_circlesDual = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh, this->ui->checkBox_projectCircles->isChecked());
+
+    for (poly::Circle const& c: m_circles) {
+        m_modelMesh.addCircle(c);
+    }
+
+    for (poly::Circle const& c: m_circlesDual) {
+        m_modelMesh.addCircleDual(c);
+    }
+
+    if (inversionLevel == 0) {
+        m_modelMesh.updateData();
+        m_view->meshChanged();
+    } else {
+        for (int i = 0; i < inversionLevel; i++) {
+            this->slotIncreaseInversion();
+        }
+    }
+}
+
+[[maybe_unused]] void MainWindow::slotProjectCirclesClicked() {
+    if (m_circles.empty()) { return; }
+
+    int inversionLevel = m_inversionLevel;
+    m_inversionLevel = 0;
+    m_circlesIndex = 0;
+    m_circles = frac::PolyCircle::computeIlluminatedCircles(m_mesh, this->ui->checkBox_projectCircles->isChecked());
+    m_circlesDual = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh, this->ui->checkBox_projectCircles->isChecked());
+    m_modelMesh.resetCircles();
+
+    for (poly::Circle const& c: m_circles) {
+        m_modelMesh.addCircle(c);
+    }
+
+    for (poly::Circle const& c: m_circlesDual) {
+        m_modelMesh.addCircleDual(c);
+    }
+
+    if (inversionLevel == 0) {
+        m_modelMesh.updateData();
+        m_view->meshChanged();
+    } else {
+        for (int i = 0; i < inversionLevel; i++) {
+            this->slotIncreaseInversion();
+        }
     }
 }

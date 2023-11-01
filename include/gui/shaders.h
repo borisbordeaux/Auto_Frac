@@ -65,19 +65,23 @@ void main() {
 static const char* vertexShaderSourceEdge = R"(
 #version 460 core
 in highp vec4 vertex;
+in highp vec3 color;
 uniform highp mat4 projMatrix;
 uniform highp mat4 mvMatrix;
+out highp vec3 vecColor;
 void main() {
     gl_Position = projMatrix * mvMatrix * vertex;
+    vecColor = color;
 }
 )";
 
 //fragment shader for edges
 static const char* fragmentShaderSourceEdge = R"(
 #version 460 core
+in highp vec3 vecColor;
 out highp vec4 fragColor;
 void main() {
-    fragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    fragColor = vec4(vecColor, 1.0);
 }
 )";
 

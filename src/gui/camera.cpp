@@ -43,17 +43,41 @@ void Camera::zoom(const float by) {
     }
 }
 
+void Camera::zoom() {
+    m_radius *= 0.9f;
+
+    if (m_radius < m_minRadius) {
+        m_radius = m_minRadius;
+    }
+
+    if (m_radius > m_maxRadius) {
+        m_radius = m_maxRadius;
+    }
+}
+
+void Camera::dezoom() {
+    m_radius *= 1.1f;
+
+    if (m_radius < m_minRadius) {
+        m_radius = m_minRadius;
+    }
+
+    if (m_radius > m_maxRadius) {
+        m_radius = m_maxRadius;
+    }
+}
+
 void Camera::moveHorizontal(const float distance) {
     const QVector3D viewVector = getNormalizedViewVector();
     const QVector3D strafeVector = QVector3D::crossProduct(viewVector, m_upVector).normalized();
-    m_center += strafeVector * distance;
+    m_center += strafeVector * distance * 4.0f * m_radius / m_maxRadius;
 }
 
 void Camera::moveVertical(const float distance) {
     const QVector3D viewVector = getNormalizedViewVector();
     const QVector3D strafeVector = QVector3D::crossProduct(viewVector, m_upVector).normalized();
     const QVector3D upVector = QVector3D::crossProduct(strafeVector, viewVector).normalized();
-    m_center += upVector * distance;
+    m_center += upVector * distance * 4.0f * m_radius / m_maxRadius;
 }
 
 QMatrix4x4 Camera::getViewMatrix() const {

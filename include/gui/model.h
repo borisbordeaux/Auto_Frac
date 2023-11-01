@@ -55,7 +55,7 @@ public:
      * @brief getter
      * @return the number of vertices the edges has
      */
-    [[nodiscard]] int vertexCountEdge() const { return m_countEdge / 3; }
+    [[nodiscard]] int vertexCountEdge() const { return m_countEdge / 6; }
 
     /**
      * @brief update the data of the polyhedron based
@@ -126,7 +126,7 @@ private:
      * @param ID the ID of the edge
      * @param isSelected has to be true if the edge is selected
      */
-    void add(const QVector3D& v);
+    void add(const QVector3D& v, const QVector3D& color = { 0.0f, 0.0f, 0.0f });
 
     /**
      * @brief computes the normal of the 3 vertices and
@@ -155,7 +155,6 @@ private:
     //the data of this model
     QVector<float> m_data;
     QVector<float> m_dataEdge;
-    QVector<float> m_dataCircles;
 
     //the amount of data
     int m_count = 0;

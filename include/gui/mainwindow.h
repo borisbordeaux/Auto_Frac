@@ -71,6 +71,7 @@ public slots:
     [[maybe_unused]] void slotDisplayMeshClicked();
     [[maybe_unused]] void slotIncreaseInversion();
     [[maybe_unused]] void slotDecreaseInversion();
+    [[maybe_unused]] void slotProjectCirclesClicked();
 
 private:
     struct Constraint {

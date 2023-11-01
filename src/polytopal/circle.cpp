@@ -6,8 +6,56 @@ namespace poly {
 Circle::Circle(QVector3D const& center, float radius, QVector3D const& axisX, QVector3D const& axisY, Circle const* inversionCircle) :
         m_center(center), m_radius(radius), m_axisX(axisX), m_axisY(axisY), m_inversionCircle(inversionCircle) {}
 
+Circle::Circle(QVector3D const& center, float radius, Circle const* inversionCircle) :
+        m_center(center), m_radius(radius), m_axisX(1, 0, 0), m_axisY(0, 1, 0), m_inversionCircle(inversionCircle) {}
+
 Circle::Circle(QVector3D const& P1, QVector3D const& P2, QVector3D const& P3, Circle const* inversionCircle) :
         m_inversionCircle(inversionCircle) {
+    from3Points(P1, P2, P3);
+}
+
+const QVector3D& Circle::center() const {
+    return m_center;
+}
+
+const QVector3D& Circle::axisX() const {
+    return m_axisX;
+}
+
+const QVector3D& Circle::axisY() const {
+    return m_axisY;
+}
+
+float Circle::radius() const {
+    return m_radius;
+}
+
+bool Circle::areOrthogonalCircles(Circle const& c1, Circle const& c2) {
+    // OO'^2 == R^2 + R'^2 -> pythagore
+    return qAbs(c1.radius() * c1.radius() + c2.radius() * c2.radius() - (c1.center() - c2.center()).lengthSquared()) < 0.1f;
+}
+
+Circle const* Circle::inversionCircle() const {
+    return m_inversionCircle;
+}
+
+void Circle::setCenter(QVector3D const& center) {
+    m_center = center;
+}
+
+void Circle::setRadius(float radius) {
+    m_radius = radius;
+}
+
+void Circle::setAxisX(QVector3D const& axisX) {
+    m_axisX = axisX;
+}
+
+void Circle::setAxisY(QVector3D const& axisY) {
+    m_axisY = axisY;
+}
+
+void Circle::from3Points(QVector3D const& P1, QVector3D const& P2, QVector3D const& P3) {
     //find new base
     m_axisX = (P2 - P1).normalized();
     QVector3D vecP1P3 = P3 - P1;
@@ -36,32 +84,6 @@ Circle::Circle(QVector3D const& P1, QVector3D const& P2, QVector3D const& P3, Ci
 
     //change of basis to be in 3D
     m_center = (P * QVector4D(m_center, 1.0f)).toVector3D();
-}
-
-const QVector3D& Circle::center() const {
-    return m_center;
-}
-
-const QVector3D& Circle::axisX() const {
-    return m_axisX;
-}
-
-const QVector3D& Circle::axisY() const {
-    return m_axisY;
-}
-
-float Circle::radius() const {
-    return m_radius;
-}
-
-bool Circle::orthogonalCircles(const Circle& c1, const Circle& c2) {
-    float e = 0.01f;
-    // OO'^2 == R^2 + R'^2 -> pythagore
-    return abs(c1.radius() * c1.radius() + c2.radius() * c2.radius() - (c1.center() - c2.center()).lengthSquared()) < e;
-}
-
-Circle const* Circle::inversionCircle() const {
-    return m_inversionCircle;
 }
 
 } // poly

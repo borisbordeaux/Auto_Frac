@@ -6,6 +6,7 @@
 #include <QtOpenGL/QOpenGLBuffer>
 #include <QtOpenGL/QOpenGLVertexArrayObject>
 #include <QtOpenGLWidgets/QOpenGLWidget>
+#include <QTimer>
 #include "gui/camera.h"
 
 class QOpenGLShaderProgram;
@@ -34,6 +35,11 @@ public:
      */
     void meshChanged();
 
+    void stopAnimation();
+
+public slots:
+    void animationStep();
+
 protected:
     // QOpenGLWidget interface
     void initializeGL() override;
@@ -45,13 +51,17 @@ protected:
     void mouseMoveEvent(QMouseEvent* event) override;
     void wheelEvent(QWheelEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
+    void keyPressEvent(QKeyEvent* event) override;
+
+    void hideEvent(QHideEvent* event) override;
 
 private:
     //manage face selection
     void clickFaceManagement();
 
-    //rotation of the model
+    //camera of the scene
     Camera m_camera;
+    QTimer m_timerAnimation;
 
     //the last position of the mouse
     //used for rotation
@@ -77,7 +87,9 @@ private:
     //for edges
     int m_projMatrixLocEdge = 0;
     int m_mvMatrixLocEdge = 0;
-    int m_isPickingLocEdge = 0;
+
+    //to prevent sending uniform already sent
+    bool m_uniformsDirty = true;
 
     //matrices for rendering
     QMatrix4x4 m_proj;
@@ -89,7 +101,6 @@ private:
     //useful for item selection
     bool m_clicked = false;
     QPoint m_clickPos;
-    QSize m_screenSize;
 };
 
 #endif // GLVIEW_H

@@ -11,6 +11,8 @@ public:
     void rotateAzimuth(float radians);
     void rotatePolar(float radians);
     void zoom(float by);
+    void zoom();
+    void dezoom();
 
     void moveHorizontal(float distance);
     void moveVertical(float distance);

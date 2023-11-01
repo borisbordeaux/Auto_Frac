@@ -34,7 +34,7 @@ void Model::updateDataFaces() {
     //we resize the data for rapidity
     m_data.resize(nbOfAdd * 8);
 
-    //set the ID to 0
+    //set the ID to 1 for the mesh faces and it will be incremented for each face
     int ID = 1;
 
     //for each face
@@ -53,7 +53,7 @@ void Model::updateDataEdge() {
     //for each edge, there are 2 vertices
     int nbOfAdd = 2 * nbOfEdges;
     //we resize the data for rapidity
-    m_dataEdge.resize(nbOfAdd * 3);
+    m_dataEdge.resize(nbOfAdd * 6);
 
     //for each halfedge
     for (he::HalfEdge* he: m_mesh->halfEdges()) {
@@ -76,10 +76,10 @@ void Model::updateDataSphere() {
     //we resize the data for rapidity
     m_data.resize(m_data.size() + nbOfAdd * 8);
 
-    //set the ID to -2
+    //set the ID to -2 to prevent selection of the sphere
     int ID = -2;
 
-    //for each face
+    //add each face
     for (he::Face* f: m_sphereMesh->faces()) {
         addFace(f, ID);
     }
@@ -87,10 +87,12 @@ void Model::updateDataSphere() {
 
 void Model::updateDataCircles() {
     //the number of edges
-    int nbOfEdges = 360 * static_cast<int>(m_circles.size()) + 180 * static_cast<int>(m_circlesDual.size());
+    int nbOfEdges = 360 * static_cast<int>(m_circles.size()) + 360 * static_cast<int>(m_circlesDual.size());
     //for each edge, there are 2 vertices
     int nbOfAdd = 2 * nbOfEdges;
-    m_dataEdge.resize(m_dataEdge.size() + nbOfAdd * 3);
+    m_dataEdge.resize(m_dataEdge.size() + nbOfAdd * 6);
+    QVector3D c1 { 0.0f, 1.0f, 0.0f };
+    QVector3D c2 { 0.0f, 0.0f, 0.0f };
     QVector3D first;
     for (poly::Circle const& c: m_circles) {
         for (int i = 0; i < 360; i++) {
@@ -101,11 +103,11 @@ void Model::updateDataCircles() {
             if (i == 0) {
                 first = { x, y, z };
             } else {
-                add({ x, y, z });
+                add({ x, y, z }, c1);
             }
-            add({ x, y, z });
+            add({ x, y, z }, c1);
             if (i == 359) {
-                add(first);
+                add(first, c1);
             }
         }
     }
@@ -116,7 +118,15 @@ void Model::updateDataCircles() {
             float x = c.center().x() + c.radius() * std::cos(alpha) * c.axisX().x() + c.radius() * std::sin(alpha) * c.axisY().x();
             float y = c.center().y() + c.radius() * std::cos(alpha) * c.axisX().y() + c.radius() * std::sin(alpha) * c.axisY().y();
             float z = c.center().z() + c.radius() * std::cos(alpha) * c.axisX().z() + c.radius() * std::sin(alpha) * c.axisY().z();
-            add({ x, y, z });
+            if (i == 0) {
+                first = { x, y, z };
+            } else {
+                add({ x, y, z }, c2);
+            }
+            add({ x, y, z }, c2);
+            if (i == 359) {
+                add(first, c2);
+            }
         }
     }
 }
@@ -140,15 +150,18 @@ void Model::add(const QVector3D& v, const QVector3D& n, float ID, float isSelect
     m_count += 8;
 }
 
-void Model::add(const QVector3D& v) {
+void Model::add(const QVector3D& v, const QVector3D& color) {
     //add to the end of the data already added
     float* p = m_dataEdge.data() + m_countEdge;
     //the coordinates of the vertex
     *p++ = v.x();
     *p++ = v.y();
     *p++ = v.z();
+    *p++ = color.x();
+    *p++ = color.y();
+    *p++ = color.z();
     //we update the amount of data
-    m_countEdge += 3;
+    m_countEdge += 6;
 }
 
 void Model::triangle(QVector3D const& pos1, QVector3D const& pos2, QVector3D const& pos3, float ID, float isSelected) {
