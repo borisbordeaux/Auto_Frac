@@ -13,6 +13,9 @@ void Model::updateData() {
     //the amount of data of the edges
     m_countEdge = 0;
     m_dataEdge.clear();
+    //the amount of data of the vertices
+    m_countVertices = 0;
+    m_dataVertices.clear();
 
     updateDataFaces();
 
@@ -21,20 +24,23 @@ void Model::updateData() {
     updateDataEdge();
 
     updateDataCircles();
+
+    updateDataVertices();
 }
 
 void Model::updateDataFaces() {
     if (m_mesh == nullptr) { return; }
     //we add data using triangles
-    int nbTriangle = findNbOfTriangle(m_mesh);
+    qsizetype nbTriangle = findNbOfTriangle(m_mesh);
 
     //for each triangle, there are 3 vertices
-    int nbOfAdd = 3 * nbTriangle;
+    qsizetype nbOfAdd = 3 * nbTriangle;
 
     //we resize the data for rapidity
     m_data.resize(nbOfAdd * 8);
 
-    //set the ID to 1 for the mesh faces and it will be incremented for each face
+    // set the ID to 1 for the mesh faces
+    // it will be incremented for each face
     int ID = 1;
 
     //for each face
@@ -49,9 +55,9 @@ void Model::updateDataFaces() {
 void Model::updateDataEdge() {
     if (m_mesh == nullptr) { return; }
     //the number of edges
-    int nbOfEdges = findNbOfEdges();
+    qsizetype nbOfEdges = findNbOfEdges();
     //for each edge, there are 2 vertices
-    int nbOfAdd = 2 * nbOfEdges;
+    qsizetype nbOfAdd = 2 * nbOfEdges;
     //we resize the data for rapidity
     m_dataEdge.resize(nbOfAdd * 6);
 
@@ -66,10 +72,10 @@ void Model::updateDataEdge() {
 void Model::updateDataSphere() {
     if (m_sphereMesh == nullptr) { return; }
     //we add data using triangles
-    int nbTriangle = findNbOfTriangle(m_sphereMesh);
+    qsizetype nbTriangle = findNbOfTriangle(m_sphereMesh);
 
     //for each triangle, there are 3 vertices
-    int nbOfAdd = 3 * nbTriangle;
+    qsizetype nbOfAdd = 3 * nbTriangle;
     //the amount of data of the polyhedron
     //m_count = 0;
     //m_data.clear();
@@ -87,9 +93,9 @@ void Model::updateDataSphere() {
 
 void Model::updateDataCircles() {
     //the number of edges
-    int nbOfEdges = 360 * static_cast<int>(m_circles.size()) + 360 * static_cast<int>(m_circlesDual.size());
+    qsizetype nbOfEdges = 360 * m_circles.size() + 360 * m_circlesDual.size();
     //for each edge, there are 2 vertices
-    int nbOfAdd = 2 * nbOfEdges;
+    qsizetype nbOfAdd = 2 * nbOfEdges;
     m_dataEdge.resize(m_dataEdge.size() + nbOfAdd * 6);
     QVector3D c1 { 0.0f, 1.0f, 0.0f };
     QVector3D c2 { 0.0f, 0.0f, 0.0f };
@@ -131,6 +137,32 @@ void Model::updateDataCircles() {
     }
 }
 
+void Model::updateDataVertices() {
+    //the number of vertices plus the projection point of the sphere mesh
+    qsizetype nbOfVertices = (m_mesh != nullptr ? static_cast<qsizetype>(m_mesh->vertices().size()) : 0) + (m_sphereMesh == nullptr ? 0 : 1);
+
+    //if no vertices, no need to compute the rest
+    if (nbOfVertices == 0) { return; }
+
+    //for each vertex, there is 1 add
+    qsizetype nbOfAdd = 1 * nbOfVertices;
+    //we resize the data for rapidity
+    m_dataVertices.resize(nbOfAdd * 6);
+
+    if (m_mesh != nullptr) {
+        //for each vertex
+        for (he::Vertex* v: m_mesh->vertices()) {
+            //will display a point
+            addVertex(v->pos());
+        }
+    }
+
+    if (m_sphereMesh != nullptr) {
+        //display projection point
+        addVertex({ 0, 0, 1 }, { 1, 0, 0 });
+    }
+}
+
 void Model::add(const QVector3D& v, const QVector3D& n, float ID, float isSelected) {
     //add to the end of the data already added
     float* p = m_data.data() + m_count;
@@ -164,6 +196,20 @@ void Model::add(const QVector3D& v, const QVector3D& color) {
     m_countEdge += 6;
 }
 
+void Model::addVertex(const QVector3D& v, const QVector3D& color) {
+    //add to the end of the data already added
+    float* p = m_dataVertices.data() + m_countVertices;
+    //the coordinates of the vertex
+    *p++ = v.x();
+    *p++ = v.y();
+    *p++ = v.z();
+    *p++ = color.x();
+    *p++ = color.y();
+    *p++ = color.z();
+    //we update the amount of data
+    m_countVertices += 6;
+}
+
 void Model::triangle(QVector3D const& pos1, QVector3D const& pos2, QVector3D const& pos3, float ID, float isSelected) {
     //compute the normal of the triangle
     QVector3D n = QVector3D::normal(pos2 - pos1, pos3 - pos2);
@@ -174,13 +220,13 @@ void Model::triangle(QVector3D const& pos1, QVector3D const& pos2, QVector3D con
     add(pos3, n, ID, isSelected);
 }
 
-int Model::findNbOfTriangle(he::Mesh* mesh) {
-    int nb = 0;
+qsizetype Model::findNbOfTriangle(he::Mesh* mesh) {
+    qsizetype nb = 0;
 
     //for each face
     for (he::Face* f: mesh->faces()) {
         //we find the number of vertices of the face
-        int nbVertices = 1;
+        qsizetype nbVertices = 1;
         he::HalfEdge* he = f->halfEdge();
         he::HalfEdge* heNext = he->next();
 
@@ -197,8 +243,8 @@ int Model::findNbOfTriangle(he::Mesh* mesh) {
     return nb;
 }
 
-int Model::findNbOfEdges() const {
-    return static_cast<int>(m_mesh->halfEdges().size());
+qsizetype Model::findNbOfEdges() const {
+    return static_cast<qsizetype>(m_mesh->halfEdges().size());
 }
 
 void Model::setMesh(he::Mesh* mesh) {
@@ -211,14 +257,14 @@ void Model::setSelected(int faceIndex) {
     m_selectedFace = faceIndex;
 }
 
-[[maybe_unused]] int Model::indexSelectedFace() const {
+[[maybe_unused]] qsizetype Model::indexSelectedFace() const {
     return m_selectedFace;
 }
 
 [[maybe_unused]] he::Face* Model::selectedFace() {
     he::Face* res = nullptr;
 
-    if (m_selectedFace >= 0 && m_selectedFace < static_cast<int>(m_mesh->faces().size())) {
+    if (m_selectedFace >= 0 && m_selectedFace < static_cast<qsizetype>(m_mesh->faces().size())) {
         res = m_mesh->faces().at(m_selectedFace);
     }
 

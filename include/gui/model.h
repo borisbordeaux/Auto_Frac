@@ -35,6 +35,12 @@ public:
 
     /**
      * @brief getter
+     * @return constant data of vertices to be thrown to the GPU
+     */
+    [[nodiscard]] const float* constDataVertices() const { return m_dataVertices.constData(); }
+
+    /**
+     * @brief getter
      * @return the amount of data the polyhedron has
      */
     [[nodiscard]] int count() const { return m_count; }
@@ -57,6 +63,19 @@ public:
      */
     [[nodiscard]] int vertexCountEdge() const { return m_countEdge / 6; }
 
+
+    /**
+     * @brief getter
+     * @return the amount of data the vertices has
+     */
+    [[nodiscard]] int countVertices() const { return m_countVertices; }
+
+    /**
+     * @brief getter
+     * @return the number of vertices the mesh vertices has
+     */
+    [[nodiscard]] int vertexCountVertices() const { return m_countVertices / 6; }
+
     /**
      * @brief update the data of the polyhedron based
      * on its mesh, necessary when the mesh changed.
@@ -72,6 +91,7 @@ public:
     void updateDataEdge();
     void updateDataSphere();
     void updateDataCircles();
+    void updateDataVertices();
 
     /**
      * @brief setter
@@ -94,7 +114,7 @@ public:
      * @brief getter
      * @return the index of the selected face
      */
-    [[nodiscard]] [[maybe_unused]] int indexSelectedFace() const;
+    [[nodiscard]] [[maybe_unused]] qsizetype indexSelectedFace() const;
 
     /**
      * @brief getter
@@ -128,6 +148,8 @@ private:
      */
     void add(const QVector3D& v, const QVector3D& color = { 0.0f, 0.0f, 0.0f });
 
+    void addVertex(const QVector3D& v, const QVector3D& color = { 0.0f, 0.0f, 0.0f });
+
     /**
      * @brief computes the normal of the 3 vertices and
      * add the vertices and their normal to the data.
@@ -144,21 +166,23 @@ private:
      * @brief getter
      * @return the number of triangles of the polyhedron
      */
-    static int findNbOfTriangle(he::Mesh* mesh);
+    static qsizetype findNbOfTriangle(he::Mesh* mesh);
 
     /**
      * @brief getter
      * @return the number of edges
      */
-    int findNbOfEdges() const;
+    qsizetype findNbOfEdges() const;
 
     //the data of this model
     QVector<float> m_data;
     QVector<float> m_dataEdge;
+    QVector<float> m_dataVertices;
 
     //the amount of data
     int m_count = 0;
     int m_countEdge = 0;
+    int m_countVertices = 0;
 
     //the mesh the model is based on
     he::Mesh* m_mesh = nullptr;

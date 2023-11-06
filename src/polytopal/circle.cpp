@@ -10,7 +10,7 @@ Circle::Circle(QVector3D const& center, float radius, Circle const* inversionCir
         m_center(center), m_radius(radius), m_axisX(1, 0, 0), m_axisY(0, 1, 0), m_inversionCircle(inversionCircle) {}
 
 Circle::Circle(QVector3D const& P1, QVector3D const& P2, QVector3D const& P3, Circle const* inversionCircle) :
-        m_inversionCircle(inversionCircle) {
+        m_radius(0.0f), m_inversionCircle(inversionCircle) {
     from3Points(P1, P2, P3);
 }
 

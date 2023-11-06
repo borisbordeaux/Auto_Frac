@@ -13,10 +13,6 @@ class QOpenGLShaderProgram;
 
 class Model;
 
-namespace he {
-class Face;
-}
-
 class GLView : public QOpenGLWidget, protected QOpenGLFunctions {
 Q_OBJECT
 
@@ -70,10 +66,13 @@ private:
     //OpenGL stuff for rendering
     QOpenGLVertexArrayObject m_vao;
     QOpenGLVertexArrayObject m_vaoEdge;
+    QOpenGLVertexArrayObject m_vaoVertices;
     QOpenGLBuffer m_vbo;
     QOpenGLBuffer m_vboEdge;
+    QOpenGLBuffer m_vboVertices;
     QOpenGLShaderProgram* m_program = nullptr;
     QOpenGLShaderProgram* m_programEdge = nullptr;
+    QOpenGLShaderProgram* m_programVertices = nullptr;
 
     //location of the different variables in the GPU
     int m_projMatrixLoc = 0;
@@ -87,6 +86,10 @@ private:
     //for edges
     int m_projMatrixLocEdge = 0;
     int m_mvMatrixLocEdge = 0;
+
+    //for vertices
+    int m_projMatrixLocVertices = 0;
+    int m_mvMatrixLocVertices = 0;
 
     //to prevent sending uniform already sent
     bool m_uniformsDirty = true;

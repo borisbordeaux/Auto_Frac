@@ -2,8 +2,6 @@
 
 #include "gui/model.h"
 #include "gui/shaders.h"
-#include "halfedge/face.h"
-
 #include <QKeyEvent>
 #include <QtOpenGL/QOpenGLShaderProgram>
 
@@ -32,6 +30,14 @@ GLView::~GLView() {
         m_programEdge = nullptr;
         doneCurrent();
     }
+
+    if (m_programVertices != nullptr) {
+        makeCurrent();
+        m_vboVertices.destroy();
+        delete m_programVertices;
+        m_programVertices = nullptr;
+        doneCurrent();
+    }
 }
 
 void GLView::meshChanged() {
@@ -42,18 +48,17 @@ void GLView::meshChanged() {
     m_vbo.allocate(m_model->constData(), m_model->count() * static_cast<int>(sizeof(GLfloat)));
 
     //enable enough attrib array for all the data of the mesh's vertices
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
-    glEnableVertexAttribArray(3);
+    glEnableVertexAttribArray(0); //coordinates
+    glEnableVertexAttribArray(1); //normal
+    glEnableVertexAttribArray(2); //ID for selection
+    glEnableVertexAttribArray(3); //is selected
     //3 coordinates of the vertex
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), nullptr);
     //3 coordinates of the vertex's normal
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
     //the ID
     glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(6 * sizeof(GLfloat)));
-    //whether it's selected or not, to simplify the code, a negative value means not selected
-    //while a positive value means selected
+    //whether it's selected or not, to simplify the code, a negative value means not selected while a positive value means selected
     glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(7 * sizeof(GLfloat)));
     m_vbo.release();
     m_vao.release();
@@ -65,12 +70,28 @@ void GLView::meshChanged() {
     m_vboEdge.allocate(m_model->constDataEdge(), m_model->countEdge() * static_cast<int>(sizeof(GLfloat)));
 
     //enable enough attrib array for all the data of the edge's vertex
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(0); //coordinates
+    glEnableVertexAttribArray(1); //color
     //coordinates of the vertex
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), nullptr);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
     m_vboEdge.release();
+    m_vaoEdge.release();
+
+    //------for the vertices------//
+    m_vaoVertices.bind();
+    m_vboVertices.bind();
+    //allocate necessary memory
+    m_vboVertices.allocate(m_model->constDataVertices(), m_model->countVertices() * static_cast<int>(sizeof(GLfloat)));
+
+    //enable enough attrib array for all the data of the edge's vertex
+    glEnableVertexAttribArray(0); //coordinates
+    glEnableVertexAttribArray(1); //color
+    //coordinates of the vertex
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), nullptr);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
+    m_vboVertices.release();
+    m_vaoVertices.release();
 
     //update the view
     update();
@@ -82,6 +103,7 @@ void GLView::initializeGL() {
 
     //to hide faces that are behind others
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_PROGRAM_POINT_SIZE);
 
     //print information
     QString val = QString::fromLatin1((char*) glGetString(GL_VERSION));
@@ -92,9 +114,11 @@ void GLView::initializeGL() {
     //for compatibility
     m_vao.create();
     m_vaoEdge.create();
+    m_vaoVertices.create();
 
     m_vbo.create();
     m_vboEdge.create();
+    m_vboVertices.create();
 
     //background
     glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
@@ -132,6 +156,19 @@ void GLView::initializeGL() {
     m_projMatrixLocEdge = m_programEdge->uniformLocation("projMatrix");
     m_mvMatrixLocEdge = m_programEdge->uniformLocation("mvMatrix");
 
+    //init shader for vertices
+    m_programVertices = new QOpenGLShaderProgram();
+    m_programVertices->addShaderFromSourceCode(QOpenGLShader::Vertex, vertexShaderSourceVertices);
+    m_programVertices->addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShaderSourceVertices);
+    m_programVertices->bindAttributeLocation("vertex", 0);
+    m_programVertices->bindAttributeLocation("color", 1);
+    m_programVertices->link();
+
+    //get location of uniforms
+    m_programVertices->bind();
+    m_projMatrixLocVertices = m_programVertices->uniformLocation("projMatrix");
+    m_mvMatrixLocVertices = m_programVertices->uniformLocation("mvMatrix");
+
     //memory allocation
     meshChanged();
 
@@ -164,31 +201,46 @@ void GLView::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //draw faces
-    //for compatibility
     m_vao.bind();
     //m_vbo.bind();
     m_program->bind();
     glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCount());
     m_program->release();
 
+    //camera translate to set lines
+    //in front of the polyhedron
+    m_camera.zoom(0.002f);
+
     //bind edge shader
     m_programEdge->bind();
+
+    //set uniforms
+    m_programEdge->setUniformValue(m_projMatrixLocEdge, m_proj);
+    m_programEdge->setUniformValue(m_mvMatrixLocEdge, m_camera.getViewMatrix() * m_world);
+
+    //draw edges
+    m_vaoEdge.bind();
+    m_vboEdge.bind();
+    glDrawArrays(GL_LINES, 0, m_model->vertexCountEdge());
+    m_programEdge->release();
 
     //camera translate to set lines
     //in front of the polyhedron
     m_camera.zoom(0.002f);
 
+    m_programVertices->bind();
     //set uniforms
-    m_programEdge->setUniformValue(m_projMatrixLocEdge, m_proj);
-    m_programEdge->setUniformValue(m_mvMatrixLocEdge, m_camera.getViewMatrix() * m_world);
-    m_camera.zoom(-0.002f);
+    m_programVertices->setUniformValue(m_projMatrixLocEdge, m_proj);
+    m_programVertices->setUniformValue(m_mvMatrixLocEdge, m_camera.getViewMatrix() * m_world);
 
-    //draw edges
-    //for compatibility
-    m_vaoEdge.bind();
-    m_vboEdge.bind();
-    glDrawArrays(GL_LINES, 0, m_model->vertexCountEdge());
+    //draw vertices
+    m_vaoVertices.bind();
+    m_vboVertices.bind();
+    glDrawArrays(GL_POINTS, 0, m_model->vertexCountVertices());
     m_programEdge->release();
+
+    //reset camera zoom
+    m_camera.zoom(-0.004f);
 }
 
 void GLView::resizeGL(int w, int h) {
@@ -236,10 +288,11 @@ void GLView::wheelEvent(QWheelEvent* event) {
     //compute new distance of camera from object
     float val = (float) event->angleDelta().y() / 500.0f;
 
-    if (val > 0.0f)
+    if (val > 0.0f) {
         this->m_camera.zoom();
-    else
+    } else {
         this->m_camera.dezoom();
+    }
 
     m_uniformsDirty = true;
     update();
@@ -303,17 +356,18 @@ void GLView::clickFaceManagement() {
 }
 
 void GLView::keyPressEvent(QKeyEvent* event) {
-    if (event->key() & Qt::Key_A) {
-        if (m_timerAnimation.isActive())
+    if (event->key() == Qt::Key_A) {
+        if (m_timerAnimation.isActive()) {
             m_timerAnimation.stop();
-        else
+        } else {
             m_timerAnimation.start(0);
+        }
     }
     QWidget::keyPressEvent(event);
 }
 
 void GLView::animationStep() {
-    m_camera.rotateAzimuth(qDegreesToRadians(0.5f));
+    m_camera.rotateAzimuth(qDegreesToRadians(2.0f));
     m_uniformsDirty = true;
     update();
 }

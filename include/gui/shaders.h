@@ -85,4 +85,29 @@ void main() {
 }
 )";
 
+//vertex shaders for vertices
+static const char* vertexShaderSourceVertices = R"(
+#version 460 core
+in highp vec4 vertex;
+in highp vec3 color;
+uniform highp mat4 projMatrix;
+uniform highp mat4 mvMatrix;
+out highp vec3 vecColor;
+void main() {
+    gl_Position = projMatrix * mvMatrix * vertex;
+    gl_PointSize = 8.0;
+    vecColor = color;
+}
+)";
+
+//fragment shader for vertices
+static const char* fragmentShaderSourceVertices = R"(
+#version 460 core
+in highp vec3 vecColor;
+out highp vec4 fragColor;
+void main() {
+    fragColor = vec4(vecColor, 1.0);
+}
+)";
+
 #endif // SHADERS_H
