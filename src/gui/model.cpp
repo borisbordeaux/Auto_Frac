@@ -59,13 +59,16 @@ void Model::updateDataEdge() {
     //for each edge, there are 2 vertices
     qsizetype nbOfAdd = 2 * nbOfEdges;
     //we resize the data for rapidity
-    m_dataEdge.resize(nbOfAdd * 6);
+    m_dataEdge.resize(nbOfAdd * 8);
+
+    float ID = 0.0f;
 
     //for each halfedge
     for (he::HalfEdge* he: m_mesh->halfEdges()) {
         //we will display a line
-        add(he->origin()->pos());
-        add(he->next()->origin()->pos());
+        add(he->origin()->pos(), ID, -1.0f);
+        add(he->next()->origin()->pos(), ID, -1.0f);
+        ID += 1.0f;
     }
 }
 
@@ -96,7 +99,7 @@ void Model::updateDataCircles() {
     qsizetype nbOfEdges = 360 * m_circles.size() + 360 * m_circlesDual.size();
     //for each edge, there are 2 vertices
     qsizetype nbOfAdd = 2 * nbOfEdges;
-    m_dataEdge.resize(m_dataEdge.size() + nbOfAdd * 6);
+    m_dataEdge.resize(m_dataEdge.size() + nbOfAdd * 8);
     QVector3D c1 { 0.0f, 1.0f, 0.0f };
     QVector3D c2 { 0.0f, 0.0f, 0.0f };
     QVector3D first;
@@ -109,11 +112,11 @@ void Model::updateDataCircles() {
             if (i == 0) {
                 first = { x, y, z };
             } else {
-                add({ x, y, z }, c1);
+                add({ x, y, z }, c1, -2.0f, -1.0f);
             }
-            add({ x, y, z }, c1);
+            add({ x, y, z }, c1, -2.0f, -1.0f);
             if (i == 359) {
-                add(first, c1);
+                add(first, c1, -2.0f, -1.0f);
             }
         }
     }
@@ -127,11 +130,11 @@ void Model::updateDataCircles() {
             if (i == 0) {
                 first = { x, y, z };
             } else {
-                add({ x, y, z }, c2);
+                add({ x, y, z }, c2, -2.0f, -1.0f);
             }
-            add({ x, y, z }, c2);
+            add({ x, y, z }, c2, -2.0f, -1.0f);
             if (i == 359) {
-                add(first, c2);
+                add(first, c2, -2.0f, -1.0f);
             }
         }
     }
@@ -147,19 +150,21 @@ void Model::updateDataVertices() {
     //for each vertex, there is 1 add
     qsizetype nbOfAdd = 1 * nbOfVertices;
     //we resize the data for rapidity
-    m_dataVertices.resize(nbOfAdd * 6);
+    m_dataVertices.resize(nbOfAdd * 8);
+
+    float ID = 0.0f;
 
     if (m_mesh != nullptr) {
         //for each vertex
         for (he::Vertex* v: m_mesh->vertices()) {
             //will display a point
-            addVertex(v->pos());
+            addVertex(v->pos(), { 0.0f, 0.0f, 0.0f }, ID, -1.0f);
         }
     }
 
     if (m_sphereMesh != nullptr) {
-        //display projection point
-        addVertex({ 0, 0, 1 }, { 1, 0, 0 });
+        //display projection point, the color depends on if the user is selcting or not
+        addVertex({ 0, 0, 1 }, { 1, 0, 0 }, -2, -1.0f);
     }
 }
 
@@ -182,7 +187,7 @@ void Model::add(const QVector3D& v, const QVector3D& n, float ID, float isSelect
     m_count += 8;
 }
 
-void Model::add(const QVector3D& v, const QVector3D& color) {
+void Model::add(const QVector3D& v, float ID, float isSelected, const QVector3D& color) {
     //add to the end of the data already added
     float* p = m_dataEdge.data() + m_countEdge;
     //the coordinates of the vertex
@@ -192,11 +197,15 @@ void Model::add(const QVector3D& v, const QVector3D& color) {
     *p++ = color.x();
     *p++ = color.y();
     *p++ = color.z();
+    //the ID of the face
+    *p++ = ID;
+    //whether the face is selected or not
+    *p = isSelected;
     //we update the amount of data
-    m_countEdge += 6;
+    m_countEdge += 8;
 }
 
-void Model::addVertex(const QVector3D& v, const QVector3D& color) {
+void Model::addVertex(QVector3D const& v, QVector3D const& color, float ID, float isSelected) {
     //add to the end of the data already added
     float* p = m_dataVertices.data() + m_countVertices;
     //the coordinates of the vertex
@@ -206,8 +215,12 @@ void Model::addVertex(const QVector3D& v, const QVector3D& color) {
     *p++ = color.x();
     *p++ = color.y();
     *p++ = color.z();
+    //the ID of the face
+    *p++ = ID;
+    //whether the face is selected or not
+    *p = isSelected;
     //we update the amount of data
-    m_countVertices += 6;
+    m_countVertices += 8;
 }
 
 void Model::triangle(QVector3D const& pos1, QVector3D const& pos2, QVector3D const& pos3, float ID, float isSelected) {

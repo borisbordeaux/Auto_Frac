@@ -72,9 +72,16 @@ void GLView::meshChanged() {
     //enable enough attrib array for all the data of the edge's vertex
     glEnableVertexAttribArray(0); //coordinates
     glEnableVertexAttribArray(1); //color
+    glEnableVertexAttribArray(2); //ID for selection
+    glEnableVertexAttribArray(3); //is selected
     //coordinates of the vertex
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), nullptr);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), nullptr);
+    //color of the edge
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
+    //the ID
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(6 * sizeof(GLfloat)));
+    //whether it's selected or not, to simplify the code, a negative value means not selected while a positive value means selected
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(7 * sizeof(GLfloat)));
     m_vboEdge.release();
     m_vaoEdge.release();
 
@@ -87,9 +94,16 @@ void GLView::meshChanged() {
     //enable enough attrib array for all the data of the edge's vertex
     glEnableVertexAttribArray(0); //coordinates
     glEnableVertexAttribArray(1); //color
+    glEnableVertexAttribArray(2); //ID for selection
+    glEnableVertexAttribArray(3); //is selected
     //coordinates of the vertex
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), nullptr);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), nullptr);
+    //color of the vertex
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
+    //the ID
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(6 * sizeof(GLfloat)));
+    //whether it's selected or not, to simplify the code, a negative value means not selected while a positive value means selected
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(7 * sizeof(GLfloat)));
     m_vboVertices.release();
     m_vaoVertices.release();
 
@@ -149,12 +163,15 @@ void GLView::initializeGL() {
     m_programEdge->addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShaderSourceEdge);
     m_programEdge->bindAttributeLocation("vertex", 0);
     m_programEdge->bindAttributeLocation("color", 1);
+    m_programEdge->bindAttributeLocation("ID", 2);
+    m_programEdge->bindAttributeLocation("isSelected", 3);
     m_programEdge->link();
 
     //get location of uniforms
     m_programEdge->bind();
     m_projMatrixLocEdge = m_programEdge->uniformLocation("projMatrix");
     m_mvMatrixLocEdge = m_programEdge->uniformLocation("mvMatrix");
+    m_isPickingLocEdge = m_programEdge->uniformLocation("isPicking");
 
     //init shader for vertices
     m_programVertices = new QOpenGLShaderProgram();
@@ -162,12 +179,15 @@ void GLView::initializeGL() {
     m_programVertices->addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShaderSourceVertices);
     m_programVertices->bindAttributeLocation("vertex", 0);
     m_programVertices->bindAttributeLocation("color", 1);
+    m_programVertices->bindAttributeLocation("ID", 2);
+    m_programVertices->bindAttributeLocation("isSelected", 3);
     m_programVertices->link();
 
     //get location of uniforms
     m_programVertices->bind();
     m_projMatrixLocVertices = m_programVertices->uniformLocation("projMatrix");
     m_mvMatrixLocVertices = m_programVertices->uniformLocation("mvMatrix");
+    m_isPickingLocVertices = m_programVertices->uniformLocation("isPicking");
 
     //memory allocation
     meshChanged();
@@ -321,15 +341,59 @@ void GLView::clickFaceManagement() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //indicates to the shader that we're doing a selection
+    //TODO: set picking uniform to the shader that corresponds to the picking mode
     m_program->bind();
     m_program->setUniformValue(m_isPickingLoc, true);
+    m_programEdge->bind();
+    m_programEdge->setUniformValue(m_isPickingLocEdge, true);
+    m_programVertices->bind();
+    m_programVertices->setUniformValue(m_isPickingLocVertices, true);
 
     //draw faces
     m_vao.bind();
+    //m_vbo.bind();
+    m_program->bind();
     glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCount());
+    m_program->release();
+
+    //camera translate to set lines
+    //in front of the polyhedron
+    m_camera.zoom(0.002f);
+
+    //bind edge shader
+    m_programEdge->bind();
+
+    //set uniforms
+    m_programEdge->setUniformValue(m_projMatrixLocEdge, m_proj);
+    m_programEdge->setUniformValue(m_mvMatrixLocEdge, m_camera.getViewMatrix() * m_world);
+
+    //draw edges
+    m_vaoEdge.bind();
+    m_vboEdge.bind();
+    glDrawArrays(GL_LINES, 0, m_model->vertexCountEdge());
+    m_programEdge->release();
+
+    //camera translate to set lines
+    //in front of the polyhedron
+    m_camera.zoom(0.002f);
+
+    m_programVertices->bind();
+    //set uniforms
+    m_programVertices->setUniformValue(m_projMatrixLocEdge, m_proj);
+    m_programVertices->setUniformValue(m_mvMatrixLocEdge, m_camera.getViewMatrix() * m_world);
+
+    //draw vertices
+    m_vaoVertices.bind();
+    m_vboVertices.bind();
+    glDrawArrays(GL_POINTS, 0, m_model->vertexCountVertices());
+    m_programEdge->release();
+
+    //reset camera zoom
+    m_camera.zoom(-0.004f);
 
     //render the scene
     QImage image = grabFramebuffer();
+    image.save("picking.png");
 
     //read the pixel under the mouse
     QColor color = image.pixelColor(m_clickPos);
@@ -337,7 +401,7 @@ void GLView::clickFaceManagement() {
     //set the selected face using the red color
     m_model->setSelected(color.red());
 
-    //update the data for drawing
+    //update the data for drawing the selected object in the right color
     m_model->updateData();
 
     //write data to the GPU
@@ -346,7 +410,13 @@ void GLView::clickFaceManagement() {
     m_vbo.release();
 
     //indicates that we're not picking
+    //TODO: set picking uniform to the shader that corresponds to the picking mode
+    m_program->bind();
     m_program->setUniformValue(m_isPickingLoc, false);
+    m_programEdge->bind();
+    m_programEdge->setUniformValue(m_isPickingLocEdge, false);
+    m_programVertices->bind();
+    m_programVertices->setUniformValue(m_isPickingLocVertices, false);
 
     //reset color
     glClearColor(0.3f, 0.3f, 0.3f, 1.0f);

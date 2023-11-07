@@ -38,7 +38,7 @@ uniform highp mat4 model;
 uniform bool isPicking;
 void main() {
    if(!isPicking){
-      if(selected < 0.0){
+      if(selected < 0.5){
          highp vec3 fragVertModel = (model*vec4(vert, 1.0)).xyz;
          highp vec3 fragNormalModel = vertNormal;
          highp vec3 L = normalize(lightPos - fragVertModel);
@@ -66,12 +66,21 @@ static const char* vertexShaderSourceEdge = R"(
 #version 460 core
 in highp vec4 vertex;
 in highp vec3 color;
+in float ID;
+in float isSelected;
 uniform highp mat4 projMatrix;
 uniform highp mat4 mvMatrix;
+uniform bool isPicking;
 out highp vec3 vecColor;
 void main() {
     gl_Position = projMatrix * mvMatrix * vertex;
-    vecColor = color;
+    if (isPicking) {
+        vecColor = vec3(ID, ID, ID);
+    } else if (isSelected > 0.5) {
+        vecColor = vec3(1.0, 1.0, 1.0);
+    } else {
+        vecColor = color;
+    }
 }
 )";
 
@@ -90,13 +99,22 @@ static const char* vertexShaderSourceVertices = R"(
 #version 460 core
 in highp vec4 vertex;
 in highp vec3 color;
+in float ID;
+in float isSelected;
 uniform highp mat4 projMatrix;
 uniform highp mat4 mvMatrix;
+uniform bool isPicking;
 out highp vec3 vecColor;
 void main() {
     gl_Position = projMatrix * mvMatrix * vertex;
     gl_PointSize = 8.0;
-    vecColor = color;
+    if (isPicking) {
+        vecColor = vec3(ID, ID, ID);
+    } else if (isSelected > 0.5) {
+        vecColor = vec3(1.0, 1.0, 1.0);
+    } else {
+        vecColor = color;
+    }
 }
 )";
 

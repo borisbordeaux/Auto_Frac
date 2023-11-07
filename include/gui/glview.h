@@ -86,10 +86,12 @@ private:
     //for edges
     int m_projMatrixLocEdge = 0;
     int m_mvMatrixLocEdge = 0;
+    int m_isPickingLocEdge = 0;
 
     //for vertices
     int m_projMatrixLocVertices = 0;
     int m_mvMatrixLocVertices = 0;
+    int m_isPickingLocVertices = 0;
 
     //to prevent sending uniform already sent
     bool m_uniformsDirty = true;

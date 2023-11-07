@@ -146,9 +146,9 @@ private:
      * @param ID the ID of the edge
      * @param isSelected has to be true if the edge is selected
      */
-    void add(const QVector3D& v, const QVector3D& color = { 0.0f, 0.0f, 0.0f });
+    void add(const QVector3D& v, float ID, float isSelected, const QVector3D& color = { 0.0f, 0.0f, 0.0f });
 
-    void addVertex(const QVector3D& v, const QVector3D& color = { 0.0f, 0.0f, 0.0f });
+    void addVertex(QVector3D const& v, QVector3D const& color, float ID, float isSelected);
 
     /**
      * @brief computes the normal of the 3 vertices and
