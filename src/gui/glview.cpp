@@ -373,8 +373,8 @@ void GLView::clickFaceManagement() {
     glDrawArrays(GL_LINES, 0, m_model->vertexCountEdge());
     m_programEdge->release();
 
-    //camera translate to set lines
-    //in front of the polyhedron
+    //camera translate to set vertices
+    //in front of the lines
     m_camera.zoom(0.002f);
 
     m_programVertices->bind();
@@ -437,7 +437,7 @@ void GLView::keyPressEvent(QKeyEvent* event) {
 }
 
 void GLView::animationStep() {
-    m_camera.rotateAzimuth(qDegreesToRadians(2.0f));
+    m_camera.rotateAzimuth(qDegreesToRadians(1.0f));
     m_uniformsDirty = true;
     update();
 }

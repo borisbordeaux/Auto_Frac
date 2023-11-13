@@ -61,13 +61,13 @@ void Model::updateDataEdge() {
     //we resize the data for rapidity
     m_dataEdge.resize(nbOfAdd * 8);
 
-    float ID = 0.0f;
+    float ID = 1.0f;
 
     //for each halfedge
     for (he::HalfEdge* he: m_mesh->halfEdges()) {
         //we will display a line
-        add(he->origin()->pos(), ID, -1.0f);
-        add(he->next()->origin()->pos(), ID, -1.0f);
+        addVertexEdge(he->origin()->pos(), { 0, 0, 0 }, ID, -1.0f);
+        addVertexEdge(he->next()->origin()->pos(), { 0, 0, 0 }, ID, -1.0f);
         ID += 1.0f;
     }
 }
@@ -100,8 +100,8 @@ void Model::updateDataCircles() {
     //for each edge, there are 2 vertices
     qsizetype nbOfAdd = 2 * nbOfEdges;
     m_dataEdge.resize(m_dataEdge.size() + nbOfAdd * 8);
-    QVector3D c1 { 0.0f, 1.0f, 0.0f };
-    QVector3D c2 { 0.0f, 0.0f, 0.0f };
+    QVector3D colorInvertedCircles { 0.0f, 0.0f, 0.0f };
+    QVector3D colorInversionCircles { 0.0f, 0.7f, 0.0f };
     QVector3D first;
     for (poly::Circle const& c: m_circles) {
         for (int i = 0; i < 360; i++) {
@@ -112,11 +112,11 @@ void Model::updateDataCircles() {
             if (i == 0) {
                 first = { x, y, z };
             } else {
-                add({ x, y, z }, c1, -2.0f, -1.0f);
+                addVertexEdge({ x, y, z }, colorInvertedCircles, -2.0f, -1.0f);
             }
-            add({ x, y, z }, c1, -2.0f, -1.0f);
+            addVertexEdge({ x, y, z }, colorInvertedCircles, -2.0f, -1.0f);
             if (i == 359) {
-                add(first, c1, -2.0f, -1.0f);
+                addVertexEdge(first, colorInvertedCircles, -2.0f, -1.0f);
             }
         }
     }
@@ -130,11 +130,11 @@ void Model::updateDataCircles() {
             if (i == 0) {
                 first = { x, y, z };
             } else {
-                add({ x, y, z }, c2, -2.0f, -1.0f);
+                addVertexEdge({ x, y, z }, colorInversionCircles, -2.0f, -1.0f);
             }
-            add({ x, y, z }, c2, -2.0f, -1.0f);
+            addVertexEdge({ x, y, z }, colorInversionCircles, -2.0f, -1.0f);
             if (i == 359) {
-                add(first, c2, -2.0f, -1.0f);
+                addVertexEdge(first, colorInversionCircles, -2.0f, -1.0f);
             }
         }
     }
@@ -152,7 +152,7 @@ void Model::updateDataVertices() {
     //we resize the data for rapidity
     m_dataVertices.resize(nbOfAdd * 8);
 
-    float ID = 0.0f;
+    float ID = 1.0f;
 
     if (m_mesh != nullptr) {
         //for each vertex
@@ -163,12 +163,12 @@ void Model::updateDataVertices() {
     }
 
     if (m_sphereMesh != nullptr) {
-        //display projection point, the color depends on if the user is selcting or not
+        //display projection point, the color depends on if the user is selecting or not
         addVertex({ 0, 0, 1 }, { 1, 0, 0 }, -2, -1.0f);
     }
 }
 
-void Model::add(const QVector3D& v, const QVector3D& n, float ID, float isSelected) {
+void Model::addVertexFace(const QVector3D& v, const QVector3D& n, float ID, float isSelected) {
     //add to the end of the data already added
     float* p = m_data.data() + m_count;
     //the coordinates of the vertex
@@ -187,7 +187,7 @@ void Model::add(const QVector3D& v, const QVector3D& n, float ID, float isSelect
     m_count += 8;
 }
 
-void Model::add(const QVector3D& v, float ID, float isSelected, const QVector3D& color) {
+void Model::addVertexEdge(QVector3D const& v, QVector3D const& color, float ID, float isSelected) {
     //add to the end of the data already added
     float* p = m_dataEdge.data() + m_countEdge;
     //the coordinates of the vertex
@@ -228,9 +228,9 @@ void Model::triangle(QVector3D const& pos1, QVector3D const& pos2, QVector3D con
     QVector3D n = QVector3D::normal(pos2 - pos1, pos3 - pos2);
 
     //add the vertices to the data
-    add(pos1, n, ID, isSelected);
-    add(pos2, n, ID, isSelected);
-    add(pos3, n, ID, isSelected);
+    addVertexFace(pos1, n, ID, isSelected);
+    addVertexFace(pos2, n, ID, isSelected);
+    addVertexFace(pos3, n, ID, isSelected);
 }
 
 qsizetype Model::findNbOfTriangle(he::Mesh* mesh) {

@@ -138,7 +138,7 @@ private:
      * @param ID the ID of the face
      * @param isSelected has to be true if the face is selected
      */
-    void add(QVector3D const& v, QVector3D const& n, float ID, float isSelected);
+    void addVertexFace(QVector3D const& v, QVector3D const& n, float ID, float isSelected);
 
     /**
      * @brief add a vertex to the edge data
@@ -146,7 +146,7 @@ private:
      * @param ID the ID of the edge
      * @param isSelected has to be true if the edge is selected
      */
-    void add(const QVector3D& v, float ID, float isSelected, const QVector3D& color = { 0.0f, 0.0f, 0.0f });
+    void addVertexEdge(QVector3D const& v, QVector3D const& color, float ID, float isSelected);
 
     void addVertex(QVector3D const& v, QVector3D const& color, float ID, float isSelected);
 
