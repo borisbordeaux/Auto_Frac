@@ -20,6 +20,7 @@ public:
     void setAxisY(QVector3D const& axisY);
     void from3Points(QVector3D const& P1, QVector3D const& P2, QVector3D const& P3);
 
+    void setInversionCircle(Circle const* inversionCircle);
     Circle const* inversionCircle() const;
 
     bool static areOrthogonalCircles(Circle const& c1, Circle const& c2);

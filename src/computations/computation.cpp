@@ -11,6 +11,7 @@
 #include "halfedge/halfedge.h"
 #include "halfedge/face.h"
 #include "utils/utils.h"
+#include "polytopal/inversivecoordinates.h"
 
 void frac::DensityComputation::computeDensity(QString const& file, int value, bool showAllImages) {
     cv::destroyAllWindows();
@@ -284,7 +285,7 @@ std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCirclesDual(he::Me
 
 std::size_t frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circlesToInverse, std::vector<poly::Circle>& circlesInvertive, std::size_t index, bool projected) {
     std::vector<poly::Circle> res;
-    res.reserve(circlesToInverse.size() * circlesInvertive.size());
+    res.reserve((circlesToInverse.size() - index) * circlesInvertive.size());
     std::size_t count = 0;
 
     if (!projected) {
@@ -300,12 +301,38 @@ std::size_t frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circl
     //inversion always in plan
     for (std::size_t i = index; i != circlesToInverse.size(); i++) {
         for (poly::Circle const& cInv: circlesInvertive) {
+            float precision = 0.001f;
+#if 0
             if (circlesToInverse[i].inversionCircle() != &cInv && !poly::Circle::areOrthogonalCircles(circlesToInverse[i], cInv)) {
-                res.push_back(inversion(circlesToInverse[i], cInv));
-                count++;
+                if (circlesToInverse[i].radius() > precision) {
+                    poly::Circle inverted = inversion(circlesToInverse[i], cInv);
+                    if (inverted.radius() > precision) {
+                        res.push_back(inverted);
+                        count++;
+                    }
+                }
             }
+#else
+            //inversion from plan to sphere space
+            //if not already inverted
+            if (circlesToInverse[i].inversionCircle() != &cInv && circlesToInverse[i].radius() > precision) {
+                poly::InversiveCoordinates circleToInverse(circlesToInverse[i]);
+                poly::InversiveCoordinates inversionCircle(cInv);
+                //if not orhtogonal
+                if (!poly::InversiveCoordinates::areOrthogonal(circleToInverse, inversionCircle)) {
+                    poly::InversiveCoordinates inverted = poly::InversiveCoordinates::inverse(circleToInverse, inversionCircle);
+                    poly::Circle circleInverted = inverted.toCircle();
+                    circleInverted.setInversionCircle(&cInv);
+                    if (circleInverted.radius() > precision) {
+                        res.push_back(circleInverted);
+                        count++;
+                    }
+                }
+            }
+#endif
         }
     }
+
 
     circlesToInverse.reserve(circlesToInverse.size() + res.size());
     circlesToInverse.insert(circlesToInverse.end(), res.begin(), res.end());

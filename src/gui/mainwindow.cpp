@@ -1070,13 +1070,16 @@ void MainWindow::canonicalizeStep() {
 
 [[maybe_unused]] void MainWindow::slotIncreaseInversion() {
     if (m_circles.empty()) { return; }
-    m_inversionLevel++;
 
     std::size_t index = m_circlesIndex;
     m_circlesIndex = m_circles.size();
 
     //write circles in m_circles
     std::size_t nbInversions = frac::PolyCircle::computeInversions(m_circles, m_circlesDual, index, this->ui->checkBox_projectCircles->isChecked());
+
+    if(nbInversions != 0){
+        m_inversionLevel++;
+    }
 
     for (std::size_t i = index; i != m_circles.size(); i++) {
         m_modelMesh.addCircle(m_circles[i]);

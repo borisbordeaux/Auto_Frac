@@ -39,6 +39,10 @@ Circle const* Circle::inversionCircle() const {
     return m_inversionCircle;
 }
 
+void Circle::setInversionCircle(Circle const* inversionCircle) {
+    m_inversionCircle = inversionCircle;
+}
+
 void Circle::setCenter(QVector3D const& center) {
     m_center = center;
 }
