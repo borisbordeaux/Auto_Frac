@@ -24,12 +24,35 @@ public:
     Circle const* inversionCircle() const;
 
     bool static areOrthogonalCircles(Circle const& c1, Circle const& c2);
+
+    void setOldCircleBeforeInversion(Circle const& oldCircle);
+    Circle oldCircleBeforeInversion() const;
+
+    void setNewCircleAfterInversion(Circle const& newCircle);
+    Circle newCircleAfterInversion() const;
+    void setInvertedValues();
+
+    void setColor(QVector3D const& color);
+    QVector3D const& color() const;
+
 private:
     QVector3D m_center;
     float m_radius;
     QVector3D m_axisX;
     QVector3D m_axisY;
     Circle const* m_inversionCircle;
+
+    QVector3D m_oldCenter;
+    float m_oldRadius = 0.0f;
+    QVector3D m_oldAxisX;
+    QVector3D m_oldAxisY;
+
+    QVector3D m_newCenter;
+    float m_newRadius = 0.0f;
+    QVector3D m_newAxisX;
+    QVector3D m_newAxisY;
+
+    QVector3D m_color = {0,0,0};
 };
 
 } // poly

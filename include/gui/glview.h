@@ -35,6 +35,7 @@ public:
 
 public slots:
     void animationStep();
+    void animationCameraStep();
 
 protected:
     // QOpenGLWidget interface
@@ -106,6 +107,11 @@ private:
     //useful for item selection
     bool m_clicked = false;
     QPoint m_clickPos;
+
+    //for animation
+    QTimer m_timerAnimCamera;
+    Camera m_cameraBeforeAnim;
+    float m_tAnimCamera = 0.0f;
 };
 
 #endif // GLVIEW_H

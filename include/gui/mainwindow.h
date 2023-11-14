@@ -72,6 +72,8 @@ public slots:
     [[maybe_unused]] void slotIncreaseInversion();
     [[maybe_unused]] void slotDecreaseInversion();
     [[maybe_unused]] void slotProjectCirclesClicked();
+    void animProjectStep();
+    void animInversionStep();
 
 private:
     struct Constraint {
@@ -119,6 +121,17 @@ private:
 
     int m_inversionLevel;
     std::size_t m_circlesIndex;
+
+    QTimer m_timerAnimProject;
+    std::vector<poly::Circle> m_circlesAnimProjectStart;
+    std::vector<poly::Circle> m_circlesDualAnimProjectStart;
+    std::vector<poly::Circle> m_circlesAnimProjectEnd;
+    std::vector<poly::Circle> m_circlesDualAnimProjectEnd;
+    float m_tAnimProject = 0.0f;
+
+    QTimer m_timerAnimInversion;
+    float m_tAnimInversion = 0.0f;
+    std::size_t m_nbInversions = 0;
 };
 
 #endif

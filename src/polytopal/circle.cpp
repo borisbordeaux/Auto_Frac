@@ -90,4 +90,45 @@ void Circle::from3Points(QVector3D const& P1, QVector3D const& P2, QVector3D con
     m_center = (P * QVector4D(m_center, 1.0f)).toVector3D();
 }
 
+void Circle::setOldCircleBeforeInversion(Circle const& oldCircle) {
+    m_oldCenter = oldCircle.center();
+    m_oldRadius = oldCircle.radius();
+    m_oldAxisX = oldCircle.axisX();
+    m_oldAxisY = oldCircle.axisY();
+}
+
+Circle Circle::oldCircleBeforeInversion() const {
+    Circle res { m_oldCenter, m_oldRadius, m_oldAxisX, m_oldAxisY, nullptr };
+    res.setColor(m_color);
+    return res;
+}
+
+void Circle::setNewCircleAfterInversion(Circle const& newCircle) {
+    m_newCenter = newCircle.center();
+    m_newRadius = newCircle.radius();
+    m_newAxisX = newCircle.axisX();
+    m_newAxisY = newCircle.axisY();
+}
+
+Circle Circle::newCircleAfterInversion() const {
+    Circle res { m_newCenter, m_newRadius, m_newAxisX, m_newAxisY, nullptr };
+    res.setColor(m_color);
+    return res;
+}
+
+void Circle::setInvertedValues() {
+    m_center = m_newCenter;
+    m_radius = m_newRadius;
+    m_axisX = m_newAxisX;
+    m_axisY = m_newAxisY;
+}
+
+void Circle::setColor(const QVector3D& color) {
+    m_color = color;
+}
+
+QVector3D const& Circle::color() const {
+    return m_color;
+}
+
 } // poly

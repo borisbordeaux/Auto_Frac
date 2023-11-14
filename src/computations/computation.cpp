@@ -5,6 +5,7 @@
 #include <QString>
 #include <QHash>
 #include <QDebug>
+#include <QColor>
 
 #include "halfedge/mesh.h"
 #include "halfedge/vertex.h"
@@ -182,6 +183,19 @@ void projectToPlan(poly::Circle& circle) {
     circle.from3Points(p1, p2, p3);
 }
 
+poly::Circle projectToSphereC(poly::Circle const& circle) {
+    QVector3D p1 = circle.center() + circle.radius() * circle.axisX();
+    QVector3D p2 = circle.center() - circle.radius() * circle.axisX();
+    QVector3D p3 = circle.center() + circle.radius() * circle.axisY();
+    projectToSphere(p1);
+    projectToSphere(p2);
+    projectToSphere(p3);
+    poly::Circle res = circle;
+    res.from3Points(p1, p2, p3);
+    res.setColor(circle.color());
+    return res;
+}
+
 [[maybe_unused]] QVector3D inversion(QVector3D const& point, poly::Circle const& circleInv) {
     QVector3D OA = point - circleInv.center();
     QVector3D OB = OA.normalized() * (circleInv.radius() * circleInv.radius() / OA.length());
@@ -215,6 +229,25 @@ void projectToPlan(poly::Circle& circle) {
     return { p1Inv + vecRadius, vecRadius.length(), &circleInv };
 }
 
+QColor colors[16] = {
+        QColor(Qt::blue),
+        QColor(Qt::darkCyan),
+        QColor(Qt::green),
+        QColor(Qt::cyan),
+        QColor(Qt::magenta),
+        QColor(Qt::yellow),
+        QColor(Qt::darkRed),
+        QColor(Qt::darkGreen),
+        QColor(Qt::darkBlue),
+        QColor(Qt::darkMagenta),
+        QColor(Qt::darkYellow),
+        QColor(Qt::darkGray),
+        QColor(Qt::gray),
+        QColor(Qt::lightGray),
+        QColor(Qt::black),
+        QColor(Qt::white)
+};
+
 }
 
 void frac::Canonizer::setMeshToOrigin(he::Mesh& m) {
@@ -240,6 +273,8 @@ void frac::Canonizer::canonicalizeMesh(he::Mesh& m) {
 std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCircles(const he::Mesh& m, bool projected) {
     std::vector<poly::Circle> res;
 
+    int i = 0;
+
     for (he::Vertex* v: m.vertices()) {
         QList<he::HalfEdge*> otherHE = v->otherHalfEdges();
         if (otherHE.size() > 1) {
@@ -253,8 +288,12 @@ std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCircles(const he::
                 projectToPlan(v3);
             }
 
-            res.emplace_back(v1, v2, v3);
+            poly::Circle c { v1, v2, v3 };
+            //c.setColor({ colors[i % 17].redF(), colors[i % 17].greenF(), colors[i % 17].blueF() });
+            c.setColor({ colors[14].redF(), colors[14].greenF(), colors[14].blueF() });
+            res.push_back(c);
         }
+        i++;
     }
 
     return res;
@@ -276,7 +315,9 @@ std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCirclesDual(he::Me
                 projectToPlan(v3);
             }
 
-            res.emplace_back(v1, v2, v3);
+            poly::Circle c { v1, v2, v3 };
+            c.setColor({ 0.0f, 0.0f, 1.0f });
+            res.push_back(c);
         }
     }
 
@@ -301,7 +342,7 @@ std::size_t frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circl
     //inversion always in plan
     for (std::size_t i = index; i != circlesToInverse.size(); i++) {
         for (poly::Circle const& cInv: circlesInvertive) {
-            float precision = 0.001f;
+            float precision = 0.005f;
 #if 0
             if (circlesToInverse[i].inversionCircle() != &cInv && !poly::Circle::areOrthogonalCircles(circlesToInverse[i], cInv)) {
                 if (circlesToInverse[i].radius() > precision) {
@@ -318,11 +359,19 @@ std::size_t frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circl
             if (circlesToInverse[i].inversionCircle() != &cInv && circlesToInverse[i].radius() > precision) {
                 poly::InversiveCoordinates circleToInverse(circlesToInverse[i]);
                 poly::InversiveCoordinates inversionCircle(cInv);
-                //if not orhtogonal
+                //if not orthogonal
                 if (!poly::InversiveCoordinates::areOrthogonal(circleToInverse, inversionCircle)) {
                     poly::InversiveCoordinates inverted = poly::InversiveCoordinates::inverse(circleToInverse, inversionCircle);
                     poly::Circle circleInverted = inverted.toCircle();
                     circleInverted.setInversionCircle(&cInv);
+                    circleInverted.setColor(circlesToInverse[i].color());
+                    if (!projected) {
+                        circleInverted.setOldCircleBeforeInversion(projectToSphereC(circlesToInverse[i]));
+                        circleInverted.setNewCircleAfterInversion(projectToSphereC(circleInverted));
+                    } else {
+                        circleInverted.setOldCircleBeforeInversion(circlesToInverse[i]);
+                        circleInverted.setNewCircleAfterInversion(circleInverted);
+                    }
                     if (circleInverted.radius() > precision) {
                         res.push_back(circleInverted);
                         count++;

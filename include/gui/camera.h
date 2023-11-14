@@ -23,6 +23,16 @@ public:
 
     void reset(QVector3D const& center, float radius, float azimuthAngle, float polarAngle);
 
+    void setCenter(QVector3D const& center);
+    void setRadius(float radius);
+    void setAzimuthAngle(float azimuthAngle);
+    void setPolarAngle(float polarAngle);
+
+    QVector3D const& center() const;
+    float radius() const;
+    float azimuthAngle() const;
+    float polarAngle() const;
+
 private:
     QVector3D m_center; // Center of the orbit camera sphere (the point upon which the camera looks)
     QVector3D m_upVector; // Up vector of the camera

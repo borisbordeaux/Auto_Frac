@@ -111,3 +111,35 @@ void Camera::reset(QVector3D const& center, float radius, float azimuthAngle, fl
     m_azimuthAngle = azimuthAngle;
     m_polarAngle = polarAngle;
 }
+
+void Camera::setCenter(const QVector3D& center) {
+    m_center = center;
+}
+
+void Camera::setRadius(float radius) {
+    m_radius = radius;
+}
+
+void Camera::setAzimuthAngle(float azimuthAngle) {
+    m_azimuthAngle = azimuthAngle;
+}
+
+void Camera::setPolarAngle(float polarAngle) {
+    m_polarAngle = polarAngle;
+}
+
+QVector3D const& Camera::center() const {
+    return m_center;
+}
+
+float Camera::radius() const {
+    return m_radius;
+}
+
+float Camera::azimuthAngle() const {
+    return m_azimuthAngle;
+}
+
+float Camera::polarAngle() const {
+    return m_polarAngle;
+}

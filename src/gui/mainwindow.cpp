@@ -84,6 +84,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this->ui->spinBox_nbIterations, &QSpinBox::valueChanged, this, [&](int) { updateEnablement(); });
 
     connect(&m_timerCanonicalize, &QTimer::timeout, this, &MainWindow::canonicalizeStep);
+    connect(&m_timerAnimProject, &QTimer::timeout, this, &MainWindow::animProjectStep);
+    connect(&m_timerAnimInversion, &QTimer::timeout, this, &MainWindow::animInversionStep);
 
     m_circlesIndex = 0;
 }
@@ -1025,7 +1027,7 @@ void MainWindow::canonicalizeStep() {
             maxError = error;
         }
     }
-    if (maxError < 0.00001f) {
+    if (maxError < 0.000001f) {
         this->setInfo("stopped at error of " + std::to_string(maxError));
         m_timerCanonicalize.stop();
     }
@@ -1069,26 +1071,12 @@ void MainWindow::canonicalizeStep() {
 }
 
 [[maybe_unused]] void MainWindow::slotIncreaseInversion() {
-    if (m_circles.empty()) { return; }
-
-    std::size_t index = m_circlesIndex;
-    m_circlesIndex = m_circles.size();
-
-    //write circles in m_circles
-    std::size_t nbInversions = frac::PolyCircle::computeInversions(m_circles, m_circlesDual, index, this->ui->checkBox_projectCircles->isChecked());
-
-    if(nbInversions != 0){
-        m_inversionLevel++;
+    if (!m_timerAnimInversion.isActive()) {
+        std::size_t index = m_circlesIndex;
+        m_circlesIndex = m_circles.size();
+        m_nbInversions = frac::PolyCircle::computeInversions(m_circles, m_circlesDual, index, this->ui->checkBox_projectCircles->isChecked());
+        m_timerAnimInversion.start();
     }
-
-    for (std::size_t i = index; i != m_circles.size(); i++) {
-        m_modelMesh.addCircle(m_circles[i]);
-    }
-
-    m_modelMesh.updateData();
-    m_view->meshChanged();
-
-    this->setInfo(std::to_string(nbInversions) + " inversions, " + std::to_string(m_circles.size()) + " circles in total", 4000);
 }
 
 [[maybe_unused]] void MainWindow::slotDecreaseInversion() {
@@ -1097,10 +1085,21 @@ void MainWindow::canonicalizeStep() {
 
     m_inversionLevel = 0;
     m_circlesIndex = 0;
+
     m_modelMesh.resetCircles();
 
     m_circles = frac::PolyCircle::computeIlluminatedCircles(m_mesh, this->ui->checkBox_projectCircles->isChecked());
     m_circlesDual = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh, this->ui->checkBox_projectCircles->isChecked());
+
+    for (int i = 0; i < inversionLevel; i++) {
+        std::size_t index = m_circlesIndex;
+        m_circlesIndex = m_circles.size();
+        m_nbInversions = frac::PolyCircle::computeInversions(m_circles, m_circlesDual, index, this->ui->checkBox_projectCircles->isChecked());
+
+        if (m_nbInversions != 0) {
+            m_inversionLevel++;
+        }
+    }
 
     for (poly::Circle const& c: m_circles) {
         m_modelMesh.addCircle(c);
@@ -1110,40 +1109,119 @@ void MainWindow::canonicalizeStep() {
         m_modelMesh.addCircleDual(c);
     }
 
-    if (inversionLevel == 0) {
-        m_modelMesh.updateData();
-        m_view->meshChanged();
-    } else {
-        for (int i = 0; i < inversionLevel; i++) {
-            this->slotIncreaseInversion();
-        }
-    }
+    this->setInfo("Iteration level : " + std::to_string(m_inversionLevel) + ", " + std::to_string(m_circles.size()) + " circles in total", 4000);
+
+    m_modelMesh.updateData();
+    m_view->meshChanged();
 }
 
 [[maybe_unused]] void MainWindow::slotProjectCirclesClicked() {
-    if (m_circles.empty()) { return; }
+    m_circlesAnimProjectStart = frac::PolyCircle::computeIlluminatedCircles(m_mesh, !this->ui->checkBox_projectCircles->isChecked());
+    m_circlesDualAnimProjectStart = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh, !this->ui->checkBox_projectCircles->isChecked());
+    m_circlesAnimProjectEnd = frac::PolyCircle::computeIlluminatedCircles(m_mesh, this->ui->checkBox_projectCircles->isChecked());
+    m_circlesDualAnimProjectEnd = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh, this->ui->checkBox_projectCircles->isChecked());
+    m_circles = m_circlesAnimProjectStart;
+    m_circlesDual = m_circlesDualAnimProjectStart;
+    m_timerAnimProject.start();
+}
 
-    int inversionLevel = m_inversionLevel;
-    m_inversionLevel = 0;
-    m_circlesIndex = 0;
-    m_circles = frac::PolyCircle::computeIlluminatedCircles(m_mesh, this->ui->checkBox_projectCircles->isChecked());
-    m_circlesDual = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh, this->ui->checkBox_projectCircles->isChecked());
+void MainWindow::animProjectStep() {
+    if (m_circles.empty()) {
+        m_timerAnimProject.stop();
+        return;
+    }
+
     m_modelMesh.resetCircles();
-
-    for (poly::Circle const& c: m_circles) {
-        m_modelMesh.addCircle(c);
+    for (size_t i = 0; i < m_circles.size(); i++) {
+        m_circles[i].setRadius((1 - m_tAnimProject) * m_circlesAnimProjectStart[i].radius() + m_tAnimProject * m_circlesAnimProjectEnd[i].radius());
+        m_circles[i].setCenter((1 - m_tAnimProject) * m_circlesAnimProjectStart[i].center() + m_tAnimProject * m_circlesAnimProjectEnd[i].center());
+        m_circles[i].setAxisX((1 - m_tAnimProject) * m_circlesAnimProjectStart[i].axisX() + m_tAnimProject * m_circlesAnimProjectEnd[i].axisX());
+        m_circles[i].setAxisY((1 - m_tAnimProject) * m_circlesAnimProjectStart[i].axisY() + m_tAnimProject * m_circlesAnimProjectEnd[i].axisY());
+        m_modelMesh.addCircle(m_circles[i]);
     }
 
-    for (poly::Circle const& c: m_circlesDual) {
-        m_modelMesh.addCircleDual(c);
+    for (size_t i = 0; i < m_circlesDual.size(); i++) {
+        m_circlesDual[i].setRadius((1 - m_tAnimProject) * m_circlesDualAnimProjectStart[i].radius() + m_tAnimProject * m_circlesDualAnimProjectEnd[i].radius());
+        m_circlesDual[i].setCenter((1 - m_tAnimProject) * m_circlesDualAnimProjectStart[i].center() + m_tAnimProject * m_circlesDualAnimProjectEnd[i].center());
+        m_circlesDual[i].setAxisX((1 - m_tAnimProject) * m_circlesDualAnimProjectStart[i].axisX() + m_tAnimProject * m_circlesDualAnimProjectEnd[i].axisX());
+        m_circlesDual[i].setAxisY((1 - m_tAnimProject) * m_circlesDualAnimProjectStart[i].axisY() + m_tAnimProject * m_circlesDualAnimProjectEnd[i].axisY());
+        m_modelMesh.addCircleDual(m_circlesDual[i]);
     }
 
-    if (inversionLevel == 0) {
-        m_modelMesh.updateData();
-        m_view->meshChanged();
-    } else {
-        for (int i = 0; i < inversionLevel; i++) {
-            this->slotIncreaseInversion();
+    m_tAnimProject += 0.04f;
+
+    if (m_tAnimProject > 1.0f) {
+        m_timerAnimProject.stop();
+        m_tAnimProject = 0.0f;
+        m_inversionLevel = 0;
+        m_circlesIndex = 0;
+        m_modelMesh.resetCircles();
+        m_circles = m_circlesAnimProjectEnd;
+        m_circlesDual = m_circlesDualAnimProjectEnd;
+
+        for (poly::Circle const& c: m_circles) {
+            m_modelMesh.addCircle(c);
+        }
+
+        for (poly::Circle const& c: m_circlesDual) {
+            m_modelMesh.addCircleDual(c);
         }
     }
+
+    m_modelMesh.updateData();
+    m_view->meshChanged();
+}
+
+void MainWindow::animInversionStep() {
+    if (m_circles.empty()) {
+        m_timerAnimInversion.stop();
+        return;
+    }
+
+    m_modelMesh.resetCircles();
+    for (size_t i = 0; i < m_circlesIndex; i++) {
+        m_modelMesh.addCircle(m_circles[i]);
+    }
+
+    for (size_t i = m_circlesIndex; i < m_circles.size(); i++) {
+        m_circles[i].setRadius((1 - m_tAnimInversion) * m_circles[i].oldCircleBeforeInversion().radius() + m_tAnimInversion * m_circles[i].newCircleAfterInversion().radius());
+        m_circles[i].setCenter((1 - m_tAnimInversion) * m_circles[i].oldCircleBeforeInversion().center() + m_tAnimInversion * m_circles[i].newCircleAfterInversion().center());
+        m_circles[i].setAxisX((1 - m_tAnimInversion) * m_circles[i].oldCircleBeforeInversion().axisX() + m_tAnimInversion * m_circles[i].newCircleAfterInversion().axisX());
+        m_circles[i].setAxisY((1 - m_tAnimInversion) * m_circles[i].oldCircleBeforeInversion().axisY() + m_tAnimInversion * m_circles[i].newCircleAfterInversion().axisY());
+        m_modelMesh.addCircle(m_circles[i]);
+    }
+
+    for (poly::Circle const& i: m_circlesDual) {
+        m_modelMesh.addCircleDual(i);
+    }
+
+    m_tAnimInversion += 0.04f;
+
+    if (m_tAnimInversion > 1.0f) {
+        m_timerAnimInversion.stop();
+        m_tAnimInversion = 0.0f;
+        m_modelMesh.resetCircles();
+
+        for (size_t i = 0; i < m_circlesIndex; i++) {
+            m_modelMesh.addCircle(m_circles[i]);
+        }
+
+        for (size_t i = m_circlesIndex; i < m_circles.size(); i++) {
+            m_circles[i].setInvertedValues();
+            m_modelMesh.addCircle(m_circles[i]);
+        }
+
+        for (poly::Circle const& c: m_circlesDual) {
+            m_modelMesh.addCircleDual(c);
+        }
+
+        if (m_nbInversions != 0) {
+            m_inversionLevel++;
+        }
+
+        this->setInfo("Iteration level : " + std::to_string(m_inversionLevel) + ", " + std::to_string(m_nbInversions) + " inversions, " + std::to_string(m_circles.size()) + " circles in total", 4000);
+    }
+
+    m_modelMesh.updateData();
+    m_view->meshChanged();
 }

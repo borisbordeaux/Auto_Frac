@@ -27,10 +27,8 @@ bool poly::InversiveCoordinates::areOrthogonal(poly::InversiveCoordinates const&
     return qAbs(scalarProduct(first, second)) < 0.01f;
 }
 
-poly::InversiveCoordinates poly::InversiveCoordinates::inverse(poly::InversiveCoordinates const& first, poly::InversiveCoordinates const& second) {
-    return first - second * (2.0f * poly::InversiveCoordinates::scalarProduct(first, second));
-    //float p = poly::InversiveCoordinates::scalarProduct(first, second);
-    //return { first.m_e1 - 2.0f * p * second.m_e1, first.m_e2 - 2.0f * p * second.m_e2, first.m_e3 - 2.0f * p * second.m_e3, first.m_e4 - 2.0f * p * second.m_e4, first.m_e5 - 2.0f * p * second.m_e5 };
+poly::InversiveCoordinates poly::InversiveCoordinates::inverse(poly::InversiveCoordinates const& inverted, poly::InversiveCoordinates const& inverter) {
+    return inverted - inverter * (2.0f * poly::InversiveCoordinates::scalarProduct(inverted, inverter));
 }
 
 poly::InversiveCoordinates poly::InversiveCoordinates::operator*(float rhs) const {

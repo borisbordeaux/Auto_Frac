@@ -8,8 +8,10 @@
 GLView::GLView(Model* model, QWidget* parent) :
         QOpenGLWidget(parent),
         m_camera(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.01f, 50.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)),
-        m_model(model) {
+        m_model(model),
+        m_cameraBeforeAnim(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.01f, 50.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)) {
     connect(&m_timerAnimation, &QTimer::timeout, this, &GLView::animationStep);
+    connect(&m_timerAnimCamera, &QTimer::timeout, this, &GLView::animationCameraStep);
     grabKeyboard();
 }
 
@@ -276,9 +278,8 @@ void GLView::mousePressEvent(QMouseEvent* event) {
         m_lastPos = event->pos().toPointF();
         m_clickPos = event->pos();
     } else if (event->button() & Qt::MouseButton::MiddleButton) {
-        m_camera.reset({ 0, 0, 0 }, 8.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f));
-        m_uniformsDirty = true;
-        update();
+        m_cameraBeforeAnim = m_camera;
+        m_timerAnimCamera.start();
     }
 }
 
@@ -449,4 +450,20 @@ void GLView::hideEvent(QHideEvent* event) {
 
 void GLView::stopAnimation() {
     m_timerAnimation.stop();
+}
+
+void GLView::animationCameraStep() {
+    m_camera.setCenter((1.0f - m_tAnimCamera) * m_cameraBeforeAnim.center() + m_tAnimCamera * QVector3D { 0, 0, 0 });
+    m_camera.setRadius((1.0f - m_tAnimCamera) * m_cameraBeforeAnim.radius() + m_tAnimCamera * 8.0f);
+    m_camera.setAzimuthAngle((1.0f - m_tAnimCamera) * m_cameraBeforeAnim.azimuthAngle() + m_tAnimCamera * qDegreesToRadians(90.0f));
+    m_camera.setPolarAngle((1.0f - m_tAnimCamera) * m_cameraBeforeAnim.polarAngle() + m_tAnimCamera * qDegreesToRadians(0.0f));
+
+    m_tAnimCamera += 0.05f;
+    if (m_tAnimCamera > 1.0f) {
+        m_camera.reset({ 0, 0, 0 }, 8.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f));
+        m_timerAnimCamera.stop();
+        m_tAnimCamera = 0.0f;
+    }
+    m_uniformsDirty = true;
+    update();
 }

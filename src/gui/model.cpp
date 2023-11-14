@@ -96,15 +96,13 @@ void Model::updateDataSphere() {
 
 void Model::updateDataCircles() {
     //the number of edges
-    qsizetype nbOfEdges = 360 * m_circles.size() + 360 * m_circlesDual.size();
+    qsizetype nbOfEdges = 90 * m_circles.size() + 90 * m_circlesDual.size();
     //for each edge, there are 2 vertices
     qsizetype nbOfAdd = 2 * nbOfEdges;
     m_dataEdge.resize(m_dataEdge.size() + nbOfAdd * 8);
-    QVector3D colorInvertedCircles { 0.0f, 0.0f, 0.0f };
-    QVector3D colorInversionCircles { 0.0f, 0.7f, 0.0f };
     QVector3D first;
     for (poly::Circle const& c: m_circles) {
-        for (int i = 0; i < 360; i++) {
+        for (int i = 0; i < 360; i += 4) {
             float alpha = qDegreesToRadians(static_cast<float>(i));
             float x = c.center().x() + c.radius() * std::cos(alpha) * c.axisX().x() + c.radius() * std::sin(alpha) * c.axisY().x();
             float y = c.center().y() + c.radius() * std::cos(alpha) * c.axisX().y() + c.radius() * std::sin(alpha) * c.axisY().y();
@@ -112,17 +110,17 @@ void Model::updateDataCircles() {
             if (i == 0) {
                 first = { x, y, z };
             } else {
-                addVertexEdge({ x, y, z }, colorInvertedCircles, -2.0f, -1.0f);
+                addVertexEdge({ x, y, z }, c.color(), -2.0f, -1.0f);
             }
-            addVertexEdge({ x, y, z }, colorInvertedCircles, -2.0f, -1.0f);
-            if (i == 359) {
-                addVertexEdge(first, colorInvertedCircles, -2.0f, -1.0f);
+            addVertexEdge({ x, y, z }, c.color(), -2.0f, -1.0f);
+            if (i == 356) {
+                addVertexEdge(first, c.color(), -2.0f, -1.0f);
             }
         }
     }
 
     for (poly::Circle const& c: m_circlesDual) {
-        for (int i = 0; i < 360; i++) {
+        for (int i = 0; i < 360; i += 4) {
             float alpha = qDegreesToRadians(static_cast<float>(i));
             float x = c.center().x() + c.radius() * std::cos(alpha) * c.axisX().x() + c.radius() * std::sin(alpha) * c.axisY().x();
             float y = c.center().y() + c.radius() * std::cos(alpha) * c.axisX().y() + c.radius() * std::sin(alpha) * c.axisY().y();
@@ -130,11 +128,11 @@ void Model::updateDataCircles() {
             if (i == 0) {
                 first = { x, y, z };
             } else {
-                addVertexEdge({ x, y, z }, colorInversionCircles, -2.0f, -1.0f);
+                addVertexEdge({ x, y, z }, c.color(), -2.0f, -1.0f);
             }
-            addVertexEdge({ x, y, z }, colorInversionCircles, -2.0f, -1.0f);
-            if (i == 359) {
-                addVertexEdge(first, colorInversionCircles, -2.0f, -1.0f);
+            addVertexEdge({ x, y, z }, c.color(), -2.0f, -1.0f);
+            if (i == 356) {
+                addVertexEdge(first, c.color(), -2.0f, -1.0f);
             }
         }
     }
