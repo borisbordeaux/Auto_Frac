@@ -112,6 +112,8 @@ private:
     QTimer m_timerAnimCamera;
     Camera m_cameraBeforeAnim;
     float m_tAnimCamera = 0.0f;
+
+    QVector3D m_clearColor = {1,1,1};
 };
 
 #endif // GLVIEW_H

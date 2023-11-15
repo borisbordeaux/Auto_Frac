@@ -7,9 +7,9 @@
 
 GLView::GLView(Model* model, QWidget* parent) :
         QOpenGLWidget(parent),
-        m_camera(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.01f, 50.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)),
+        m_camera(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.01f, 49.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)),
         m_model(model),
-        m_cameraBeforeAnim(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.01f, 50.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)) {
+        m_cameraBeforeAnim(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.01f, 49.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)) {
     connect(&m_timerAnimation, &QTimer::timeout, this, &GLView::animationStep);
     connect(&m_timerAnimCamera, &QTimer::timeout, this, &GLView::animationCameraStep);
     grabKeyboard();
@@ -137,7 +137,7 @@ void GLView::initializeGL() {
     m_vboVertices.create();
 
     //background
-    glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+    glClearColor(m_clearColor.x(), m_clearColor.y(), m_clearColor.z(), 1.0f);
 
     //init shader for mesh
     m_program = new QOpenGLShaderProgram();
@@ -420,7 +420,7 @@ void GLView::clickFaceManagement() {
     m_programVertices->setUniformValue(m_isPickingLocVertices, false);
 
     //reset color
-    glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+    glClearColor(m_clearColor.x(), m_clearColor.y(), m_clearColor.z(), 1.0f);
 
     //enable multisample
     glEnable(GL_MULTISAMPLE);
