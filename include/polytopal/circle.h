@@ -35,6 +35,13 @@ public:
     void setColor(QVector3D const& color);
     QVector3D const& color() const;
 
+    /**
+     * Computes the number of segment of the circle to draw a dashed circle where each dash has the same size as the dash for the unit circle
+     * @param n the number of the segments for the unit circle
+     * @return the number of segment to draw this dashed circle
+     */
+    qsizetype numberOfSegments(float n) const;
+
 private:
     QVector3D m_center;
     float m_radius;

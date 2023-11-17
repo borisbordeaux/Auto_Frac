@@ -1,5 +1,6 @@
 #include <QMatrix4x4>
 #include "polytopal/circle.h"
+#include "utils/utils.h"
 
 namespace poly {
 
@@ -129,6 +130,11 @@ void Circle::setColor(const QVector3D& color) {
 
 QVector3D const& Circle::color() const {
     return m_color;
+}
+
+qsizetype Circle::numberOfSegments(float n) const {
+    //n is the number of segment on the unit circle
+    return qFloor(n * m_radius);
 }
 
 } // poly

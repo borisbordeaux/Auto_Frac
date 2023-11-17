@@ -5,18 +5,9 @@
 #include "halfedge/mesh.h"
 #include "halfedge/vertex.h"
 #include "polytopal/circle.h"
+#include <QDebug>
 
 void Model::updateData() {
-    //the amount of data of the polyhedron
-    m_count = 0;
-    m_data.clear();
-    //the amount of data of the edges
-    m_countEdge = 0;
-    m_dataEdge.clear();
-    //the amount of data of the vertices
-    m_countVertices = 0;
-    m_dataVertices.clear();
-
     updateDataFaces();
 
     updateDataSphere();
@@ -29,6 +20,9 @@ void Model::updateData() {
 }
 
 void Model::updateDataFaces() {
+    m_count = 0;
+    m_data.clear();
+
     if (m_mesh == nullptr) { return; }
     //we add data using triangles
     qsizetype nbTriangle = findNbOfTriangle(m_mesh);
@@ -53,7 +47,11 @@ void Model::updateDataFaces() {
 }
 
 void Model::updateDataEdge() {
+    m_countEdge = 0;
+    m_dataEdge.clear();
+
     if (m_mesh == nullptr) { return; }
+
     //the number of edges
     qsizetype nbOfEdges = findNbOfEdges();
     //for each edge, there are 2 vertices
@@ -95,11 +93,15 @@ void Model::updateDataSphere() {
 }
 
 void Model::updateDataCircles() {
+    //the amount of data of the circles
+    m_countCircle = 0;
+    m_dataCircles.clear();
+
     //the number of edges
-    qsizetype nbOfEdges = 90 * m_circles.size() + 90 * m_circlesDual.size();
+    qsizetype nbOfEdges = findNbOfSegments();
     //for each edge, there are 2 vertices
     qsizetype nbOfAdd = 2 * nbOfEdges;
-    m_dataEdge.resize(m_dataEdge.size() + nbOfAdd * 8);
+    m_dataCircles.resize(nbOfAdd * 8);
     QVector3D first;
     for (poly::Circle const& c: m_circles) {
         for (int i = 0; i < 360; i += 4) {
@@ -110,35 +112,37 @@ void Model::updateDataCircles() {
             if (i == 0) {
                 first = { x, y, z };
             } else {
-                addVertexEdge({ x, y, z }, c.color(), -2.0f, -1.0f);
+                addVertexCircle({ x, y, z }, c.color(), -2.0f, -1.0f);
             }
-            addVertexEdge({ x, y, z }, c.color(), -2.0f, -1.0f);
+            addVertexCircle({ x, y, z }, c.color(), -2.0f, -1.0f);
             if (i == 356) {
-                addVertexEdge(first, c.color(), -2.0f, -1.0f);
+                addVertexCircle(first, c.color(), -2.0f, -1.0f);
             }
         }
     }
 
     for (poly::Circle const& c: m_circlesDual) {
-        for (int i = 0; i < 360; i += 4) {
-            float alpha = qDegreesToRadians(static_cast<float>(i));
+        qsizetype n = c.numberOfSegments(m_dashLength);
+        for (qsizetype i = 0; i < n; i++) {
+            float alpha = qDegreesToRadians(360.0f / static_cast<float>(n) * static_cast<float>(i));
             float x = c.center().x() + c.radius() * std::cos(alpha) * c.axisX().x() + c.radius() * std::sin(alpha) * c.axisY().x();
             float y = c.center().y() + c.radius() * std::cos(alpha) * c.axisX().y() + c.radius() * std::sin(alpha) * c.axisY().y();
             float z = c.center().z() + c.radius() * std::cos(alpha) * c.axisX().z() + c.radius() * std::sin(alpha) * c.axisY().z();
             if (i == 0) {
                 first = { x, y, z };
-            } else {
-                addVertexEdge({ x, y, z }, c.color(), -2.0f, -1.0f);
             }
-            addVertexEdge({ x, y, z }, c.color(), -2.0f, -1.0f);
-            if (i == 356) {
-                addVertexEdge(first, c.color(), -2.0f, -1.0f);
+            addVertexCircle({ x, y, z }, c.color(), -2.0f, -1.0f);
+            if (i == n - 1 && n % 2 == 1) {
+                addVertexCircle(first, c.color(), -2.0f, -1.0f);
             }
         }
     }
 }
 
 void Model::updateDataVertices() {
+    m_countVertices = 0;
+    m_dataVertices.clear();
+
     //the number of vertices plus the projection point of the sphere mesh
     qsizetype nbOfVertices = (m_mesh != nullptr ? static_cast<qsizetype>(m_mesh->vertices().size()) : 0) + (m_sphereMesh == nullptr ? 0 : 1);
 
@@ -201,6 +205,24 @@ void Model::addVertexEdge(QVector3D const& v, QVector3D const& color, float ID, 
     *p = isSelected;
     //we update the amount of data
     m_countEdge += 8;
+}
+
+void Model::addVertexCircle(const QVector3D& v, const QVector3D& color, float ID, float isSelected) {
+    //add to the end of the data already added
+    float* p = m_dataCircles.data() + m_countCircle;
+    //the coordinates of the vertex
+    *p++ = v.x();
+    *p++ = v.y();
+    *p++ = v.z();
+    *p++ = color.x();
+    *p++ = color.y();
+    *p++ = color.z();
+    //the ID of the face
+    *p++ = ID;
+    //whether the face is selected or not
+    *p = isSelected;
+    //we update the amount of data
+    m_countCircle += 8;
 }
 
 void Model::addVertex(QVector3D const& v, QVector3D const& color, float ID, float isSelected) {
@@ -328,4 +350,14 @@ void Model::addCircleDual(poly::Circle const& circle) {
 void Model::resetCircles() {
     m_circles.clear();
     m_circlesDual.clear();
+}
+
+qsizetype Model::findNbOfSegments() const {
+    qsizetype res = 90 * m_circles.size();
+
+    for (poly::Circle const& c: m_circlesDual) {
+        res += c.numberOfSegments(m_dashLength) / 2;
+    }
+
+    return res;
 }

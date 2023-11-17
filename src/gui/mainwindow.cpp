@@ -1168,7 +1168,7 @@ void MainWindow::animProjectStep() {
         }
     }
 
-    m_modelMesh.updateData();
+    m_modelMesh.updateDataCircles();
     m_view->meshChanged();
 }
 
@@ -1222,6 +1222,6 @@ void MainWindow::animInversionStep() {
         this->setInfo("Iteration level : " + std::to_string(m_inversionLevel) + ", " + std::to_string(m_nbInversions) + " inversions, " + std::to_string(m_circles.size()) + " circles in total", 4000);
     }
 
-    m_modelMesh.updateData();
+    m_modelMesh.updateDataCircles();
     m_view->meshChanged();
 }

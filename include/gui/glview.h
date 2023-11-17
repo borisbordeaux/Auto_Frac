@@ -67,12 +67,15 @@ private:
     //OpenGL stuff for rendering
     QOpenGLVertexArrayObject m_vao;
     QOpenGLVertexArrayObject m_vaoEdge;
+    QOpenGLVertexArrayObject m_vaoCircles;
     QOpenGLVertexArrayObject m_vaoVertices;
     QOpenGLBuffer m_vbo;
     QOpenGLBuffer m_vboEdge;
+    QOpenGLBuffer m_vboCircles;
     QOpenGLBuffer m_vboVertices;
     QOpenGLShaderProgram* m_program = nullptr;
     QOpenGLShaderProgram* m_programEdge = nullptr;
+    QOpenGLShaderProgram* m_programCircles = nullptr;
     QOpenGLShaderProgram* m_programVertices = nullptr;
 
     //location of the different variables in the GPU
@@ -88,6 +91,11 @@ private:
     int m_projMatrixLocEdge = 0;
     int m_mvMatrixLocEdge = 0;
     int m_isPickingLocEdge = 0;
+
+    //for circles
+    int m_projMatrixLocCircles = 0;
+    int m_mvMatrixLocCircles = 0;
+    int m_isPickingLocCircles = 0;
 
     //for vertices
     int m_projMatrixLocVertices = 0;

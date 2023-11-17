@@ -35,6 +35,12 @@ public:
 
     /**
      * @brief getter
+     * @return constant data of edges to be thrown to the GPU
+     */
+    [[nodiscard]] const float* constDataCircles() const { return m_dataCircles.constData(); }
+
+    /**
+     * @brief getter
      * @return constant data of vertices to be thrown to the GPU
      */
     [[nodiscard]] const float* constDataVertices() const { return m_dataVertices.constData(); }
@@ -53,15 +59,27 @@ public:
 
     /**
      * @brief getter
+     * @return the amount of data the edges has
+     */
+    [[nodiscard]] int countCircles() const { return m_countCircle; }
+
+    /**
+     * @brief getter
      * @return the number of vertices the polyhedron has
      */
     [[nodiscard]] int vertexCount() const { return m_count / 8; }
 
     /**
      * @brief getter
+     * @return the number of vertices the polyhedron has
+     */
+    [[nodiscard]] int vertexCountCircles() const { return m_countCircle / 8; }
+
+    /**
+     * @brief getter
      * @return the number of vertices the edges has
      */
-    [[nodiscard]] int vertexCountEdge() const { return m_countEdge / 6; }
+    [[nodiscard]] int vertexCountEdge() const { return m_countEdge / 8; }
 
 
     /**
@@ -74,7 +92,7 @@ public:
      * @brief getter
      * @return the number of vertices the mesh vertices has
      */
-    [[nodiscard]] int vertexCountVertices() const { return m_countVertices / 6; }
+    [[nodiscard]] int vertexCountVertices() const { return m_countVertices / 8; }
 
     /**
      * @brief update the data of the polyhedron based
@@ -148,6 +166,8 @@ private:
      */
     void addVertexEdge(QVector3D const& v, QVector3D const& color, float ID, float isSelected);
 
+    void addVertexCircle(QVector3D const& v, QVector3D const& color, float ID, float isSelected);
+
     void addVertex(QVector3D const& v, QVector3D const& color, float ID, float isSelected);
 
     /**
@@ -174,14 +194,18 @@ private:
      */
     qsizetype findNbOfEdges() const;
 
+    qsizetype findNbOfSegments() const;
+
     //the data of this model
     QVector<float> m_data;
     QVector<float> m_dataEdge;
+    QVector<float> m_dataCircles;
     QVector<float> m_dataVertices;
 
     //the amount of data
     int m_count = 0;
     int m_countEdge = 0;
+    int m_countCircle = 0;
     int m_countVertices = 0;
 
     //the mesh the model is based on
@@ -193,6 +217,8 @@ private:
 
     //the index of the selected face
     int m_selectedFace = -1;
+
+    float m_dashLength = 90.0f;
 };
 
 #endif // MODEL_H
