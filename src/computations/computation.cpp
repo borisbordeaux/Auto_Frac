@@ -273,8 +273,6 @@ void frac::Canonizer::canonicalizeMesh(he::Mesh& m) {
 std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCircles(const he::Mesh& m, bool projected) {
     std::vector<poly::Circle> res;
 
-    int i = 0;
-
     for (he::Vertex* v: m.vertices()) {
         QList<he::HalfEdge*> otherHE = v->otherHalfEdges();
         if (otherHE.size() > 1) {
@@ -293,7 +291,6 @@ std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCircles(const he::
             c.setColor({ colors[14].redF(), colors[14].greenF(), colors[14].blueF() });
             res.push_back(c);
         }
-        i++;
     }
 
     return res;
@@ -316,7 +313,7 @@ std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCirclesDual(he::Me
             }
 
             poly::Circle c { v1, v2, v3 };
-            c.setColor({ 0.0f, 0.0f, 1.0f });
+            c.setColor({ 0.0f, 0.0f, 0.0f });
             res.push_back(c);
         }
     }
