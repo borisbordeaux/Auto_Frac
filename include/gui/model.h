@@ -140,6 +140,8 @@ public:
      */
     [[nodiscard]] [[maybe_unused]] he::Face* selectedFace();
 
+    void toggleDisplayCircleDual();
+
 private:
 
     /**
@@ -219,6 +221,7 @@ private:
     int m_selectedFace = -1;
 
     float m_dashLength = 90.0f;
+    bool m_displayCircleDual = true;
 };
 
 #endif // MODEL_H

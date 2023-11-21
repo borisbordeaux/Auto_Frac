@@ -121,19 +121,21 @@ void Model::updateDataCircles() {
         }
     }
 
-    for (poly::Circle const& c: m_circlesDual) {
-        qsizetype n = c.numberOfSegments(m_dashLength);
-        for (qsizetype i = 0; i < n; i++) {
-            float alpha = qDegreesToRadians(360.0f / static_cast<float>(n) * static_cast<float>(i));
-            float x = c.center().x() + c.radius() * std::cos(alpha) * c.axisX().x() + c.radius() * std::sin(alpha) * c.axisY().x();
-            float y = c.center().y() + c.radius() * std::cos(alpha) * c.axisX().y() + c.radius() * std::sin(alpha) * c.axisY().y();
-            float z = c.center().z() + c.radius() * std::cos(alpha) * c.axisX().z() + c.radius() * std::sin(alpha) * c.axisY().z();
-            if (i == 0) {
-                first = { x, y, z };
-            }
-            addVertexCircle({ x, y, z }, c.color(), -2.0f, -1.0f);
-            if (i == n - 1 && n % 2 == 1) {
-                addVertexCircle(first, c.color(), -2.0f, -1.0f);
+    if (m_displayCircleDual) {
+        for (poly::Circle const& c: m_circlesDual) {
+            qsizetype n = c.numberOfSegments(m_dashLength);
+            for (qsizetype i = 0; i < n; i++) {
+                float alpha = qDegreesToRadians(360.0f / static_cast<float>(n) * static_cast<float>(i));
+                float x = c.center().x() + c.radius() * std::cos(alpha) * c.axisX().x() + c.radius() * std::sin(alpha) * c.axisY().x();
+                float y = c.center().y() + c.radius() * std::cos(alpha) * c.axisX().y() + c.radius() * std::sin(alpha) * c.axisY().y();
+                float z = c.center().z() + c.radius() * std::cos(alpha) * c.axisX().z() + c.radius() * std::sin(alpha) * c.axisY().z();
+                if (i == 0) {
+                    first = { x, y, z };
+                }
+                addVertexCircle({ x, y, z }, c.color(), -2.0f, -1.0f);
+                if (i == n - 1 && n % 2 == 1) {
+                    addVertexCircle(first, c.color(), -2.0f, -1.0f);
+                }
             }
         }
     }
@@ -355,9 +357,14 @@ void Model::resetCircles() {
 qsizetype Model::findNbOfSegments() const {
     qsizetype res = 90 * m_circles.size();
 
-    for (poly::Circle const& c: m_circlesDual) {
-        res += c.numberOfSegments(m_dashLength) / 2;
+    if (m_displayCircleDual) {
+        for (poly::Circle const& c: m_circlesDual) {
+            res += c.numberOfSegments(m_dashLength) / 2;
+        }
     }
-
     return res;
+}
+
+void Model::toggleDisplayCircleDual() {
+    m_displayCircleDual = !m_displayCircleDual;
 }

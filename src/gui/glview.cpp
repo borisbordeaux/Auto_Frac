@@ -487,6 +487,11 @@ void GLView::keyPressEvent(QKeyEvent* event) {
             m_timerAnimation.start(0);
         }
     }
+    if (event->key() == Qt::Key_D) {
+        m_model->toggleDisplayCircleDual();
+        m_model->updateDataCircles();
+        this->meshChanged();
+    }
     QWidget::keyPressEvent(event);
 }
 
