@@ -42,7 +42,7 @@ void main() {
          highp vec3 fragVertModel = (model*vec4(vert, 1.0)).xyz;
          highp vec3 fragNormalModel = vertNormal;
          highp vec3 L = normalize(lightPos - fragVertModel);
-         highp float diffuse = abs(dot(fragNormalModel, L));
+         highp float diffuse = max(dot(fragNormalModel, L), 0.0);
          highp vec3 R = reflect(-L, fragNormalModel);
          highp vec3 V = normalize(cameraPosition - fragVertModel);
          highp float RV = max(dot(R,V), 0.0);
@@ -75,7 +75,7 @@ out highp vec3 vecColor;
 void main() {
     gl_Position = projMatrix * mvMatrix * vertex;
     if (isPicking) {
-        vecColor = vec3(ID, ID, ID);
+        vecColor = vec3(ID/255.0, ID/255.0, ID/255.0);
     } else if (isSelected > 0.5) {
         vecColor = vec3(1.0, 1.0, 1.0);
     } else {
@@ -107,16 +107,31 @@ uniform bool isPicking;
 out highp vec3 vecColor;
 void main() {
     gl_Position = projMatrix * mvMatrix * vertex;
-    gl_PointSize = 8.0;
     if (isPicking) {
-        vecColor = vec3(ID, ID, ID);
+        gl_PointSize = 32.0;
+    } else {
+        gl_PointSize = 8.0;
+    }
+    if (isPicking) {
+        if (ID > 255.0) {
+            vecColor.x = 1.0;
+            float id = ID - 255.0;
+            if (id > 255.0) {
+                vecColor.y = 1.0;
+                id = id - 255.0;
+                vecColor.z = id / 255.0;
+            } else {
+                vecColor.yz = vec2(id / 255.0, 0.0);
+            }
+        } else {
+            vecColor = vec3(ID / 255.0, 0.0, 0.0);
+        }
     } else if (isSelected > 0.5) {
         vecColor = vec3(1.0, 1.0, 1.0);
     } else {
         vecColor = color;
     }
-}
-)";
+})";
 
 //fragment shader for vertices
 static const char* fragmentShaderSourceVertices = R"(

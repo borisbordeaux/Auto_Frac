@@ -9,6 +9,12 @@
 #include <QTimer>
 #include "gui/camera.h"
 
+enum class PickingType {
+    PickingFace,
+    PickingEdge,
+    PickingVertex
+};
+
 class QOpenGLShaderProgram;
 
 class Model;
@@ -55,6 +61,8 @@ protected:
 private:
     //manage face selection
     void clickFaceManagement();
+    void clickEdgeManagement();
+    void clickVertexManagement();
 
     //camera of the scene
     Camera m_camera;
@@ -121,7 +129,9 @@ private:
     Camera m_cameraBeforeAnim;
     float m_tAnimCamera = 0.0f;
 
-    QVector3D m_clearColor = {1,1,1};
+    QVector3D m_clearColor = { 1, 1, 1 };
+
+    PickingType m_pickingType = PickingType::PickingFace;
 };
 
 #endif // GLVIEW_H

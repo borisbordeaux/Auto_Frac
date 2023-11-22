@@ -233,11 +233,6 @@ void GLView::initializeGL() {
 
     //memory allocation
     meshChanged();
-
-    //set light position
-    m_program->bind();
-    m_program->setUniformValue(m_lightPosLoc, QVector3D(0.0f, 0.0f, 100.0f));
-    m_program->release();
 }
 
 void GLView::paintGL() {
@@ -250,12 +245,34 @@ void GLView::paintGL() {
         m_program->setUniformValue(m_cameraPosLoc, m_camera.getEye());
         m_program->setUniformValue(m_modelMatrixLoc, m_world);
         m_program->setUniformValue(m_lightPosLoc, m_camera.getEye());
+        m_program->release();
+
+        m_programEdge->bind();
+        m_programEdge->setUniformValue(m_projMatrixLocEdge, m_proj);
+        m_programEdge->release();
+
+        m_programCircles->bind();
+        m_programCircles->setUniformValue(m_projMatrixLocCircles, m_proj);
+        m_programCircles->release();
+
+        m_programVertices->bind();
+        m_programVertices->setUniformValue(m_projMatrixLocVertices, m_proj);
+        m_programVertices->release();
+
         m_uniformsDirty = false;
     }
 
     //click management
     if (m_clicked) {
-        clickFaceManagement();
+        if (m_pickingType == PickingType::PickingFace) {
+            clickFaceManagement();
+        }
+        if (m_pickingType == PickingType::PickingEdge) {
+            clickEdgeManagement();
+        }
+        if (m_pickingType == PickingType::PickingVertex) {
+            clickVertexManagement();
+        }
         m_clicked = false;
     }
 
@@ -263,9 +280,8 @@ void GLView::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //draw faces
-    m_vao.bind();
-    //m_vbo.bind();
     m_program->bind();
+    m_vao.bind();
     glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCount());
     m_program->release();
 
@@ -273,29 +289,21 @@ void GLView::paintGL() {
     //in front of the polyhedron
     m_camera.zoom(0.002f);
 
-    //bind edge shader
-    m_programEdge->bind();
-
     //set uniforms
-    m_programEdge->setUniformValue(m_projMatrixLocEdge, m_proj);
+    m_programEdge->bind();
     m_programEdge->setUniformValue(m_mvMatrixLocEdge, m_camera.getViewMatrix() * m_world);
 
     //draw edges
     m_vaoEdge.bind();
-    m_vboEdge.bind();
     glDrawArrays(GL_LINES, 0, m_model->vertexCountEdge());
     m_programEdge->release();
 
-    //bind circle shaders
-    m_programCircles->bind();
-
     //set uniforms
-    m_programCircles->setUniformValue(m_projMatrixLocCircles, m_proj);
+    m_programCircles->bind();
     m_programCircles->setUniformValue(m_mvMatrixLocCircles, m_camera.getViewMatrix() * m_world);
 
     //draw circles
     m_vaoCircles.bind();
-    m_vboCircles.bind();
     glDrawArrays(GL_LINES, 0, m_model->vertexCountCircles());
     m_programCircles->release();
 
@@ -303,19 +311,21 @@ void GLView::paintGL() {
     //in front of the polyhedron
     m_camera.zoom(0.002f);
 
-    m_programVertices->bind();
     //set uniforms
-    m_programVertices->setUniformValue(m_projMatrixLocEdge, m_proj);
-    m_programVertices->setUniformValue(m_mvMatrixLocEdge, m_camera.getViewMatrix() * m_world);
+    m_programVertices->bind();
+    m_programVertices->setUniformValue(m_mvMatrixLocVertices, m_camera.getViewMatrix() * m_world);
 
     //draw vertices
     m_vaoVertices.bind();
-    m_vboVertices.bind();
     glDrawArrays(GL_POINTS, 0, m_model->vertexCountVertices());
     m_programEdge->release();
 
     //reset camera zoom
     m_camera.zoom(-0.004f);
+
+    //set uniforms
+    m_program->bind();
+    m_program->setUniformValue(m_mvMatrixLoc, m_camera.getViewMatrix() * m_world);
 }
 
 void GLView::resizeGL(int w, int h) {
@@ -386,8 +396,8 @@ void GLView::mouseReleaseEvent(QMouseEvent* event) {
 }
 
 void GLView::clickFaceManagement() {
-    //white background
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    //black background
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     //no multisample
     glDisable(GL_MULTISAMPLE);
@@ -395,55 +405,13 @@ void GLView::clickFaceManagement() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //indicates to the shader that we're doing a selection
-    //TODO: set picking uniform to the shader that corresponds to the picking mode
     m_program->bind();
     m_program->setUniformValue(m_isPickingLoc, true);
-    m_programEdge->bind();
-    m_programEdge->setUniformValue(m_isPickingLocEdge, true);
-    m_programVertices->bind();
-    m_programVertices->setUniformValue(m_isPickingLocVertices, true);
 
     //draw faces
     m_vao.bind();
-    //m_vbo.bind();
-    m_program->bind();
     glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCount());
     m_program->release();
-
-    //camera translate to set lines
-    //in front of the polyhedron
-    m_camera.zoom(0.002f);
-
-    //bind edge shader
-    m_programEdge->bind();
-
-    //set uniforms
-    m_programEdge->setUniformValue(m_projMatrixLocEdge, m_proj);
-    m_programEdge->setUniformValue(m_mvMatrixLocEdge, m_camera.getViewMatrix() * m_world);
-
-    //draw edges
-    m_vaoEdge.bind();
-    m_vboEdge.bind();
-    glDrawArrays(GL_LINES, 0, m_model->vertexCountEdge());
-    m_programEdge->release();
-
-    //camera translate to set vertices
-    //in front of the lines
-    m_camera.zoom(0.002f);
-
-    m_programVertices->bind();
-    //set uniforms
-    m_programVertices->setUniformValue(m_projMatrixLocEdge, m_proj);
-    m_programVertices->setUniformValue(m_mvMatrixLocEdge, m_camera.getViewMatrix() * m_world);
-
-    //draw vertices
-    m_vaoVertices.bind();
-    m_vboVertices.bind();
-    glDrawArrays(GL_POINTS, 0, m_model->vertexCountVertices());
-    m_programEdge->release();
-
-    //reset camera zoom
-    m_camera.zoom(-0.004f);
 
     //render the scene
     QImage image = grabFramebuffer();
@@ -456,7 +424,9 @@ void GLView::clickFaceManagement() {
     m_model->setSelected(color.red());
 
     //update the data for drawing the selected object in the right color
-    m_model->updateData();
+    m_model->updateDataFaces();
+    //update data sphere because polyhedron and sphere use the same buffer
+    m_model->updateDataSphere();
 
     //write data to the GPU
     m_vbo.bind();
@@ -464,15 +434,78 @@ void GLView::clickFaceManagement() {
     m_vbo.release();
 
     //indicates that we're not picking
-    //TODO: set picking uniform to the shader that corresponds to the picking mode
     m_program->bind();
     m_program->setUniformValue(m_isPickingLoc, false);
-    m_programEdge->bind();
-    m_programEdge->setUniformValue(m_isPickingLocEdge, false);
-    m_programVertices->bind();
-    m_programVertices->setUniformValue(m_isPickingLocVertices, false);
 
     //reset color
+    glClearColor(m_clearColor.x(), m_clearColor.y(), m_clearColor.z(), 1.0f);
+
+    //enable multisample
+    glEnable(GL_MULTISAMPLE);
+}
+
+void GLView::clickEdgeManagement() {
+    qDebug() << "click edge";
+}
+
+void GLView::clickVertexManagement() {
+    //black background
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+    //no multisample
+    glDisable(GL_MULTISAMPLE);
+    //clear buffers
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    //draw faces
+    m_program->bind();
+    m_vao.bind();
+    glColorMask(false, false, false, false);
+    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCount());
+    glColorMask(true, true, true, true);
+    m_program->release();
+
+    //camera translate to set vertices
+    //in front of the polyhedron
+    m_camera.zoom(0.002f);
+
+    //set uniforms
+    m_programVertices->bind();
+    m_programVertices->setUniformValue(m_mvMatrixLocVertices, m_camera.getViewMatrix() * m_world);
+    //indicates to the shader that we're doing a selection
+    m_programVertices->setUniformValue(m_isPickingLocVertices, true);
+
+    //reset camera zoom
+    m_camera.zoom(-0.002f);
+
+    //draw vertices
+    m_vaoVertices.bind();
+    glDrawArrays(GL_POINTS, 0, m_model->vertexCountVertices());
+
+    //indicates that we're not picking
+    m_programVertices->setUniformValue(m_isPickingLocVertices, false);
+    m_programVertices->release();
+
+    //render the scene
+    QImage image = grabFramebuffer();
+    image.save("picking.png");
+
+    //read the pixel under the mouse
+    //TODO: read several pixels in a area under the mouse and take the higher
+    QColor color = image.pixelColor(m_clickPos);
+
+    //set the selected face using the red color
+    m_model->setSelectedVertex(color.red() + color.green() + color.blue());
+
+    //update the data for drawing the selected object in the right color
+    m_model->updateDataVertices();
+
+    //write data to the GPU
+    m_vboVertices.bind();
+    m_vboVertices.write(0, m_model->constDataVertices(), m_model->countVertices() * static_cast<int>(sizeof(GLfloat)));
+    m_vboVertices.release();
+
+    //reset clear color
     glClearColor(m_clearColor.x(), m_clearColor.y(), m_clearColor.z(), 1.0f);
 
     //enable multisample
@@ -491,6 +524,15 @@ void GLView::keyPressEvent(QKeyEvent* event) {
         m_model->toggleDisplayCircleDual();
         m_model->updateDataCircles();
         this->meshChanged();
+    }
+    if (event->key() == Qt::Key_F) {
+        m_pickingType = PickingType::PickingFace;
+    }
+    if (event->key() == Qt::Key_E) {
+        m_pickingType = PickingType::PickingEdge;
+    }
+    if (event->key() == Qt::Key_V) {
+        m_pickingType = PickingType::PickingVertex;
     }
     QWidget::keyPressEvent(event);
 }

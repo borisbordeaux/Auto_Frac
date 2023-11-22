@@ -127,12 +127,7 @@ public:
      * @param faceIndex the index of the face that is selected
      */
     void setSelected(int faceIndex);
-
-    /**
-     * @brief getter
-     * @return the index of the selected face
-     */
-    [[nodiscard]] [[maybe_unused]] qsizetype indexSelectedFace() const;
+    void setSelectedVertex(int vertexIndex);
 
     /**
      * @brief getter
@@ -218,7 +213,8 @@ private:
     QVector<poly::Circle> m_circlesDual;
 
     //the index of the selected face
-    int m_selectedFace = -1;
+    int m_selectedFace = 0;
+    int m_selectedVertex = 0;
 
     float m_dashLength = 90.0f;
     bool m_displayCircleDual = true;

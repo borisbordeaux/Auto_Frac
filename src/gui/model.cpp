@@ -5,17 +5,12 @@
 #include "halfedge/mesh.h"
 #include "halfedge/vertex.h"
 #include "polytopal/circle.h"
-#include <QDebug>
 
 void Model::updateData() {
     updateDataFaces();
-
     updateDataSphere();
-
     updateDataEdge();
-
     updateDataCircles();
-
     updateDataVertices();
 }
 
@@ -77,9 +72,7 @@ void Model::updateDataSphere() {
 
     //for each triangle, there are 3 vertices
     qsizetype nbOfAdd = 3 * nbTriangle;
-    //the amount of data of the polyhedron
-    //m_count = 0;
-    //m_data.clear();
+
     //we resize the data for rapidity
     m_data.resize(m_data.size() + nbOfAdd * 8);
 
@@ -156,13 +149,14 @@ void Model::updateDataVertices() {
     //we resize the data for rapidity
     m_dataVertices.resize(nbOfAdd * 8);
 
-    float ID = 1.0f;
+    int ID = 1;
 
     if (m_mesh != nullptr) {
         //for each vertex
         for (he::Vertex* v: m_mesh->vertices()) {
             //will display a point
-            addVertex(v->pos(), { 0.0f, 0.0f, 0.0f }, ID, -1.0f);
+            addVertex(v->pos(), { 0.0f, 0.0f, 0.0f }, static_cast<float>(ID), m_selectedVertex == ID ? 1.0f : 0.0f);
+            ID++;
         }
     }
 
@@ -292,15 +286,15 @@ void Model::setSelected(int faceIndex) {
     m_selectedFace = faceIndex;
 }
 
-[[maybe_unused]] qsizetype Model::indexSelectedFace() const {
-    return m_selectedFace;
+void Model::setSelectedVertex(int vertexIndex) {
+    m_selectedVertex = vertexIndex;
 }
 
-[[maybe_unused]] he::Face* Model::selectedFace() {
+he::Face* Model::selectedFace() {
     he::Face* res = nullptr;
 
-    if (m_selectedFace >= 0 && m_selectedFace < static_cast<qsizetype>(m_mesh->faces().size())) {
-        res = m_mesh->faces().at(m_selectedFace);
+    if (m_selectedFace - 1 >= 0 && m_selectedFace - 1 < static_cast<qsizetype>(m_mesh->faces().size())) {
+        res = m_mesh->faces().at(m_selectedFace - 1);
     }
 
     return res;
