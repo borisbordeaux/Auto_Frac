@@ -56,8 +56,6 @@ void he::reader::readOBJ(QString const& filename, he::Mesh& mesh) {
                             he = new he::HalfEdge(mesh.vertices()[list[i].toInt() - 1], name);
                             //we update the vertex
                             mesh.vertices()[list[i].toInt() - 1]->setHalfEdge(he);
-                            //we append the half-edge
-                            mesh.append(he);
 
                             //twin of the half-edge
                             //get its name
@@ -66,11 +64,13 @@ void he::reader::readOBJ(QString const& filename, he::Mesh& mesh) {
                             auto* twinHe = new he::HalfEdge(mesh.vertices()[list[next].toInt() - 1], name);
                             //update the vertex
                             mesh.vertices()[list[next].toInt() - 1]->setHalfEdge(twinHe);
-                            //append the half-edge
-                            mesh.append(twinHe);
                             //set the twin for both half-edges
                             twinHe->setTwin(he);
                             he->setTwin(twinHe);
+                            //we append the half-edge
+                            mesh.append(he, true);
+                            //append the twin half-edge
+                            mesh.append(twinHe, false);
                         }
 
                         f->setHalfEdge(he);

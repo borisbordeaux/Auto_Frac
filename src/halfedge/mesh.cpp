@@ -16,6 +16,10 @@ std::vector<he::HalfEdge*> const& he::Mesh::halfEdges() const {
     return m_halfEdges;
 }
 
+std::vector<he::HalfEdge*> const& he::Mesh::halfEdgesNoTwin() const {
+    return m_halfEdgesNotTwin;
+}
+
 std::vector<he::Face*> const& he::Mesh::faces() const {
     return m_faces;
 }
@@ -24,9 +28,12 @@ void he::Mesh::append(he::Vertex* v) {
     m_vertices.push_back(v);
 }
 
-void he::Mesh::append(he::HalfEdge* he) {
+void he::Mesh::append(he::HalfEdge* he, bool completeNotTwin) {
     //append a half-edge to the mesh
     m_halfEdges.push_back(he);
+    if (completeNotTwin) {
+        m_halfEdgesNotTwin.push_back(he);
+    }
 }
 
 void he::Mesh::append(Face* f) {
@@ -84,6 +91,8 @@ void he::Mesh::reset() {
 
     //clear the vector
     m_halfEdges.clear();
+
+    m_halfEdgesNotTwin.clear();
 }
 
 QString he::Mesh::toString() const {

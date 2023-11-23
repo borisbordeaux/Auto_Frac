@@ -10,7 +10,7 @@ in float ID;
 in float isSelected;
 out vec3 vert;
 out vec3 vertNormal;
-out float pickingColor;
+out vec3 pickingColor;
 out float selected;
 uniform mat4 projMatrix;
 uniform mat4 mvMatrix;
@@ -18,7 +18,11 @@ uniform mat3 normalMatrix;
 void main() {
     vert = vertex.xyz;
     vertNormal = normalMatrix * normal;
-    pickingColor = ID/255.0;
+    int id = int(ID + 0.2);
+    int mask = 255;
+    pickingColor.z = float(id & mask) / 255.0;
+    pickingColor.y = float((id >> 8) & mask) / 255.0;
+    pickingColor.x = float((id >> 16) & mask) / 255.0;
     selected = isSelected;
     gl_Position = projMatrix * mvMatrix * vertex;
 }
@@ -29,7 +33,7 @@ static const char* fragmentShaderSource = R"(
 #version 460 core
 in highp vec3 vert;
 in highp vec3 vertNormal;
-in highp float pickingColor;
+in highp vec3 pickingColor;
 in highp float selected;
 out highp vec4 fragColor;
 uniform highp vec3 lightPos;
@@ -56,7 +60,7 @@ void main() {
          fragColor = vec4(1.0, 0.3, 0.3, 1.0);
       }
    }else{
-      fragColor = vec4(pickingColor, pickingColor, pickingColor, 1.0);
+      fragColor = vec4(pickingColor, 1.0);
    }
 }
 )";
@@ -75,7 +79,11 @@ out highp vec3 vecColor;
 void main() {
     gl_Position = projMatrix * mvMatrix * vertex;
     if (isPicking) {
-        vecColor = vec3(ID/255.0, ID/255.0, ID/255.0);
+        int id = int(ID + 0.2);
+        int mask = 255;
+        vecColor.z = float(id & mask) / 255.0;
+        vecColor.y = float((id >> 8) & mask) / 255.0;
+        vecColor.x = float((id >> 16) & mask) / 255.0;
     } else if (isSelected > 0.5) {
         vecColor = vec3(1.0, 1.0, 1.0);
     } else {
@@ -108,28 +116,19 @@ out highp vec3 vecColor;
 void main() {
     gl_Position = projMatrix * mvMatrix * vertex;
     if (isPicking) {
-        gl_PointSize = 32.0;
+        gl_PointSize = 64.0;
+        int id = int(ID + 0.2);
+        int mask = 255;
+        vecColor.z = float(id & mask) / 255.0;
+        vecColor.y = float((id >> 8) & mask) / 255.0;
+        vecColor.x = float((id >> 16) & mask) / 255.0;
     } else {
         gl_PointSize = 8.0;
-    }
-    if (isPicking) {
-        if (ID > 255.0) {
-            vecColor.x = 1.0;
-            float id = ID - 255.0;
-            if (id > 255.0) {
-                vecColor.y = 1.0;
-                id = id - 255.0;
-                vecColor.z = id / 255.0;
-            } else {
-                vecColor.yz = vec2(id / 255.0, 0.0);
-            }
+        if (isSelected > 0.5) {
+            vecColor = vec3(1.0, 1.0, 1.0);
         } else {
-            vecColor = vec3(ID / 255.0, 0.0, 0.0);
+            vecColor = color;
         }
-    } else if (isSelected > 0.5) {
-        vecColor = vec3(1.0, 1.0, 1.0);
-    } else {
-        vecColor = color;
     }
 })";
 

@@ -128,6 +128,7 @@ public:
      */
     void setSelected(int faceIndex);
     void setSelectedVertex(int vertexIndex);
+    void setSelectedEdge(int edgeIndex);
 
     /**
      * @brief getter
@@ -185,14 +186,9 @@ private:
      */
     static qsizetype findNbOfTriangle(he::Mesh* mesh);
 
-    /**
-     * @brief getter
-     * @return the number of edges
-     */
-    qsizetype findNbOfEdges() const;
-
     qsizetype findNbOfSegments() const;
 
+private:
     //the data of this model
     QVector<float> m_data;
     QVector<float> m_dataEdge;
@@ -215,6 +211,7 @@ private:
     //the index of the selected face
     int m_selectedFace = 0;
     int m_selectedVertex = 0;
+    int m_selectedEdge = 0;
 
     float m_dashLength = 90.0f;
     bool m_displayCircleDual = true;

@@ -421,7 +421,7 @@ void GLView::clickFaceManagement() {
     QColor color = image.pixelColor(m_clickPos);
 
     //set the selected face using the red color
-    m_model->setSelected(color.red());
+    m_model->setSelected(color.red() * 65536 + color.green() * 256 + color.blue());
 
     //update the data for drawing the selected object in the right color
     m_model->updateDataFaces();
@@ -445,7 +445,79 @@ void GLView::clickFaceManagement() {
 }
 
 void GLView::clickEdgeManagement() {
-    qDebug() << "click edge";
+    //black background
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+    //no multisample
+    glDisable(GL_MULTISAMPLE);
+    //clear buffers
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    //draw faces
+    m_program->bind();
+    m_vao.bind();
+    glColorMask(false, false, false, false);
+    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCount());
+    glColorMask(true, true, true, true);
+    m_program->release();
+
+    //camera translate to set edges
+    //in front of the polyhedron
+    m_camera.zoom(0.002f);
+
+    //set uniforms
+    m_programEdge->bind();
+    m_programEdge->setUniformValue(m_mvMatrixLocEdge, m_camera.getViewMatrix() * m_world);
+    //indicates to the shader that we're doing a selection
+    m_programEdge->setUniformValue(m_isPickingLocEdge, true);
+
+    //reset camera zoom
+    m_camera.zoom(-0.002f);
+
+    //draw edges
+    m_vaoEdge.bind();
+    glDrawArrays(GL_LINES, 0, m_model->vertexCountEdge());
+
+    //indicates that we're not picking
+    m_programEdge->setUniformValue(m_isPickingLocVertices, false);
+    m_programEdge->release();
+
+    //render the scene
+    QImage image = grabFramebuffer();
+    image.save("picking.png");
+
+    //read the pixel under the mouse
+    int max = 0;
+    int area = 5;
+
+    for (int i = -area; i < area; i++) {
+        for (int j = -area; j < area; j++) {
+            QColor color = image.pixelColor(m_clickPos.x() + i, m_clickPos.y() + j);
+            if (color.isValid()) {
+                int val = color.red() * 65536 + color.green() * 256 + color.blue();
+                if (val > max) {
+                    max = val;
+                }
+            }
+        }
+    }
+
+    //set the selected face using the red color
+    m_model->setSelectedEdge(max);
+
+    //update the data for drawing the selected object in the right color
+    m_model->updateDataEdge();
+
+    //write data to the GPU
+    m_vboEdge.bind();
+    m_vboEdge.write(0, m_model->constDataEdge(), m_model->countEdge() * static_cast<int>(sizeof(GLfloat)));
+    m_vboEdge.release();
+
+    //reset clear color
+    glClearColor(m_clearColor.x(), m_clearColor.y(), m_clearColor.z(), 1.0f);
+
+    //enable multisample
+    glEnable(GL_MULTISAMPLE);
 }
 
 void GLView::clickVertexManagement() {
@@ -491,11 +563,23 @@ void GLView::clickVertexManagement() {
     image.save("picking.png");
 
     //read the pixel under the mouse
-    //TODO: read several pixels in a area under the mouse and take the higher
-    QColor color = image.pixelColor(m_clickPos);
+    int max = 0;
+    int area = 5;
+
+    for (int i = -area; i < area; i++) {
+        for (int j = -area; j < area; j++) {
+            QColor color = image.pixelColor(m_clickPos.x() + i, m_clickPos.y() + j);
+            if (color.isValid()) {
+                int val = color.red() * 65536 + color.green() * 256 + color.blue();
+                if (val > max) {
+                    max = val;
+                }
+            }
+        }
+    }
 
     //set the selected face using the red color
-    m_model->setSelectedVertex(color.red() + color.green() + color.blue());
+    m_model->setSelectedVertex(max);
 
     //update the data for drawing the selected object in the right color
     m_model->updateDataVertices();
@@ -527,12 +611,27 @@ void GLView::keyPressEvent(QKeyEvent* event) {
     }
     if (event->key() == Qt::Key_F) {
         m_pickingType = PickingType::PickingFace;
+        m_model->setSelected(0);
+        m_model->setSelectedEdge(0);
+        m_model->setSelectedVertex(0);
+        m_model->updateData();
+        this->meshChanged();
     }
     if (event->key() == Qt::Key_E) {
         m_pickingType = PickingType::PickingEdge;
+        m_model->setSelected(0);
+        m_model->setSelectedEdge(0);
+        m_model->setSelectedVertex(0);
+        m_model->updateData();
+        this->meshChanged();
     }
     if (event->key() == Qt::Key_V) {
         m_pickingType = PickingType::PickingVertex;
+        m_model->setSelected(0);
+        m_model->setSelectedEdge(0);
+        m_model->setSelectedVertex(0);
+        m_model->updateData();
+        this->meshChanged();
     }
     QWidget::keyPressEvent(event);
 }

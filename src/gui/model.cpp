@@ -48,20 +48,22 @@ void Model::updateDataEdge() {
     if (m_mesh == nullptr) { return; }
 
     //the number of edges
-    qsizetype nbOfEdges = findNbOfEdges();
+    qsizetype nbOfEdges = static_cast<qsizetype>(m_mesh->halfEdgesNoTwin().size());
+
     //for each edge, there are 2 vertices
     qsizetype nbOfAdd = 2 * nbOfEdges;
     //we resize the data for rapidity
     m_dataEdge.resize(nbOfAdd * 8);
 
-    float ID = 1.0f;
+    int ID = 1;
 
     //for each halfedge
-    for (he::HalfEdge* he: m_mesh->halfEdges()) {
+    for (he::HalfEdge* he: m_mesh->halfEdgesNoTwin()) {
+        float isSelected = (ID == m_selectedEdge && m_selectedEdge != 0) ? 1.0f : -1.0f;
         //we will display a line
-        addVertexEdge(he->origin()->pos(), { 0, 0, 0 }, ID, -1.0f);
-        addVertexEdge(he->next()->origin()->pos(), { 0, 0, 0 }, ID, -1.0f);
-        ID += 1.0f;
+        addVertexEdge(he->origin()->pos(), { 0, 0, 0 }, static_cast<float>(ID), isSelected);
+        addVertexEdge(he->next()->origin()->pos(), { 0, 0, 0 }, static_cast<float>(ID), isSelected);
+        ID++;
     }
 }
 
@@ -77,7 +79,7 @@ void Model::updateDataSphere() {
     m_data.resize(m_data.size() + nbOfAdd * 8);
 
     //set the ID to -2 to prevent selection of the sphere
-    int ID = -2;
+    int ID = 0;
 
     //add each face
     for (he::Face* f: m_sphereMesh->faces()) {
@@ -155,14 +157,15 @@ void Model::updateDataVertices() {
         //for each vertex
         for (he::Vertex* v: m_mesh->vertices()) {
             //will display a point
-            addVertex(v->pos(), { 0.0f, 0.0f, 0.0f }, static_cast<float>(ID), m_selectedVertex == ID ? 1.0f : 0.0f);
+            float isSelected = (ID == m_selectedVertex && m_selectedVertex != 0) ? 1.0f : -1.0f;
+            addVertex(v->pos(), { 0.0f, 0.0f, 0.0f }, static_cast<float>(ID), isSelected);
             ID++;
         }
     }
 
     if (m_sphereMesh != nullptr) {
         //display projection point, the color depends on if the user is selecting or not
-        addVertex({ 0, 0, 1 }, { 1, 0, 0 }, -2, -1.0f);
+        addVertex({ 0, 0, 1 }, { 1, 0, 0 }, 0, -1.0f);
     }
 }
 
@@ -272,14 +275,10 @@ qsizetype Model::findNbOfTriangle(he::Mesh* mesh) {
     return nb;
 }
 
-qsizetype Model::findNbOfEdges() const {
-    return static_cast<qsizetype>(m_mesh->halfEdges().size());
-}
-
 void Model::setMesh(he::Mesh* mesh) {
     m_mesh = mesh;
     //reset the selected face
-    setSelected(-1);
+    setSelected(0);
 }
 
 void Model::setSelected(int faceIndex) {
@@ -322,7 +321,7 @@ void Model::addFace(he::Face* f, int ID) {
 
         //if the face is selected, we will
         //throw 1.0 and -1.0 otherwise
-        float isSelected = ID == m_selectedFace ? 1.0f : -1.0f;
+        float isSelected = (ID == m_selectedFace && m_selectedFace != 0) ? 1.0f : -1.0f;
 
         triangle(pos1, pos2, pos3, static_cast<float>(ID), isSelected);
 
@@ -361,4 +360,8 @@ qsizetype Model::findNbOfSegments() const {
 
 void Model::toggleDisplayCircleDual() {
     m_displayCircleDual = !m_displayCircleDual;
+}
+
+void Model::setSelectedEdge(int edgeIndex) {
+    m_selectedEdge = edgeIndex;
 }

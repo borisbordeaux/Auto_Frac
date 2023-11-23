@@ -129,7 +129,7 @@ private:
     Camera m_cameraBeforeAnim;
     float m_tAnimCamera = 0.0f;
 
-    QVector3D m_clearColor = { 1, 1, 1 };
+    QVector3D m_clearColor = { 0.7f, 0.7f, 0.7f };
 
     PickingType m_pickingType = PickingType::PickingFace;
 };

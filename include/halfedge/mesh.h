@@ -20,10 +20,11 @@ public:
 
     [[nodiscard]] std::vector<he::Vertex*> const& vertices() const;
     [[nodiscard]] std::vector<he::HalfEdge*> const& halfEdges() const;
+    [[nodiscard]] std::vector<he::HalfEdge*> const& halfEdgesNoTwin() const;
     [[nodiscard]] std::vector<he::Face*> const& faces() const;
 
     void append(he::Vertex* v);
-    void append(he::HalfEdge* he);
+    void append(he::HalfEdge* he, bool completeNotTwin = false);
     void append(he::Face* f);
     he::HalfEdge* findByName(QString const& name);
 
@@ -34,6 +35,7 @@ public:
 private:
     std::vector<he::Vertex*> m_vertices;
     std::vector<he::HalfEdge*> m_halfEdges;
+    std::vector<he::HalfEdge*> m_halfEdgesNotTwin;
     std::vector<he::Face*> m_faces;
 };
 
