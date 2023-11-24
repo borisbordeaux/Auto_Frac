@@ -186,6 +186,7 @@ void GLView::initializeGL() {
     //init shader for edges
     m_programEdge = new QOpenGLShaderProgram();
     m_programEdge->addShaderFromSourceCode(QOpenGLShader::Vertex, vertexShaderSourceEdge);
+    m_programEdge->addShaderFromSourceCode(QOpenGLShader::Geometry, geometryShader);
     m_programEdge->addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShaderSourceEdge);
     m_programEdge->bindAttributeLocation("vertex", 0);
     m_programEdge->bindAttributeLocation("color", 1);
@@ -450,6 +451,7 @@ void GLView::clickEdgeManagement() {
 
     //no multisample
     glDisable(GL_MULTISAMPLE);
+    glDisable(GL_LINE_SMOOTH);
     //clear buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -484,7 +486,6 @@ void GLView::clickEdgeManagement() {
 
     //render the scene
     QImage image = grabFramebuffer();
-    image.save("picking.png");
 
     //read the pixel under the mouse
     int max = 0;
@@ -498,9 +499,11 @@ void GLView::clickEdgeManagement() {
                 if (val > max) {
                     max = val;
                 }
+                image.setPixelColor(m_clickPos.x() + i, m_clickPos.y() + j, Qt::blue);
             }
         }
     }
+    image.save("picking.png");
 
     //set the selected face using the red color
     m_model->setSelectedEdge(max);
@@ -517,6 +520,7 @@ void GLView::clickEdgeManagement() {
     glClearColor(m_clearColor.x(), m_clearColor.y(), m_clearColor.z(), 1.0f);
 
     //enable multisample
+    glLineWidth(1.0);
     glEnable(GL_MULTISAMPLE);
 }
 
