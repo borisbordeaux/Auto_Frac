@@ -32,7 +32,19 @@ void Camera::rotatePolar(const float radians) {
 }
 
 void Camera::zoom(const float by) {
-    m_radius -= by;
+    m_radius *= 1.0f - by;
+
+    if (m_radius < m_minRadius) {
+        m_radius = m_minRadius;
+    }
+
+    if (m_radius > m_maxRadius) {
+        m_radius = m_maxRadius;
+    }
+}
+
+void Camera::dezoom(const float by) {
+    m_radius /= 1.0f - by;
 
     if (m_radius < m_minRadius) {
         m_radius = m_minRadius;
@@ -56,7 +68,7 @@ void Camera::zoom() {
 }
 
 void Camera::dezoom() {
-    m_radius *= 1.1f;
+    m_radius /= 0.9f;
 
     if (m_radius < m_minRadius) {
         m_radius = m_minRadius;

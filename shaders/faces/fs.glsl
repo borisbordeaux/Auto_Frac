@@ -1,0 +1,31 @@
+#version 460 core
+
+in vec3 vert;
+in vec3 vertNormal;
+in float selected;
+
+out vec4 fragColor;
+
+uniform vec3 lightPos;
+uniform vec3 cameraPosition;
+uniform mat4 model;
+
+void main() {
+    if (selected < 0.5) {
+        vec3 fragVertModel = (model * vec4(vert, 1.0)).xyz;
+        vec3 fragNormalModel = vertNormal;
+        vec3 L = normalize(lightPos - fragVertModel);
+        float diffuse = abs(dot(fragNormalModel, L));
+        vec3 R = reflect(-L, fragNormalModel);
+        vec3 V = normalize(cameraPosition - fragVertModel);
+        float RV = max(dot(R, V), 0.0);
+        float specular = pow(RV, 100.0);
+        vec3 specularColor = specular * vec3(0.3, 0.3, 0.6);
+        vec3 color = vec3(0.4, 0.4, 1.0);
+        vec3 ambientColor = 0.6 * color;
+        vec3 diffuseColor = diffuse * color;
+        fragColor = vec4(clamp(specularColor + ambientColor + diffuseColor, 0.0, 1.0), 1.0);
+    } else {
+        fragColor = vec4(1.0, 0.3, 0.3, 1.0);
+    }
+}

@@ -59,20 +59,24 @@ protected:
     void hideEvent(QHideEvent* event) override;
 
 private:
-    //manage face selection
+    void initShaders();
+    void initShadersView();
+    void initShadersPicking();
+
+    //manage face picking
     void clickFaceManagement();
     void clickEdgeManagement();
     void clickVertexManagement();
 
     //camera of the scene
     Camera m_camera;
-    QTimer m_timerAnimation;
 
     //the last position of the mouse
     //used for rotation
     QPointF m_lastPos;
 
     //OpenGL stuff for rendering
+    QVector3D m_clearColor = { 0.7f, 0.7f, 0.7f };
     QOpenGLVertexArrayObject m_vao;
     QOpenGLVertexArrayObject m_vaoEdge;
     QOpenGLVertexArrayObject m_vaoCircles;
@@ -81,36 +85,41 @@ private:
     QOpenGLBuffer m_vboEdge;
     QOpenGLBuffer m_vboCircles;
     QOpenGLBuffer m_vboVertices;
-    QOpenGLShaderProgram* m_program = nullptr;
-    QOpenGLShaderProgram* m_programEdge = nullptr;
-    QOpenGLShaderProgram* m_programCircles = nullptr;
+    QOpenGLShaderProgram* m_programFaces = nullptr;
+    QOpenGLShaderProgram* m_programFacesPicking = nullptr;
+    QOpenGLShaderProgram* m_programLines = nullptr;
+    QOpenGLShaderProgram* m_programLinesPicking = nullptr;
     QOpenGLShaderProgram* m_programVertices = nullptr;
+    QOpenGLShaderProgram* m_programVerticesPicking = nullptr;
 
     //location of the different variables in the GPU
+    //Faces viewing
     int m_projMatrixLoc = 0;
     int m_mvMatrixLoc = 0;
     int m_normalMatrixLoc = 0;
     int m_lightPosLoc = 0;
     int m_cameraPosLoc = 0;
     int m_modelMatrixLoc = 0;
-    int m_isPickingLoc = 0;
+    //Faces picking
+    int m_projMatrixPickingLoc = 0;
+    int m_mvMatrixPickingLoc = 0;
 
-    //for edges
+    //Lines viewing
     int m_projMatrixLocEdge = 0;
     int m_mvMatrixLocEdge = 0;
-    int m_isPickingLocEdge = 0;
+    //Lines picking
+    int m_projMatrixPickingLocEdge = 0;
+    int m_mvMatrixPickingLocEdge = 0;
+    int m_invViewportPickingLocEdge = 0;
 
-    //for circles
-    int m_projMatrixLocCircles = 0;
-    int m_mvMatrixLocCircles = 0;
-    int m_isPickingLocCircles = 0;
-
-    //for vertices
+    //Vertices viewing
     int m_projMatrixLocVertices = 0;
     int m_mvMatrixLocVertices = 0;
-    int m_isPickingLocVertices = 0;
+    //Vertices picking
+    int m_projMatrixPickingLocVertices = 0;
+    int m_mvMatrixPickingLocVertices = 0;
 
-    //to prevent sending uniform already sent
+    //flag to update uniforms if needed
     bool m_uniformsDirty = true;
 
     //matrices for rendering
@@ -120,18 +129,18 @@ private:
     //the model that will be displayed
     Model* m_model;
 
-    //useful for item selection
+    //useful for item picking
     bool m_clicked = false;
     QPoint m_clickPos;
+    PickingType m_pickingType = PickingType::PickingFace;
+    float m_viewportWidth = 0.0f;
+    float m_viewportHeight = 0.0f;
 
     //for animation
+    QTimer m_timerAnimation;
     QTimer m_timerAnimCamera;
     Camera m_cameraBeforeAnim;
     float m_tAnimCamera = 0.0f;
-
-    QVector3D m_clearColor = { 0.7f, 0.7f, 0.7f };
-
-    PickingType m_pickingType = PickingType::PickingFace;
 };
 
 #endif // GLVIEW_H

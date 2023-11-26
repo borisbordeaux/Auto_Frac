@@ -11,6 +11,7 @@ public:
     void rotateAzimuth(float radians);
     void rotatePolar(float radians);
     void zoom(float by);
+    void dezoom(float by);
     void zoom();
     void dezoom();
 

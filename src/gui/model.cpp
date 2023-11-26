@@ -78,7 +78,7 @@ void Model::updateDataSphere() {
     //we resize the data for rapidity
     m_data.resize(m_data.size() + nbOfAdd * 8);
 
-    //set the ID to -2 to prevent selection of the sphere
+    //set the ID to -2 to prevent picking of the sphere
     int ID = 0;
 
     //add each face
