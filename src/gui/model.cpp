@@ -277,8 +277,10 @@ qsizetype Model::findNbOfTriangle(he::Mesh* mesh) {
 
 void Model::setMesh(he::Mesh* mesh) {
     m_mesh = mesh;
-    //reset the selected face
+    //reset the selected elements
     setSelected(0);
+    setSelectedVertex(0);
+    setSelectedEdge(0);
 }
 
 void Model::setSelected(int faceIndex) {
