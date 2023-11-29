@@ -1,6 +1,5 @@
 #include <QMatrix4x4>
 #include "polytopal/circle.h"
-#include "utils/utils.h"
 
 namespace poly {
 
