@@ -15,6 +15,12 @@ namespace poly {
         InversiveCoordinates operator*(float rhs) const;
         InversiveCoordinates operator-(InversiveCoordinates const& rhs) const;
 
+        float e1() const;
+        float e2() const;
+        float e3() const;
+        float e4() const;
+        float e5() const;
+
     private:
         float m_e1;
         float m_e2;

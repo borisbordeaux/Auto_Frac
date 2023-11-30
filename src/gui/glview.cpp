@@ -1,17 +1,20 @@
 #include "gui/glview.h"
 
 #include "gui/model.h"
+#include "gui/mainwindow.h"
 #include <QKeyEvent>
 #include <QtOpenGL/QOpenGLShaderProgram>
 
-GLView::GLView(Model* model, QWidget* parent) :
+GLView::GLView(Model* model, MainWindow* parent) :
         QOpenGLWidget(parent),
         m_camera(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.01f, 49.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)),
         m_model(model),
-        m_cameraBeforeAnim(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.01f, 49.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)) {
+        m_cameraBeforeAnim(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.01f, 49.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)),
+        m_mainWindow(parent) {
     connect(&m_timerAnimation, &QTimer::timeout, this, &GLView::animationStep);
     connect(&m_timerAnimCamera, &QTimer::timeout, this, &GLView::animationCameraStep);
     grabKeyboard();
+    this->connectTimers();
 }
 
 GLView::~GLView() {
@@ -290,7 +293,7 @@ void GLView::paintGL() {
         m_programFacesPicking->setUniformValue(m_mvMatrixPickingLoc, m_camera.getViewMatrix() * m_world);
         m_programFacesPicking->release();
 
-        m_camera.zoom(0.002);
+        m_camera.zoom(0.001);
 
         m_programLines->bind();
         m_programLines->setUniformValue(m_projMatrixLocEdge, m_proj);
@@ -303,7 +306,7 @@ void GLView::paintGL() {
         m_programLinesPicking->setUniformValue(m_invViewportPickingLocEdge, 1.0f / m_viewportWidth, 1.0f / m_viewportHeight);
         m_programLinesPicking->release();
 
-        m_camera.zoom(0.002);
+        m_camera.zoom(0.001);
 
         m_programVertices->bind();
         m_programVertices->setUniformValue(m_projMatrixLocVertices, m_proj);
@@ -315,8 +318,8 @@ void GLView::paintGL() {
         m_programVerticesPicking->setUniformValue(m_mvMatrixPickingLocVertices, m_camera.getViewMatrix() * m_world);
         m_programVerticesPicking->release();
 
-        m_camera.dezoom(0.002);
-        m_camera.dezoom(0.002);
+        m_camera.dezoom(0.001);
+        m_camera.dezoom(0.001);
 
         m_uniformsDirty = false;
     }
@@ -637,6 +640,12 @@ void GLView::keyPressEvent(QKeyEvent* event) {
         m_model->updateData();
         this->meshChanged();
     }
+    if (event->key() == Qt::Key_S) {
+        m_timerDisplaySphere.start();
+    }
+    if (event->key() == Qt::Key_I) {
+        m_mainWindow->displayInfoPlan();
+    }
     QWidget::keyPressEvent(event);
 }
 
@@ -669,4 +678,72 @@ void GLView::animationCameraStep() {
     }
     m_uniformsDirty = true;
     update();
+}
+
+void GLView::connectTimers() {
+    connect(&m_timerDisplaySphere, &QTimer::timeout, this, [&]() {
+        m_mainWindow->slotDisplayUnitSphereChanged();
+        m_timerCanonic.start(1000);
+        m_timerDisplaySphere.stop();
+    });
+    connect(&m_timerCanonic, &QTimer::timeout, this, [&]() {
+        m_mainWindow->slotCanonizeMesh();
+        m_timerDisplayCircle.start(6000);
+        m_timerCanonic.stop();
+    });
+    connect(&m_timerDisplayCircle, &QTimer::timeout, this, [&]() {
+        m_mainWindow->slotDisplayAreaCircles();
+        m_timerDisplayCircleDual.start(2000);
+        m_timerDisplayCircle.stop();
+    });
+    connect(&m_timerDisplayCircleDual, &QTimer::timeout, this, [&]() {
+        m_model->toggleDisplayCircleDual();
+        m_model->updateDataCircles();
+        this->meshChanged();
+        m_timerResetCamera.start(9000);
+        m_timerDisplayCircleDual.stop();
+    });
+    connect(&m_timerResetCamera, &QTimer::timeout, this, [&]() {
+        m_timerAnimation.stop();
+        m_cameraBeforeAnim = m_camera;
+        m_timerAnimCamera.start();
+        m_timerProjection.start(1000);
+        m_timerResetCamera.stop();
+    });
+    connect(&m_timerProjection, &QTimer::timeout, this, [&]() {
+        m_mainWindow->projectCirclesToPlan();
+        m_timerHideMeshes.start(1000);
+        m_timerProjection.stop();
+    });
+    connect(&m_timerHideMeshes, &QTimer::timeout, this, [&]() {
+        m_model->setMesh(nullptr);
+        m_model->setSphereMesh(nullptr);
+        this->meshChanged();
+        m_timerInversion.start(1000);
+        m_timerHideMeshes.stop();
+    });
+    connect(&m_timerInversion, &QTimer::timeout, this, [&]() {
+        m_mainWindow->slotIncreaseInversion();
+        if (m_mainWindow->inversionLevel() == 10) {
+            m_timerInversion.stop();
+            m_timerHideCircleDual.start();
+        } else {
+            m_timerInversion.start(1000);
+        }
+    });
+    connect(&m_timerHideCircleDual, &QTimer::timeout, this, [&]() {
+        m_model->toggleDisplayCircleDual();
+        m_model->updateDataCircles();
+        this->meshChanged();
+        m_timerHideCircleDual.stop();
+        m_timerZoom.start();
+    });
+    connect(&m_timerZoom, &QTimer::timeout, this, [&]() {
+        this->m_camera.zoom(0.01f);
+        if (m_camera.radius() < 5.0f) {
+            m_timerZoom.stop();
+        }
+        m_uniformsDirty = true;
+        update();
+    });
 }

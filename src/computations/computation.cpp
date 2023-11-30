@@ -342,7 +342,7 @@ std::size_t frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circl
     //inversion always in plan
     for (std::size_t i = index; i != circlesToInverse.size(); i++) {
         for (poly::Circle const& cInv: circlesInvertive) {
-            float precision = 0.005f;
+            float precision = 0.003f;
 #if 0
             if (circlesToInverse[i].inversionCircle() != &cInv && !poly::Circle::areOrthogonalCircles(circlesToInverse[i], cInv)) {
                 if (circlesToInverse[i].radius() > precision) {
@@ -355,7 +355,7 @@ std::size_t frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circl
             }
 #else
             //inversion from plan to sphere space
-            //if not already inverted
+            //if not already inverted and circle not too small
             if (circlesToInverse[i].inversionCircle() != &cInv && circlesToInverse[i].radius() > precision) {
                 poly::InversiveCoordinates circleToInverse(circlesToInverse[i]);
                 poly::InversiveCoordinates inversionCircle(cInv);

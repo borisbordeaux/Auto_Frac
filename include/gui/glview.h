@@ -19,6 +19,8 @@ class QOpenGLShaderProgram;
 
 class Model;
 
+class MainWindow;
+
 class GLView : public QOpenGLWidget, protected QOpenGLFunctions {
 Q_OBJECT
 
@@ -28,7 +30,7 @@ public:
      * @param model the model that has to be drawn
      * @param parent the parent of this widget
      */
-    explicit GLView(Model* model, QWidget* parent = nullptr);
+    explicit GLView(Model* model, MainWindow* parent = nullptr);
     ~GLView() override;
 
     /**
@@ -141,6 +143,22 @@ private:
     QTimer m_timerAnimCamera;
     Camera m_cameraBeforeAnim;
     float m_tAnimCamera = 0.0f;
+
+private:
+    MainWindow* m_mainWindow;
+    //for video animation
+    QTimer m_timerDisplaySphere;
+    QTimer m_timerCanonic;
+    QTimer m_timerDisplayCircle;
+    QTimer m_timerDisplayCircleDual;
+    QTimer m_timerResetCamera;
+    QTimer m_timerProjection;
+    QTimer m_timerHideMeshes;
+    QTimer m_timerInversion;
+    QTimer m_timerHideCircleDual;
+    QTimer m_timerZoom;
+
+    void connectTimers();
 };
 
 #endif // GLVIEW_H

@@ -38,3 +38,23 @@ poly::InversiveCoordinates poly::InversiveCoordinates::operator*(float rhs) cons
 poly::InversiveCoordinates poly::InversiveCoordinates::operator-(poly::InversiveCoordinates const& rhs) const {
     return { m_e1 - rhs.m_e1, m_e2 - rhs.m_e2, m_e3 - rhs.m_e3, m_e4 - rhs.m_e4, m_e5 - rhs.m_e5 };
 }
+
+float poly::InversiveCoordinates::e1() const {
+    return m_e1;
+}
+
+float poly::InversiveCoordinates::e2() const {
+    return m_e2;
+}
+
+float poly::InversiveCoordinates::e3() const {
+    return m_e3;
+}
+
+float poly::InversiveCoordinates::e4() const {
+    return m_e4;
+}
+
+float poly::InversiveCoordinates::e5() const {
+    return m_e5;
+}

@@ -118,6 +118,7 @@ public:
      */
     void setMesh(he::Mesh* mesh);
     void setSphereMesh(he::Mesh* mesh);
+    he::Mesh* sphereMesh() const;
     void addCircle(poly::Circle const& circle);
     void addCircleDual(poly::Circle const& circle);
     void resetCircles();
@@ -214,7 +215,7 @@ private:
     int m_selectedEdge = 0;
 
     float m_dashLength = 90.0f;
-    bool m_displayCircleDual = true;
+    bool m_displayCircleDual = false;
 };
 
 #endif // MODEL_H

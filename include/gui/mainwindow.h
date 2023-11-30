@@ -24,6 +24,8 @@ public:
     explicit MainWindow(QWidget* parent = nullptr);
     ~MainWindow() override;
 
+    int inversionLevel() const { return m_inversionLevel; }
+
 public slots:
     [[maybe_unused]] void slotGenerateScript();
     [[maybe_unused]] void slotAddFace();
@@ -74,6 +76,10 @@ public slots:
     [[maybe_unused]] void slotProjectCirclesClicked();
     void animProjectStep();
     void animInversionStep();
+
+public:
+    void projectCirclesToPlan();
+    void displayInfoPlan() const;
 
 private:
     struct Constraint {

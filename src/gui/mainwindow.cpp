@@ -28,6 +28,7 @@
 #include <QValueAxis>
 
 #include "NazaraUtils/Algorithm.hpp"
+#include "polytopal/inversivecoordinates.h"
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow), m_openedMesh(false), m_chartFractalDim(new QChart()), m_chartAreaPerimeter(new QChart()), m_inversionLevel(0) {
     ui->setupUi(this);
@@ -52,7 +53,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->updateEnablement();
     this->updateEnablementPoly();
 
-    m_view = new GLView(&m_modelMesh);
+    m_view = new GLView(&m_modelMesh, this);
     this->ui->verticalLayout_poly2D->addWidget(m_view);
     this->ui->graphicsView->setScene(&m_scene);
     m_scene.setBackgroundBrush(Qt::white);
@@ -992,7 +993,7 @@ double MainWindow::getNbLacunaOfCell(std::string const& faceName, std::size_t le
 }
 
 [[maybe_unused]] void MainWindow::slotDisplayUnitSphereChanged() {
-    if (this->ui->checkBox_displayUnitSphere->isChecked()) {
+    if (m_modelMesh.sphereMesh() == nullptr) {
         if (m_sphereMesh.vertices().empty()) {
             he::reader::readOBJ("../obj/unit_sphere.obj", m_sphereMesh);
         }
@@ -1066,7 +1067,6 @@ void MainWindow::canonicalizeStep() {
     } else {
         m_modelMesh.setMesh(nullptr);
     }
-    m_modelMesh.updateData();
     m_view->meshChanged();
 }
 
@@ -1224,4 +1224,22 @@ void MainWindow::animInversionStep() {
 
     m_modelMesh.updateDataCircles();
     m_view->meshChanged();
+}
+
+void MainWindow::projectCirclesToPlan() {
+    this->ui->checkBox_projectCircles->setChecked(true);
+    m_circlesAnimProjectStart = frac::PolyCircle::computeIlluminatedCircles(m_mesh, false);
+    m_circlesDualAnimProjectStart = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh, false);
+    m_circlesAnimProjectEnd = frac::PolyCircle::computeIlluminatedCircles(m_mesh, true);
+    m_circlesDualAnimProjectEnd = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh, true);
+    m_circles = m_circlesAnimProjectStart;
+    m_circlesDual = m_circlesDualAnimProjectStart;
+    m_timerAnimProject.start();
+}
+
+void MainWindow::displayInfoPlan() const {
+    for(poly::Circle const& c : m_circles) {
+        poly::InversiveCoordinates coord(c);
+        qDebug() << coord.e1() << coord.e2() << coord.e3() << coord.e4() << coord.e5();
+    }
 }

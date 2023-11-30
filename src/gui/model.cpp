@@ -281,6 +281,8 @@ void Model::setMesh(he::Mesh* mesh) {
     setSelected(0);
     setSelectedVertex(0);
     setSelectedEdge(0);
+    //update buffers
+    updateData();
 }
 
 void Model::setSelected(int faceIndex) {
@@ -366,4 +368,8 @@ void Model::toggleDisplayCircleDual() {
 
 void Model::setSelectedEdge(int edgeIndex) {
     m_selectedEdge = edgeIndex;
+}
+
+he::Mesh* Model::sphereMesh() const {
+    return m_sphereMesh;
 }
