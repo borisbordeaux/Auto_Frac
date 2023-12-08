@@ -1244,13 +1244,26 @@ void MainWindow::displayInfoPlan() {
         float b = coord.e2();
         float c = coord.e4();
         float d = -coord.e5();
-        //qDebug() << "plan associé" << a << "x +" << b << "y +" << c << "z +" << d << " = 0";
 
         float l = d / (a * a + b * b + c * c);
         QVector3D H(-l * a, -l * b, -l * c);
         float D_squared = H.lengthSquared();
         float r = qSqrt(1.0f - D_squared);
-        poly::Circle projectedCircle(H, r);
+
+        QVector3D n { a, b, c };
+        n.normalize();
+
+        QVector3D xAxis { -b, a, 0 };
+        if (qFuzzyIsNull(xAxis.lengthSquared())) {
+            xAxis.setX(0);
+            xAxis.setY(-c);
+            xAxis.setZ(b);
+        }
+        xAxis.normalize();
+
+        QVector3D yAxis = QVector3D::crossProduct(n, xAxis);
+        poly::Circle projectedCircle(H, r, xAxis, yAxis);
+        projectedCircle.setColor({ 0, 0, 1 });
         m_modelMesh.addCircle(projectedCircle);
     }
     m_modelMesh.updateDataCircles();

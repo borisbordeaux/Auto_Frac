@@ -231,13 +231,13 @@ poly::Circle projectToSphereC(poly::Circle const& circle) {
 
 QColor colors[16] = {
         QColor(Qt::blue),
-        QColor(Qt::darkCyan),
-        QColor(Qt::green),
+        QColor(Qt::darkRed),
+        QColor(Qt::darkGreen),
         QColor(Qt::cyan),
         QColor(Qt::magenta),
         QColor(Qt::yellow),
-        QColor(Qt::darkRed),
-        QColor(Qt::darkGreen),
+        QColor(Qt::darkCyan),
+        QColor(Qt::green),
         QColor(Qt::darkBlue),
         QColor(Qt::darkMagenta),
         QColor(Qt::darkYellow),
@@ -289,8 +289,8 @@ std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCircles(const he::
             }
 
             poly::Circle c { v1, v2, v3 };
-            //c.setColor({ colors[i % 17].redF(), colors[i % 17].greenF(), colors[i % 17].blueF() });
             c.setColor({ colors[14].redF(), colors[14].greenF(), colors[14].blueF() });
+            //c.setColor({ colors[i % 17].redF(), colors[i % 17].greenF(), colors[i % 17].blueF() });
             res.push_back(c);
             i++;
         }
@@ -372,10 +372,8 @@ std::size_t frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circl
                         circleInverted.setOldCircleBeforeInversion(circlesToInverse[i]);
                         circleInverted.setNewCircleAfterInversion(circleInverted);
                     }
-                    if (circleInverted.radius() > precision) {
-                        res.push_back(circleInverted);
-                        count++;
-                    }
+                    res.push_back(circleInverted);
+                    count++;
                 }
             }
 #endif
