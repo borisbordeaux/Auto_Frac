@@ -1237,9 +1237,22 @@ void MainWindow::projectCirclesToPlan() {
     m_timerAnimProject.start();
 }
 
-void MainWindow::displayInfoPlan() const {
-    for(poly::Circle const& c : m_circles) {
-        poly::InversiveCoordinates coord(c);
-        qDebug() << coord.e1() << coord.e2() << coord.e3() << coord.e4() << coord.e5();
+void MainWindow::displayInfoPlan() {
+    for (poly::Circle const& circle: m_circles) {
+        poly::InversiveCoordinates coord(circle);
+        float a = coord.e1();
+        float b = coord.e2();
+        float c = coord.e4();
+        float d = -coord.e5();
+        //qDebug() << "plan associé" << a << "x +" << b << "y +" << c << "z +" << d << " = 0";
+
+        float l = d / (a * a + b * b + c * c);
+        QVector3D H(-l * a, -l * b, -l * c);
+        float D_squared = H.lengthSquared();
+        float r = qSqrt(1.0f - D_squared);
+        poly::Circle projectedCircle(H, r);
+        m_modelMesh.addCircle(projectedCircle);
     }
+    m_modelMesh.updateDataCircles();
+    m_view->meshChanged();
 }

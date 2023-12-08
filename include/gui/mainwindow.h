@@ -79,7 +79,7 @@ public slots:
 
 public:
     void projectCirclesToPlan();
-    void displayInfoPlan() const;
+    void displayInfoPlan();
 
 private:
     struct Constraint {
