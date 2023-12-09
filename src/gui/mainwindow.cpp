@@ -1071,16 +1071,43 @@ void MainWindow::canonicalizeStep() {
 }
 
 [[maybe_unused]] void MainWindow::slotIncreaseInversion() {
-    if (!m_timerAnimInversion.isActive()) {
+    if (this->ui->checkBox_animations->isChecked()) {
+        if (!m_timerAnimInversion.isActive()) {
+            std::size_t index = m_circlesIndex;
+            m_circlesIndex = m_circles.size();
+            m_nbInversions = frac::PolyCircle::computeInversions(m_circles, m_circlesDual, index, this->ui->checkBox_projectCircles->isChecked());
+            m_timerAnimInversion.start();
+        }
+    } else {
+        if (m_circles.empty()) return;
+
+        m_modelMesh.resetCircles();
+
         std::size_t index = m_circlesIndex;
         m_circlesIndex = m_circles.size();
         m_nbInversions = frac::PolyCircle::computeInversions(m_circles, m_circlesDual, index, this->ui->checkBox_projectCircles->isChecked());
-        m_timerAnimInversion.start();
+
+        if (m_nbInversions != 0) {
+            m_inversionLevel++;
+        }
+
+        for (poly::Circle const& c: m_circles) {
+            m_modelMesh.addCircle(c);
+        }
+
+        for (poly::Circle const& c: m_circlesDual) {
+            m_modelMesh.addCircleDual(c);
+        }
+
+        this->setInfo("Iteration level : " + std::to_string(m_inversionLevel) + ", " + std::to_string(m_circles.size()) + " circles in total", 4000);
+
+        m_modelMesh.updateData();
+        m_view->meshChanged();
     }
 }
 
 [[maybe_unused]] void MainWindow::slotDecreaseInversion() {
-    if (m_circles.empty()) { return; }
+    if (m_circles.empty()) return;
     int inversionLevel = std::max(m_inversionLevel - 1, 0);
 
     m_inversionLevel = 0;

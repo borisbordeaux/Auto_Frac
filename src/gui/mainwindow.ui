@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1055</width>
+    <width>1207</width>
     <height>1039</height>
    </rect>
   </property>
@@ -1664,6 +1664,13 @@ QListWidget {
              <widget class="QCheckBox" name="checkBox_polytopalPlanarControlPoints">
               <property name="text">
                <string>Planar CP</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBox_animations">
+              <property name="text">
+               <string>Animations</string>
               </property>
              </widget>
             </item>
