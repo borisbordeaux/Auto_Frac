@@ -45,7 +45,7 @@ void he::reader::readOBJ(QString const& filename, he::Mesh& mesh) {
                         //get the unique name of the half-edge
                         //for instance a half-edge between vertex 0 and 3 will be named "0 3"
                         int next = (i == list.size() - 1 ? 1 : i + 1);
-                        QString name = list[i] + " " + list[next];
+                        QString name = list[i].split("/")[0] + " " + list[next].split("/")[0];
 
                         //we find the half-edge using its unique name
                         he::HalfEdge* he = mesh.findByName(name);
@@ -53,17 +53,17 @@ void he::reader::readOBJ(QString const& filename, he::Mesh& mesh) {
                         //if the half-edge doesn't exist
                         if (he == nullptr) {
                             //we create it
-                            he = new he::HalfEdge(mesh.vertices()[list[i].toInt() - 1], name);
+                            he = new he::HalfEdge(mesh.vertices()[list[i].split("/")[0].toInt() - 1], name);
                             //we update the vertex
-                            mesh.vertices()[list[i].toInt() - 1]->setHalfEdge(he);
+                            mesh.vertices()[list[i].split("/")[0].toInt() - 1]->setHalfEdge(he);
 
                             //twin of the half-edge
                             //get its name
-                            name = list[next] + " " + list[i];
+                            name = list[next].split("/")[0] + " " + list[i].split("/")[0];
                             //create it
-                            auto* twinHe = new he::HalfEdge(mesh.vertices()[list[next].toInt() - 1], name);
+                            auto* twinHe = new he::HalfEdge(mesh.vertices()[list[next].split("/")[0].toInt() - 1], name);
                             //update the vertex
-                            mesh.vertices()[list[next].toInt() - 1]->setHalfEdge(twinHe);
+                            mesh.vertices()[list[next].split("/")[0].toInt() - 1]->setHalfEdge(twinHe);
                             //set the twin for both half-edges
                             twinHe->setTwin(he);
                             he->setTwin(twinHe);
