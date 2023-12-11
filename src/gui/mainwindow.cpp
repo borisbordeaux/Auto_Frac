@@ -1283,8 +1283,8 @@ void MainWindow::displayInfoPlan() {
         QVector3D xAxis { -b, a, 0 };
         if (qFuzzyIsNull(xAxis.lengthSquared())) {
             xAxis.setX(0);
-            xAxis.setY(-c);
-            xAxis.setZ(b);
+            xAxis.setY(c);
+            xAxis.setZ(0);
         }
         xAxis.normalize();
 
