@@ -4,15 +4,23 @@
 namespace poly {
 
 Circle::Circle(QVector3D const& center, float radius, QVector3D const& axisX, QVector3D const& axisY, Circle const* inversionCircle) :
-        m_center(center), m_radius(radius), m_axisX(axisX), m_axisY(axisY), m_inversionCircle(inversionCircle) {}
+        m_center(center), m_radius(radius), m_axisX(axisX), m_axisY(axisY), m_inversionCircle(inversionCircle) {
+    this->initInversiveCoordinates();
+}
 
 Circle::Circle(QVector3D const& center, float radius, Circle const* inversionCircle) :
-        m_center(center), m_radius(radius), m_axisX(1, 0, 0), m_axisY(0, 1, 0), m_inversionCircle(inversionCircle) {}
+        m_center(center), m_radius(radius), m_axisX(1, 0, 0), m_axisY(0, 1, 0), m_inversionCircle(inversionCircle) {
+    this->initInversiveCoordinates();
+}
 
 Circle::Circle(QVector3D const& P1, QVector3D const& P2, QVector3D const& P3, Circle const* inversionCircle) :
         m_radius(0.0f), m_inversionCircle(inversionCircle) {
     from3Points(P1, P2, P3);
+    this->initInversiveCoordinates();
 }
+
+Circle::Circle(float e1, float e2, float e4, float e5, const Circle* inversionCircle) :
+        m_center(e1 / (e5 - e4), e2 / (e5 - e4), 0.0f), m_radius(qAbs(1.0f / (e5 - e4))), m_inversionCircle(inversionCircle), m_e1(e1), m_e2(e2), m_e4(e4), m_e5(e5) {}
 
 const QVector3D& Circle::center() const {
     return m_center;
@@ -32,7 +40,9 @@ float Circle::radius() const {
 
 bool Circle::areOrthogonalCircles(Circle const& c1, Circle const& c2) {
     // OO'^2 == R^2 + R'^2 -> pythagore
-    return qAbs(c1.radius() * c1.radius() + c2.radius() * c2.radius() - (c1.center() - c2.center()).lengthSquared()) < 0.1f;
+    //return qAbs(c1.radius() * c1.radius() + c2.radius() * c2.radius() - (c1.center() - c2.center()).lengthSquared()) < 0.1f;
+    //with inversive coordinates
+    return qAbs(scalarProduct(c1, c2)) < 0.01f;
 }
 
 Circle const* Circle::inversionCircle() const {
@@ -134,6 +144,66 @@ QVector3D const& Circle::color() const {
 qsizetype Circle::numberOfSegments(float n) const {
     //n is the number of segment on the unit circle
     return qFloor(n * m_radius);
+}
+
+void Circle::initInversiveCoordinates() {
+    float K = 1.0f / m_radius;
+    m_e1 = K * m_center.x();
+    m_e2 = K * m_center.y();
+    m_e4 = 0.5f * (K * m_center.lengthSquared() - m_radius - K);
+    m_e5 = 0.5f * (K * m_center.lengthSquared() - m_radius + K);
+}
+
+float Circle::scalarProduct(const Circle& c1, const Circle& c2) {
+    return c1.m_e1 * c2.m_e1 + c1.m_e2 * c2.m_e2 + c1.m_e4 * c2.m_e4 - c1.m_e5 * c2.m_e5;
+}
+
+Circle Circle::operator-(const Circle& rhs) const {
+    return { m_e1 - rhs.m_e1, m_e2 - rhs.m_e2, m_e4 - rhs.m_e4, m_e5 - rhs.m_e5 };
+}
+
+Circle Circle::operator*(float rhs) const {
+    return { m_e1 * rhs, m_e2 * rhs, m_e4 * rhs, m_e5 * rhs };
+}
+
+Circle Circle::inverse(const Circle& inverted, const Circle& inverter) {
+    return inverted - inverter * (2.0f * Circle::scalarProduct(inverted, inverter));
+}
+
+Circle Circle::inverseStereographicProject() const {
+    float a = m_e1;
+    float b = m_e2;
+    float c = m_e4;
+    float d = -m_e5;
+
+    //compute orthogonal projection of the origin on the plan
+    float lambda = d / (a * a + b * b + c * c);
+    QVector3D H(-lambda * a, -lambda * b, -lambda * c);
+
+    //squared distance of origin to plan
+    float D_squared = H.lengthSquared();
+
+    //radius of the circle
+    float r = qSqrt(1.0f - D_squared);
+
+    //normal of the plan
+    QVector3D n { a, b, c };
+    n.normalize();
+
+    //get an orthogonal vector
+    QVector3D xAxis { -b, a, 0 };
+    if (qFuzzyIsNull(xAxis.lengthSquared())) {
+        xAxis.setX(0);
+        xAxis.setY(c);
+        xAxis.setZ(0);
+    }
+    xAxis.normalize();
+
+    //get a second orthogonal vector to have an orthonormal basis
+    QVector3D yAxis = QVector3D::crossProduct(n, xAxis);
+
+    //return the circle with the new axis
+    return { H, r, xAxis, yAxis };
 }
 
 } // poly

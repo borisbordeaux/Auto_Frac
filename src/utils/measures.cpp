@@ -124,7 +124,7 @@ void computeDensity(cv::Mat const& img, int size, bool showAllImages) {
     // and can be done independently for each pixel
     unsigned int nb_thread = std::thread::hardware_concurrency();
 
-    auto f = [&](unsigned int idxThread) {
+    std::function<void(unsigned int)> f = [&](unsigned int idxThread) {
         // each thread handles the image cut in vertical parts
         // hence the width is determined by the number of thread
         int width = img.cols / static_cast<int>(nb_thread);
