@@ -98,6 +98,7 @@ void Circle::from3Points(QVector3D const& P1, QVector3D const& P2, QVector3D con
 
     //change of basis to be in 3D
     m_center = (P * QVector4D(m_center, 1.0f)).toVector3D();
+    initInversiveCoordinates();
 }
 
 void Circle::setOldCircleBeforeInversion(Circle const& oldCircle) {

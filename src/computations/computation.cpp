@@ -183,7 +183,7 @@ void projectToPlan(poly::Circle& circle) {
     circle.from3Points(p1, p2, p3);
 }
 
-poly::Circle projectToSphereC(poly::Circle const& circle) {
+[[maybe_unused]] poly::Circle projectToSphereC(poly::Circle const& circle) {
     QVector3D p1 = circle.center() + circle.radius() * circle.axisX();
     QVector3D p2 = circle.center() - circle.radius() * circle.axisX();
     QVector3D p3 = circle.center() + circle.radius() * circle.axisY();
@@ -270,10 +270,10 @@ void frac::Canonizer::canonicalizeMesh(he::Mesh& m) {
     planarize(m);
 }
 
-std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCircles(const he::Mesh& m, bool projected) {
+std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCircles(const he::Mesh& m) {
     std::vector<poly::Circle> res;
 
-    int i = 0;
+    //int i = 0;
 
     for (he::Vertex* v: m.vertices()) {
         QList<he::HalfEdge*> otherHE = v->otherHalfEdges();
@@ -282,24 +282,23 @@ std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCircles(const he::
             QVector3D v2 = closestPoint(otherHE[0]->origin()->pos(), otherHE[0]->next()->origin()->pos());
             QVector3D v3 = closestPoint(otherHE[1]->origin()->pos(), otherHE[1]->next()->origin()->pos());
 
-            if (projected) {
-                projectToPlan(v1);
-                projectToPlan(v2);
-                projectToPlan(v3);
-            }
+            //always project to plan
+            projectToPlan(v1);
+            projectToPlan(v2);
+            projectToPlan(v3);
 
             poly::Circle c { v1, v2, v3 };
             c.setColor({ colors[14].redF(), colors[14].greenF(), colors[14].blueF() });
             //c.setColor({ colors[i % 17].redF(), colors[i % 17].greenF(), colors[i % 17].blueF() });
             res.push_back(c);
-            i++;
+            //i++;
         }
     }
 
     return res;
 }
 
-std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCirclesDual(he::Mesh const& m, bool projected) {
+std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCirclesDual(he::Mesh const& m) {
     std::vector<poly::Circle> res;
 
     for (he::Face* f: m.faces()) {
@@ -309,11 +308,10 @@ std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCirclesDual(he::Me
             QVector3D v2 = closestPoint(allHE[1]->origin()->pos(), allHE[1]->next()->origin()->pos());
             QVector3D v3 = closestPoint(allHE[2]->origin()->pos(), allHE[2]->next()->origin()->pos());
 
-            if (projected) {
-                projectToPlan(v1);
-                projectToPlan(v2);
-                projectToPlan(v3);
-            }
+            //always project to plan
+            projectToPlan(v1);
+            projectToPlan(v2);
+            projectToPlan(v3);
 
             poly::Circle c { v1, v2, v3 };
             c.setColor({ 0.0f, 0.0f, 0.0f });
@@ -343,14 +341,12 @@ std::size_t frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circl
     for (std::size_t i = index; i != circlesToInverse.size(); i++) {
         for (poly::Circle const& cInv: circlesInvertive) {
             float precision = 0.003f;
-#if 0
+#if 1
             if (circlesToInverse[i].inversionCircle() != &cInv && !poly::Circle::areOrthogonalCircles(circlesToInverse[i], cInv)) {
                 if (circlesToInverse[i].radius() > precision) {
-                    poly::Circle inverted = inversion(circlesToInverse[i], cInv);
-                    if (inverted.radius() > precision) {
-                        res.push_back(inverted);
-                        count++;
-                    }
+                    poly::Circle inverted = poly::Circle::inverse(circlesToInverse[i], cInv);
+                    res.push_back(inverted);
+                    count++;
                 }
             }
 #else

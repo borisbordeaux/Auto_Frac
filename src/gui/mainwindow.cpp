@@ -1041,8 +1041,8 @@ void MainWindow::canonicalizeStep() {
         m_modelMesh.resetCircles();
 
         if (m_circles.empty()) {
-            m_circles = frac::PolyCircle::computeIlluminatedCircles(m_mesh, this->ui->checkBox_projectCircles->isChecked());
-            m_circlesDual = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh, this->ui->checkBox_projectCircles->isChecked());
+            m_circles = frac::PolyCircle::computeIlluminatedCircles(m_mesh);
+            m_circlesDual = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh);
 
             for (poly::Circle const& c: m_circles) {
                 m_modelMesh.addCircle(c);
@@ -1115,8 +1115,8 @@ void MainWindow::canonicalizeStep() {
 
     m_modelMesh.resetCircles();
 
-    m_circles = frac::PolyCircle::computeIlluminatedCircles(m_mesh, this->ui->checkBox_projectCircles->isChecked());
-    m_circlesDual = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh, this->ui->checkBox_projectCircles->isChecked());
+    m_circles = frac::PolyCircle::computeIlluminatedCircles(m_mesh);
+    m_circlesDual = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh);
 
     for (int i = 0; i < inversionLevel; i++) {
         std::size_t index = m_circlesIndex;
@@ -1143,13 +1143,14 @@ void MainWindow::canonicalizeStep() {
 }
 
 [[maybe_unused]] void MainWindow::slotProjectCirclesClicked() {
-    m_circlesAnimProjectStart = frac::PolyCircle::computeIlluminatedCircles(m_mesh, !this->ui->checkBox_projectCircles->isChecked());
+    /*m_circlesAnimProjectStart = frac::PolyCircle::computeIlluminatedCircles(m_mesh, !this->ui->checkBox_projectCircles->isChecked());
     m_circlesDualAnimProjectStart = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh, !this->ui->checkBox_projectCircles->isChecked());
     m_circlesAnimProjectEnd = frac::PolyCircle::computeIlluminatedCircles(m_mesh, this->ui->checkBox_projectCircles->isChecked());
     m_circlesDualAnimProjectEnd = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh, this->ui->checkBox_projectCircles->isChecked());
     m_circles = m_circlesAnimProjectStart;
     m_circlesDual = m_circlesDualAnimProjectStart;
-    m_timerAnimProject.start();
+    m_timerAnimProject.start();*/
+    this->projectCirclesToPlan();
 }
 
 void MainWindow::animProjectStep() {
@@ -1255,13 +1256,36 @@ void MainWindow::animInversionStep() {
 
 void MainWindow::projectCirclesToPlan() {
     this->ui->checkBox_projectCircles->setChecked(true);
-    m_circlesAnimProjectStart = frac::PolyCircle::computeIlluminatedCircles(m_mesh, false);
+    /*m_circlesAnimProjectStart = frac::PolyCircle::computeIlluminatedCircles(m_mesh, false);
     m_circlesDualAnimProjectStart = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh, false);
     m_circlesAnimProjectEnd = frac::PolyCircle::computeIlluminatedCircles(m_mesh, true);
     m_circlesDualAnimProjectEnd = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh, true);
     m_circles = m_circlesAnimProjectStart;
     m_circlesDual = m_circlesDualAnimProjectStart;
-    m_timerAnimProject.start();
+    m_timerAnimProject.start();*/
+    m_inversionLevel = 0;
+    m_circlesIndex = 0;
+    m_modelMesh.resetCircles();
+    m_circles = frac::PolyCircle::computeIlluminatedCircles(m_mesh);
+    m_circlesDual = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh);
+
+    for (poly::Circle const& c: m_circles) {
+        if (this->ui->checkBox_projectCircles->isChecked())
+            m_modelMesh.addCircle(c);
+        else
+            m_modelMesh.addCircle(c.inverseStereographicProject());
+    }
+
+    for (poly::Circle const& c: m_circlesDual) {
+        if (this->ui->checkBox_projectCircles->isChecked())
+            m_modelMesh.addCircleDual(c);
+        else
+            m_modelMesh.addCircleDual(c.inverseStereographicProject());
+
+    }
+
+    m_modelMesh.updateDataCircles();
+    m_view->meshChanged();
 }
 
 void MainWindow::displayInfoPlan() {
