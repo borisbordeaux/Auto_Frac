@@ -47,6 +47,7 @@ public:
 
     static Circle inverse(Circle const& inverted, Circle const& inverter);
     Circle inverseStereographicProject() const;
+    void updateR3Coord();
 
 private:
     Circle operator*(float rhs) const;

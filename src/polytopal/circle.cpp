@@ -207,4 +207,10 @@ Circle Circle::inverseStereographicProject() const {
     return { H, r, xAxis, yAxis };
 }
 
+void Circle::updateR3Coord() {
+    float K = m_e5 - m_e4;
+    m_center = { m_e1 / K, m_e2 / K, 0.0f };
+    m_radius = qAbs(1.0f / K);
+}
+
 } // poly

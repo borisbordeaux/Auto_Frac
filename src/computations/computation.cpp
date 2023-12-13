@@ -156,7 +156,7 @@ void projectToPlan(QVector3D& point) {
     point.setZ(0.0f);
 }
 
-void projectToPlan(poly::Circle& circle) {
+[[maybe_unused]] void projectToPlan(poly::Circle& circle) {
     QVector3D p1 = circle.center() + circle.radius() * circle.axisX();
     QVector3D p2 = circle.center() - circle.radius() * circle.axisX();
     QVector3D p3 = circle.center() + circle.radius() * circle.axisY();
@@ -322,12 +322,12 @@ std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCirclesDual(he::Me
     return res;
 }
 
-std::size_t frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circlesToInverse, std::vector<poly::Circle>& circlesInvertive, std::size_t index, bool projected) {
+std::size_t frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circlesToInverse, std::vector<poly::Circle>& circlesInvertive, std::size_t index) {
     std::vector<poly::Circle> res;
     res.reserve((circlesToInverse.size() - index) * circlesInvertive.size());
     std::size_t count = 0;
 
-    if (!projected) {
+    /*if (!projected) {
         // project circles to do inversion in plan, we will later reproject to sphere
         for (poly::Circle& cInv: circlesInvertive) {
             projectToPlan(cInv);
@@ -335,9 +335,9 @@ std::size_t frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circl
         for (std::size_t i = index; i != circlesToInverse.size(); i++) {
             projectToPlan(circlesToInverse[i]);
         }
-    }
+    }*/
 
-    //inversion always in plan
+    //inversion always in plan using inversive coordinates
     for (std::size_t i = index; i != circlesToInverse.size(); i++) {
         for (poly::Circle const& cInv: circlesInvertive) {
             float precision = 0.003f;
@@ -345,6 +345,8 @@ std::size_t frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circl
             if (circlesToInverse[i].inversionCircle() != &cInv && !poly::Circle::areOrthogonalCircles(circlesToInverse[i], cInv)) {
                 if (circlesToInverse[i].radius() > precision) {
                     poly::Circle inverted = poly::Circle::inverse(circlesToInverse[i], cInv);
+                    inverted.setInversionCircle(&cInv);
+                    inverted.updateR3Coord();
                     res.push_back(inverted);
                     count++;
                 }
@@ -376,19 +378,18 @@ std::size_t frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circl
         }
     }
 
-
     circlesToInverse.reserve(circlesToInverse.size() + res.size());
     circlesToInverse.insert(circlesToInverse.end(), res.begin(), res.end());
 
     //reproject to sphere if needed
-    if (!projected) {
+    /*if (!projected) {
         for (poly::Circle& cInv: circlesInvertive) {
             projectToSphere(cInv);
         }
         for (std::size_t i = index; i != circlesToInverse.size(); i++) {
             projectToSphere(circlesToInverse[i]);
         }
-    }
+    }*/
 
     return count;
 }
