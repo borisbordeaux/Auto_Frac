@@ -39,8 +39,6 @@ float Circle::radius() const {
 }
 
 bool Circle::areOrthogonalCircles(Circle const& c1, Circle const& c2) {
-    // OO'^2 == R^2 + R'^2 -> pythagore
-    //return qAbs(c1.radius() * c1.radius() + c2.radius() * c2.radius() - (c1.center() - c2.center()).lengthSquared()) < 0.1f;
     //with inversive coordinates
     return qAbs(scalarProduct(c1, c2)) < 0.01f;
 }
@@ -104,12 +102,10 @@ void Circle::from3Points(QVector3D const& P1, QVector3D const& P2, QVector3D con
 void Circle::setOldCircleBeforeInversion(Circle const& oldCircle) {
     m_oldCenter = oldCircle.center();
     m_oldRadius = oldCircle.radius();
-    m_oldAxisX = oldCircle.axisX();
-    m_oldAxisY = oldCircle.axisY();
 }
 
 Circle Circle::oldCircleBeforeInversion() const {
-    Circle res { m_oldCenter, m_oldRadius, m_oldAxisX, m_oldAxisY, nullptr };
+    Circle res { m_oldCenter, m_oldRadius };
     res.setColor(m_color);
     return res;
 }
@@ -117,12 +113,10 @@ Circle Circle::oldCircleBeforeInversion() const {
 void Circle::setNewCircleAfterInversion(Circle const& newCircle) {
     m_newCenter = newCircle.center();
     m_newRadius = newCircle.radius();
-    m_newAxisX = newCircle.axisX();
-    m_newAxisY = newCircle.axisY();
 }
 
 Circle Circle::newCircleAfterInversion() const {
-    Circle res { m_newCenter, m_newRadius, m_newAxisX, m_newAxisY, nullptr };
+    Circle res { m_newCenter, m_newRadius };
     res.setColor(m_color);
     return res;
 }
@@ -130,8 +124,7 @@ Circle Circle::newCircleAfterInversion() const {
 void Circle::setInvertedValues() {
     m_center = m_newCenter;
     m_radius = m_newRadius;
-    m_axisX = m_newAxisX;
-    m_axisY = m_newAxisY;
+    this->initInversiveCoordinates();
 }
 
 void Circle::setColor(const QVector3D& color) {
@@ -203,7 +196,7 @@ Circle Circle::inverseStereographicProject() const {
     //get a second orthogonal vector to have an orthonormal basis
     QVector3D yAxis = QVector3D::crossProduct(n, xAxis);
 
-    //return the circle with the new axis
+    //return the circle with the new axes
     return { H, r, xAxis, yAxis };
 }
 
@@ -211,6 +204,8 @@ void Circle::updateR3Coord() {
     float K = m_e5 - m_e4;
     m_center = { m_e1 / K, m_e2 / K, 0.0f };
     m_radius = qAbs(1.0f / K);
+    m_axisX = { 1, 0, 0 };
+    m_axisY = { 0, 1, 0 };
 }
 
 } // poly

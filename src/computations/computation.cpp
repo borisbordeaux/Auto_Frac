@@ -288,6 +288,8 @@ std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCircles(const he::
             projectToPlan(v3);
 
             poly::Circle c { v1, v2, v3 };
+            c.setAxisX({ 1, 0, 0 });
+            c.setAxisY({ 0, 1, 0 });
             c.setColor({ colors[14].redF(), colors[14].greenF(), colors[14].blueF() });
             //c.setColor({ colors[i % 17].redF(), colors[i % 17].greenF(), colors[i % 17].blueF() });
             res.push_back(c);
@@ -314,6 +316,8 @@ std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCirclesDual(he::Me
             projectToPlan(v3);
 
             poly::Circle c { v1, v2, v3 };
+            c.setAxisX({ 1, 0, 0 });
+            c.setAxisY({ 0, 1, 0 });
             c.setColor({ 0.0f, 0.0f, 0.0f });
             res.push_back(c);
         }
@@ -347,6 +351,8 @@ std::size_t frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circl
                     poly::Circle inverted = poly::Circle::inverse(circlesToInverse[i], cInv);
                     inverted.setInversionCircle(&cInv);
                     inverted.updateR3Coord();
+                    inverted.setOldCircleBeforeInversion(circlesToInverse[i]);
+                    inverted.setNewCircleAfterInversion(inverted);
                     res.push_back(inverted);
                     count++;
                 }

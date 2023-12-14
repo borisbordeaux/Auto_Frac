@@ -129,10 +129,8 @@ private:
     std::size_t m_circlesIndex;
 
     QTimer m_timerAnimProject;
-    std::vector<poly::Circle> m_circlesAnimProjectStart;
-    std::vector<poly::Circle> m_circlesDualAnimProjectStart;
-    std::vector<poly::Circle> m_circlesAnimProjectEnd;
-    std::vector<poly::Circle> m_circlesDualAnimProjectEnd;
+    std::vector<poly::Circle> m_circlesAnimProject;
+    std::vector<poly::Circle> m_circlesDualAnimProject;
     float m_tAnimProject = 0.0f;
 
     QTimer m_timerAnimInversion;

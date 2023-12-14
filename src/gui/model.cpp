@@ -78,12 +78,9 @@ void Model::updateDataSphere() {
     //we resize the data for rapidity
     m_data.resize(m_data.size() + nbOfAdd * 8);
 
-    //set the ID to -2 to prevent picking of the sphere
-    int ID = 0;
-
     //add each face
     for (he::Face* f: m_sphereMesh->faces()) {
-        addFace(f, ID);
+        addFace(f);
     }
 }
 
@@ -372,4 +369,37 @@ void Model::setSelectedEdge(int edgeIndex) {
 
 he::Mesh* Model::sphereMesh() const {
     return m_sphereMesh;
+}
+
+void Model::triangle(const QVector3D& pos1, const QVector3D& pos2, const QVector3D& pos3) {
+    //add the vertices to the data
+    addVertexFace(pos1, pos1, 0, -1);
+    addVertexFace(pos2, pos2, 0, -1);
+    addVertexFace(pos3, pos3, 0, -1);
+}
+
+void Model::addFace(he::Face* f) {
+    //we compute the number of halfedges
+    he::HalfEdge* he = f->halfEdge();
+    he::HalfEdge* temp = f->halfEdge()->next();
+    int nbHe = 1;
+
+    while (temp != he) {
+        temp = temp->next();
+        nbHe++;
+    }
+
+    //we set the origin of the triangles
+    QVector3D pos1 = he->origin()->pos();
+
+    //then we can triangulate the face
+    //using the origin and the other vertices
+    for (int i = 0; i < nbHe - 2; i++) {
+        QVector3D pos2 = he->next()->origin()->pos();
+        QVector3D pos3 = he->next()->next()->origin()->pos();
+
+        triangle(pos1, pos2, pos3);
+
+        he = he->next();
+    }
 }

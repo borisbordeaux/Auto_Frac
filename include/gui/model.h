@@ -148,6 +148,8 @@ private:
      */
     void addFace(he::Face* f, int ID);
 
+    void addFace(he::Face* f);
+
     /**
      * @brief add a vertex, its normal and its ID to the data
      * @param v the vertex to add
@@ -180,6 +182,7 @@ private:
      * @param isSelected has to be true if the face is selected
      */
     void triangle(QVector3D const& pos1, QVector3D const& pos2, QVector3D const& pos3, float ID, float isSelected);
+    void triangle(QVector3D const& pos1, QVector3D const& pos2, QVector3D const& pos3);
 
     /**
      * @brief getter

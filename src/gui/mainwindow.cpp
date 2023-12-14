@@ -1168,19 +1168,11 @@ void MainWindow::canonicalizeStep() {
 
 [[maybe_unused]] void MainWindow::slotProjectCirclesClicked() {
     if (this->ui->checkBox_animations->isChecked()) {
-        m_circlesAnimProjectStart = frac::PolyCircle::computeIlluminatedCircles(m_mesh);
-        m_circlesDualAnimProjectStart = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh);
-        m_circlesAnimProjectEnd = frac::PolyCircle::computeIlluminatedCircles(m_mesh);
-        m_circlesDualAnimProjectEnd = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh);
-        m_circles = m_circlesAnimProjectStart;
-        m_circlesDual = m_circlesDualAnimProjectStart;
+        m_circlesAnimProject = m_circles;
+        m_circlesDualAnimProject = m_circlesDual;
         m_timerAnimProject.start();
     } else {
-        m_inversionLevel = 0;
-        m_circlesIndex = 0;
         m_modelMesh.resetCircles();
-        m_circles = frac::PolyCircle::computeIlluminatedCircles(m_mesh);
-        m_circlesDual = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh);
 
         for (poly::Circle const& c: m_circles) {
             if (this->ui->checkBox_projectCircles->isChecked()) {
@@ -1196,7 +1188,6 @@ void MainWindow::canonicalizeStep() {
             } else {
                 m_modelMesh.addCircleDual(c.inverseStereographicProject());
             }
-
         }
 
         m_modelMesh.updateDataCircles();
@@ -1211,39 +1202,57 @@ void MainWindow::animProjectStep() {
     }
 
     m_modelMesh.resetCircles();
-    for (size_t i = 0; i < m_circles.size(); i++) {
-        m_circles[i].setRadius((1 - m_tAnimProject) * m_circlesAnimProjectStart[i].radius() + m_tAnimProject * m_circlesAnimProjectEnd[i].radius());
-        m_circles[i].setCenter((1 - m_tAnimProject) * m_circlesAnimProjectStart[i].center() + m_tAnimProject * m_circlesAnimProjectEnd[i].center());
-        m_circles[i].setAxisX((1 - m_tAnimProject) * m_circlesAnimProjectStart[i].axisX() + m_tAnimProject * m_circlesAnimProjectEnd[i].axisX());
-        m_circles[i].setAxisY((1 - m_tAnimProject) * m_circlesAnimProjectStart[i].axisY() + m_tAnimProject * m_circlesAnimProjectEnd[i].axisY());
-        m_modelMesh.addCircle(m_circles[i]);
+    for (size_t i = 0; i < m_circlesAnimProject.size(); i++) {
+        if (!this->ui->checkBox_projectCircles->isChecked()) {
+            m_circlesAnimProject[i].setRadius((1 - m_tAnimProject) * m_circles[i].radius() + m_tAnimProject * m_circles[i].inverseStereographicProject().radius());
+            m_circlesAnimProject[i].setCenter((1 - m_tAnimProject) * m_circles[i].center() + m_tAnimProject * m_circles[i].inverseStereographicProject().center());
+            m_circlesAnimProject[i].setAxisX((1 - m_tAnimProject) * m_circles[i].axisX() + m_tAnimProject * m_circles[i].inverseStereographicProject().axisX());
+            m_circlesAnimProject[i].setAxisY((1 - m_tAnimProject) * m_circles[i].axisY() + m_tAnimProject * m_circles[i].inverseStereographicProject().axisY());
+        } else {
+            m_circlesAnimProject[i].setRadius((1 - m_tAnimProject) * m_circles[i].inverseStereographicProject().radius() + m_tAnimProject * m_circles[i].radius());
+            m_circlesAnimProject[i].setCenter((1 - m_tAnimProject) * m_circles[i].inverseStereographicProject().center() + m_tAnimProject * m_circles[i].center());
+            m_circlesAnimProject[i].setAxisX((1 - m_tAnimProject) * m_circles[i].inverseStereographicProject().axisX() + m_tAnimProject * m_circles[i].axisX());
+            m_circlesAnimProject[i].setAxisY((1 - m_tAnimProject) * m_circles[i].inverseStereographicProject().axisY() + m_tAnimProject * m_circles[i].axisY());
+        }
+        m_modelMesh.addCircle(m_circlesAnimProject[i]);
     }
 
     for (size_t i = 0; i < m_circlesDual.size(); i++) {
-        m_circlesDual[i].setRadius((1 - m_tAnimProject) * m_circlesDualAnimProjectStart[i].radius() + m_tAnimProject * m_circlesDualAnimProjectEnd[i].radius());
-        m_circlesDual[i].setCenter((1 - m_tAnimProject) * m_circlesDualAnimProjectStart[i].center() + m_tAnimProject * m_circlesDualAnimProjectEnd[i].center());
-        m_circlesDual[i].setAxisX((1 - m_tAnimProject) * m_circlesDualAnimProjectStart[i].axisX() + m_tAnimProject * m_circlesDualAnimProjectEnd[i].axisX());
-        m_circlesDual[i].setAxisY((1 - m_tAnimProject) * m_circlesDualAnimProjectStart[i].axisY() + m_tAnimProject * m_circlesDualAnimProjectEnd[i].axisY());
-        m_modelMesh.addCircleDual(m_circlesDual[i]);
+        if (!this->ui->checkBox_projectCircles->isChecked()) {
+            m_circlesDualAnimProject[i].setRadius((1 - m_tAnimProject) * m_circlesDual[i].radius() + m_tAnimProject * m_circlesDual[i].inverseStereographicProject().radius());
+            m_circlesDualAnimProject[i].setCenter((1 - m_tAnimProject) * m_circlesDual[i].center() + m_tAnimProject * m_circlesDual[i].inverseStereographicProject().center());
+            m_circlesDualAnimProject[i].setAxisX((1 - m_tAnimProject) * m_circlesDual[i].axisX() + m_tAnimProject * m_circlesDual[i].inverseStereographicProject().axisX());
+            m_circlesDualAnimProject[i].setAxisY((1 - m_tAnimProject) * m_circlesDual[i].axisY() + m_tAnimProject * m_circlesDual[i].inverseStereographicProject().axisY());
+        } else {
+            m_circlesDualAnimProject[i].setRadius((1 - m_tAnimProject) * m_circlesDual[i].inverseStereographicProject().radius() + m_tAnimProject * m_circlesDual[i].radius());
+            m_circlesDualAnimProject[i].setCenter((1 - m_tAnimProject) * m_circlesDual[i].inverseStereographicProject().center() + m_tAnimProject * m_circlesDual[i].center());
+            m_circlesDualAnimProject[i].setAxisX((1 - m_tAnimProject) * m_circlesDual[i].inverseStereographicProject().axisX() + m_tAnimProject * m_circlesDual[i].axisX());
+            m_circlesDualAnimProject[i].setAxisY((1 - m_tAnimProject) * m_circlesDual[i].inverseStereographicProject().axisY() + m_tAnimProject * m_circlesDual[i].axisY());
+        }
+        m_modelMesh.addCircleDual(m_circlesDualAnimProject[i]);
     }
 
-    m_tAnimProject += 0.04f;
+    m_tAnimProject += 0.01f;
 
     if (m_tAnimProject > 1.0f) {
         m_timerAnimProject.stop();
         m_tAnimProject = 0.0f;
-        m_inversionLevel = 0;
-        m_circlesIndex = 0;
         m_modelMesh.resetCircles();
-        m_circles = m_circlesAnimProjectEnd;
-        m_circlesDual = m_circlesDualAnimProjectEnd;
 
         for (poly::Circle const& c: m_circles) {
-            m_modelMesh.addCircle(c);
+            if (this->ui->checkBox_projectCircles->isChecked()) {
+                m_modelMesh.addCircle(c);
+            } else {
+                m_modelMesh.addCircle(c.inverseStereographicProject());
+            }
         }
 
         for (poly::Circle const& c: m_circlesDual) {
-            m_modelMesh.addCircleDual(c);
+            if (this->ui->checkBox_projectCircles->isChecked()) {
+                m_modelMesh.addCircleDual(c);
+            } else {
+                m_modelMesh.addCircleDual(c.inverseStereographicProject());
+            }
         }
     }
 
@@ -1259,19 +1268,30 @@ void MainWindow::animInversionStep() {
 
     m_modelMesh.resetCircles();
     for (size_t i = 0; i < m_circlesIndex; i++) {
-        m_modelMesh.addCircle(m_circles[i]);
+        if (this->ui->checkBox_projectCircles->isChecked()) {
+            m_modelMesh.addCircle(m_circles[i]);
+        } else {
+            m_modelMesh.addCircle(m_circles[i].inverseStereographicProject());
+        }
     }
 
     for (size_t i = m_circlesIndex; i < m_circles.size(); i++) {
         m_circles[i].setRadius((1 - m_tAnimInversion) * m_circles[i].oldCircleBeforeInversion().radius() + m_tAnimInversion * m_circles[i].newCircleAfterInversion().radius());
         m_circles[i].setCenter((1 - m_tAnimInversion) * m_circles[i].oldCircleBeforeInversion().center() + m_tAnimInversion * m_circles[i].newCircleAfterInversion().center());
-        m_circles[i].setAxisX((1 - m_tAnimInversion) * m_circles[i].oldCircleBeforeInversion().axisX() + m_tAnimInversion * m_circles[i].newCircleAfterInversion().axisX());
-        m_circles[i].setAxisY((1 - m_tAnimInversion) * m_circles[i].oldCircleBeforeInversion().axisY() + m_tAnimInversion * m_circles[i].newCircleAfterInversion().axisY());
-        m_modelMesh.addCircle(m_circles[i]);
+        if (this->ui->checkBox_projectCircles->isChecked()) {
+            m_modelMesh.addCircle(m_circles[i]);
+        } else {
+            m_circles[i].initInversiveCoordinates();
+            m_modelMesh.addCircle(m_circles[i].inverseStereographicProject());
+        }
     }
 
-    for (poly::Circle const& i: m_circlesDual) {
-        m_modelMesh.addCircleDual(i);
+    for (poly::Circle const& c: m_circlesDual) {
+        if (this->ui->checkBox_projectCircles->isChecked()) {
+            m_modelMesh.addCircleDual(c);
+        } else {
+            m_modelMesh.addCircleDual(c.inverseStereographicProject());
+        }
     }
 
     m_tAnimInversion += 0.04f;
@@ -1282,16 +1302,28 @@ void MainWindow::animInversionStep() {
         m_modelMesh.resetCircles();
 
         for (size_t i = 0; i < m_circlesIndex; i++) {
-            m_modelMesh.addCircle(m_circles[i]);
+            if (this->ui->checkBox_projectCircles->isChecked()) {
+                m_modelMesh.addCircle(m_circles[i]);
+            } else {
+                m_modelMesh.addCircle(m_circles[i].inverseStereographicProject());
+            }
         }
 
         for (size_t i = m_circlesIndex; i < m_circles.size(); i++) {
             m_circles[i].setInvertedValues();
-            m_modelMesh.addCircle(m_circles[i]);
+            if (this->ui->checkBox_projectCircles->isChecked()) {
+                m_modelMesh.addCircle(m_circles[i]);
+            } else {
+                m_modelMesh.addCircle(m_circles[i].inverseStereographicProject());
+            }
         }
 
         for (poly::Circle const& c: m_circlesDual) {
-            m_modelMesh.addCircleDual(c);
+            if (this->ui->checkBox_projectCircles->isChecked()) {
+                m_modelMesh.addCircleDual(c);
+            } else {
+                m_modelMesh.addCircleDual(c.inverseStereographicProject());
+            }
         }
 
         if (m_nbInversions != 0) {
@@ -1307,12 +1339,8 @@ void MainWindow::animInversionStep() {
 
 void MainWindow::projectCirclesToPlan() {
     this->ui->checkBox_projectCircles->setChecked(!this->ui->checkBox_projectCircles->isChecked());
-    m_circlesAnimProjectStart = frac::PolyCircle::computeIlluminatedCircles(m_mesh);
-    m_circlesDualAnimProjectStart = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh);
-    m_circlesAnimProjectEnd = frac::PolyCircle::computeIlluminatedCircles(m_mesh);
-    m_circlesDualAnimProjectEnd = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh);
-    m_circles = m_circlesAnimProjectStart;
-    m_circlesDual = m_circlesDualAnimProjectStart;
+    m_circlesAnimProject = m_circles;
+    m_circlesDualAnimProject = m_circlesDual;
     m_timerAnimProject.start();
 }
 

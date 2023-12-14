@@ -48,38 +48,35 @@ public:
     static Circle inverse(Circle const& inverted, Circle const& inverter);
     Circle inverseStereographicProject() const;
     void updateR3Coord();
+    void initInversiveCoordinates();
 
 private:
     Circle operator*(float rhs) const;
     Circle operator-(Circle const& rhs) const;
-    void initInversiveCoordinates();
 
 private:
     QVector3D m_center;
     float m_radius;
     QVector3D m_axisX;
     QVector3D m_axisY;
+
     Circle const* m_inversionCircle;
 
     //for animation
     QVector3D m_oldCenter;
     float m_oldRadius = 0.0f;
-    QVector3D m_oldAxisX;
-    QVector3D m_oldAxisY;
 
     QVector3D m_newCenter;
     float m_newRadius = 0.0f;
-    QVector3D m_newAxisX;
-    QVector3D m_newAxisY;
 
     //color of circle
     QVector3D m_color = {0,0,0};
 
     //inversive coordinates
-    float m_e1;
-    float m_e2;
-    float m_e4;
-    float m_e5;
+    float m_e1 = 0.0f;
+    float m_e2 = 0.0f;
+    float m_e4 = 0.0f;
+    float m_e5 = 0.0f;
 };
 
 } // poly
