@@ -8,11 +8,10 @@ out vec4 fragColor;
 
 uniform vec3 lightPos;
 uniform vec3 cameraPosition;
-uniform mat4 model;
 
 void main() {
     if (selected < 0.5) {
-        vec3 fragVertModel = (model * vec4(vert, 1.0)).xyz;
+        vec3 fragVertModel = vert;
         vec3 fragNormalModel = vertNormal;
         vec3 L = normalize(lightPos - fragVertModel);
         float diffuse = abs(dot(fragNormalModel, L));

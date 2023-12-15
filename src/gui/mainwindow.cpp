@@ -1087,38 +1087,7 @@ void MainWindow::canonicalizeStep() {
             m_timerAnimInversion.start();
         }
     } else {
-        if (m_circles.empty()) { return; }
-
-        std::size_t index = m_circlesIndex;
-        m_circlesIndex = m_circles.size();
-        m_nbInversions = frac::PolyCircle::computeInversions(m_circles, m_circlesDual, index);
-
-        if (m_nbInversions == 0) { return; }
-
-        m_inversionLevel++;
-
-        m_modelMesh.resetCircles();
-
-        for (poly::Circle const& c: m_circles) {
-            if (this->ui->checkBox_projectCircles->isChecked()) {
-                m_modelMesh.addCircle(c);
-            } else {
-                m_modelMesh.addCircle(c.inverseStereographicProject());
-            }
-        }
-
-        for (poly::Circle const& c: m_circlesDual) {
-            if (this->ui->checkBox_projectCircles->isChecked()) {
-                m_modelMesh.addCircleDual(c);
-            } else {
-                m_modelMesh.addCircleDual(c.inverseStereographicProject());
-            }
-        }
-
-        this->setInfo("Iteration level : " + std::to_string(m_inversionLevel) + ", " + std::to_string(m_circles.size()) + " circles in total", 4000);
-
-        m_modelMesh.updateData();
-        m_view->meshChanged();
+        this->increaseInversion();
     }
 }
 
@@ -1374,5 +1343,81 @@ void MainWindow::displayInfoPlan() {
         m_modelMesh.addCircle(projectedCircle);
     }
     m_modelMesh.updateDataCircles();
+    m_view->meshChanged();
+}
+
+void MainWindow::updateCircles() {
+    //if there were circles
+    if (!m_circles.empty()) {
+        int inversionLevel = m_inversionLevel;
+        //clear circles
+        this->slotDisplayAreaCircles();
+        //set circles
+        this->slotDisplayAreaCircles();
+
+        //redo all inversions
+        for (int i = 0; i < inversionLevel; i++) {
+            std::size_t index = m_circlesIndex;
+            m_circlesIndex = m_circles.size();
+            m_nbInversions = frac::PolyCircle::computeInversions(m_circles, m_circlesDual, index);
+
+            if (m_nbInversions == 0) { return; }
+
+            m_inversionLevel++;
+
+            m_modelMesh.resetCircles();
+
+            for (poly::Circle const& c: m_circles) {
+                if (this->ui->checkBox_projectCircles->isChecked()) {
+                    m_modelMesh.addCircle(c);
+                } else {
+                    m_modelMesh.addCircle(c.inverseStereographicProject());
+                }
+            }
+
+            for (poly::Circle const& c: m_circlesDual) {
+                if (this->ui->checkBox_projectCircles->isChecked()) {
+                    m_modelMesh.addCircleDual(c);
+                } else {
+                    m_modelMesh.addCircleDual(c.inverseStereographicProject());
+                }
+            }
+        }
+        m_modelMesh.updateDataCircles();
+    }
+}
+
+void MainWindow::increaseInversion() {
+    if (m_circles.empty()) { return; }
+
+    std::size_t index = m_circlesIndex;
+    m_circlesIndex = m_circles.size();
+    m_nbInversions = frac::PolyCircle::computeInversions(m_circles, m_circlesDual, index);
+
+    if (m_nbInversions == 0) { return; }
+
+    m_inversionLevel++;
+
+    m_modelMesh.resetCircles();
+
+    for (poly::Circle const& c: m_circles) {
+        if (this->ui->checkBox_projectCircles->isChecked()) {
+            m_modelMesh.addCircle(c);
+        } else {
+            m_modelMesh.addCircle(c.inverseStereographicProject());
+        }
+    }
+
+    for (poly::Circle const& c: m_circlesDual) {
+        if (this->ui->checkBox_projectCircles->isChecked()) {
+            m_modelMesh.addCircleDual(c);
+        } else {
+            m_modelMesh.addCircleDual(c.inverseStereographicProject());
+        }
+    }
+
+    this->setInfo("Iteration level : " + std::to_string(m_inversionLevel) + ", " + std::to_string(m_circles.size()) + " circles in total", 4000);
+
+    m_modelMesh.updateData();
     m_view->meshChanged();
 }

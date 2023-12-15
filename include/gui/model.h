@@ -117,6 +117,7 @@ public:
      * Calls updateData()
      */
     void setMesh(he::Mesh* mesh);
+    void transformMesh(QMatrix4x4 const& transform);
     void setSphereMesh(he::Mesh* mesh);
     he::Mesh* sphereMesh() const;
     void addCircle(poly::Circle const& circle);
@@ -138,6 +139,7 @@ public:
     [[nodiscard]] [[maybe_unused]] he::Face* selectedFace();
 
     void toggleDisplayCircleDual();
+
 
 private:
 

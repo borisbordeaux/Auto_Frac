@@ -8,6 +8,7 @@
 GLView::GLView(Model* model, MainWindow* parent) :
         QOpenGLWidget(parent),
         m_camera(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.01f, 49.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)),
+        m_rotationType(RotationType::CameraRotation),
         m_model(model),
         m_cameraBeforeAnim(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.01f, 49.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)),
         m_mainWindow(parent) {
@@ -157,10 +158,8 @@ void GLView::initShadersView() {
     m_programFaces->bind();
     m_projMatrixLoc = m_programFaces->uniformLocation("projMatrix");
     m_mvMatrixLoc = m_programFaces->uniformLocation("mvMatrix");
-    m_normalMatrixLoc = m_programFaces->uniformLocation("normalMatrix");
     m_lightPosLoc = m_programFaces->uniformLocation("lightPos");
     m_cameraPosLoc = m_programFaces->uniformLocation("cameraPosition");
-    m_modelMatrixLoc = m_programFaces->uniformLocation("model");
 
     //init shader for lines
     m_programLines = new QOpenGLShaderProgram();
@@ -281,28 +280,26 @@ void GLView::paintGL() {
         //set values for uniforms
         m_programFaces->bind();
         m_programFaces->setUniformValue(m_projMatrixLoc, m_proj);
-        m_programFaces->setUniformValue(m_mvMatrixLoc, m_camera.getViewMatrix() * m_world);
-        m_programFaces->setUniformValue(m_normalMatrixLoc, m_world.normalMatrix());
+        m_programFaces->setUniformValue(m_mvMatrixLoc, m_camera.getViewMatrix());
         m_programFaces->setUniformValue(m_cameraPosLoc, m_camera.getEye());
-        m_programFaces->setUniformValue(m_modelMatrixLoc, m_world);
         m_programFaces->setUniformValue(m_lightPosLoc, m_camera.getEye());
         m_programFaces->release();
 
         m_programFacesPicking->bind();
         m_programFacesPicking->setUniformValue(m_projMatrixPickingLoc, m_proj);
-        m_programFacesPicking->setUniformValue(m_mvMatrixPickingLoc, m_camera.getViewMatrix() * m_world);
+        m_programFacesPicking->setUniformValue(m_mvMatrixPickingLoc, m_camera.getViewMatrix());
         m_programFacesPicking->release();
 
         m_camera.zoom(0.001);
 
         m_programLines->bind();
         m_programLines->setUniformValue(m_projMatrixLocEdge, m_proj);
-        m_programLines->setUniformValue(m_mvMatrixLocEdge, m_camera.getViewMatrix() * m_world);
+        m_programLines->setUniformValue(m_mvMatrixLocEdge, m_camera.getViewMatrix());
         m_programLines->release();
 
         m_programLinesPicking->bind();
         m_programLinesPicking->setUniformValue(m_projMatrixPickingLocEdge, m_proj);
-        m_programLinesPicking->setUniformValue(m_mvMatrixPickingLocEdge, m_camera.getViewMatrix() * m_world);
+        m_programLinesPicking->setUniformValue(m_mvMatrixPickingLocEdge, m_camera.getViewMatrix());
         m_programLinesPicking->setUniformValue(m_invViewportPickingLocEdge, 1.0f / m_viewportWidth, 1.0f / m_viewportHeight);
         m_programLinesPicking->release();
 
@@ -310,12 +307,12 @@ void GLView::paintGL() {
 
         m_programVertices->bind();
         m_programVertices->setUniformValue(m_projMatrixLocVertices, m_proj);
-        m_programVertices->setUniformValue(m_mvMatrixLocVertices, m_camera.getViewMatrix() * m_world);
+        m_programVertices->setUniformValue(m_mvMatrixLocVertices, m_camera.getViewMatrix());
         m_programVertices->release();
 
         m_programVerticesPicking->bind();
         m_programVerticesPicking->setUniformValue(m_projMatrixPickingLocVertices, m_proj);
-        m_programVerticesPicking->setUniformValue(m_mvMatrixPickingLocVertices, m_camera.getViewMatrix() * m_world);
+        m_programVerticesPicking->setUniformValue(m_mvMatrixPickingLocVertices, m_camera.getViewMatrix());
         m_programVerticesPicking->release();
 
         m_camera.dezoom(0.001);
@@ -387,19 +384,37 @@ void GLView::mousePressEvent(QMouseEvent* event) {
 void GLView::mouseMoveEvent(QMouseEvent* event) {
     //compute rotations
     qreal dx = event->position().x() - m_lastPos.x();
-    qreal dy = event->position().toPoint().y() - m_lastPos.y();
+    qreal dy = event->position().y() - m_lastPos.y();
 
     if (event->buttons() & Qt::LeftButton) {
-        m_camera.rotateAzimuth(static_cast<float>(dx / this->size().toSizeF().width() * 4.0));
-        m_camera.rotatePolar(static_cast<float>(dy / this->size().toSizeF().height() * 2.0));
-        m_uniformsDirty = true;
+        if (m_rotationType == RotationType::CameraRotation) {
+            m_camera.rotateAzimuth(static_cast<float>(dx / this->size().toSizeF().width() * 4.0));
+            m_camera.rotatePolar(static_cast<float>(dy / this->size().toSizeF().height() * 2.0));
+            m_uniformsDirty = true;
+        } else {
+            m_world.setToIdentity();
+            m_world.rotate(static_cast<float>(dy) / 4.0f, 1, 0, 0);
+            m_world.rotate(static_cast<float>(dx) / 4.0f, 0, 1, 0);
+            m_model->transformMesh(m_world);
+            m_mainWindow->updateCircles();
+            meshChanged();
+        }
         update();
     }
 
     if (event->buttons() & Qt::RightButton) {
-        m_camera.moveHorizontal(static_cast<float>(-dx) / 100.0f);
-        m_camera.moveVertical(static_cast<float>(dy) / 100.0f);
-        m_uniformsDirty = true;
+        if (m_rotationType == RotationType::CameraRotation) {
+            m_camera.moveHorizontal(static_cast<float>(-dx) / 100.0f);
+            m_camera.moveVertical(static_cast<float>(dy) / 100.0f);
+            m_uniformsDirty = true;
+        } else {
+            m_world.setToIdentity();
+            m_world.rotate(static_cast<float>(-dx) / 4.0f, 0, 0, 1);
+            m_world.rotate(static_cast<float>(dy) / 4.0f, 0, 1, 0);
+            m_model->transformMesh(m_world);
+            m_mainWindow->updateCircles();
+            meshChanged();
+        }
         update();
     }
 
@@ -645,6 +660,13 @@ void GLView::keyPressEvent(QKeyEvent* event) {
     }
     if (event->key() == Qt::Key_I) {
         m_mainWindow->displayInfoPlan();
+    }
+    if (event->key() == Qt::Key_R) {
+        if (m_rotationType == RotationType::CameraRotation) {
+            m_rotationType = RotationType::PolyhedronRotation;
+        } else {
+            m_rotationType = RotationType::CameraRotation;
+        }
     }
     QWidget::keyPressEvent(event);
 }

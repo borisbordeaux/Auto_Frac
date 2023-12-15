@@ -5,6 +5,7 @@
 #include "halfedge/mesh.h"
 #include "halfedge/vertex.h"
 #include "polytopal/circle.h"
+#include <QMatrix4x4>
 
 void Model::updateData() {
     updateDataFaces();
@@ -402,4 +403,14 @@ void Model::addFace(he::Face* f) {
 
         he = he->next();
     }
+}
+
+void Model::transformMesh(QMatrix4x4 const& transform) {
+    if (m_mesh == nullptr) { return; }
+    for (he::Vertex* v: m_mesh->vertices()) {
+        v->setPos((transform * v->pos().toVector4D()).toVector3D());
+    }
+    this->updateDataFaces();
+    this->updateDataEdge();
+    this->updateDataVertices();
 }

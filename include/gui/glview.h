@@ -15,6 +15,11 @@ enum class PickingType {
     PickingVertex
 };
 
+enum class RotationType {
+    CameraRotation,
+    PolyhedronRotation
+};
+
 class QOpenGLShaderProgram;
 
 class Model;
@@ -76,9 +81,10 @@ private:
     //the last position of the mouse
     //used for rotation
     QPointF m_lastPos;
+    RotationType m_rotationType;
 
     //OpenGL stuff for rendering
-    QVector3D m_clearColor = { 0.7f, 0.7f, 0.7f };
+    QVector3D m_clearColor = { 0.2f, 0.7f, 0.2f };
     QOpenGLVertexArrayObject m_vao;
     QOpenGLVertexArrayObject m_vaoEdge;
     QOpenGLVertexArrayObject m_vaoCircles;
@@ -98,10 +104,8 @@ private:
     //Faces viewing
     int m_projMatrixLoc = 0;
     int m_mvMatrixLoc = 0;
-    int m_normalMatrixLoc = 0;
     int m_lightPosLoc = 0;
     int m_cameraPosLoc = 0;
-    int m_modelMatrixLoc = 0;
     //Faces picking
     int m_projMatrixPickingLoc = 0;
     int m_mvMatrixPickingLoc = 0;

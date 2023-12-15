@@ -76,10 +76,12 @@ public slots:
     [[maybe_unused]] void slotProjectCirclesClicked();
     void animProjectStep();
     void animInversionStep();
+    void increaseInversion();
 
 public:
     void projectCirclesToPlan();
     void displayInfoPlan();
+    void updateCircles();
 
 private:
     struct Constraint {
