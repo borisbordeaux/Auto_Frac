@@ -48,7 +48,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     //this->ui->listWidget_constraints->addItem("0.2 / 1.0");
     //this->ui->listWidget_constraints->addItem("0.6 / 2.0");
-    //this->ui->listWidget_constraints->setCurrentRow(this->ui->listWidget_constraints->count() - 1);
+    //this->ui->listWidget_constraints->setCurrentRow(this->ui->listWidget_constraints->countFace() - 1);
 
     this->updateEnablement();
     this->updateEnablementPoly();

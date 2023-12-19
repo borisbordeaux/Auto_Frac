@@ -22,7 +22,7 @@ GLView::~GLView() {
     //destroy the programs
     if (m_programFaces != nullptr) {
         makeCurrent();
-        m_vbo.destroy();
+        m_vboFaces.destroy();
         delete m_programFaces;
         m_programFaces = nullptr;
         doneCurrent();
@@ -30,7 +30,7 @@ GLView::~GLView() {
 
     if (m_programLinesPicking != nullptr) {
         makeCurrent();
-        m_vboEdge.destroy();
+        m_vboEdges.destroy();
         delete m_programLinesPicking;
         m_programLinesPicking = nullptr;
         doneCurrent();
@@ -47,10 +47,10 @@ GLView::~GLView() {
 
 void GLView::meshChanged() {
     //------for the faces------//
-    m_vao.bind();
-    m_vbo.bind();
+    m_vaoFaces.bind();
+    m_vboFaces.bind();
     //allocate necessary memory
-    m_vbo.allocate(m_model->constData(), m_model->count() * static_cast<int>(sizeof(GLfloat)));
+    m_vboFaces.allocate(m_model->constDataFace(), m_model->countFace() * static_cast<int>(sizeof(GLfloat)));
 
     //enable enough attrib array for all the data of the mesh's vertices
     glEnableVertexAttribArray(0); //coordinates
@@ -65,14 +65,36 @@ void GLView::meshChanged() {
     glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(6 * sizeof(GLfloat)));
     //whether it's selected or not, to simplify the code, a negative value means not selected while a positive value means selected
     glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(7 * sizeof(GLfloat)));
-    m_vbo.release();
-    m_vao.release();
+    m_vboFaces.release();
+    m_vaoFaces.release();
+
+    //------for the sphere------//
+    m_vaoSphere.bind();
+    m_vboSphere.bind();
+    //allocate necessary memory
+    m_vboSphere.allocate(m_model->constDataSphere(), m_model->countSphere() * static_cast<int>(sizeof(GLfloat)));
+
+    //enable enough attrib array for all the data of the mesh's vertices
+    glEnableVertexAttribArray(0); //coordinates
+    glEnableVertexAttribArray(1); //normal
+    glEnableVertexAttribArray(2); //ID for picking
+    glEnableVertexAttribArray(3); //is selected
+    //3 coordinates of the vertex
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), nullptr);
+    //3 coordinates of the vertex's normal
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
+    //the ID
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(6 * sizeof(GLfloat)));
+    //whether it's selected or not, to simplify the code, a negative value means not selected while a positive value means selected
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(7 * sizeof(GLfloat)));
+    m_vboSphere.release();
+    m_vaoSphere.release();
 
     //------for the edges------//
-    m_vaoEdge.bind();
-    m_vboEdge.bind();
+    m_vaoEdges.bind();
+    m_vboEdges.bind();
     //allocate necessary memory
-    m_vboEdge.allocate(m_model->constDataEdge(), m_model->countEdge() * static_cast<int>(sizeof(GLfloat)));
+    m_vboEdges.allocate(m_model->constDataEdge(), m_model->countEdge() * static_cast<int>(sizeof(GLfloat)));
 
     //enable enough attrib array for all the data of the edge's vertex
     glEnableVertexAttribArray(0); //coordinates
@@ -87,8 +109,8 @@ void GLView::meshChanged() {
     glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(6 * sizeof(GLfloat)));
     //whether it's selected or not, to simplify the code, a negative value means not selected while a positive value means selected
     glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(7 * sizeof(GLfloat)));
-    m_vboEdge.release();
-    m_vaoEdge.release();
+    m_vboEdges.release();
+    m_vaoEdges.release();
 
     //------for the circles------//
     m_vaoCircles.bind();
@@ -135,7 +157,7 @@ void GLView::meshChanged() {
     m_vaoVertices.release();
 
     //update the view
-    update();
+    this->update();
 }
 
 void GLView::initShaders() {
@@ -243,7 +265,7 @@ void GLView::initShadersPicking() {
 
 void GLView::initializeGL() {
     //init OpenGL
-    initializeOpenGLFunctions();
+    this->initializeOpenGLFunctions();
 
     //to hide faces that are behind others
     glEnable(GL_DEPTH_TEST);
@@ -256,23 +278,25 @@ void GLView::initializeGL() {
     qDebug() << "GLSL version : " << val;
 
     //for compatibility
-    m_vao.create();
-    m_vaoEdge.create();
+    m_vaoFaces.create();
+    m_vaoSphere.create();
+    m_vaoEdges.create();
     m_vaoCircles.create();
     m_vaoVertices.create();
 
-    m_vbo.create();
-    m_vboEdge.create();
+    m_vboFaces.create();
+    m_vboSphere.create();
+    m_vboEdges.create();
     m_vboCircles.create();
     m_vboVertices.create();
 
     //background
     glClearColor(m_clearColor.x(), m_clearColor.y(), m_clearColor.z(), 1.0f);
 
-    initShaders();
+    this->initShaders();
 
     //memory allocation
-    meshChanged();
+    this->meshChanged();
 }
 
 void GLView::paintGL() {
@@ -340,8 +364,11 @@ void GLView::paintGL() {
 
     //draw faces
     m_programFaces->bind();
-    m_vao.bind();
-    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCount());
+    m_vaoFaces.bind();
+    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountFace());
+
+    m_vaoSphere.bind();
+    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountSphere());
     m_programFaces->release();
 
     //draw circles
@@ -350,7 +377,7 @@ void GLView::paintGL() {
     glDrawArrays(GL_LINES, 0, m_model->vertexCountCircles());
 
     //draw edges
-    m_vaoEdge.bind();
+    m_vaoEdges.bind();
     glDrawArrays(GL_LINES, 0, m_model->vertexCountEdge());
     m_programLines->release();
 
@@ -462,8 +489,10 @@ void GLView::clickFaceManagement() {
     m_programFacesPicking->bind();
 
     //draw faces
-    m_vao.bind();
-    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCount());
+    m_vaoFaces.bind();
+    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountFace());
+    m_vaoSphere.bind();
+    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountSphere());
     m_programFaces->release();
 
     //get the rendered image of the scene
@@ -474,17 +503,15 @@ void GLView::clickFaceManagement() {
     QColor color = image.pixelColor(m_clickPos);
 
     //set the selected face using the red color
-    m_model->setSelected(color.red() * 65536 + color.green() * 256 + color.blue());
+    m_model->setSelectedFace(color.red() * 65536 + color.green() * 256 + color.blue());
 
     //update the data for drawing the selected object in the right color
     m_model->updateDataFaces();
-    //update data sphere because polyhedron and sphere use the same buffer
-    m_model->updateDataSphere();
 
     //write data to the GPU
-    m_vbo.bind();
-    m_vbo.write(0, m_model->constData(), m_model->count() * static_cast<int>(sizeof(GLfloat)));
-    m_vbo.release();
+    m_vboFaces.bind();
+    m_vboFaces.write(0, m_model->constDataFace(), m_model->countFace() * static_cast<int>(sizeof(GLfloat)));
+    m_vboFaces.release();
 
     //reset color
     glClearColor(m_clearColor.x(), m_clearColor.y(), m_clearColor.z(), 1.0f);
@@ -505,15 +532,17 @@ void GLView::clickEdgeManagement() {
 
     //draw faces only in depth buffer
     m_programFaces->bind();
-    m_vao.bind();
     glColorMask(false, false, false, false);
-    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCount());
+    m_vaoFaces.bind();
+    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountFace());
+    m_vaoSphere.bind();
+    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountSphere());
     glColorMask(true, true, true, true);
     m_programFaces->release();
 
     //draw edges
     m_programLinesPicking->bind();
-    m_vaoEdge.bind();
+    m_vaoEdges.bind();
     glDrawArrays(GL_LINES, 0, m_model->vertexCountEdge());
     m_programLinesPicking->release();
 
@@ -545,9 +574,9 @@ void GLView::clickEdgeManagement() {
     m_model->updateDataEdge();
 
     //write data to the GPU
-    m_vboEdge.bind();
-    m_vboEdge.write(0, m_model->constDataEdge(), m_model->countEdge() * static_cast<int>(sizeof(GLfloat)));
-    m_vboEdge.release();
+    m_vboEdges.bind();
+    m_vboEdges.write(0, m_model->constDataEdge(), m_model->countEdge() * static_cast<int>(sizeof(GLfloat)));
+    m_vboEdges.release();
 
     //reset clear color
     glClearColor(m_clearColor.x(), m_clearColor.y(), m_clearColor.z(), 1.0f);
@@ -568,9 +597,11 @@ void GLView::clickVertexManagement() {
 
     //draw faces only in depth buffer
     m_programFaces->bind();
-    m_vao.bind();
     glColorMask(false, false, false, false);
-    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCount());
+    m_vaoFaces.bind();
+    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountFace());
+    m_vaoSphere.bind();
+    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountSphere());
     glColorMask(true, true, true, true);
     m_programFaces->release();
 
@@ -633,7 +664,7 @@ void GLView::keyPressEvent(QKeyEvent* event) {
     }
     if (event->key() == Qt::Key_F) {
         m_pickingType = PickingType::PickingFace;
-        m_model->setSelected(0);
+        m_model->setSelectedFace(0);
         m_model->setSelectedEdge(0);
         m_model->setSelectedVertex(0);
         m_model->updateData();
@@ -641,7 +672,7 @@ void GLView::keyPressEvent(QKeyEvent* event) {
     }
     if (event->key() == Qt::Key_E) {
         m_pickingType = PickingType::PickingEdge;
-        m_model->setSelected(0);
+        m_model->setSelectedFace(0);
         m_model->setSelectedEdge(0);
         m_model->setSelectedVertex(0);
         m_model->updateData();
@@ -649,7 +680,7 @@ void GLView::keyPressEvent(QKeyEvent* event) {
     }
     if (event->key() == Qt::Key_V) {
         m_pickingType = PickingType::PickingVertex;
-        m_model->setSelected(0);
+        m_model->setSelectedFace(0);
         m_model->setSelectedEdge(0);
         m_model->setSelectedVertex(0);
         m_model->updateData();
@@ -720,7 +751,6 @@ void GLView::connectTimers() {
     });
     connect(&m_timerDisplayCircleDual, &QTimer::timeout, this, [&]() {
         m_model->toggleDisplayCircleDual();
-        m_model->updateDataCircles();
         this->meshChanged();
         m_timerResetCamera.start(9000);
         m_timerDisplayCircleDual.stop();
@@ -755,7 +785,6 @@ void GLView::connectTimers() {
     });
     connect(&m_timerHideCircleDual, &QTimer::timeout, this, [&]() {
         m_model->toggleDisplayCircleDual();
-        m_model->updateDataCircles();
         this->meshChanged();
         m_timerHideCircleDual.stop();
         m_timerZoom.start();

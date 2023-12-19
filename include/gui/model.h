@@ -16,98 +16,54 @@ class Circle;
 
 class Model {
 public:
-    /**
-     * @brief Construct a Model based on a mesh
-     */
     Model() = default;
 
-    /**
-     * @brief getter
-     * @return constant data of the polyhedron to be thrown to the GPU
-     */
-    [[nodiscard]] const float* constData() const { return m_data.constData(); }
+    //constant data to be thrown to the GPU
+    [[nodiscard]] const float* constDataFace() const { return m_dataFace.constData(); }
 
-    /**
-     * @brief getter
-     * @return constant data of edges to be thrown to the GPU
-     */
+    [[nodiscard]] const float* constDataSphere() const { return m_dataSphere.constData(); }
+
     [[nodiscard]] const float* constDataEdge() const { return m_dataEdge.constData(); }
 
-    /**
-     * @brief getter
-     * @return constant data of edges to be thrown to the GPU
-     */
     [[nodiscard]] const float* constDataCircles() const { return m_dataCircles.constData(); }
 
-    /**
-     * @brief getter
-     * @return constant data of vertices to be thrown to the GPU
-     */
     [[nodiscard]] const float* constDataVertices() const { return m_dataVertices.constData(); }
 
-    /**
-     * @brief getter
-     * @return the amount of data the polyhedron has
-     */
-    [[nodiscard]] int count() const { return m_count; }
+    //the number of floats of vertices (in GPU POV)
+    [[nodiscard]] int countFace() const { return m_countFace; }
 
-    /**
-     * @brief getter
-     * @return the amount of data the edges has
-     */
+    [[nodiscard]] int countSphere() const { return m_countSphere; }
+
     [[nodiscard]] int countEdge() const { return m_countEdge; }
 
-    /**
-     * @brief getter
-     * @return the amount of data the edges has
-     */
     [[nodiscard]] int countCircles() const { return m_countCircle; }
 
-    /**
-     * @brief getter
-     * @return the number of vertices the polyhedron has
-     */
-    [[nodiscard]] int vertexCount() const { return m_count / 8; }
-
-    /**
-     * @brief getter
-     * @return the number of vertices the polyhedron has
-     */
-    [[nodiscard]] int vertexCountCircles() const { return m_countCircle / 8; }
-
-    /**
-     * @brief getter
-     * @return the number of vertices the edges has
-     */
-    [[nodiscard]] int vertexCountEdge() const { return m_countEdge / 8; }
-
-
-    /**
-     * @brief getter
-     * @return the amount of data the vertices has
-     */
     [[nodiscard]] int countVertices() const { return m_countVertices; }
 
-    /**
-     * @brief getter
-     * @return the number of vertices the mesh vertices has
-     */
+    //the number of vertices (in GPU POV)
+    [[nodiscard]] int vertexCountFace() const { return m_countFace / 8; }
+
+    [[nodiscard]] int vertexCountSphere() const { return m_countSphere / 8; }
+
+    [[nodiscard]] int vertexCountEdge() const { return m_countEdge / 8; }
+
+    [[nodiscard]] int vertexCountCircles() const { return m_countCircle / 8; }
+
     [[nodiscard]] int vertexCountVertices() const { return m_countVertices / 8; }
 
     /**
-     * @brief update the data of the polyhedron based
-     * on its mesh, necessary when the mesh changed.
-     * Calls updateDataEdge()
+     * @brief update all data that has to be displayed.
+     * Calls all specific update data functions.
      */
     void updateData();
 
     /**
-     * @brief update the data of the edges based
-     * on its mesh, necessary when the mesh changed
+     * @brief update specific data based on the mesh,
+     * necessary when the mesh changed
      */
     void updateDataFaces();
-    void updateDataEdge();
     void updateDataSphere();
+    void updateDataEdge();
     void updateDataCircles();
     void updateDataVertices();
 
@@ -117,27 +73,65 @@ public:
      * Calls updateData()
      */
     void setMesh(he::Mesh* mesh);
+
+    /**
+     * @brief Apply a transform to the mesh and update faces, edges and vertices data
+     * @param transform the transform to apply on the vertices
+     */
     void transformMesh(QMatrix4x4 const& transform);
+
+    /**
+     * @brief setter for the sphere mesh, update the sphere data
+     * @param mesh
+     */
     void setSphereMesh(he::Mesh* mesh);
+
+    /**
+     * @brief getter
+     * @return a pointer to the sphere mesh
+     */
     he::Mesh* sphereMesh() const;
+
+    /**
+     * @brief Adds circle to the data
+     * @param circle the circle to add
+     */
     void addCircle(poly::Circle const& circle);
+
+    /**
+     * @brief Adds dual circle to the data
+     * @param circle the dual circle to add
+     */
     void addCircleDual(poly::Circle const& circle);
     void resetCircles();
 
     /**
-     * @brief set the selected face index
+     * @brief Sets the selected face index
      * @param faceIndex the index of the face that is selected
      */
-    void setSelected(int faceIndex);
+    void setSelectedFace(int faceIndex);
+
+    /**
+     * @brief Sets the selected vertex index
+     * @param vertexIndex the index of the vertex that is selected
+     */
     void setSelectedVertex(int vertexIndex);
+
+    /**
+     * @brief Sets the selected edge index
+     * @param edgeIndex the index of the edge that is selected
+     */
     void setSelectedEdge(int edgeIndex);
 
     /**
      * @brief getter
      * @return a pointer to the selected face, nullptr if no face is selected
      */
-    [[nodiscard]] [[maybe_unused]] he::Face* selectedFace();
+    [[nodiscard]] he::Face* selectedFace();
 
+    /**
+     * @brief Toggles the display of the dual circles
+     */
     void toggleDisplayCircleDual();
 
 
@@ -150,7 +144,7 @@ private:
      */
     void addFace(he::Face* f, int ID);
 
-    void addFace(he::Face* f);
+    void addFaceSphere(he::Face* f);
 
     /**
      * @brief add a vertex, its normal and its ID to the data
@@ -160,6 +154,7 @@ private:
      * @param isSelected has to be true if the face is selected
      */
     void addVertexFace(QVector3D const& v, QVector3D const& n, float ID, float isSelected);
+    void addVertexSphere(QVector3D const& v);
 
     /**
      * @brief add a vertex to the edge data
@@ -184,7 +179,7 @@ private:
      * @param isSelected has to be true if the face is selected
      */
     void triangle(QVector3D const& pos1, QVector3D const& pos2, QVector3D const& pos3, float ID, float isSelected);
-    void triangle(QVector3D const& pos1, QVector3D const& pos2, QVector3D const& pos3);
+    void triangleSphere(const QVector3D& pos1, const QVector3D& pos2, const QVector3D& pos3);
 
     /**
      * @brief getter
@@ -196,13 +191,15 @@ private:
 
 private:
     //the data of this model
-    QVector<float> m_data;
+    QVector<float> m_dataFace;
+    QVector<float> m_dataSphere;
     QVector<float> m_dataEdge;
     QVector<float> m_dataCircles;
     QVector<float> m_dataVertices;
 
     //the amount of data
-    int m_count = 0;
+    int m_countFace = 0;
+    int m_countSphere = 0;
     int m_countEdge = 0;
     int m_countCircle = 0;
     int m_countVertices = 0;
