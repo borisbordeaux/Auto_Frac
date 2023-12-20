@@ -479,7 +479,7 @@ void MainWindow::setInfo(std::string const& textInfo, int timeoutMs) {
         m_modelMesh.resetCircles();
         m_modelMesh.setMesh(&m_mesh);
         m_modelMesh.updateData();
-        m_view->meshChanged();
+        m_view->updateData();
         m_openedMesh = true;
         this->updateEnablementPoly();
     }
@@ -1001,7 +1001,9 @@ double MainWindow::getNbLacunaOfCell(std::string const& faceName, std::size_t le
     } else {
         m_modelMesh.setSphereMesh(nullptr);
     }
-    m_view->meshChanged();
+    m_view->updateDataSphere();
+    m_view->updateDataVertices(); //for projection point
+    m_view->update();
 }
 
 [[maybe_unused]] void MainWindow::slotCanonizeMesh() {
@@ -1019,7 +1021,10 @@ void MainWindow::canonicalizeStep() {
 
     frac::Canonizer::canonicalizeMesh(m_mesh);
     m_modelMesh.updateData();
-    m_view->meshChanged();
+    m_view->updateDataFaces();
+    m_view->updateDataEdge();
+    m_view->updateDataVertices();
+    m_view->update();
 
     float maxError = -1.0f;
     for (size_t i = 0; i < m_mesh.vertices().size(); i++) {
@@ -1064,8 +1069,9 @@ void MainWindow::canonicalizeStep() {
             m_circlesDual.clear();
         }
 
-        m_modelMesh.updateData();
-        m_view->meshChanged();
+        m_modelMesh.updateDataCircles();
+        m_view->updateDataCircles();
+        m_view->update();
     }
 }
 
@@ -1075,7 +1081,10 @@ void MainWindow::canonicalizeStep() {
     } else {
         m_modelMesh.setMesh(nullptr);
     }
-    m_view->meshChanged();
+    m_view->updateDataFaces();
+    m_view->updateDataEdge();
+    m_view->updateDataVertices();
+    m_view->update();
 }
 
 [[maybe_unused]] void MainWindow::slotIncreaseInversion() {
@@ -1131,8 +1140,9 @@ void MainWindow::canonicalizeStep() {
 
     this->setInfo("Iteration level : " + std::to_string(m_inversionLevel) + ", " + std::to_string(m_circles.size()) + " circles in total", 4000);
 
-    m_modelMesh.updateData();
-    m_view->meshChanged();
+    m_modelMesh.updateDataCircles();
+    m_view->updateDataCircles();
+    m_view->update();
 }
 
 [[maybe_unused]] void MainWindow::slotProjectCirclesClicked() {
@@ -1160,7 +1170,8 @@ void MainWindow::canonicalizeStep() {
         }
 
         m_modelMesh.updateDataCircles();
-        m_view->meshChanged();
+        m_view->updateDataCircles();
+        m_view->update();
     }
 }
 
@@ -1201,7 +1212,7 @@ void MainWindow::animProjectStep() {
         m_modelMesh.addCircleDual(m_circlesDualAnimProject[i]);
     }
 
-    m_tAnimProject += 0.01f;
+    m_tAnimProject += 0.02f;
 
     if (m_tAnimProject > 1.0f) {
         m_timerAnimProject.stop();
@@ -1226,7 +1237,8 @@ void MainWindow::animProjectStep() {
     }
 
     m_modelMesh.updateDataCircles();
-    m_view->meshChanged();
+    m_view->updateDataCircles();
+    m_view->update();
 }
 
 void MainWindow::animInversionStep() {
@@ -1263,7 +1275,7 @@ void MainWindow::animInversionStep() {
         }
     }
 
-    m_tAnimInversion += 0.04f;
+    m_tAnimInversion += 0.02f;
 
     if (m_tAnimInversion > 1.0f) {
         m_timerAnimInversion.stop();
@@ -1303,7 +1315,8 @@ void MainWindow::animInversionStep() {
     }
 
     m_modelMesh.updateDataCircles();
-    m_view->meshChanged();
+    m_view->updateDataCircles();
+    m_view->update();
 }
 
 void MainWindow::projectCirclesToPlan() {
@@ -1311,39 +1324,6 @@ void MainWindow::projectCirclesToPlan() {
     m_circlesAnimProject = m_circles;
     m_circlesDualAnimProject = m_circlesDual;
     m_timerAnimProject.start();
-}
-
-void MainWindow::displayInfoPlan() {
-    for (poly::Circle const& circle: m_circles) {
-        poly::InversiveCoordinates coord(circle);
-        float a = coord.e1();
-        float b = coord.e2();
-        float c = coord.e4();
-        float d = -coord.e5();
-
-        float l = d / (a * a + b * b + c * c);
-        QVector3D H(-l * a, -l * b, -l * c);
-        float D_squared = H.lengthSquared();
-        float r = qSqrt(1.0f - D_squared);
-
-        QVector3D n { a, b, c };
-        n.normalize();
-
-        QVector3D xAxis { -b, a, 0 };
-        if (qFuzzyIsNull(xAxis.lengthSquared())) {
-            xAxis.setX(0);
-            xAxis.setY(c);
-            xAxis.setZ(0);
-        }
-        xAxis.normalize();
-
-        QVector3D yAxis = QVector3D::crossProduct(n, xAxis);
-        poly::Circle projectedCircle(H, r, xAxis, yAxis);
-        projectedCircle.setColor({ 0, 0, 1 });
-        m_modelMesh.addCircle(projectedCircle);
-    }
-    m_modelMesh.updateDataCircles();
-    m_view->meshChanged();
 }
 
 void MainWindow::updateCircles() {
@@ -1418,6 +1398,7 @@ void MainWindow::increaseInversion() {
 
     this->setInfo("Iteration level : " + std::to_string(m_inversionLevel) + ", " + std::to_string(m_circles.size()) + " circles in total", 4000);
 
-    m_modelMesh.updateData();
-    m_view->meshChanged();
+    m_modelMesh.updateDataCircles();
+    m_view->updateDataCircles();
+    m_view->update();
 }

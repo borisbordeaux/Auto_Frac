@@ -8,11 +8,11 @@
 #include <QMatrix4x4>
 
 void Model::updateData() {
-    updateDataFaces();
-    updateDataSphere();
-    updateDataEdge();
-    updateDataCircles();
-    updateDataVertices();
+    this->updateDataFaces();
+    this->updateDataSphere();
+    this->updateDataEdge();
+    this->updateDataCircles();
+    this->updateDataVertices();
 }
 
 void Model::updateDataFaces() {

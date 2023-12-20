@@ -42,7 +42,14 @@ public:
      * @brief indicates that the mesh changed, so we have
      * to reallocate memory and resend data to the GPU
      */
-    void meshChanged();
+    void initBuffers();
+
+    void updateData();
+    void updateDataFaces();
+    void updateDataSphere();
+    void updateDataEdge();
+    void updateDataCircles();
+    void updateDataVertices();
 
     void stopAnimation();
 

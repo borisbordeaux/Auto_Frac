@@ -45,7 +45,7 @@ GLView::~GLView() {
     }
 }
 
-void GLView::meshChanged() {
+void GLView::initBuffers() {
     //------for the faces------//
     m_vaoFaces.bind();
     m_vboFaces.bind();
@@ -296,7 +296,7 @@ void GLView::initializeGL() {
     this->initShaders();
 
     //memory allocation
-    this->meshChanged();
+    this->initBuffers();
 }
 
 void GLView::paintGL() {
@@ -424,7 +424,7 @@ void GLView::mouseMoveEvent(QMouseEvent* event) {
             m_world.rotate(static_cast<float>(dx) / 4.0f, 0, 1, 0);
             m_model->transformMesh(m_world);
             m_mainWindow->updateCircles();
-            meshChanged();
+            this->updateData();
         }
         update();
     }
@@ -440,7 +440,7 @@ void GLView::mouseMoveEvent(QMouseEvent* event) {
             m_world.rotate(static_cast<float>(dy) / 4.0f, 0, 1, 0);
             m_model->transformMesh(m_world);
             m_mainWindow->updateCircles();
-            meshChanged();
+            this->updateData();
         }
         update();
     }
@@ -660,37 +660,50 @@ void GLView::keyPressEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_D) {
         m_model->toggleDisplayCircleDual();
         m_model->updateDataCircles();
-        this->meshChanged();
+        this->updateDataCircles();
+        this->update();
     }
     if (event->key() == Qt::Key_F) {
         m_pickingType = PickingType::PickingFace;
         m_model->setSelectedFace(0);
         m_model->setSelectedEdge(0);
         m_model->setSelectedVertex(0);
-        m_model->updateData();
-        this->meshChanged();
+        m_model->updateDataFaces();
+        m_model->updateDataEdge();
+        m_model->updateDataVertices();
+        this->updateDataFaces();
+        this->updateDataEdge();
+        this->updateDataVertices();
+        this->update();
     }
     if (event->key() == Qt::Key_E) {
         m_pickingType = PickingType::PickingEdge;
         m_model->setSelectedFace(0);
         m_model->setSelectedEdge(0);
         m_model->setSelectedVertex(0);
-        m_model->updateData();
-        this->meshChanged();
+        m_model->updateDataFaces();
+        m_model->updateDataEdge();
+        m_model->updateDataVertices();
+        this->updateDataFaces();
+        this->updateDataEdge();
+        this->updateDataVertices();
+        this->update();
     }
     if (event->key() == Qt::Key_V) {
         m_pickingType = PickingType::PickingVertex;
         m_model->setSelectedFace(0);
         m_model->setSelectedEdge(0);
         m_model->setSelectedVertex(0);
-        m_model->updateData();
-        this->meshChanged();
+        m_model->updateDataFaces();
+        m_model->updateDataEdge();
+        m_model->updateDataVertices();
+        this->updateDataFaces();
+        this->updateDataEdge();
+        this->updateDataVertices();
+        this->update();
     }
     if (event->key() == Qt::Key_S) {
         m_timerDisplaySphere.start();
-    }
-    if (event->key() == Qt::Key_I) {
-        m_mainWindow->displayInfoPlan();
     }
     if (event->key() == Qt::Key_R) {
         if (m_rotationType == RotationType::CameraRotation) {
@@ -751,7 +764,7 @@ void GLView::connectTimers() {
     });
     connect(&m_timerDisplayCircleDual, &QTimer::timeout, this, [&]() {
         m_model->toggleDisplayCircleDual();
-        this->meshChanged();
+        this->updateDataCircles();
         m_timerResetCamera.start(9000);
         m_timerDisplayCircleDual.stop();
     });
@@ -770,7 +783,7 @@ void GLView::connectTimers() {
     connect(&m_timerHideMeshes, &QTimer::timeout, this, [&]() {
         m_model->setMesh(nullptr);
         m_model->setSphereMesh(nullptr);
-        this->meshChanged();
+        this->updateData();
         m_timerInversion.start(1000);
         m_timerHideMeshes.stop();
     });
@@ -785,7 +798,7 @@ void GLView::connectTimers() {
     });
     connect(&m_timerHideCircleDual, &QTimer::timeout, this, [&]() {
         m_model->toggleDisplayCircleDual();
-        this->meshChanged();
+        this->updateDataCircles();
         m_timerHideCircleDual.stop();
         m_timerZoom.start();
     });
@@ -797,4 +810,42 @@ void GLView::connectTimers() {
         m_uniformsDirty = true;
         update();
     });
+}
+
+void GLView::updateData() {
+    this->updateDataFaces();
+    this->updateDataSphere();
+    this->updateDataEdge();
+    this->updateDataCircles();
+    this->updateDataVertices();
+}
+
+void GLView::updateDataFaces() {
+    m_vboFaces.bind();
+    m_vboFaces.allocate(m_model->constDataFace(), m_model->countFace() * static_cast<int>(sizeof(GLfloat)));
+    m_vboFaces.release();
+}
+
+void GLView::updateDataSphere() {
+    m_vboSphere.bind();
+    m_vboSphere.allocate(m_model->constDataSphere(), m_model->countSphere() * static_cast<int>(sizeof(GLfloat)));
+    m_vboSphere.release();
+}
+
+void GLView::updateDataEdge() {
+    m_vboEdges.bind();
+    m_vboEdges.allocate(m_model->constDataEdge(), m_model->countEdge() * static_cast<int>(sizeof(GLfloat)));
+    m_vboEdges.release();
+}
+
+void GLView::updateDataCircles() {
+    m_vboCircles.bind();
+    m_vboCircles.allocate(m_model->constDataCircles(), m_model->countCircles() * static_cast<int>(sizeof(GLfloat)));
+    m_vboCircles.release();
+}
+
+void GLView::updateDataVertices() {
+    m_vboVertices.bind();
+    m_vboVertices.allocate(m_model->constDataVertices(), m_model->countVertices() * static_cast<int>(sizeof(GLfloat)));
+    m_vboVertices.release();
 }

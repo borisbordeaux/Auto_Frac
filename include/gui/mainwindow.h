@@ -80,7 +80,6 @@ public slots:
 
 public:
     void projectCirclesToPlan();
-    void displayInfoPlan();
     void updateCircles();
 
 private:
