@@ -60,7 +60,7 @@ he::HalfEdge* he::Mesh::findByName(const QString& name) {
 
 void he::Mesh::reset() {
     //free each face
-    for (he::Face* f: qAsConst(m_faces)) {
+    for (he::Face* f: m_faces) {
         if (f != nullptr) {
             delete f;
             f = nullptr;
@@ -71,7 +71,7 @@ void he::Mesh::reset() {
     m_faces.clear();
 
     //free each vertex
-    for (he::Vertex* v: qAsConst(m_vertices)) {
+    for (he::Vertex* v: m_vertices) {
         if (v != nullptr) {
             delete v;
             v = nullptr;
@@ -82,7 +82,7 @@ void he::Mesh::reset() {
     m_vertices.clear();
 
     //free each half-edge
-    for (he::HalfEdge* he: qAsConst(m_halfEdges)) {
+    for (he::HalfEdge* he: m_halfEdges) {
         if (he != nullptr) {
             delete he;
             he = nullptr;
