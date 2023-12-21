@@ -659,7 +659,6 @@ void GLView::keyPressEvent(QKeyEvent* event) {
     }
     if (event->key() == Qt::Key_D) {
         m_model->toggleDisplayCircleDual();
-        m_model->updateDataCircles();
         this->updateDataCircles();
         this->update();
     }

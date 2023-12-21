@@ -385,10 +385,9 @@ void Model::resetCircles() {
 
 qsizetype Model::findNbOfSegments() const {
     qsizetype res = 90 * m_circles.size();
-
     if (m_displayCircleDual) {
         for (poly::Circle const& c: m_circlesDual) {
-            res += c.numberOfSegments(m_dashLength) / 2;
+            res += qRound(static_cast<float>(c.numberOfSegments(m_dashLength)) / 2.0f);
         }
     }
     return res;

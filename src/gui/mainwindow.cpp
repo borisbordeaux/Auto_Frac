@@ -478,7 +478,6 @@ void MainWindow::setInfo(std::string const& textInfo, int timeoutMs) {
         he::reader::readOBJ(file, m_mesh);
         m_modelMesh.resetCircles();
         m_modelMesh.setMesh(&m_mesh);
-        m_modelMesh.updateData();
         m_view->updateData();
         m_openedMesh = true;
         this->updateEnablementPoly();
@@ -1020,7 +1019,9 @@ void MainWindow::canonicalizeStep() {
     }
 
     frac::Canonizer::canonicalizeMesh(m_mesh);
-    m_modelMesh.updateData();
+    m_modelMesh.updateDataFaces();
+    m_modelMesh.updateDataEdge();
+    m_modelMesh.updateDataVertices();
     m_view->updateDataFaces();
     m_view->updateDataEdge();
     m_view->updateDataVertices();
