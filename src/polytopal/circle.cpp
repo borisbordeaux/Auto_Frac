@@ -20,7 +20,11 @@ Circle::Circle(QVector3D const& P1, QVector3D const& P2, QVector3D const& P3, Ci
 }
 
 Circle::Circle(float e1, float e2, float e4, float e5, const Circle* inversionCircle) :
-        m_center(e1 / (e5 - e4), e2 / (e5 - e4), 0.0f), m_radius(qAbs(1.0f / (e5 - e4))), m_inversionCircle(inversionCircle), m_e1(e1), m_e2(e2), m_e4(e4), m_e5(e5) {}
+        m_center(e1 / (e5 - e4), e2 / (e5 - e4), 0.0f),
+        m_radius(qAbs(1.0f / (e5 - e4))),
+        m_axisX(1, 0, 0), m_axisY(0, 1, 0),
+        m_inversionCircle(inversionCircle),
+        m_e1(e1), m_e2(e2), m_e4(e4), m_e5(e5) {}
 
 const QVector3D& Circle::center() const {
     return m_center;

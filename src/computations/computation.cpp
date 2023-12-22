@@ -209,6 +209,7 @@ std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCircles(const he::
     int i = 14;
 
     for (he::Vertex* v: m.vertices()) {
+#if 0
         QList<he::HalfEdge*> otherHE = v->otherHalfEdges();
         if (otherHE.size() > 1) {
             QVector3D v1 = closestPoint(v->pos(), v->halfEdge()->next()->origin()->pos());
@@ -225,8 +226,14 @@ std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCircles(const he::
             c.setAxisY({ 0, 1, 0 });
             c.setColor({ colors[i % 16].redF(), colors[i % 16].greenF(), colors[i % 16].blueF() });
             res.push_back(c);
-            //i++;
         }
+#else
+        float coef = 1.0f / qSqrt(v->pos().lengthSquared() - 1.0f);
+        poly::Circle c { coef * v->pos().x(), coef * v->pos().y(), coef * v->pos().z(), coef };
+        c.setColor({ colors[i % 16].redF(), colors[i % 16].greenF(), colors[i % 16].blueF() });
+        res.push_back(c);
+#endif
+        //i++;
     }
 
     return res;
