@@ -28,14 +28,19 @@
 #include <QValueAxis>
 
 #include "NazaraUtils/Algorithm.hpp"
-#include "polytopal/inversivecoordinates.h"
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow), m_openedMesh(false), m_chartFractalDim(new QChart()), m_chartAreaPerimeter(new QChart()), m_inversionLevel(0) {
     ui->setupUi(this);
 
+    //to draw frac signal
     //this->ui->listWidget_faces->addItem("C_2_1 - B_2_0 - C_2_1 - B_2_0 - C_2_1 - B_2_0 - C_2_0 - B_2_0 / C_2_0 - B_2_0 - B_2_0 / 0 / 1");
     //this->ui->listWidget_faces->addItem("C_2_1 - B_2_1 - C_2_1 - B_2_1 - C_2_1 - B_2_1 / C_2_0 - B_2_0 - B_2_0 / 1 / 1");
     //this->ui->listWidget_faces->addItem("C_2_0 - B_2_0 - C_2_0 - B_2_0 - C_2_0 - B_2_0 / C_2_0 - B_2_0 - B_2_0 / 0 / 1");
+    //this->ui->listWidget_faces->setCurrentRow(this->ui->listWidget_faces->count() - 1);
+    //this->ui->listWidget_constraints->addItem("0.2 / 1.0");
+    //this->ui->listWidget_constraints->addItem("0.6 / 2.0");
+    //this->ui->listWidget_constraints->setCurrentRow(this->ui->listWidget_constraints->count() - 1);
+
     // classic algo
     this->ui->listWidget_faces->addItem("C_2_0 - B_2_0 - C_2_0 - B_2_0 - C_2_0 - B_2_0 / C_2_0 - B_2_0 - B_2_0 / 0 / 1");
     this->ui->listWidget_faces->addItem("C_2_0 - C_2_0 - C_2_0 - C_2_0 - C_2_0 - C_2_0 - C_2_0 / C_2_0 - C_2_0 - C_2_0 / 0 / 1");
@@ -45,10 +50,12 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     this->ui->listWidget_faces->addItem("B_2_0 - B_2_0 - B_2_0 - B_2_0 / B_2_0 - B_2_0 - B_2_0 / 0 / 2");
     this->ui->listWidget_faces->addItem("B_3_0 - B_3_0 - B_3_0 - B_3_0 / B_3_0 - B_3_0 - B_3_0 / 0 / 2");
     this->ui->listWidget_faces->setCurrentRow(this->ui->listWidget_faces->count() - 1);
-
-    //this->ui->listWidget_constraints->addItem("0.2 / 1.0");
-    //this->ui->listWidget_constraints->addItem("0.6 / 2.0");
-    //this->ui->listWidget_constraints->setCurrentRow(this->ui->listWidget_constraints->countFace() - 1);
+    // constraints to draw cells connected
+    this->ui->listWidget_constraints->addItem("0.0 / 1.0");
+    this->ui->listWidget_constraints->addItem("0.3 / 2.0");
+    this->ui->listWidget_constraints->addItem("2.2 / 4.0");
+    this->ui->listWidget_constraints->addItem("1.4 / 3.0");
+    this->ui->listWidget_constraints->setCurrentRow(this->ui->listWidget_constraints->count() - 1);
 
     this->updateEnablement();
     this->updateEnablementPoly();
