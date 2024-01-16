@@ -1,7 +1,4 @@
 #include "halfedge/halfedge.h"
-
-#include <utility>
-
 #include "halfedge/face.h"
 #include "halfedge/vertex.h"
 

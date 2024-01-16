@@ -2,7 +2,6 @@
 #include "halfedge/halfedge.h"
 #include "halfedge/face.h"
 #include "utils/utils.h"
-#include "graph/vertex.h"
 
 
 he::Vertex::Vertex(float x, float y, float z, QString name) :
