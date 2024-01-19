@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <QPointF>
 
 namespace frac {
 
@@ -14,7 +15,7 @@ class Edge;
 
 class StructurePrinter {
 public:
-    static void exportStruct(frac::Structure const& s, bool planarControlPoints, std::string const& filename);
+    static void exportStruct(frac::Structure const& s, bool planarControlPoints, std::string const& filename, std::vector<std::vector<QPointF>> const& coords = {});
 private:
     static void print_header();
     static void print_vertex_state();
@@ -36,6 +37,7 @@ private:
     static void print_prim_of_cell(frac::Face const& cell);
     static void print_edge_adjacencies_of_cell(frac::Face const& cell);
     static void print_plan_control_points(frac::Structure const& structure);
+    static void print_plan_control_points(std::vector<std::vector<QPointF>> const& coords);
     [[maybe_unused]] static void print_init_ctrl_pts_8_bezier();
     static void print_footer();
 };

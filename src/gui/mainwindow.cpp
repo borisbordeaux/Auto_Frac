@@ -29,6 +29,8 @@
 
 #include "NazaraUtils/Algorithm.hpp"
 
+#include "gui/controlpointeditor.h"
+
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow), m_openedMesh(false), m_chartFractalDim(new QChart()), m_chartAreaPerimeter(new QChart()), m_inversionLevel(0) {
     ui->setupUi(this);
 
@@ -96,10 +98,13 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(&m_timerAnimInversion, &QTimer::timeout, this, &MainWindow::animInversionStep);
 
     m_circlesIndex = 0;
+
+    m_CPEditor = new frac::ControlPointEditor();
 }
 
 MainWindow::~MainWindow() {
     delete ui;
+    delete m_CPEditor;
 }
 
 [[maybe_unused]] void MainWindow::slotGenerateScript() {
@@ -133,7 +138,11 @@ MainWindow::~MainWindow() {
     std::ostringstream info;
 
     try {
-        frac::StructurePrinter::exportStruct(s, this->ui->checkBox_planarControlPoints->isChecked(), "../output/result.py");
+        if (m_CPEditor->isValidForStructure(s)) {
+            frac::StructurePrinter::exportStruct(s, this->ui->checkBox_planarControlPoints->isChecked(), "../output/result.py", m_CPEditor->coordinates());
+        } else {
+            frac::StructurePrinter::exportStruct(s, this->ui->checkBox_planarControlPoints->isChecked(), "../output/result.py");
+        }
     } catch (std::runtime_error const& error) {
         info << error.what();
     }
@@ -393,6 +402,7 @@ void MainWindow::updateEnablement() {
     this->ui->pushButton_computePorosity->setEnabled(this->ui->spinBox_nbIterations->value() > 1);
     //button generation
     this->ui->pushButton_generateScript->setEnabled(this->ui->listWidget_faces->currentRow() > -1);
+    this->ui->pushButton_EditCP->setEnabled(this->ui->checkBox_planarControlPoints->isChecked());
 }
 
 void MainWindow::updateEnablementPoly() {
@@ -1409,4 +1419,21 @@ void MainWindow::increaseInversion() {
     m_modelMesh.updateDataCircles();
     m_view->updateDataCircles();
     m_view->update();
+}
+
+[[maybe_unused]] void MainWindow::slotEditCP() {
+    frac::Face::reset();
+    frac::FilePrinter::reset();
+
+    std::vector<frac::Face> faces;
+    for (int i = 0; i < this->ui->listWidget_faces->count(); ++i) {
+        faces.push_back(toFace(this->ui->listWidget_faces->item(i)->text()));
+    }
+
+    frac::Structure s { faces };
+    m_CPEditor->show(s);
+}
+
+[[maybe_unused]] void MainWindow::slotPlanarControlPointsChanged() {
+    this->updateEnablement();
 }

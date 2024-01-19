@@ -5,7 +5,7 @@
 #include "utils/fileprinter.h"
 #include "utils/utils.h"
 
-void frac::StructurePrinter::exportStruct(const frac::Structure& structure, bool planarControlPoints, std::string const& filename) {
+void frac::StructurePrinter::exportStruct(const frac::Structure& structure, bool planarControlPoints, std::string const& filename, std::vector<std::vector<QPointF>> const& coords) {
     StructurePrinter::print_header();
     StructurePrinter::print_vertex_state();
     FilePrinter::append_nl("    ##############################");
@@ -87,7 +87,11 @@ void frac::StructurePrinter::exportStruct(const frac::Structure& structure, bool
 
     FilePrinter::append_nl("    # control points");
     if (planarControlPoints) {
-        StructurePrinter::print_plan_control_points(structure);
+        if (!coords.empty()) {
+            StructurePrinter::print_plan_control_points(coords);
+        } else {
+            StructurePrinter::print_plan_control_points(structure);
+        }
     }
     // StructurePrinter::print_init_ctrl_pts_8_bezier();
 
@@ -348,7 +352,7 @@ void frac::StructurePrinter::print_prim_of_cell(const frac::Face& cell) {
                     }
                 }
             }
-        }else{
+        } else {
             FilePrinter::append_nl("        Bord_('" + std::to_string(i) + "') + Bord('0'),");
         }
     }
@@ -374,6 +378,46 @@ void frac::StructurePrinter::print_plan_control_points(const frac::Structure& st
             }
             FilePrinter::append_nl("0],");
         }
+        // w
+        FilePrinter::append("        [");
+        for (std::size_t i = 0; i < nb_pts - 1; ++i) {
+            FilePrinter::append("1, ");
+        }
+        FilePrinter::append_nl("1]]).setTyp('Var')");
+        // set z as const
+        FilePrinter::append_nl("    for i in range(init.initMat[Sub_('" + std::to_string(index_face) + "')].n):");
+        FilePrinter::append_nl("        init.initMat[Sub_('" + std::to_string(index_face) + "')][2, i].setTyp('Const')");
+        FilePrinter::append_nl("");
+    }
+}
+
+void frac::StructurePrinter::print_plan_control_points(const std::vector<std::vector<QPointF>>& coords) {
+    float scale = 1.0f / 100.0f;
+    for (std::size_t index_face = 0; index_face < coords.size(); ++index_face) {
+        std::size_t nb_pts = coords[index_face].size();
+        FilePrinter::append_nl("    init.initMat[Sub_('" + std::to_string(index_face) + "')] = FMat([");
+
+        //x
+        FilePrinter::append("        [");
+        for (std::size_t i = 0; i < nb_pts - 1; ++i) {
+            FilePrinter::append(frac::utils::to_string(static_cast<float>(coords[index_face][i].x()) * scale) + ", ");
+        }
+        FilePrinter::append_nl(frac::utils::to_string(static_cast<float>(coords[index_face][nb_pts - 1].x()) * scale) + "],");
+
+        //y
+        FilePrinter::append("        [");
+        for (std::size_t i = 0; i < nb_pts - 1; ++i) {
+            FilePrinter::append(frac::utils::to_string(static_cast<float>(-coords[index_face][i].y()) * scale) + ", ");
+        }
+        FilePrinter::append_nl(frac::utils::to_string(static_cast<float>(-coords[index_face][nb_pts - 1].y()) * scale) + "],");
+
+        //z
+        FilePrinter::append("        [");
+        for (std::size_t i = 0; i < nb_pts - 1; ++i) {
+            FilePrinter::append("0, ");
+        }
+        FilePrinter::append_nl("0],");
+
         // w
         FilePrinter::append("        [");
         for (std::size_t i = 0; i < nb_pts - 1; ++i) {

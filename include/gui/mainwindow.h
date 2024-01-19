@@ -12,9 +12,14 @@
 #include "halfedge/mesh.h"
 #include "model.h"
 #include "graph/incidencegraph.h"
+#include "controlpointeditor.h"
 
 namespace Ui {
 class MainWindow;
+}
+
+namespace frac {
+class ControlPointEditor;
 }
 
 class MainWindow : public QMainWindow {
@@ -77,6 +82,8 @@ public slots:
     void animProjectStep();
     void animInversionStep();
     void increaseInversion();
+    [[maybe_unused]] void slotPlanarControlPointsChanged();
+    [[maybe_unused]] void slotEditCP();
 
 public:
     void projectCirclesToPlan();
@@ -137,6 +144,9 @@ private:
     QTimer m_timerAnimInversion;
     float m_tAnimInversion = 0.0f;
     std::size_t m_nbInversions = 0;
+
+    //for gui fractal control points
+    frac::ControlPointEditor* m_CPEditor;
 };
 
 #endif
