@@ -407,9 +407,9 @@ void frac::StructurePrinter::print_plan_control_points(const std::vector<std::ve
         //y
         FilePrinter::append("        [");
         for (std::size_t i = 0; i < nb_pts - 1; ++i) {
-            FilePrinter::append(frac::utils::to_string(static_cast<float>(-coords[index_face][i].y()) * scale) + ", ");
+            FilePrinter::append(frac::utils::to_string(static_cast<float>(coords[index_face][i].y()) * scale) + ", ");
         }
-        FilePrinter::append_nl(frac::utils::to_string(static_cast<float>(-coords[index_face][nb_pts - 1].y()) * scale) + "],");
+        FilePrinter::append_nl(frac::utils::to_string(static_cast<float>(coords[index_face][nb_pts - 1].y()) * scale) + "],");
 
         //z
         FilePrinter::append("        [");

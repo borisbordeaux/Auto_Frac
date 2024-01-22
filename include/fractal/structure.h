@@ -37,7 +37,7 @@ public:
     std::vector<frac::Face> const& faces() const;
 
     std::size_t nbControlPointsOfFace(std::size_t indexFace) const;
-    std::vector<std::size_t> controlPointIndices(std::size_t indexEdge, std::size_t indexFace) const;
+    std::vector<std::size_t> controlPointIndices(std::size_t indexEdge, std::size_t indexFace, bool reverse = false) const;
 
     friend std::ostream& operator<<(std::ostream& os, const frac::Structure& structure);
     frac::Face const& operator[](std::size_t index) const;
