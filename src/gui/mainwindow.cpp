@@ -119,7 +119,7 @@ MainWindow::~MainWindow() {
     frac::Structure s { faces };
 
     for (int i = 0; i < this->ui->listWidget_constraints->count(); ++i) {
-        Constraint c = toConstraint(this->ui->listWidget_constraints->item(i)->text());
+        frac::Adjacency c = toConstraint(this->ui->listWidget_constraints->item(i)->text());
         //checks if constraint valid
         try {
             bool res = faces.at(c.Face1)[c.Edge1] == faces.at(c.Face2)[c.Edge2];
@@ -138,7 +138,7 @@ MainWindow::~MainWindow() {
     std::ostringstream info;
 
     try {
-        if (m_CPEditor->isValidForStructure(s)) {
+        if (m_CPEditor->isValidForStructure(&s)) {
             frac::StructurePrinter::exportStruct(s, this->ui->checkBox_planarControlPoints->isChecked(), "../output/result.py", m_CPEditor->coordinates());
         } else {
             frac::StructurePrinter::exportStruct(s, this->ui->checkBox_planarControlPoints->isChecked(), "../output/result.py");
@@ -423,14 +423,14 @@ void MainWindow::updateEnablementPoly() {
 
 [[maybe_unused]] void MainWindow::slotOnConstraintSelected(int row) {
     if (row == -1) { return; }
-    Constraint c = MainWindow::toConstraint(this->ui->listWidget_constraints->item(row)->text());
+    frac::Adjacency c = MainWindow::toConstraint(this->ui->listWidget_constraints->item(row)->text());
     this->ui->spinBox_constraintFace1->setValue(static_cast<int>(c.Face1));
     this->ui->spinBox_constraintEdge1->setValue(static_cast<int>(c.Edge1));
     this->ui->spinBox_constraintFace2->setValue(static_cast<int>(c.Face2));
     this->ui->spinBox_constraintEdge2->setValue(static_cast<int>(c.Edge2));
 }
 
-MainWindow::Constraint MainWindow::toConstraint(QString const& constraintText) {
+frac::Adjacency MainWindow::toConstraint(QString const& constraintText) {
     QString sepFaces = " / ";
     QString sepFaceInfo = ".";
 
@@ -448,30 +448,30 @@ MainWindow::Constraint MainWindow::toConstraint(QString const& constraintText) {
     return { face1, edge1, face2, edge2 };
 }
 
-QString MainWindow::fromConstraint(const MainWindow::Constraint& constraint) {
+QString MainWindow::fromConstraint(frac::Adjacency const& constraint) {
     return QString::number(constraint.Face1) + "." + QString::number(constraint.Edge1) + " / " + QString::number(constraint.Face2) + "." + QString::number(constraint.Edge2);
 }
 
 [[maybe_unused]] void MainWindow::slotOnConstraintFace1Changed(int value) {
-    Constraint c = toConstraint(this->ui->listWidget_constraints->currentItem()->text());
+    frac::Adjacency c = toConstraint(this->ui->listWidget_constraints->currentItem()->text());
     c.Face1 = static_cast<std::size_t>(value);
     this->ui->listWidget_constraints->currentItem()->setText(MainWindow::fromConstraint(c));
 }
 
 [[maybe_unused]] void MainWindow::slotOnConstraintEdge1Changed(int value) {
-    Constraint c = toConstraint(this->ui->listWidget_constraints->currentItem()->text());
+    frac::Adjacency c = toConstraint(this->ui->listWidget_constraints->currentItem()->text());
     c.Edge1 = static_cast<std::size_t>(value);
     this->ui->listWidget_constraints->currentItem()->setText(MainWindow::fromConstraint(c));
 }
 
 [[maybe_unused]] void MainWindow::slotOnConstraintFace2Changed(int value) {
-    Constraint c = toConstraint(this->ui->listWidget_constraints->currentItem()->text());
+    frac::Adjacency c = toConstraint(this->ui->listWidget_constraints->currentItem()->text());
     c.Face2 = static_cast<std::size_t>(value);
     this->ui->listWidget_constraints->currentItem()->setText(MainWindow::fromConstraint(c));
 }
 
 [[maybe_unused]] void MainWindow::slotOnConstraintEdge2Changed(int value) {
-    Constraint c = toConstraint(this->ui->listWidget_constraints->currentItem()->text());
+    frac::Adjacency c = toConstraint(this->ui->listWidget_constraints->currentItem()->text());
     c.Edge2 = static_cast<std::size_t>(value);
     this->ui->listWidget_constraints->currentItem()->setText(MainWindow::fromConstraint(c));
 }
@@ -1430,8 +1430,32 @@ void MainWindow::increaseInversion() {
         faces.push_back(toFace(this->ui->listWidget_faces->item(i)->text()));
     }
 
-    frac::Structure s { faces };
-    m_CPEditor->show(s);
+    frac::Structure* newStruct = new frac::Structure(faces);
+
+    for (int i = 0; i < this->ui->listWidget_constraints->count(); ++i) {
+        frac::Adjacency c = toConstraint(this->ui->listWidget_constraints->item(i)->text());
+        //checks if constraint valid
+        try {
+            bool res = faces.at(c.Face1)[c.Edge1] == faces.at(c.Face2)[c.Edge2];
+            if (!res) {
+                this->setInfo("[Error] Constraint " + std::to_string(i) + " : edges are different!");
+                return;
+            } else {
+                newStruct->addAdjacency(c.Face1, c.Edge1, c.Face2, c.Edge2);
+            }
+        } catch (std::out_of_range const& error) {
+            this->setInfo("[Error] Constraint " + std::to_string(i) + " : faces or edges indices are not valid!");
+            return;
+        }
+    }
+
+    if (m_CPEditor->isValidForStructure(newStruct)) {
+        delete newStruct;
+    } else {
+        m_currentStructureForCP = newStruct;
+        m_CPEditor->setStructure(m_currentStructureForCP);
+    }
+    m_CPEditor->show();
 }
 
 [[maybe_unused]] void MainWindow::slotPlanarControlPointsChanged() {

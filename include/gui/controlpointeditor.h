@@ -10,8 +10,9 @@ class Structure;
 class ControlPointEditor : public QGraphicsView {
 public:
     ControlPointEditor();
-    void show(Structure const& s);
-    bool isValidForStructure(Structure const& s) const;
+    void show();
+    bool isValidForStructure(Structure* s) const;
+    void setStructure(Structure* s);
     std::vector<std::vector<QPointF>> const& coordinates() const;
 
 protected:
@@ -19,13 +20,14 @@ protected:
     void mouseReleaseEvent(QMouseEvent* event) override;
 
 private:
-    void setStructure(Structure const& s);
     void redraw();
+    void updateWithAdjacencies();
 
 private:
     QGraphicsScene m_scene;
     std::vector<std::vector<QPointF>> m_coordinates;
     QGraphicsItem* m_pressedItem = nullptr;
+    Structure* m_structure = nullptr;
 };
 
 } // frac

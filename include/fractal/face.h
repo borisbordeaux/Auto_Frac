@@ -62,6 +62,8 @@ public:
     // key is name of the cell (since it is unique)
     static std::unordered_map<std::string, std::vector<frac::Face>> s_subdivisions;
 
+    std::size_t nbControlPoints() const;
+
 private:
     std::vector<frac::Edge> m_data;
     unsigned int m_delay;

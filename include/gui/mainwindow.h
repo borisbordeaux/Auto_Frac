@@ -13,6 +13,7 @@
 #include "model.h"
 #include "graph/incidencegraph.h"
 #include "controlpointeditor.h"
+#include "fractal/structure.h"
 
 namespace Ui {
 class MainWindow;
@@ -90,17 +91,10 @@ public:
     void updateCircles();
 
 private:
-    struct Constraint {
-        std::size_t Face1;
-        std::size_t Edge1;
-        std::size_t Face2;
-        std::size_t Edge2;
-    };
-private:
     static frac::Face toFace(QString const& cellName);
     static frac::Edge toEdge(QString const& edgeName);
-    static Constraint toConstraint(QString const& constraintText);
-    static QString fromConstraint(Constraint const& constraint);
+    static frac::Adjacency toConstraint(QString const& constraintText);
+    static QString fromConstraint(frac::Adjacency const& constraint);
     static std::size_t getNbCellsOfCell(std::string const& faceName, std::size_t level, std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>>& cacheSubdivisions);
     static double getNbLacunaOfCell(std::string const& faceName, std::size_t level, std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>>& cacheSubdivisions, std::unordered_map<std::string, double>& cacheLacunas);
     void computeAreaPerimeter(QStringList const& files);
@@ -147,6 +141,7 @@ private:
 
     //for gui fractal control points
     frac::ControlPointEditor* m_CPEditor;
+    frac::Structure* m_currentStructureForCP = nullptr;
 };
 
 #endif

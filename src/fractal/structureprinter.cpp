@@ -83,7 +83,7 @@ void frac::StructurePrinter::exportStruct(const frac::Structure& structure, bool
     }
 
     FilePrinter::append_nl("    # constraints on init cells");
-    FilePrinter::append(structure.adjacencies());
+    FilePrinter::append(structure.strAdjacencies());
 
     FilePrinter::append_nl("    # control points");
     if (planarControlPoints) {

@@ -242,3 +242,12 @@ std::optional<frac::Edge> frac::Face::edgeIfRequired(const frac::Edge& edge) con
         return {};
     }
 }
+
+std::size_t frac::Face::nbControlPoints() const {
+    std::size_t res = 0;
+    for (Edge const& e: m_data) {
+        res += e.edgeType() == EdgeType::BEZIER ? 3 : 2;
+        res--;
+    }
+    return res;
+}
