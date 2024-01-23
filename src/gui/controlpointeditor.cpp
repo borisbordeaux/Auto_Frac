@@ -19,9 +19,9 @@ ControlPointEditor::ControlPointEditor() : QGraphicsView() {
     this->scale(1, -1.0);
     m_scene.setBackgroundBrush(Qt::white);
 
-    QVBoxLayout * layout = new QVBoxLayout(this);
-    QHBoxLayout * hLayout = new QHBoxLayout();
-    QFormLayout * hLayoutButton = new QFormLayout();
+    QVBoxLayout* layout = new QVBoxLayout(this);
+    QHBoxLayout* hLayout = new QHBoxLayout();
+    QFormLayout* hLayoutButton = new QFormLayout();
     hLayout->setAlignment(Qt::AlignRight);
     layout->setAlignment(Qt::AlignBottom);
     layout->addLayout(hLayout);
@@ -34,10 +34,18 @@ ControlPointEditor::ControlPointEditor() : QGraphicsView() {
     m_ySlider = new QDoubleSpinBox();
     m_xSlider->setRange(-1000, 1000);
     m_ySlider->setRange(-1000, 1000);
-    hLayoutButton->addRow(new QLabel("x"), m_xSlider);
-    hLayoutButton->addRow(new QLabel("y"), m_ySlider);
+    QLabel* labelX = new QLabel("x");
+    QLabel* labelY = new QLabel("y");
+    labelX->setStyleSheet("color: black;");
+    labelY->setStyleSheet("color: black;");
+    hLayoutButton->addRow(labelX, m_xSlider);
+    hLayoutButton->addRow(labelY, m_ySlider);
     hLayoutButton->addRow(m_changeCoordButton);
     hLayoutButton->addRow(m_saveButton, m_loadButton);
+    hLayoutButton->setRowWrapPolicy(QFormLayout::DontWrapRows);
+    hLayoutButton->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
+    hLayoutButton->setFormAlignment(Qt::AlignHCenter | Qt::AlignTop);
+    hLayoutButton->setLabelAlignment(Qt::AlignRight);
     hLayout->addWidget(m_okButton);
     connect(m_okButton, &QPushButton::clicked, this, &ControlPointEditor::valid);
     connect(m_changeCoordButton, &QPushButton::clicked, this, &ControlPointEditor::changeCoord);
