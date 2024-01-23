@@ -14,7 +14,6 @@ GLView::GLView(Model* model, MainWindow* parent) :
         m_mainWindow(parent) {
     connect(&m_timerAnimation, &QTimer::timeout, this, &GLView::animationStep);
     connect(&m_timerAnimCamera, &QTimer::timeout, this, &GLView::animationCameraStep);
-    grabKeyboard();
     this->connectTimers();
 }
 
@@ -398,6 +397,7 @@ void GLView::resizeGL(int w, int h) {
 }
 
 void GLView::mousePressEvent(QMouseEvent* event) {
+    this->grabKeyboard();
     if (event->button() & Qt::MouseButton::LeftButton || event->button() & Qt::MouseButton::RightButton) {
         //update the mouse positions
         m_lastPos = event->pos().toPointF();
@@ -722,6 +722,7 @@ void GLView::animationStep() {
 
 void GLView::hideEvent(QHideEvent* event) {
     this->stopAnimation();
+    this->releaseKeyboard();
     QWidget::hideEvent(event);
 }
 

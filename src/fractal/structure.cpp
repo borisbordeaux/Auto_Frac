@@ -87,3 +87,15 @@ std::vector<std::size_t> frac::Structure::controlPointIndices(std::size_t indexE
 
     return res;
 }
+
+bool frac::Structure::isInternControlPoint(std::size_t indexControlPoint, std::size_t indexFace) const {
+    bool res = indexControlPoint != 0;
+    std::size_t current = 0;
+    for (std::size_t i = 0; i < m_faces[indexFace].constData().size(); i++) {
+        current += m_faces[indexFace][i].edgeType() == EdgeType::BEZIER ? 2 : 1;
+        if (current == indexControlPoint) {
+            res = false;
+        }
+    }
+    return res;
+}

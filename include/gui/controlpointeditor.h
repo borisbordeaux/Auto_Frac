@@ -2,7 +2,10 @@
 #define AUTOFRAC_CONTROLPOINTEDITOR_H
 
 #include <QGraphicsView>
-#include <QPushButton>
+
+class QPushButton;
+
+class QDoubleSpinBox;
 
 namespace frac {
 
@@ -19,11 +22,14 @@ public:
 
 public slots:
     void valid();
+    void changeCoord();
+    void save();
+    void load();
 
 protected:
     void mousePressEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
-    void closeEvent(QCloseEvent* event) override;
+    [[maybe_unused]] void closeEvent(QCloseEvent* event) override;
 
 private:
     void redraw(bool useCurrentCoordinates);
@@ -32,10 +38,18 @@ private:
 private:
     QGraphicsScene m_scene;
     QPushButton* m_okButton;
+    QPushButton* m_changeCoordButton;
+    QPushButton* m_saveButton;
+    QPushButton* m_loadButton;
+    QDoubleSpinBox* m_xSlider;
+    QDoubleSpinBox* m_ySlider;
     std::vector<std::vector<QPointF>> m_coordinates;
     std::vector<std::vector<QPointF>> m_coordinatesTemp;
     QGraphicsItem* m_pressedItem = nullptr;
     Structure* m_structure = nullptr;
+
+    int m_lastFaceIndex = -1;
+    int m_lastControlPointIndex = -1;
 };
 
 } // frac
