@@ -25,6 +25,8 @@ public slots:
     void changeCoord();
     void save();
     void load();
+    void rotateFace();
+    void translateFace();
 
 protected:
     void mousePressEvent(QMouseEvent* event) override;
@@ -37,12 +39,11 @@ private:
 
 private:
     QGraphicsScene m_scene;
-    QPushButton* m_okButton;
-    QPushButton* m_changeCoordButton;
-    QPushButton* m_saveButton;
-    QPushButton* m_loadButton;
-    QDoubleSpinBox* m_xSlider;
-    QDoubleSpinBox* m_ySlider;
+    QDoubleSpinBox* m_xCoord;
+    QDoubleSpinBox* m_yCoord;
+    QDoubleSpinBox* m_angle;
+    QDoubleSpinBox* m_xTranslate;
+    QDoubleSpinBox* m_yTranslate;
     std::vector<std::vector<QPointF>> m_coordinates;
     std::vector<std::vector<QPointF>> m_coordinatesTemp;
     QGraphicsItem* m_pressedItem = nullptr;

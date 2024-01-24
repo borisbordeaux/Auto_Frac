@@ -7,11 +7,14 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QDoubleSpinBox>
+#include <QFrame>
 #include <QFormLayout>
 #include <QFile>
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QMatrix4x4>
+#include <QFileDialog>
 
 namespace frac {
 ControlPointEditor::ControlPointEditor() : QGraphicsView() {
@@ -19,38 +22,50 @@ ControlPointEditor::ControlPointEditor() : QGraphicsView() {
     this->scale(1, -1.0);
     m_scene.setBackgroundBrush(Qt::white);
 
-    QVBoxLayout* layout = new QVBoxLayout(this);
-    QHBoxLayout* hLayout = new QHBoxLayout();
-    QFormLayout* hLayoutButton = new QFormLayout();
+    QVBoxLayout * layout = new QVBoxLayout(this);
+    QHBoxLayout * hLayout = new QHBoxLayout();
+    QFormLayout * hLayoutButton = new QFormLayout();
     hLayout->setAlignment(Qt::AlignRight);
     layout->setAlignment(Qt::AlignBottom);
     layout->addLayout(hLayout);
     hLayout->addLayout(hLayoutButton);
-    m_okButton = new QPushButton("OK");
-    m_changeCoordButton = new QPushButton("Change coordinates");
-    m_saveButton = new QPushButton("Save...");
-    m_loadButton = new QPushButton("Load...");
-    m_xSlider = new QDoubleSpinBox();
-    m_ySlider = new QDoubleSpinBox();
-    m_xSlider->setRange(-1000, 1000);
-    m_ySlider->setRange(-1000, 1000);
-    QLabel* labelX = new QLabel("x");
-    QLabel* labelY = new QLabel("y");
-    labelX->setStyleSheet("color: black;");
-    labelY->setStyleSheet("color: black;");
-    hLayoutButton->addRow(labelX, m_xSlider);
-    hLayoutButton->addRow(labelY, m_ySlider);
-    hLayoutButton->addRow(m_changeCoordButton);
-    hLayoutButton->addRow(m_saveButton, m_loadButton);
+    QPushButton* okButton = new QPushButton("OK");
+    QPushButton* changeCoordButton = new QPushButton("Change coordinates");
+    QPushButton* saveButton = new QPushButton("Save...");
+    QPushButton* loadButton = new QPushButton("Load...");
+    QPushButton* rotateButton = new QPushButton("Rotate");
+    QPushButton* translateButton = new QPushButton("Translate");
+    m_xCoord = new QDoubleSpinBox();
+    m_yCoord = new QDoubleSpinBox();
+    m_angle = new QDoubleSpinBox();
+    m_xTranslate = new QDoubleSpinBox();
+    m_yTranslate = new QDoubleSpinBox();
+    m_xCoord->setRange(-1000, 1000);
+    m_yCoord->setRange(-1000, 1000);
+    m_angle->setRange(-360, 360);
+    m_xTranslate->setRange(-1000, 1000);
+    m_yTranslate->setRange(-1000, 1000);
+    hLayoutButton->addRow(m_xCoord, m_yCoord);
+    hLayoutButton->addRow(changeCoordButton);
+    QFrame * hline = new QFrame();
+    hline->setFrameShape(QFrame::HLine);
+    hLayoutButton->addRow(hline);
+    hLayoutButton->addRow(saveButton, loadButton);
+    hLayoutButton->addRow(m_angle, rotateButton);
+    hLayoutButton->addRow(m_xTranslate, m_yTranslate);
+    hLayoutButton->addRow(translateButton);
+
     hLayoutButton->setRowWrapPolicy(QFormLayout::DontWrapRows);
     hLayoutButton->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
     hLayoutButton->setFormAlignment(Qt::AlignHCenter | Qt::AlignTop);
     hLayoutButton->setLabelAlignment(Qt::AlignRight);
-    hLayout->addWidget(m_okButton);
-    connect(m_okButton, &QPushButton::clicked, this, &ControlPointEditor::valid);
-    connect(m_changeCoordButton, &QPushButton::clicked, this, &ControlPointEditor::changeCoord);
-    connect(m_saveButton, &QPushButton::clicked, this, &ControlPointEditor::save);
-    connect(m_loadButton, &QPushButton::clicked, this, &ControlPointEditor::load);
+    hLayout->addWidget(okButton);
+    connect(okButton, &QPushButton::clicked, this, &ControlPointEditor::valid);
+    connect(changeCoordButton, &QPushButton::clicked, this, &ControlPointEditor::changeCoord);
+    connect(saveButton, &QPushButton::clicked, this, &ControlPointEditor::save);
+    connect(loadButton, &QPushButton::clicked, this, &ControlPointEditor::load);
+    connect(rotateButton, &QPushButton::clicked, this, &ControlPointEditor::rotateFace);
+    connect(translateButton, &QPushButton::clicked, this, &ControlPointEditor::translateFace);
 }
 
 void ControlPointEditor::show() {
@@ -88,6 +103,21 @@ void ControlPointEditor::redraw(bool useCurrentCoordinates) {
     float thick = 15.0f;
     this->updateWithAdjacencies();
     for (std::size_t i = 0; i < coords.size(); i++) {
+        //draw lines
+        for (std::size_t j = 0; j < coords[i].size(); j++) {
+            bool nextIsIntern = m_structure->isInternControlPoint((j + 1) % coords[i].size(), i);
+            QPen pen { nextIsIntern ? Qt::green : Qt::blue, j == 0 ? 3.0 : 2.0 };
+            if (nextIsIntern) {
+                QPainterPath path;
+                path.moveTo(coords[i][j]);
+                path.quadTo(coords[i][j + 1], coords[i][(j + 2) % coords[i].size()]);
+                m_scene.addPath(path, pen);
+                j++;
+            } else {
+                m_scene.addLine(coords[i][j].x(), coords[i][j].y(), coords[i][(j + 1) % coords[i].size()].x(), coords[i][(j + 1) % coords[i].size()].y(), pen);
+            }
+        }
+        //draw points
         for (std::size_t j = 0; j < coords[i].size(); j++) {
             QBrush brush = m_structure->isInternControlPoint(j, i) ? Qt::blue : Qt::black;
             QGraphicsRectItem* r = m_scene.addRect(coords[i][j].x() - thick / 2.0f, coords[i][j].y() - thick / 2.0f, thick, thick, QPen(), brush);
@@ -95,18 +125,6 @@ void ControlPointEditor::redraw(bool useCurrentCoordinates) {
             r->setData(1, static_cast<int>(j));
             r->setFlag(QGraphicsRectItem::GraphicsItemFlag::ItemIsMovable);
         }
-        QPainterPath path;
-        for (std::size_t j = 0; j < coords[i].size(); j++) {
-            bool nextIsIntern = m_structure->isInternControlPoint((j + 1) % coords[i].size(), i);
-            path.moveTo(coords[i][j]);
-            if (nextIsIntern) {
-                path.quadTo(coords[i][j + 1], coords[i][(j + 2) % coords[i].size()]);
-                j++;
-            } else {
-                path.lineTo(coords[i][(j + 1) % coords[i].size()]);
-            }
-        }
-        m_scene.addPath(path);
     }
 }
 
@@ -127,8 +145,8 @@ void ControlPointEditor::mouseReleaseEvent(QMouseEvent* event) {
         m_lastControlPointIndex = m_pressedItem->data(1).toInt();
         m_coordinatesTemp[m_lastFaceIndex][m_lastControlPointIndex] = this->mapToScene(event->pos());
         m_pressedItem = nullptr;
-        m_xSlider->setValue(m_coordinatesTemp[m_lastFaceIndex][m_lastControlPointIndex].x());
-        m_ySlider->setValue(m_coordinatesTemp[m_lastFaceIndex][m_lastControlPointIndex].y());
+        m_xCoord->setValue(m_coordinatesTemp[m_lastFaceIndex][m_lastControlPointIndex].x());
+        m_yCoord->setValue(m_coordinatesTemp[m_lastFaceIndex][m_lastControlPointIndex].y());
         this->redraw(true);
         this->update();
     }
@@ -199,8 +217,8 @@ void ControlPointEditor::valid() {
 void ControlPointEditor::changeCoord() {
     qDebug() << "translate";
     if (m_lastFaceIndex != -1) {
-        m_coordinatesTemp[m_lastFaceIndex][m_lastControlPointIndex].setX(m_xSlider->value());
-        m_coordinatesTemp[m_lastFaceIndex][m_lastControlPointIndex].setY(m_ySlider->value());
+        m_coordinatesTemp[m_lastFaceIndex][m_lastControlPointIndex].setX(m_xCoord->value());
+        m_coordinatesTemp[m_lastFaceIndex][m_lastControlPointIndex].setY(m_yCoord->value());
         this->redraw(true);
         qDebug() << "translation done";
     }
@@ -208,7 +226,8 @@ void ControlPointEditor::changeCoord() {
 
 void ControlPointEditor::save() {
     qDebug() << "Saving coordinates...";
-    QFile saveFile("ctrlPts.json");
+    QString file = QFileDialog::getSaveFileName(this, "Save a JSON File...", "../json", "JSON Files (*.json)");
+    QFile saveFile(file);
     if (!saveFile.open(QIODevice::WriteOnly)) {
         qWarning("Couldn't open save file.");
         return;
@@ -235,8 +254,8 @@ void ControlPointEditor::save() {
 
 void ControlPointEditor::load() {
     qDebug() << "Loading coordinates...";
-
-    QFile loadFile("ctrlPts.json");
+    QString file = QFileDialog::getOpenFileName(this, "Open a JSON File...", "../json", "JSON Files (*.json)");
+    QFile loadFile(file);
     if (!loadFile.open(QIODevice::ReadOnly)) {
         qWarning("Couldn't open save file.");
         return;
@@ -292,6 +311,44 @@ void ControlPointEditor::load() {
         this->redraw(true);
     } else {
         qDebug() << "Coordinates not loaded, not for same structure!";
+    }
+}
+
+void ControlPointEditor::rotateFace() {
+    if (m_lastFaceIndex != -1) {
+        qreal degrees = m_angle->value();
+        qreal radians = qDegreesToRadians(degrees);
+        QPointF barycenter { 0.0, 0.0 };
+        for (QPointF& p: m_coordinatesTemp[m_lastFaceIndex]) {
+            barycenter.setX(barycenter.x() + p.x());
+            barycenter.setY(barycenter.y() + p.y());
+        }
+        barycenter.setX(barycenter.x() / static_cast<qreal>(m_coordinatesTemp[m_lastFaceIndex].size()));
+        barycenter.setY(barycenter.y() / static_cast<qreal>(m_coordinatesTemp[m_lastFaceIndex].size()));
+        for (QPointF& p: m_coordinatesTemp[m_lastFaceIndex]) {
+            //set to origin
+            p.setX(p.x() - barycenter.x());
+            p.setY(p.y() - barycenter.y());
+            //rotate
+            qreal x = p.x() * qCos(radians) - p.y() * qSin(radians);
+            qreal y = p.x() * qSin(radians) + p.y() * qCos(radians);
+            //restore to face position
+            p.setX(x + barycenter.x());
+            p.setY(y + barycenter.y());
+        }
+        this->redraw(true);
+    }
+}
+
+void ControlPointEditor::translateFace() {
+    if (m_lastFaceIndex != -1) {
+        qreal x = m_xTranslate->value();
+        qreal y = m_yTranslate->value();
+        for (QPointF& p: m_coordinatesTemp[m_lastFaceIndex]) {
+            p.setX(p.x() + x);
+            p.setY(p.y() + y);
+        }
+        this->redraw(true);
     }
 }
 } // frac
