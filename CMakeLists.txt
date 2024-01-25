@@ -22,6 +22,7 @@ add_executable(AutoFrac ${FILES} include/gui/mainwindow.h include/gui/glview.h)
 target_include_directories(AutoFrac PUBLIC include)
 target_include_directories(AutoFrac PUBLIC vendor/NazaraUtils/include)
 target_include_directories(AutoFrac PUBLIC ${OpenCV_INCLUDE_DIRS})
+target_include_directories(AutoFrac PUBLIC vendor/gudhi.3.9.0/include)
 
 target_link_libraries(AutoFrac PRIVATE Qt6::Core)
 target_link_libraries(AutoFrac PRIVATE Qt6::Gui)

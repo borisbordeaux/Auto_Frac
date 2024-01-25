@@ -38,6 +38,10 @@ std::vector<poly::Circle> computeIlluminatedCirclesDual(he::Mesh const& m);
 std::size_t computeInversions(std::vector<poly::Circle>& circlesToInverse, std::vector<poly::Circle>& circlesInvertive, std::size_t index);
 }
 
+namespace PersistentHomology {
+void computePersistenceHomology();
+}
+
 } // frac
 
 #endif //AUTOFRAC_COMPUTATION_H

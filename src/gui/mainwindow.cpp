@@ -1462,3 +1462,7 @@ void MainWindow::increaseInversion() {
 [[maybe_unused]] void MainWindow::slotPlanarControlPointsChanged() {
     this->updateEnablement();
 }
+
+[[maybe_unused]] void MainWindow::slotComputePersistenceHomology() {
+    frac::PersistentHomology::computePersistenceHomology();
+}

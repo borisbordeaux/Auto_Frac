@@ -85,6 +85,7 @@ public slots:
     void increaseInversion();
     [[maybe_unused]] void slotPlanarControlPointsChanged();
     [[maybe_unused]] void slotEditCP();
+    [[maybe_unused]] void slotComputePersistenceHomology();
 
 public:
     void projectCirclesToPlan();
