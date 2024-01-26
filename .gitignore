@@ -75,3 +75,4 @@ cmake-build-debug
 cmake-build-profile
 cmake-build-release
 .idea
+vendor/gudhi.3.9.0/build/
