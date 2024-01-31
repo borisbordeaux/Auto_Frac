@@ -313,7 +313,7 @@ using Points_off_reader = Gudhi::Points_off_reader<Point>;
 
 void frac::PersistentHomology::computePersistenceHomology() {
     std::string off_file_points = "../off/papillon_R/iter1.off";
-    std::string filediag = "../vendor/gudhi.3.9.0/build/example/Persistent_cohomology/out.pers";
+    std::string filediag = "out.pers";
     Filtration_value threshold = 10; //r parameter
     int dim_max = 2;
     int min_p = 2;

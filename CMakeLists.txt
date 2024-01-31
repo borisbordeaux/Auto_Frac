@@ -8,7 +8,6 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 set(CMAKE_PREFIX_PATH "$ENV{QT_PATH}")
-set(CMAKE_PREFIX_PATH "/usr/lib/")
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets OpenGLWidgets Charts)
 find_package(OpenCV REQUIRED COMPONENTS core highgui imgcodecs imgproc features2d calib3d)
