@@ -14,7 +14,12 @@
 #include "utils/utils.h"
 #include "polytopal/inversivecoordinates.h"
 
-#include <gudhi/Persistence_landscape.h>
+#include <gudhi/Rips_complex.h>
+#include <gudhi/distance_functions.h>
+#include <gudhi/Simplex_tree.h>
+#include <gudhi/Persistent_cohomology.h>
+#include <gudhi/Persistent_cohomology/Multi_field.h>
+#include <gudhi/Points_off_io.h>
 
 void frac::DensityComputation::computeDensity(QString const& file, int value, bool showAllImages) {
     cv::destroyAllWindows();
@@ -297,46 +302,47 @@ std::size_t frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circl
     return count;
 }
 
-using Persistence_landscape = Gudhi::Persistence_representations::Persistence_landscape;
+// Types definition
+using Simplex_tree = Gudhi::Simplex_tree<Gudhi::Simplex_tree_options_fast_persistence>;
+using Filtration_value = Simplex_tree::Filtration_value;
+using Rips_complex = Gudhi::rips_complex::Rips_complex<Filtration_value>;
+using Multi_field = Gudhi::persistent_cohomology::Multi_field;
+using Persistent_cohomology = Gudhi::persistent_cohomology::Persistent_cohomology<Simplex_tree, Multi_field >;
+using Point = std::vector<double>;
+using Points_off_reader = Gudhi::Points_off_reader<Point>;
 
 void frac::PersistentHomology::computePersistenceHomology() {
-    // create two simple vectors with birth--death pairs:
-    std::vector<std::pair<double, double> > persistence1;
-    std::vector<std::pair<double, double> > persistence2;
-    persistence1.emplace_back(1, 2);
-    persistence1.emplace_back(6, 8);
-    persistence1.emplace_back(0, 4);
-    persistence1.emplace_back(3, 8);
-    persistence2.emplace_back(2, 9);
-    persistence2.emplace_back(1, 6);
-    persistence2.emplace_back(3, 5);
-    persistence2.emplace_back(6, 10);
-    // create two persistence landscapes based on persistence1 and persistence2:
-    Persistence_landscape l1(persistence1);
-    Persistence_landscape l2(persistence2);
-    // This is how to compute integral of landscapes:
-    std::clog << "Integral of the first landscape : " << l1.compute_integral_of_landscape() << std::endl;
-    std::clog << "Integral of the second landscape : " << l2.compute_integral_of_landscape() << std::endl;
-    // And here how to write landscapes to stream:
-    std::clog << "l1 : " << l1 << std::endl;
-    std::clog << "l2 : " << l2 << std::endl;
-    // Arithmetic operations on landscapes:
-    Persistence_landscape sum = l1 + l2;
-    std::clog << "sum : " << sum << std::endl;
-    // here are the maxima of the functions:
-    std::clog << "Maximum of l1 : " << l1.compute_maximum() << std::endl;
-    std::clog << "Maximum of l2 : " << l2.compute_maximum() << std::endl;
-    // here are the norms of landscapes:
-    std::clog << "L^1 Norm of l1 : " << l1.compute_norm_of_landscape(1.) << std::endl;
-    std::clog << "L^1 Norm of l2 : " << l2.compute_norm_of_landscape(1.) << std::endl;
-    // here is the average of landscapes:
-    Persistence_landscape average;
-    average.compute_average({ &l1, &l2 });
-    std::clog << "average : " << average << std::endl;
-    // here is the distance of landscapes:
-    std::clog << "Distance : " << l1.distance(l2) << std::endl;
-    // here is the scalar product of landscapes:
-    std::clog << "Scalar product : " << l1.compute_scalar_product(l2) << std::endl;
-    // here is how to create a file which is suitable for visualization via gnuplot:
-    average.plot("average_landscape");
+    std::string off_file_points = "../off/papillon_R/iter1.off";
+    std::string filediag = "../vendor/gudhi.3.9.0/build/example/Persistent_cohomology/out.pers";
+    Filtration_value threshold = 10; //r parameter
+    int dim_max = 2;
+    int min_p = 2;
+    int max_p = 3;
+    Filtration_value min_persistence = 0;
+
+    Points_off_reader off_reader(off_file_points);
+    Rips_complex rips_complex_from_file(off_reader.get_point_cloud(), threshold, Gudhi::Euclidean_distance());
+
+    // Construct the Rips complex in a Simplex Tree
+    Simplex_tree simplex_tree;
+
+    rips_complex_from_file.create_complex(simplex_tree, dim_max);
+    std::clog << "The complex contains " << simplex_tree.num_simplices() << " simplices \n";
+    std::clog << "   and has dimension " << simplex_tree.dimension() << " \n";
+
+    // Compute the persistence diagram of the complex
+    Persistent_cohomology pcoh(simplex_tree);
+    // initializes the coefficient field for homology
+    pcoh.init_coefficients(min_p, max_p);
+
+    pcoh.compute_persistent_cohomology(min_persistence);
+
+    // Output the diagram in filediag
+    if (filediag.empty()) {
+        pcoh.output_diagram();
+    } else {
+        std::ofstream out(filediag);
+        pcoh.output_diagram(out);
+        out.close();
+    }
 }

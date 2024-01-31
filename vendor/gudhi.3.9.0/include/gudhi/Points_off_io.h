@@ -28,8 +28,8 @@ class Points_off_visitor_reader {
   std::vector<Point_d> point_cloud;
 
  public:
-  /** \brief Off_reader visitor init implementation. 
-   * 
+  /** \brief Off_reader visitor init implementation.
+   *
    * The init parameters are set from OFF file header.
    * Dimension value is required in order to construct a vector of points.
    *
@@ -38,10 +38,12 @@ class Points_off_visitor_reader {
    * @param[in] num_faces number of faces in the OFF file (not used).
    * @param[in] num_edges number of edges in the OFF file (not used).
    */
-  void init(int dim, int num_vertices, int num_faces, int num_edges) {
 #ifdef DEBUG_TRACES
+    void init(int dim, int num_vertices, int num_faces, int num_edges) {
     std::clog << "Points_off_visitor_reader::init - dim=" << dim << " - num_vertices=" <<
         num_vertices << " - num_faces=" << num_faces << " - num_edges=" << num_edges << std::endl;
+#else
+    void init(int, int, int num_faces, int num_edges) {
 #endif  // DEBUG_TRACES
     if (num_faces > 0) {
       std::cerr << "Points_off_visitor_reader::init faces are not taken into account from OFF file for Points.\n";
@@ -77,7 +79,7 @@ class Points_off_visitor_reader {
   }
 
   // Off_reader visitor maximal_face implementation - Only points are read
-  void maximal_face(const std::vector<int>& face) { }
+  void maximal_face(const std::vector<int>&) { }
 
   // Off_reader visitor done implementation - Only points are read
   void done() { }
@@ -128,7 +130,7 @@ class Points_off_reader {
    * 
    * \post Check with is_valid() function to see if read operation was successful.
    */
-  Points_off_reader(const std::string& name_file)
+  explicit Points_off_reader(const std::string& name_file)
   : valid_(false) {
     std::ifstream stream(name_file);
     if (stream.is_open()) {
@@ -147,7 +149,7 @@ class Points_off_reader {
    *
    * @return OFF file read status.
    */
-  bool is_valid() const {
+  [[maybe_unused]] bool is_valid() const {
     return valid_;
   }
 
