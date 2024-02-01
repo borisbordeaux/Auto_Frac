@@ -13,7 +13,7 @@ namespace frac {
 
 namespace DensityComputation {
 void computeDensity(QString const& file, int value, bool showAllImages);
-};
+}
 
 namespace Canonizer {
 /**
@@ -26,7 +26,7 @@ namespace Canonizer {
 void canonicalizeMesh(he::Mesh& m);
 
 /**
- * Recenters the mesh around the origin
+ * Centers the mesh around the origin
  * @param m the mesh to recenter
  */
 void setMeshToOrigin(he::Mesh& m);
@@ -39,7 +39,16 @@ std::size_t computeInversions(std::vector<poly::Circle>& circlesToInverse, std::
 }
 
 namespace PersistentHomology {
-void computePersistenceHomology();
+
+struct Cycles {
+    int Dim;
+    float Birth;
+    float Death;
+
+    Cycles(int dim, float birth, float death) : Dim(dim), Birth(birth), Death(death) {}
+};
+
+std::vector<Cycles> computePersistenceHomology(QString const& off_file_points);
 }
 
 } // frac

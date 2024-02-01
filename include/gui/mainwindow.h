@@ -143,6 +143,9 @@ private:
     //for gui fractal control points
     frac::ControlPointEditor* m_CPEditor;
     frac::Structure* m_currentStructureForCP = nullptr;
+
+    QGraphicsScene m_scenePersistentHomology;
+    QChart* m_chartPersistentHomology;
 };
 
 #endif

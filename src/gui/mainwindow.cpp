@@ -26,12 +26,15 @@
 #include <string>
 #include <QScatterSeries>
 #include <QValueAxis>
+#include <QLineSeries>
 
 #include "NazaraUtils/Algorithm.hpp"
 
 #include "gui/controlpointeditor.h"
 
-MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow), m_openedMesh(false), m_chartFractalDim(new QChart()), m_chartAreaPerimeter(new QChart()), m_inversionLevel(0) {
+MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow), m_openedMesh(false),
+                                          m_chartFractalDim(new QChart()), m_chartAreaPerimeter(new QChart()),
+                                          m_inversionLevel(0), m_chartPersistentHomology(new QChart()) {
     ui->setupUi(this);
 
     //to draw frac signal
@@ -84,6 +87,14 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     m_chartAreaPerimeter->setAnimationOptions(QChart::AnimationOption::AllAnimations);
     m_chartAreaPerimeter->setAnimationDuration(1000);
     m_sceneAreaPerimeter.addItem(m_chartAreaPerimeter);
+
+    this->ui->graphicsView_PersistentHomology->setScene(&m_scenePersistentHomology);
+    m_chartPersistentHomology->setTheme(QChart::ChartTheme::ChartThemeDark);
+    m_chartPersistentHomology->setTitle("Persistent Homology");
+    m_chartPersistentHomology->setPreferredSize(845, 845);
+    m_chartPersistentHomology->setAnimationOptions(QChart::AnimationOption::AllAnimations);
+    m_chartPersistentHomology->setAnimationDuration(1000);
+    m_scenePersistentHomology.addItem(m_chartPersistentHomology);
 
     connect(this->ui->horizontalSlider_windowSize, &QSlider::valueChanged, this->ui->label_windowSize, qOverload<int>(&QLabel::setNum));
     connect(this->ui->horizontalSlider_windowSize, &QSlider::sliderMoved, this, [&](int value) {
@@ -1464,5 +1475,64 @@ void MainWindow::increaseInversion() {
 }
 
 [[maybe_unused]] void MainWindow::slotComputePersistenceHomology() {
-    frac::PersistentHomology::computePersistenceHomology();
+    QString file = QFileDialog::getOpenFileName(this, "Open an OFF File...", "../off", "OFF Files (*.off)");
+    if (file != "") {
+
+        m_chartPersistentHomology->removeAllSeries();
+        QScatterSeries* series0 = new QScatterSeries();
+        QScatterSeries* series1 = new QScatterSeries();
+        QLineSeries* diag = new QLineSeries();
+
+        series0->setName("Dim 0");
+        series1->setName("Dim 1");
+        diag->setName("Diagonal");
+
+        series0->setColor(Qt::blue);
+        series1->setColor(Qt::darkGreen);
+
+        std::vector<frac::PersistentHomology::Cycles> cycles = frac::PersistentHomology::computePersistenceHomology(file);
+        for (frac::PersistentHomology::Cycles const& c: cycles) {
+            if (c.Death < 100.0f) { //not inf
+                if (c.Dim == 0) {
+                    series0->append(c.Birth, c.Death);
+                } else if (c.Dim == 1) {
+                    series1->append(c.Birth, c.Death);
+                } else {
+                    std::cout << "other dimension not supported" << std::endl;
+                }
+            }
+        }
+
+        m_chartPersistentHomology->addSeries(series0);
+        m_chartPersistentHomology->addSeries(series1);
+        m_chartPersistentHomology->createDefaultAxes();
+        QValueAxis* xAxis = dynamic_cast<QValueAxis*>(m_chartPersistentHomology->axes(Qt::Horizontal).first());
+        QValueAxis* yAxis = dynamic_cast<QValueAxis*>(m_chartPersistentHomology->axes(Qt::Vertical).first());
+
+        int max = qCeil(qMax(xAxis->max(), yAxis->max()));
+
+        xAxis->setRange(-1.0, max);
+        xAxis->setTickCount(2*max + 3);
+        xAxis->setTitleText("Birth");
+
+        yAxis->setRange(-1.0, max);
+        yAxis->setTickCount(2*max + 3);
+        yAxis->setTitleText("Death");
+
+        for (frac::PersistentHomology::Cycles const& c: cycles) {
+            if (c.Death > 100.0f) { //inf
+                if (c.Dim == 0) {
+                    series0->append(c.Birth, max);
+                } else if (c.Dim == 1) {
+                    series1->append(c.Birth, max);
+                } else {
+                    std::cout << "other dimension not supported" << std::endl;
+                }
+            }
+        }
+
+        diag->append(-1.0, -1.0);
+        diag->append(max, max);
+        m_chartPersistentHomology->addSeries(diag);
+    }
 }

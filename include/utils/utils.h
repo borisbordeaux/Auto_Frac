@@ -38,11 +38,11 @@ std::vector<T> shiftVector(std::vector<T> const& vec) {
     return res;
 }
 
-inline std::vector<std::string> split(std::string const& str, char const& delimitor) {
+inline std::vector<std::string> split(std::string const& str, char const& delimiter) {
     std::vector<std::string> strings;
     std::istringstream f(str);
     std::string s;
-    while (std::getline(f, s, delimitor)) {
+    while (std::getline(f, s, delimiter)) {
         strings.push_back(s);
     }
     return strings;

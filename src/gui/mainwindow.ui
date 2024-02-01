@@ -2139,14 +2139,27 @@ QListWidget {
        <widget class="QPushButton" name="pushButton_computePersistenceHomology">
         <property name="geometry">
          <rect>
-          <x>220</x>
-          <y>110</y>
+          <x>390</x>
+          <y>10</y>
           <width>211</width>
           <height>25</height>
          </rect>
         </property>
         <property name="text">
          <string>Compute Persistence Homology</string>
+        </property>
+       </widget>
+       <widget class="QGraphicsView" name="graphicsView_PersistentHomology">
+        <property name="geometry">
+         <rect>
+          <x>80</x>
+          <y>50</y>
+          <width>850</width>
+          <height>850</height>
+         </rect>
+        </property>
+        <property name="renderHints">
+         <set>QPainter::Antialiasing|QPainter::TextAntialiasing</set>
         </property>
        </widget>
       </widget>

@@ -303,46 +303,49 @@ std::size_t frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circl
 }
 
 // Types definition
-using Simplex_tree = Gudhi::Simplex_tree<Gudhi::Simplex_tree_options_fast_persistence>;
-using Filtration_value = Simplex_tree::Filtration_value;
-using Rips_complex = Gudhi::rips_complex::Rips_complex<Filtration_value>;
-using Multi_field = Gudhi::persistent_cohomology::Multi_field;
-using Persistent_cohomology = Gudhi::persistent_cohomology::Persistent_cohomology<Simplex_tree, Multi_field >;
+using SimplexTree = Gudhi::Simplex_tree<Gudhi::Simplex_tree_options_fast_persistence>;
+using FiltrationValue = SimplexTree::Filtration_value;
+using RipsComplex = Gudhi::rips_complex::Rips_complex<FiltrationValue>;
+using MultiField = Gudhi::persistent_cohomology::Multi_field;
+using PersistentCohomology = Gudhi::persistent_cohomology::Persistent_cohomology<SimplexTree, MultiField>;
 using Point = std::vector<double>;
-using Points_off_reader = Gudhi::Points_off_reader<Point>;
+using PointsOffReader = Gudhi::Points_off_reader<Point>;
 
-void frac::PersistentHomology::computePersistenceHomology() {
-    std::string off_file_points = "../off/papillon_R/iter1.off";
-    std::string filediag = "out.pers";
-    Filtration_value threshold = 10; //r parameter
-    int dim_max = 2;
-    int min_p = 2;
-    int max_p = 3;
-    Filtration_value min_persistence = 0;
+std::vector<frac::PersistentHomology::Cycles> frac::PersistentHomology::computePersistenceHomology(QString const& off_file_points) {
+    FiltrationValue threshold = 10; //r parameter
+    int maxDim = 2;
+    int pMin = 2;
+    int pMax = 3;
+    FiltrationValue minPersistence = 0;
 
-    Points_off_reader off_reader(off_file_points);
-    Rips_complex rips_complex_from_file(off_reader.get_point_cloud(), threshold, Gudhi::Euclidean_distance());
+    PointsOffReader offReader(off_file_points.toStdString());
+    RipsComplex ripsComplexFromFile(offReader.get_point_cloud(), threshold, Gudhi::Euclidean_distance());
 
-    // Construct the Rips complex in a Simplex Tree
-    Simplex_tree simplex_tree;
+    SimplexTree simplexTree;
+    ripsComplexFromFile.create_complex(simplexTree, maxDim);
 
-    rips_complex_from_file.create_complex(simplex_tree, dim_max);
-    std::clog << "The complex contains " << simplex_tree.num_simplices() << " simplices \n";
-    std::clog << "   and has dimension " << simplex_tree.dimension() << " \n";
+    PersistentCohomology persistentCohomology(simplexTree);
+    persistentCohomology.init_coefficients(pMin, pMax);
+    persistentCohomology.compute_persistent_cohomology(minPersistence);
 
-    // Compute the persistence diagram of the complex
-    Persistent_cohomology pcoh(simplex_tree);
-    // initializes the coefficient field for homology
-    pcoh.init_coefficients(min_p, max_p);
+    std::stringstream stringStream;
+    persistentCohomology.output_diagram(stringStream);
 
-    pcoh.compute_persistent_cohomology(min_persistence);
+    std::vector<Cycles> res;
 
-    // Output the diagram in filediag
-    if (filediag.empty()) {
-        pcoh.output_diagram();
-    } else {
-        std::ofstream out(filediag);
-        pcoh.output_diagram(out);
-        out.close();
+    std::string str;
+    std::cout << "Results:" << std::endl;
+    while (std::getline(stringStream, str)) {
+        // all lines have 5 words
+        // first is ignored and second is empty (2 spaces in output diagram)
+        // third is dimension, fourth is birth, fifth is death
+        std::vector<std::string> words = frac::utils::split(str, ' ');
+        std::replace(words[3].begin(), words[3].end(), '.', ',');
+        std::replace(words[4].begin(), words[4].end(), '.', ',');
+
+        res.emplace_back(std::stoi(words[2]), std::stof(words[3]), std::stof(words[4]));
+        std::cout << str << std::endl;
     }
+
+    return res;
 }
