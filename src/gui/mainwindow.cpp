@@ -1477,34 +1477,33 @@ void MainWindow::increaseInversion() {
 [[maybe_unused]] void MainWindow::slotComputePersistenceHomology() {
     QString file = QFileDialog::getOpenFileName(this, "Open an OFF File...", "../off", "OFF Files (*.off)");
     if (file != "") {
-
         m_chartPersistentHomology->removeAllSeries();
-        QScatterSeries* series0 = new QScatterSeries();
-        QScatterSeries* series1 = new QScatterSeries();
+        std::vector<QScatterSeries*> series;
         QLineSeries* diag = new QLineSeries();
-
-        series0->setName("Dim 0");
-        series1->setName("Dim 1");
         diag->setName("Diagonal");
 
-        series0->setColor(Qt::blue);
-        series1->setColor(Qt::darkGreen);
+        // dim will never be greater than 4
+        Qt::GlobalColor colors[4] = { Qt::darkGreen, Qt::blue, Qt::red, Qt::yellow };
 
-        std::vector<frac::PersistentHomology::Cycles> cycles = frac::PersistentHomology::computePersistenceHomology(file);
+        std::vector<frac::PersistentHomology::Cycles> cycles = frac::PersistentHomology::computePersistenceHomology(file, static_cast<float>(this->ui->spinBox_persistenceR->value()), static_cast<float>(this->ui->spinBox_persistenceLifeTime->value()), this->ui->spinBox_persistenceDim->value());
         for (frac::PersistentHomology::Cycles const& c: cycles) {
             if (c.Death < 100.0f) { //not inf
-                if (c.Dim == 0) {
-                    series0->append(c.Birth, c.Death);
-                } else if (c.Dim == 1) {
-                    series1->append(c.Birth, c.Death);
-                } else {
-                    std::cout << "other dimension not supported" << std::endl;
+                while (series.size() < static_cast<std::size_t>(c.Dim) + 1) {
+                    series.push_back(new QScatterSeries());
+                    series[series.size() - 1]->setName("Dim " + QString::number(c.Dim));
+                    series[series.size() - 1]->setColor(colors[series.size() - 1]);
                 }
+                series[c.Dim]->append(c.Birth, c.Death);
             }
         }
 
-        m_chartPersistentHomology->addSeries(series0);
-        m_chartPersistentHomology->addSeries(series1);
+        std::vector<int> addedSeries;
+        int i = 0;
+        for (auto* s: series) {
+            m_chartPersistentHomology->addSeries(s);
+            addedSeries.push_back(i);
+            i++;
+        }
         m_chartPersistentHomology->createDefaultAxes();
         QValueAxis* xAxis = dynamic_cast<QValueAxis*>(m_chartPersistentHomology->axes(Qt::Horizontal).first());
         QValueAxis* yAxis = dynamic_cast<QValueAxis*>(m_chartPersistentHomology->axes(Qt::Vertical).first());
@@ -1512,23 +1511,30 @@ void MainWindow::increaseInversion() {
         int max = qCeil(qMax(xAxis->max(), yAxis->max()));
 
         xAxis->setRange(-1.0, max);
-        xAxis->setTickCount(2*max + 3);
+        xAxis->setTickCount(2 * max + 3);
         xAxis->setTitleText("Birth");
 
         yAxis->setRange(-1.0, max);
-        yAxis->setTickCount(2*max + 3);
+        yAxis->setTickCount(2 * max + 3);
         yAxis->setTitleText("Death");
 
         for (frac::PersistentHomology::Cycles const& c: cycles) {
-            if (c.Death > 100.0f) { //inf
-                if (c.Dim == 0) {
-                    series0->append(c.Birth, max);
-                } else if (c.Dim == 1) {
-                    series1->append(c.Birth, max);
-                } else {
-                    std::cout << "other dimension not supported" << std::endl;
+            if (c.Death > 100.0f) { //not inf
+                while (series.size() < static_cast<std::size_t>(c.Dim) + 1) {
+                    series.push_back(new QScatterSeries());
+                    series[series.size() - 1]->setName("Dim " + QString::number(c.Dim));
+                    series[series.size() - 1]->setColor(colors[series.size() - 1]);
                 }
+                series[c.Dim]->append(c.Birth, max);
             }
+        }
+
+        i = 0;
+        for (auto* s: series) {
+            if (std::find(addedSeries.begin(), addedSeries.end(), i) == addedSeries.end()) {
+                m_chartPersistentHomology->addSeries(s);
+            }
+            i++;
         }
 
         diag->append(-1.0, -1.0);

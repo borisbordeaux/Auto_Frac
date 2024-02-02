@@ -304,37 +304,31 @@ std::size_t frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circl
 
 // Types definition
 using SimplexTree = Gudhi::Simplex_tree<Gudhi::Simplex_tree_options_fast_persistence>;
-using FiltrationValue = SimplexTree::Filtration_value;
-using RipsComplex = Gudhi::rips_complex::Rips_complex<FiltrationValue>;
+using RipsComplex = Gudhi::rips_complex::Rips_complex<SimplexTree::Filtration_value>;
 using MultiField = Gudhi::persistent_cohomology::Multi_field;
 using PersistentCohomology = Gudhi::persistent_cohomology::Persistent_cohomology<SimplexTree, MultiField>;
 using Point = std::vector<double>;
 using PointsOffReader = Gudhi::Points_off_reader<Point>;
 
-std::vector<frac::PersistentHomology::Cycles> frac::PersistentHomology::computePersistenceHomology(QString const& off_file_points) {
-    FiltrationValue threshold = 10; //r parameter
-    int maxDim = 2;
-    int pMin = 2;
-    int pMax = 3;
-    FiltrationValue minPersistence = 0;
-
+std::vector<frac::PersistentHomology::Cycles> frac::PersistentHomology::computePersistenceHomology(QString const& off_file_points, float r, float minLifeTime, int dimension) {
     PointsOffReader offReader(off_file_points.toStdString());
-    RipsComplex ripsComplexFromFile(offReader.get_point_cloud(), threshold, Gudhi::Euclidean_distance());
+    RipsComplex ripsComplexFromFile(offReader.get_point_cloud(), r, Gudhi::Euclidean_distance());
 
     SimplexTree simplexTree;
-    ripsComplexFromFile.create_complex(simplexTree, maxDim);
+    ripsComplexFromFile.create_complex(simplexTree, dimension);
 
     PersistentCohomology persistentCohomology(simplexTree);
-    persistentCohomology.init_coefficients(pMin, pMax);
-    persistentCohomology.compute_persistent_cohomology(minPersistence);
+    persistentCohomology.init_coefficients(2, 3);
+    persistentCohomology.compute_persistent_cohomology(minLifeTime);
+
+    std::vector<Cycles> res;
+    std::cout << "end" << std::endl;
 
     std::stringstream stringStream;
     persistentCohomology.output_diagram(stringStream);
 
-    std::vector<Cycles> res;
-
     std::string str;
-    std::cout << "Results:" << std::endl;
+    std::cout << "Results: " << std::endl;
     while (std::getline(stringStream, str)) {
         // all lines have 5 words
         // first is ignored and second is empty (2 spaces in output diagram)
@@ -346,6 +340,7 @@ std::vector<frac::PersistentHomology::Cycles> frac::PersistentHomology::computeP
         res.emplace_back(std::stoi(words[2]), std::stof(words[3]), std::stof(words[4]));
         std::cout << str << std::endl;
     }
+    std::cout << std::to_string(res.size()) << " points" << std::endl;
 
     return res;
 }

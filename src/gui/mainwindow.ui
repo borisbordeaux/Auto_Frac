@@ -2162,6 +2162,87 @@ QListWidget {
          <set>QPainter::Antialiasing|QPainter::TextAntialiasing</set>
         </property>
        </widget>
+       <widget class="QDoubleSpinBox" name="spinBox_persistenceR">
+        <property name="geometry">
+         <rect>
+          <x>714</x>
+          <y>11</y>
+          <width>71</width>
+          <height>30</height>
+         </rect>
+        </property>
+        <property name="value">
+         <double>6.000000000000000</double>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_26">
+        <property name="geometry">
+         <rect>
+          <x>690</x>
+          <y>10</y>
+          <width>21</width>
+          <height>30</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>R:</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_27">
+        <property name="geometry">
+         <rect>
+          <x>830</x>
+          <y>10</y>
+          <width>91</width>
+          <height>30</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Min Life time:</string>
+        </property>
+       </widget>
+       <widget class="QDoubleSpinBox" name="spinBox_persistenceLifeTime">
+        <property name="geometry">
+         <rect>
+          <x>920</x>
+          <y>10</y>
+          <width>71</width>
+          <height>30</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_28">
+        <property name="geometry">
+         <rect>
+          <x>1010</x>
+          <y>10</y>
+          <width>41</width>
+          <height>30</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Dim:</string>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="spinBox_persistenceDim">
+        <property name="geometry">
+         <rect>
+          <x>1049</x>
+          <y>13</y>
+          <width>42</width>
+          <height>26</height>
+         </rect>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>4</number>
+        </property>
+        <property name="value">
+         <number>2</number>
+        </property>
+       </widget>
       </widget>
      </widget>
     </item>

@@ -48,7 +48,7 @@ struct Cycles {
     Cycles(int dim, float birth, float death) : Dim(dim), Birth(birth), Death(death) {}
 };
 
-std::vector<Cycles> computePersistenceHomology(QString const& off_file_points);
+std::vector<Cycles> computePersistenceHomology(QString const& off_file_points, float r, float minLifeTime, int dimension);
 }
 
 } // frac
