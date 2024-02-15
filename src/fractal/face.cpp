@@ -88,7 +88,7 @@ const frac::Edge& frac::Face::operator[](std::size_t index) const {
 }
 
 bool frac::Face::operator==(frac::Face const& other) const {
-    if (m_delay != other.m_delay || this->len() != other.len() || m_adjEdge != other.m_adjEdge || m_gapEdge != other.m_gapEdge || m_reqEdge != other.m_reqEdge) {
+    if (m_delay != other.m_delay || this->len() != other.len() || m_adjEdge != other.m_adjEdge || m_gapEdge != other.m_gapEdge || m_reqEdge != other.m_reqEdge || m_algo != other.m_algo) {
         return false;
     }
 

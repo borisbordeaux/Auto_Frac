@@ -200,6 +200,12 @@ frac::Face MainWindow::toFace(QString const& cellName) {
     this->updateEnablement();
 }
 
+[[maybe_unused]] void MainWindow::slotDuplicateFace() {
+    this->ui->listWidget_faces->addItem(this->ui->listWidget_faces->currentItem()->text());
+    this->ui->listWidget_faces->setCurrentRow(this->ui->listWidget_faces->count() - 1);
+    this->updateEnablement();
+}
+
 [[maybe_unused]] void MainWindow::slotRemoveFace() {
     this->ui->listWidget_faces->takeItem(this->ui->listWidget_faces->currentRow());
     this->updateEnablement();
@@ -507,6 +513,7 @@ void MainWindow::setInfo(std::string const& textInfo, int timeoutMs) {
         m_modelMesh.resetCircles();
         m_modelMesh.setMesh(&m_mesh);
         m_view->updateData();
+        m_view->update();
         m_openedMesh = true;
         this->updateEnablementPoly();
     }

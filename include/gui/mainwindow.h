@@ -35,6 +35,7 @@ public:
 public slots:
     [[maybe_unused]] void slotGenerateScript();
     [[maybe_unused]] void slotAddFace();
+    [[maybe_unused]] void slotDuplicateFace();
     [[maybe_unused]] void slotRemoveFace();
     [[maybe_unused]] void slotOnFaceSelected(int row);
     [[maybe_unused]] void slotOnEdgeSelected(int row);
