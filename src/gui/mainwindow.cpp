@@ -3,8 +3,6 @@
 
 #include "fractal/structure.h"
 #include "fractal/structureprinter.h"
-#include "graph/vertex.h"
-#include "gui/vertexgraphicsitem.h"
 #include "halfedge/face.h"
 #include "halfedge/mesh.h"
 #include "polytopal/structure.h"
@@ -16,7 +14,6 @@
 #include "utils/utils.h"
 
 #include <QtWidgets>
-#include <QPen>
 #include <iostream>
 
 #include <opencv2/core/core.hpp>
@@ -67,9 +64,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     m_view = new GLView(&m_modelMesh, this);
     this->ui->verticalLayout_poly2D->addWidget(m_view);
-    this->ui->graphicsView->setScene(&m_scene);
-    m_scene.setBackgroundBrush(Qt::white);
-    m_scene.setSceneRect(10., 10., 840., 840.);
 
     this->ui->graphicsView_fractalDim->setScene(&m_sceneFractalDim);
     m_chartFractalDim->setTheme(QChart::ChartTheme::ChartThemeDark);
@@ -554,61 +548,6 @@ void MainWindow::setInfo(std::string const& textInfo, int timeoutMs) {
 
     info << "[Finished] Result in ../output/result_poly.py";
     this->setInfo(info.str());
-}
-
-[[maybe_unused]] void MainWindow::slotOpenOBJ4File() {
-    QString file = QFileDialog::getOpenFileName(this, "Open an OBJ4 File...", "../obj", "OBJ4 Files (*.obj4)");
-
-    if (file != "") {
-        m_graph.reset();
-        graph::reader::readOBJ4(file, m_graph);
-        std::cout << m_graph << std::endl;
-    }
-
-    m_graph.updateVerticesPositions(this->ui->graphicsView->width());
-
-    this->displayGraph();
-}
-
-void MainWindow::displayGraph() {
-    m_scene.clear();
-
-    QPen penLine;
-    penLine.setWidth(1);
-    penLine.setColor(Qt::black);
-
-    //first draw lines
-    for (graph::Vertex* v: m_graph.getVertices()) {
-        for (graph::Vertex* p: v->getParents()) {
-            m_scene.addLine(v->getX(), v->getY(), p->getX(), p->getY(), penLine);
-        }
-    }
-    for (graph::Vertex* v: m_graph.getEdges()) {
-        for (graph::Vertex* p: v->getParents()) {
-            m_scene.addLine(v->getX(), v->getY(), p->getX(), p->getY(), penLine);
-        }
-    }
-    for (graph::Vertex* v: m_graph.getFaces()) {
-        for (graph::Vertex* p: v->getParents()) {
-            m_scene.addLine(v->getX(), v->getY(), p->getX(), p->getY(), penLine);
-        }
-    }
-
-    // then draw vertices
-    for (graph::Vertex* v: m_graph.getVertices()) {
-        m_scene.addItem(v->graphicsItem());
-    }
-    for (graph::Vertex* v: m_graph.getEdges()) {
-        m_scene.addItem(v->graphicsItem());
-    }
-    for (graph::Vertex* v: m_graph.getFaces()) {
-        m_scene.addItem(v->graphicsItem());
-    }
-    for (graph::Vertex* v: m_graph.getVolumes()) {
-        m_scene.addItem(v->graphicsItem());
-    }
-
-    m_scene.update();
 }
 
 [[maybe_unused]] void MainWindow::slotComputeFractalDimension() {
@@ -1548,4 +1487,8 @@ void MainWindow::increaseInversion() {
         diag->append(max, max);
         m_chartPersistentHomology->addSeries(diag);
     }
+}
+
+[[maybe_unused]] void MainWindow::slotFractalToGraph() {
+    qDebug() << "clicked";
 }

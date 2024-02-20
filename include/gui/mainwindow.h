@@ -11,7 +11,6 @@
 #include "glview.h"
 #include "halfedge/mesh.h"
 #include "model.h"
-#include "graph/incidencegraph.h"
 #include "controlpointeditor.h"
 #include "fractal/structure.h"
 
@@ -65,7 +64,6 @@ public slots:
     [[maybe_unused]] void slotOpenOBJFile();
     [[maybe_unused]] void slotExportAllFaces();
     [[maybe_unused]] void slotExportSelectedFace();
-    [[maybe_unused]] void slotOpenOBJ4File();
     [[maybe_unused]] void slotComputeFractalDimension();
     [[maybe_unused]] void slotComputeAreaPerimeterPNG();
     [[maybe_unused]] void slotComputeAreaPerimeterOBJ();
@@ -87,6 +85,7 @@ public slots:
     [[maybe_unused]] void slotPlanarControlPointsChanged();
     [[maybe_unused]] void slotEditCP();
     [[maybe_unused]] void slotComputePersistenceHomology();
+    [[maybe_unused]] void slotFractalToGraph();
 
 public:
     void projectCirclesToPlan();
@@ -103,7 +102,6 @@ private:
     void updateEnablement();
     void updateEnablementPoly();
     void setInfo(std::string const& textInfo, int timeoutMs = 2000);
-    void displayGraph();
 
 private:
     std::map<frac::Face, std::map<frac::Face, int>> m_mapSubFaces;
@@ -114,9 +112,6 @@ private:
     Model m_modelMesh;
     GLView* m_view;
     bool m_openedMesh;
-
-    graph::IncidenceGraph m_graph;
-    QGraphicsScene m_scene;
 
     QGraphicsScene m_sceneFractalDim;
     QChart* m_chartFractalDim;

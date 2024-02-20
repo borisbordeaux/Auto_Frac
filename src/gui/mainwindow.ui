@@ -463,7 +463,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -1561,6 +1561,24 @@ QListWidget {
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tab_3">
+       <attribute name="title">
+        <string>Auto Subd 3D</string>
+       </attribute>
+       <widget class="QPushButton" name="pushButton_OBJ2Graph">
+        <property name="geometry">
+         <rect>
+          <x>120</x>
+          <y>70</y>
+          <width>131</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Open OBJ File...</string>
+        </property>
+       </widget>
+      </widget>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">
         <string>Polytopal 2D</string>
@@ -1706,34 +1724,6 @@ QListWidget {
          </layout>
         </item>
        </layout>
-      </widget>
-      <widget class="QWidget" name="tab_3">
-       <attribute name="title">
-        <string>Polytopal 3D</string>
-       </attribute>
-       <widget class="QPushButton" name="pushButton_openOBJ4">
-        <property name="geometry">
-         <rect>
-          <x>400</x>
-          <y>10</y>
-          <width>111</width>
-          <height>25</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Open OBJ4 File...</string>
-        </property>
-       </widget>
-       <widget class="QGraphicsView" name="graphicsView">
-        <property name="geometry">
-         <rect>
-          <x>80</x>
-          <y>50</y>
-          <width>850</width>
-          <height>850</height>
-         </rect>
-        </property>
-       </widget>
       </widget>
       <widget class="QWidget" name="tab_4">
        <attribute name="title">
@@ -2260,82 +2250,34 @@ QListWidget {
  <resources/>
  <connections>
   <connection>
-   <sender>spinBox_currentEdgeDelay</sender>
-   <signal>valueChanged(int)</signal>
+   <sender>pushButton_duplicateFace</sender>
+   <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>slotOnSelectedEdgeDelayChanged(int)</slot>
+   <slot>slotDuplicateFace()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>710</x>
-     <y>566</y>
+     <x>697</x>
+     <y>265</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1055</x>
-     <y>605</y>
+     <x>4</x>
+     <y>285</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>spinBox_adjEdgeDelay</sender>
-   <signal>valueChanged(int)</signal>
+   <sender>pushButton_computePorosity</sender>
+   <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>slotOnFaceAdjDelayChanged(int)</slot>
+   <slot>slotComputePorosityMetrics()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>237</x>
-     <y>422</y>
+     <x>754</x>
+     <y>808</y>
     </hint>
     <hint type="destinationlabel">
-     <x>530</x>
-     <y>507</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_constraintFace1</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnConstraintFace1Changed(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>654</x>
-     <y>735</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1058</x>
-     <y>680</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>listWidget_constraints</sender>
-   <signal>currentRowChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnConstraintSelected(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>82</x>
-     <y>795</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>3</x>
-     <y>798</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>listWidget_faces</sender>
-   <signal>currentRowChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnFaceSelected(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>530</x>
-     <y>175</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>530</x>
-     <y>507</y>
+     <x>1054</x>
+     <y>969</y>
     </hint>
    </hints>
   </connection>
@@ -2356,210 +2298,34 @@ QListWidget {
    </hints>
   </connection>
   <connection>
-   <sender>comboBox_currentEdgeTopology</sender>
-   <signal>activated(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnSelectedEdgeTopologyChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>710</x>
-     <y>502</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>2</x>
-     <y>342</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_reqEdgeDelay</sender>
+   <sender>spinBox_reqEdgeNbSubdivisions</sender>
    <signal>valueChanged(int)</signal>
    <receiver>MainWindow</receiver>
-   <slot>slotOnFaceReqDelayChanged(int)</slot>
+   <slot>slotOnFaceReqNbSubdivisionsChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>850</x>
-     <y>416</y>
+     <y>384</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1025</x>
-     <y>25</y>
+     <x>678</x>
+     <y>28</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>comboBox_adjEdgeTopology</sender>
-   <signal>activated(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnFaceAdjTopologyChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>237</x>
-     <y>358</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>530</x>
-     <y>507</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_constraintEdge2</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnConstraintEdge2Changed(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>654</x>
-     <y>840</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1057</x>
-     <y>848</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_adjEdgeNbSubdivisions</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnFaceAdjNbSubdivisionsChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>237</x>
-     <y>390</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>530</x>
-     <y>507</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_ExportAll</sender>
+   <sender>pushButton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>slotExportAllFaces()</slot>
+   <slot>slotDisplayAreaCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>75</x>
-     <y>56</y>
+     <x>315</x>
+     <y>533</y>
     </hint>
     <hint type="destinationlabel">
-     <x>3</x>
-     <y>628</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>listWidget_edges</sender>
-   <signal>currentRowChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnEdgeSelected(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>218</x>
-     <y>581</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>530</x>
-     <y>507</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_generateScript</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotGenerateScript()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>635</x>
-     <y>994</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>227</x>
-     <y>108</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_faceDelay</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnFaceDelayChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1182</x>
-     <y>353</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1053</x>
-     <y>370</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_addEdge</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotAddEdge()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>252</x>
-     <y>653</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>3</x>
-     <y>688</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>comboBox_reqEdgeTopology</sender>
-   <signal>activated(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnFaceReqTopologyChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>850</x>
-     <y>352</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>650</x>
-     <y>22</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_removeConstraint</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotRemoveConstraint()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>361</x>
-     <y>959</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>6</x>
-     <y>899</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_ExportSelectedFace</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotExportSelectedFace()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>81</x>
-     <y>56</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1064</x>
-     <y>385</y>
+     <x>4</x>
+     <y>495</y>
     </hint>
    </hints>
   </connection>
@@ -2580,34 +2346,322 @@ QListWidget {
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_openOBJ</sender>
+   <sender>pushButton_ExportAll</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>slotOpenOBJFile()</slot>
+   <slot>slotExportAllFaces()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>69</x>
-     <y>56</y>
+     <x>833</x>
+     <y>533</y>
     </hint>
     <hint type="destinationlabel">
-     <x>7</x>
-     <y>196</y>
+     <x>3</x>
+     <y>628</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>spinBox_gapEdgeNbSubdivisions</sender>
+   <sender>pushButton_EditCP</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotEditCP()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>507</x>
+     <y>980</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>6</x>
+     <y>955</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_computeAreaPerimeter</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotComputeAreaPerimeterPNG()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>321</x>
+     <y>70</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>337</x>
+     <y>-4</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_addFace</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotAddFace()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>557</x>
+     <y>272</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>31</x>
+     <y>23</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_computeAreaPerimeterOBJ</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotComputeAreaPerimeterOBJ()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>129</x>
+     <y>980</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>960</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_reqEdgeDelay</sender>
    <signal>valueChanged(int)</signal>
    <receiver>MainWindow</receiver>
-   <slot>slotOnFaceGapNbSubdivisionsChanged(int)</slot>
+   <slot>slotOnFaceReqDelayChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>850</x>
+     <y>416</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1025</x>
+     <y>25</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_constraintEdge2</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnConstraintEdge2Changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>654</x>
+     <y>840</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1057</x>
+     <y>848</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_computeFractalDim</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotComputeFractalDimension()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>594</x>
+     <y>70</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1055</x>
+     <y>152</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_reqEdgeTopology</sender>
+   <signal>activated(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnFaceReqTopologyChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>850</x>
+     <y>352</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>650</x>
+     <y>22</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_projectCircles</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotProjectCirclesClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>199</x>
+     <y>532</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>6</x>
+     <y>391</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_computePersistenceHomology</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotComputePersistenceHomology()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>401</x>
+     <y>72</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>861</x>
+     <y>2</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_displayMesh</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotDisplayMeshClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>537</x>
+     <y>532</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1048</x>
+     <y>754</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_canonizeMesh</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotCanonizeMesh()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>649</x>
+     <y>533</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>428</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_gapEdgeTopology</sender>
+   <signal>activated(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnFaceGapTopologyChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>544</x>
-     <y>384</y>
+     <y>352</y>
     </hint>
     <hint type="destinationlabel">
-     <x>537</x>
-     <y>27</y>
+     <x>519</x>
+     <y>22</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_addEdge</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotAddEdge()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>252</x>
+     <y>653</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>3</x>
+     <y>688</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_constraintFace1</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnConstraintFace1Changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>654</x>
+     <y>735</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1058</x>
+     <y>680</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_faceDelay</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnFaceDelayChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1182</x>
+     <y>353</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1053</x>
+     <y>370</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_adjEdgeDelay</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnFaceAdjDelayChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>237</x>
+     <y>422</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>530</x>
+     <y>507</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_adjEdgeTopology</sender>
+   <signal>activated(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnFaceAdjTopologyChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>237</x>
+     <y>358</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>530</x>
+     <y>507</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_currentEdgeDelay</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnSelectedEdgeDelayChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>710</x>
+     <y>566</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1055</x>
+     <y>605</y>
     </hint>
    </hints>
   </connection>
@@ -2660,66 +2714,50 @@ QListWidget {
    </hints>
   </connection>
   <connection>
-   <sender>spinBox_reqEdgeNbSubdivisions</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnFaceReqNbSubdivisionsChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>850</x>
-     <y>384</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>678</x>
-     <y>28</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_addFace</sender>
+   <sender>pushButton_generateScript</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>slotAddFace()</slot>
+   <slot>slotGenerateScript()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>557</x>
-     <y>272</y>
+     <x>635</x>
+     <y>994</y>
     </hint>
     <hint type="destinationlabel">
-     <x>31</x>
-     <y>23</y>
+     <x>227</x>
+     <y>108</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>comboBox_gapEdgeTopology</sender>
-   <signal>activated(int)</signal>
+   <sender>checkBox_displayUnitSphere</sender>
+   <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>slotOnFaceGapTopologyChanged(int)</slot>
+   <slot>slotDisplayUnitSphereChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>544</x>
-     <y>352</y>
+     <x>416</x>
+     <y>532</y>
     </hint>
     <hint type="destinationlabel">
-     <x>519</x>
-     <y>22</y>
+     <x>6</x>
+     <y>541</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>spinBox_constraintEdge1</sender>
-   <signal>valueChanged(int)</signal>
+   <sender>pushButton_removeConstraint</sender>
+   <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>slotOnConstraintEdge1Changed(int)</slot>
+   <slot>slotRemoveConstraint()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>654</x>
-     <y>767</y>
+     <x>361</x>
+     <y>959</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1057</x>
-     <y>725</y>
+     <x>6</x>
+     <y>899</y>
     </hint>
    </hints>
   </connection>
@@ -2740,54 +2778,6 @@ QListWidget {
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_openOBJ4</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOpenOBJ4File()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>433</x>
-     <y>72</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>5</x>
-     <y>244</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_computeFractalDim</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotComputeFractalDimension()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>594</x>
-     <y>70</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1055</x>
-     <y>152</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_computeAreaPerimeter</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotComputeAreaPerimeterPNG()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>321</x>
-     <y>70</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>337</x>
-     <y>-4</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>pushButton_computeDensity</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
@@ -2804,18 +2794,82 @@ QListWidget {
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_computeNbCells</sender>
+   <sender>pushButton_2</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>slotComputeNbCells()</slot>
+   <slot>slotIncreaseInversion()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>823</x>
-     <y>742</y>
+     <x>95</x>
+     <y>533</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1051</x>
-     <y>884</y>
+     <x>5</x>
+     <y>601</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_openOBJ</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOpenOBJFile()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>741</x>
+     <y>533</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>196</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_adjEdgeNbSubdivisions</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnFaceAdjNbSubdivisionsChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>237</x>
+     <y>390</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>530</x>
+     <y>507</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>listWidget_faces</sender>
+   <signal>currentRowChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnFaceSelected(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>530</x>
+     <y>175</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>530</x>
+     <y>507</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_currentEdgeTopology</sender>
+   <signal>activated(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnSelectedEdgeTopologyChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>710</x>
+     <y>502</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>2</x>
+     <y>342</y>
     </hint>
    </hints>
   </connection>
@@ -2836,178 +2890,34 @@ QListWidget {
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_computePorosity</sender>
-   <signal>clicked()</signal>
+   <sender>listWidget_constraints</sender>
+   <signal>currentRowChanged(int)</signal>
    <receiver>MainWindow</receiver>
-   <slot>slotComputePorosityMetrics()</slot>
+   <slot>slotOnConstraintSelected(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>754</x>
-     <y>808</y>
+     <x>82</x>
+     <y>795</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1054</x>
-     <y>969</y>
+     <x>3</x>
+     <y>798</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>comboBox_algorithm</sender>
-   <signal>currentIndexChanged(int)</signal>
+   <sender>spinBox_constraintEdge1</sender>
+   <signal>valueChanged(int)</signal>
    <receiver>MainWindow</receiver>
-   <slot>slotOnFaceAlgoChanged(int)</slot>
+   <slot>slotOnConstraintEdge1Changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1182</x>
-     <y>384</y>
+     <x>654</x>
+     <y>767</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1051</x>
-     <y>441</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_computeAreaPerimeterOBJ</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotComputeAreaPerimeterOBJ()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>129</x>
-     <y>980</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>4</x>
-     <y>960</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>checkBox_displayUnitSphere</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotDisplayUnitSphereChanged()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>51</x>
-     <y>56</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>6</x>
-     <y>541</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_canonizeMesh</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotCanonizeMesh()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>63</x>
-     <y>56</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>4</x>
-     <y>428</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotDisplayAreaCircles()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>45</x>
-     <y>56</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>4</x>
-     <y>495</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>checkBox_displayMesh</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotDisplayMeshClicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>57</x>
-     <y>56</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1048</x>
-     <y>754</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_2</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotIncreaseInversion()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>27</x>
-     <y>56</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>5</x>
-     <y>601</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_3</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotDecreaseInversion()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>33</x>
-     <y>56</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>5</x>
-     <y>578</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>checkBox_projectCircles</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotProjectCirclesClicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>39</x>
-     <y>56</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>6</x>
-     <y>391</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_EditCP</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotEditCP()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>507</x>
-     <y>980</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>6</x>
-     <y>955</y>
+     <x>1057</x>
+     <y>725</y>
     </hint>
    </hints>
   </connection>
@@ -3028,34 +2938,114 @@ QListWidget {
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_computePersistenceHomology</sender>
-   <signal>clicked()</signal>
+   <sender>spinBox_gapEdgeNbSubdivisions</sender>
+   <signal>valueChanged(int)</signal>
    <receiver>MainWindow</receiver>
-   <slot>slotComputePersistenceHomology()</slot>
+   <slot>slotOnFaceGapNbSubdivisionsChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>401</x>
-     <y>72</y>
+     <x>544</x>
+     <y>384</y>
     </hint>
     <hint type="destinationlabel">
-     <x>861</x>
-     <y>2</y>
+     <x>537</x>
+     <y>27</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_duplicateFace</sender>
-   <signal>clicked()</signal>
+   <sender>comboBox_algorithm</sender>
+   <signal>currentIndexChanged(int)</signal>
    <receiver>MainWindow</receiver>
-   <slot>slotDuplicateFace()</slot>
+   <slot>slotOnFaceAlgoChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>697</x>
-     <y>265</y>
+     <x>1182</x>
+     <y>384</y>
     </hint>
     <hint type="destinationlabel">
-     <x>4</x>
-     <y>285</y>
+     <x>1051</x>
+     <y>441</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_computeNbCells</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotComputeNbCells()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>823</x>
+     <y>742</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1051</x>
+     <y>884</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_ExportSelectedFace</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotExportSelectedFace()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>925</x>
+     <y>533</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1064</x>
+     <y>385</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>listWidget_edges</sender>
+   <signal>currentRowChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOnEdgeSelected(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>218</x>
+     <y>581</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>530</x>
+     <y>507</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_3</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotDecreaseInversion()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>147</x>
+     <y>533</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>578</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_OBJ2Graph</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotFractalToGraph()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>176</x>
+     <y>118</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>255</x>
+     <y>5</y>
     </hint>
    </hints>
   </connection>
@@ -3092,7 +3082,7 @@ QListWidget {
   <slot>slotChangeSelectionMode()</slot>
   <slot>slotExportAllFaces()</slot>
   <slot>slotExportSelectedFace()</slot>
-  <slot>slotOpenOBJ4File()</slot>
+  <slot>slotFractalToGraph()</slot>
   <slot>slotComputeFractalDimension()</slot>
   <slot>slotComputeAreaPerimeterPNG()</slot>
   <slot>slotComputeImageDensity()</slot>
