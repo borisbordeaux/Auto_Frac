@@ -1,6 +1,7 @@
 #include "gui/controlpointeditor.h"
 
 #include "fractal/structure.h"
+#include "utils/utils.h"
 #include <QGraphicsRectItem>
 #include <QMouseEvent>
 #include <QVBoxLayout>
@@ -22,9 +23,9 @@ ControlPointEditor::ControlPointEditor() : QGraphicsView() {
     this->scale(1, -1.0);
     m_scene.setBackgroundBrush(Qt::white);
 
-    QVBoxLayout * layout = new QVBoxLayout(this);
-    QHBoxLayout * hLayout = new QHBoxLayout();
-    QFormLayout * hLayoutButton = new QFormLayout();
+    QVBoxLayout* layout = new QVBoxLayout(this);
+    QHBoxLayout* hLayout = new QHBoxLayout();
+    QFormLayout* hLayoutButton = new QFormLayout();
     hLayout->setAlignment(Qt::AlignRight);
     layout->setAlignment(Qt::AlignBottom);
     layout->addLayout(hLayout);
@@ -35,6 +36,7 @@ ControlPointEditor::ControlPointEditor() : QGraphicsView() {
     QPushButton* loadButton = new QPushButton("Load...");
     QPushButton* rotateButton = new QPushButton("Rotate");
     QPushButton* translateButton = new QPushButton("Translate");
+    QPushButton* localDistButton = new QPushButton("Local Distribution");
     m_xCoord = new QDoubleSpinBox();
     m_yCoord = new QDoubleSpinBox();
     m_angle = new QDoubleSpinBox();
@@ -47,13 +49,14 @@ ControlPointEditor::ControlPointEditor() : QGraphicsView() {
     m_yTranslate->setRange(-1000, 1000);
     hLayoutButton->addRow(m_xCoord, m_yCoord);
     hLayoutButton->addRow(changeCoordButton);
-    QFrame * hline = new QFrame();
+    QFrame* hline = new QFrame();
     hline->setFrameShape(QFrame::HLine);
     hLayoutButton->addRow(hline);
     hLayoutButton->addRow(saveButton, loadButton);
     hLayoutButton->addRow(m_angle, rotateButton);
     hLayoutButton->addRow(m_xTranslate, m_yTranslate);
     hLayoutButton->addRow(translateButton);
+    hLayoutButton->addRow(localDistButton);
 
     hLayoutButton->setRowWrapPolicy(QFormLayout::DontWrapRows);
     hLayoutButton->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
@@ -66,6 +69,7 @@ ControlPointEditor::ControlPointEditor() : QGraphicsView() {
     connect(loadButton, &QPushButton::clicked, this, &ControlPointEditor::load);
     connect(rotateButton, &QPushButton::clicked, this, &ControlPointEditor::rotateFace);
     connect(translateButton, &QPushButton::clicked, this, &ControlPointEditor::translateFace);
+    connect(localDistButton, &QPushButton::clicked, this, &ControlPointEditor::localDistFace);
 }
 
 void ControlPointEditor::show() {
@@ -348,6 +352,43 @@ void ControlPointEditor::translateFace() {
             p.setX(p.x() + x);
             p.setY(p.y() + y);
         }
+        this->redraw(true);
+    }
+}
+
+void ControlPointEditor::localDistFace() {
+    if (m_lastFaceIndex != -1) {
+        //compute barycenter
+        qreal x = 0.0;
+        qreal y = 0.0;
+        for (QPointF& p: m_coordinatesTemp[m_lastFaceIndex]) {
+            x += p.x();
+            y += p.y();
+        }
+        x /= static_cast<double>(m_coordinatesTemp[m_lastFaceIndex].size());
+        y /= static_cast<double>(m_coordinatesTemp[m_lastFaceIndex].size());
+
+        //distribute points around the origin and add the computed barycenter to place correctly the face
+        float nbCtrlPtsF = static_cast<float>(m_coordinatesTemp[m_lastFaceIndex].size());
+        int nbCtrlPts = static_cast<int>(m_coordinatesTemp[m_lastFaceIndex].size());
+        double radius = 100.0;
+        int i = 0;
+        for (QPointF& p: m_coordinatesTemp[m_lastFaceIndex]) {
+            if (!m_structure->isInternControlPoint(i, m_lastFaceIndex)) {
+                p.setX(radius * qCos(static_cast<float>(i) * 2.0f * 3.1415926f / nbCtrlPtsF) + x);
+                p.setY(radius * qSin(static_cast<float>(i) * 2.0f * 3.1415926f / nbCtrlPtsF) + y);
+            }
+            i++;
+        }
+        i = 0;
+        for (QPointF& p: m_coordinatesTemp[m_lastFaceIndex]) {
+            if (m_structure->isInternControlPoint(i, m_lastFaceIndex)) {
+                p.setX((m_coordinatesTemp[m_lastFaceIndex][frac::utils::mod(i - 1, nbCtrlPts)].x() + m_coordinatesTemp[m_lastFaceIndex][frac::utils::mod(i + 1, nbCtrlPts)].x()) / 2.0);
+                p.setY((m_coordinatesTemp[m_lastFaceIndex][frac::utils::mod(i - 1, nbCtrlPts)].y() + m_coordinatesTemp[m_lastFaceIndex][frac::utils::mod(i + 1, nbCtrlPts)].y()) / 2.0);
+            }
+            i++;
+        }
+
         this->redraw(true);
     }
 }

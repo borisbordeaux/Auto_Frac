@@ -27,6 +27,7 @@ public slots:
     void load();
     void rotateFace();
     void translateFace();
+    void localDistFace();
 
 protected:
     void mousePressEvent(QMouseEvent* event) override;
