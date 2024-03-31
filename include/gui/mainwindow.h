@@ -86,6 +86,7 @@ public slots:
     [[maybe_unused]] void slotEditCP();
     [[maybe_unused]] void slotComputePersistenceHomology();
     [[maybe_unused]] void slotFractalToGraph();
+    [[maybe_unused]] void slotExportOBJ();
 
 public:
     void projectCirclesToPlan();

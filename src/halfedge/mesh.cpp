@@ -110,3 +110,11 @@ QString he::Mesh::toString() const {
     }
     return res;
 }
+
+std::optional<std::size_t> he::Mesh::indexOf(he::Vertex* v) const {
+    for (std::size_t i = 0; i < m_vertices.size(); i++) {
+        if (m_vertices[i] == v)
+            return i;
+    }
+    return {};
+}

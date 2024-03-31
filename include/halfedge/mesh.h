@@ -32,6 +32,8 @@ public:
 
     [[nodiscard]] QString toString() const;
 
+    std::optional<std::size_t> indexOf(he::Vertex* v) const;
+
 private:
     std::vector<he::Vertex*> m_vertices;
     std::vector<he::HalfEdge*> m_halfEdges;

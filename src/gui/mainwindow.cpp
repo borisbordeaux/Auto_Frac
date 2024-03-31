@@ -28,6 +28,7 @@
 #include "NazaraUtils/Algorithm.hpp"
 
 #include "gui/controlpointeditor.h"
+#include "utils/objwriter.h"
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow), m_openedMesh(false),
                                           m_chartFractalDim(new QChart()), m_chartAreaPerimeter(new QChart()),
@@ -1491,4 +1492,15 @@ void MainWindow::increaseInversion() {
 
 [[maybe_unused]] void MainWindow::slotFractalToGraph() {
     qDebug() << "clicked";
+}
+
+[[maybe_unused]] void MainWindow::slotExportOBJ() {
+    if (!m_mesh.vertices().empty()) {
+        this->grabKeyboard();
+        this->releaseKeyboard();
+        QString file = QFileDialog::getSaveFileName(this, "Choose an OBJ File...", "../obj", "OBJ Files (*.obj)");
+        if (file != "") {
+            he::writer::writeOBJ(file, m_mesh);
+        }
+    }
 }
