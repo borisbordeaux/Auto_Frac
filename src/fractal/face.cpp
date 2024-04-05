@@ -251,3 +251,26 @@ std::size_t frac::Face::nbControlPoints() const {
     }
     return res;
 }
+
+frac::Face frac::Face::fromStr(std::string const& name) {
+    std::string sepCellInfo = " / ";
+    std::string sepEdges = " - ";
+
+    std::vector<std::string> splitCellName = frac::utils::split(name, sepCellInfo);
+    std::string edgesNames = splitCellName[0];
+    std::string paramsNames = splitCellName[1];
+    unsigned int delay = std::stoul(splitCellName[2]);
+
+    std::vector<frac::Edge> edges;
+    for (std::string const& edgeName: frac::utils::split(edgesNames, sepEdges)) {
+        edges.emplace_back(frac::Edge::fromStr(edgeName));
+    }
+    std::vector<std::string> splitParamsNames = frac::utils::split(paramsNames, sepEdges);
+
+    frac::Edge adjEdge = frac::Edge::fromStr(splitParamsNames[0]);
+    frac::Edge gapEdge = frac::Edge::fromStr(splitParamsNames[1]);
+    frac::Edge reqEdge = frac::Edge::fromStr(splitParamsNames[2]);
+
+    frac::AlgorithmSubdivision algo = static_cast<frac::AlgorithmSubdivision>(std::stoul(splitCellName[3]));
+    return frac::Face(edges, delay, adjEdge, gapEdge, reqEdge, algo);
+}

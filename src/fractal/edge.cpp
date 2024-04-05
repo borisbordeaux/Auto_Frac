@@ -1,6 +1,17 @@
 #include "fractal/edge.h"
+#include "utils/utils.h"
 
 frac::Edge::Edge(EdgeType edgeType, unsigned int nbSubdivisions, unsigned int delay) : m_edgeType(edgeType), m_nbSubdivisions(nbSubdivisions), m_delay(delay) {}
+
+frac::Edge frac::Edge::fromStr(const std::string& name) {
+    std::vector<std::string> splitEdgeName = frac::utils::split(name, '_');
+
+    frac::EdgeType type = splitEdgeName[0] == "C" ? frac::EdgeType::CANTOR : frac::EdgeType::BEZIER;
+    unsigned int nbSubs = std::stoul(splitEdgeName[1]);
+    unsigned int delayEdge = std::stoul(splitEdgeName[2]);
+
+    return {type, nbSubs, delayEdge};
+}
 
 void frac::Edge::decreaseDelay() {
     if (this->isDelay()) {

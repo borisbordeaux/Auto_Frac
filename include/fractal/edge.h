@@ -16,6 +16,7 @@ public:
     Edge(frac::Edge const& other) = default;
     Edge(frac::EdgeType edgeType, unsigned int nbSubdivisions, unsigned int delay = 0);
     Edge& operator=(const frac::Edge& other) = default;
+    static Edge fromStr(std::string const& name);
 
     void decreaseDelay();
     [[nodiscard]] frac::EdgeType edgeType() const;

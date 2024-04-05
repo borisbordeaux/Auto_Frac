@@ -48,6 +48,17 @@ inline std::vector<std::string> split(std::string const& str, char const& delimi
     return strings;
 }
 
+inline std::vector<std::string> split(std::string const& str, std::string const& delimiter) {
+    std::vector<std::string> strings;
+    std::size_t start = 0, end;
+    while ((end = str.find(delimiter, start)) != std::string::npos) {
+        strings.push_back(str.substr(start, end - start));
+        start = end + delimiter.length();
+    }
+    strings.push_back(str.substr(start));
+    return strings;
+}
+
 }
 
 #endif //AUTOFRAC_UTILS_H

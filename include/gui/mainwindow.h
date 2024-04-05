@@ -93,8 +93,6 @@ public:
     void updateCircles();
 
 private:
-    static frac::Face toFace(QString const& cellName);
-    static frac::Edge toEdge(QString const& edgeName);
     static frac::Adjacency toConstraint(QString const& constraintText);
     static QString fromConstraint(frac::Adjacency const& constraint);
     static std::size_t getNbCellsOfCell(std::string const& faceName, std::size_t level, std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>>& cacheSubdivisions);

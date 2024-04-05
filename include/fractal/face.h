@@ -21,6 +21,7 @@ class Face {
 public:
     Face() : Face(std::vector<frac::Edge> {}) {}
     explicit Face(std::vector<frac::Edge> edges, unsigned int delay = 0, const frac::Edge& adjEdge = { frac::EdgeType::CANTOR, 2 }, const frac::Edge& gapEdge = { frac::EdgeType::BEZIER, 2 }, const frac::Edge& reqEdge = { frac::EdgeType::BEZIER, 2 }, AlgorithmSubdivision algo = AlgorithmSubdivision::LinksSurroundDelayAndBezier);
+    static Face fromStr(std::string const& name);
 
     [[nodiscard]] std::vector<frac::Edge> const& constData() const;
     [[nodiscard]] std::vector<frac::Edge>& data();

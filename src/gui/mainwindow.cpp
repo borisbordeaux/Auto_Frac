@@ -117,9 +117,9 @@ MainWindow::~MainWindow() {
     frac::Face::reset();
     frac::FilePrinter::reset();
 
-    std::vector<frac::Face> faces;
+    std::vector <frac::Face> faces;
     for (int i = 0; i < this->ui->listWidget_faces->count(); ++i) {
-        faces.push_back(toFace(this->ui->listWidget_faces->item(i)->text()));
+        faces.push_back(frac::Face::fromStr(this->ui->listWidget_faces->item(i)->text().toStdString()));
     }
 
     frac::Structure s { faces };
@@ -157,38 +157,6 @@ MainWindow::~MainWindow() {
     this->setInfo(info.str());
 }
 
-frac::Edge MainWindow::toEdge(QString const& edgeName) {
-    QChar sepEdgesParam = '_';
-    QStringList splitEdgeName = edgeName.split(sepEdgesParam);
-    frac::EdgeType type = splitEdgeName[0] == "C" ? frac::EdgeType::CANTOR : frac::EdgeType::BEZIER;
-    unsigned int nbSubs = splitEdgeName[1].toUInt();
-    unsigned int delayEdge = splitEdgeName[2].toUInt();
-    return { type, nbSubs, delayEdge };
-}
-
-frac::Face MainWindow::toFace(QString const& cellName) {
-    QString sepCellInfo = " / ";
-    QString sepEdges = " - ";
-
-    QStringList splitCellName = cellName.split(sepCellInfo);
-    QString edgesNames = splitCellName[0];
-    QString paramsNames = splitCellName[1];
-    unsigned int delay = splitCellName[2].toUInt();
-
-    std::vector<frac::Edge> edges;
-    for (QString const& edgeName: edgesNames.split(sepEdges)) {
-        edges.emplace_back(MainWindow::toEdge(edgeName));
-    }
-    QStringList splitParamsNames = paramsNames.split(sepEdges);
-
-    frac::Edge adjEdge = MainWindow::toEdge(splitParamsNames[0]);
-    frac::Edge gapEdge = MainWindow::toEdge(splitParamsNames[1]);
-    frac::Edge reqEdge = MainWindow::toEdge(splitParamsNames[2]);
-
-    frac::AlgorithmSubdivision algo = static_cast<frac::AlgorithmSubdivision>(splitCellName[3].toUInt());
-    return frac::Face(edges, delay, adjEdge, gapEdge, reqEdge, algo);
-}
-
 [[maybe_unused]] void MainWindow::slotAddFace() {
     this->ui->listWidget_faces->addItem("C_2_0 - B_2_0 - C_2_0 - B_2_0 - C_2_0 - B_2_0 / C_2_0 - B_2_0 - B_2_0 / 0 / 1");
     this->ui->listWidget_faces->setCurrentRow(this->ui->listWidget_faces->count() - 1);
@@ -209,8 +177,8 @@ frac::Face MainWindow::toFace(QString const& cellName) {
 [[maybe_unused]] void MainWindow::slotOnFaceSelected(int row) {
     if (row == -1) { return; }
 
-    QString cellName = this->ui->listWidget_faces->item(row)->text();
-    frac::Face f = MainWindow::toFace(cellName);
+    std::string cellName = this->ui->listWidget_faces->item(row)->text().toStdString();
+    frac::Face f = frac::Face::fromStr(cellName);
     //delay
     this->ui->spinBox_faceDelay->setValue(static_cast<int>(f.delay()));
     //algo
@@ -238,89 +206,89 @@ frac::Face MainWindow::toFace(QString const& cellName) {
 [[maybe_unused]] void MainWindow::slotOnEdgeSelected(int row) {
     if (row == -1) { return; }
 
-    frac::Edge e = toEdge(this->ui->listWidget_edges->item(row)->text());
+    frac::Edge e = frac::Edge::fromStr(this->ui->listWidget_edges->item(row)->text().toStdString());
     this->ui->comboBox_currentEdgeTopology->setCurrentIndex(e.edgeType() == frac::EdgeType::CANTOR ? 0 : 1);
     this->ui->spinBox_currentEdgeNbSubdivisions->setValue(static_cast<int>(e.nbSubdivisions()));
     this->ui->spinBox_currentEdgeDelay->setValue(static_cast<int>(e.delay()));
 }
 
 [[maybe_unused]] void MainWindow::slotOnFaceAdjTopologyChanged(int row) {
-    frac::Face f = MainWindow::toFace(this->ui->listWidget_faces->currentItem()->text());
+    frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     frac::Edge e { row == 0 ? frac::EdgeType::CANTOR : frac::EdgeType::BEZIER, f.adjEdge().nbSubdivisions(), f.adjEdge().delay() };
     f.setAdjEdge(e);
     this->ui->listWidget_faces->currentItem()->setText(f.toString().c_str());
 }
 
 [[maybe_unused]] void MainWindow::slotOnFaceAdjNbSubdivisionsChanged(int value) {
-    frac::Face f = MainWindow::toFace(this->ui->listWidget_faces->currentItem()->text());
+    frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     frac::Edge e { f.adjEdge().edgeType(), static_cast<unsigned int>(value), f.adjEdge().delay() };
     f.setAdjEdge(e);
     this->ui->listWidget_faces->currentItem()->setText(f.toString().c_str());
 }
 
 [[maybe_unused]] void MainWindow::slotOnFaceAdjDelayChanged(int value) {
-    frac::Face f = MainWindow::toFace(this->ui->listWidget_faces->currentItem()->text());
+    frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     frac::Edge e { f.adjEdge().edgeType(), f.adjEdge().nbSubdivisions(), static_cast<unsigned int>(value) };
     f.setAdjEdge(e);
     this->ui->listWidget_faces->currentItem()->setText(f.toString().c_str());
 }
 
 [[maybe_unused]] void MainWindow::slotOnFaceGapTopologyChanged(int row) {
-    frac::Face f = MainWindow::toFace(this->ui->listWidget_faces->currentItem()->text());
+    frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     frac::Edge e { row == 0 ? frac::EdgeType::CANTOR : frac::EdgeType::BEZIER, f.gapEdge().nbSubdivisions(), f.gapEdge().delay() };
     f.setGapEdge(e);
     this->ui->listWidget_faces->currentItem()->setText(f.toString().c_str());
 }
 
 [[maybe_unused]] void MainWindow::slotOnFaceGapNbSubdivisionsChanged(int value) {
-    frac::Face f = MainWindow::toFace(this->ui->listWidget_faces->currentItem()->text());
+    frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     frac::Edge e { f.gapEdge().edgeType(), static_cast<unsigned int>(value), f.gapEdge().delay() };
     f.setGapEdge(e);
     this->ui->listWidget_faces->currentItem()->setText(f.toString().c_str());
 }
 
 [[maybe_unused]] void MainWindow::slotOnFaceGapDelayChanged(int value) {
-    frac::Face f = MainWindow::toFace(this->ui->listWidget_faces->currentItem()->text());
+    frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     frac::Edge e { f.gapEdge().edgeType(), f.gapEdge().nbSubdivisions(), static_cast<unsigned int>(value) };
     f.setGapEdge(e);
     this->ui->listWidget_faces->currentItem()->setText(f.toString().c_str());
 }
 
 [[maybe_unused]] void MainWindow::slotOnFaceReqTopologyChanged(int row) {
-    frac::Face f = MainWindow::toFace(this->ui->listWidget_faces->currentItem()->text());
+    frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     frac::Edge e { row == 0 ? frac::EdgeType::CANTOR : frac::EdgeType::BEZIER, f.reqEdge().nbSubdivisions(), f.reqEdge().delay() };
     f.setReqEdge(e);
     this->ui->listWidget_faces->currentItem()->setText(f.toString().c_str());
 }
 
 [[maybe_unused]] void MainWindow::slotOnFaceReqNbSubdivisionsChanged(int value) {
-    frac::Face f = MainWindow::toFace(this->ui->listWidget_faces->currentItem()->text());
+    frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     frac::Edge e { f.reqEdge().edgeType(), static_cast<unsigned int>(value), f.reqEdge().delay() };
     f.setReqEdge(e);
     this->ui->listWidget_faces->currentItem()->setText(f.toString().c_str());
 }
 
 [[maybe_unused]] void MainWindow::slotOnFaceReqDelayChanged(int value) {
-    frac::Face f = MainWindow::toFace(this->ui->listWidget_faces->currentItem()->text());
+    frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     frac::Edge e { f.reqEdge().edgeType(), f.reqEdge().nbSubdivisions(), static_cast<unsigned int>(value) };
     f.setReqEdge(e);
     this->ui->listWidget_faces->currentItem()->setText(f.toString().c_str());
 }
 
 [[maybe_unused]] void MainWindow::slotOnFaceDelayChanged(int value) {
-    frac::Face f = MainWindow::toFace(this->ui->listWidget_faces->currentItem()->text());
+    frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     f.setDelay(value);
     this->ui->listWidget_faces->currentItem()->setText(f.toString().c_str());
 }
 
 [[maybe_unused]] void MainWindow::slotOnFaceAlgoChanged(int row) {
-    frac::Face f = MainWindow::toFace(this->ui->listWidget_faces->currentItem()->text());
+    frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     f.setAlgo(static_cast<frac::AlgorithmSubdivision>(row));
     this->ui->listWidget_faces->currentItem()->setText(f.toString().c_str());
 }
 
 [[maybe_unused]] void MainWindow::slotAddEdge() {
-    frac::Face f = MainWindow::toFace(this->ui->listWidget_faces->currentItem()->text());
+    frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     frac::Edge e { frac::EdgeType::CANTOR, 2, 0 };
     auto it = f.data().begin();
     it += this->ui->listWidget_edges->currentRow() + 1;
@@ -334,9 +302,9 @@ frac::Face MainWindow::toFace(QString const& cellName) {
 
 [[maybe_unused]] void MainWindow::slotRemoveEdge() {
     if (this->ui->listWidget_edges->count() == 3) { return; }
-    frac::Face f = MainWindow::toFace(this->ui->listWidget_faces->currentItem()->text());
+    frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     long int indexToRemove = this->ui->listWidget_edges->currentRow();
-    std::vector<frac::Edge> edges;
+    std::vector <frac::Edge> edges;
     int i = 0;
     for (frac::Edge const& e: f.constData()) {
         if (i != indexToRemove) {
@@ -354,7 +322,7 @@ frac::Face MainWindow::toFace(QString const& cellName) {
 }
 
 [[maybe_unused]] void MainWindow::slotOnSelectedEdgeTopologyChanged(int row) {
-    frac::Face f = MainWindow::toFace(this->ui->listWidget_faces->currentItem()->text());
+    frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     f.data().at(this->ui->listWidget_edges->currentRow()).setEdgeType(row == 0 ? frac::EdgeType::CANTOR : frac::EdgeType::BEZIER);
 
     this->ui->listWidget_faces->currentItem()->setText(f.toString().c_str());
@@ -362,7 +330,7 @@ frac::Face MainWindow::toFace(QString const& cellName) {
 }
 
 [[maybe_unused]] void MainWindow::slotOnSelectedEdgeNbSubdivisionsChanged(int value) {
-    frac::Face f = MainWindow::toFace(this->ui->listWidget_faces->currentItem()->text());
+    frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     f.data().at(this->ui->listWidget_edges->currentRow()).setNbSubdivisions(static_cast<unsigned int>(value));
 
     this->ui->listWidget_faces->currentItem()->setText(f.toString().c_str());
@@ -370,7 +338,7 @@ frac::Face MainWindow::toFace(QString const& cellName) {
 }
 
 [[maybe_unused]] void MainWindow::slotOnSelectedEdgeDelayChanged(int value) {
-    frac::Face f = MainWindow::toFace(this->ui->listWidget_faces->currentItem()->text());
+    frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     f.data().at(this->ui->listWidget_edges->currentRow()).setDelay(static_cast<unsigned int>(value));
 
     this->ui->listWidget_faces->currentItem()->setText(f.toString().c_str());
@@ -583,7 +551,7 @@ void MainWindow::setInfo(std::string const& textInfo, int timeoutMs) {
 
         std::vector<int> res = frac::utils::computeFractalDimension(img);
 
-        std::vector<std::pair<float, float>> logRes;
+        std::vector <std::pair<float, float>> logRes;
         logRes.reserve(res.size());
         int i = 2;
         for (auto x: res) {
@@ -631,7 +599,7 @@ void MainWindow::setInfo(std::string const& textInfo, int timeoutMs) {
         yAxis->setTitleText("log(Ne)");
 
         bool ok;
-        QPair<qreal, qreal> eq = series->bestFitLineEquation(ok);
+        QPair <qreal, qreal> eq = series->bestFitLineEquation(ok);
         if (ok) {
             this->ui->label_fractalDimension->setText(QString::number(eq.first));
             std::cout << eq.first << "x + " << eq.second << std::endl;
@@ -683,8 +651,8 @@ void MainWindow::computeAreaPerimeter(QStringList const& files) {
 
     bool okArea;
     bool okPerimeter;
-    QPair<qreal, qreal> areaReg = seriesArea->bestFitLineEquation(okArea);
-    QPair<qreal, qreal> perimeterReg = seriesPerimeter->bestFitLineEquation(okPerimeter);
+    QPair <qreal, qreal> areaReg = seriesArea->bestFitLineEquation(okArea);
+    QPair <qreal, qreal> perimeterReg = seriesPerimeter->bestFitLineEquation(okPerimeter);
     if (okArea && okPerimeter) {
         seriesArea->setBestFitLineColor(Qt::blue);
         seriesArea->setBestFitLineVisible(true);
@@ -788,18 +756,18 @@ void MainWindow::computeAreaPerimeter(QStringList const& files) {
     frac::Face::reset();
     frac::FilePrinter::reset();
 
-    std::vector<frac::Face> faces;
+    std::vector <frac::Face> faces;
     for (int i = 0; i < this->ui->listWidget_faces->count(); ++i) {
-        faces.push_back(toFace(this->ui->listWidget_faces->item(i)->text()));
+        faces.push_back(frac::Face::fromStr(this->ui->listWidget_faces->item(i)->text().toStdString()));
     }
 
     frac::Structure s { faces };
 
     // need to store for each face the number of subdivisions and their type (their face)
-    std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>> cache;
+    std::unordered_map <std::string, std::unordered_map<std::string, std::size_t>> cache;
 
     for (frac::Face const& f: s.allFaces()) {
-        std::unordered_map<std::string, std::size_t> map;
+        std::unordered_map <std::string, std::size_t> map;
         // get the number of each kind of subdivision
         for (frac::Face const& sub: f.subdivisions()) {
             if (map.find(sub.name()) != map.end()) {
@@ -824,20 +792,20 @@ void MainWindow::computeAreaPerimeter(QStringList const& files) {
     frac::Face::reset();
     frac::FilePrinter::reset();
 
-    std::vector<frac::Face> faces;
+    std::vector <frac::Face> faces;
     for (int i = 0; i < this->ui->listWidget_faces->count(); ++i) {
-        faces.push_back(toFace(this->ui->listWidget_faces->item(i)->text()));
+        faces.push_back(frac::Face::fromStr(this->ui->listWidget_faces->item(i)->text().toStdString()));
     }
 
     frac::Structure s { faces };
 
     // need to store for each face the number of subdivisions and their type (their face)
-    std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>> cacheSubdivisions;
+    std::unordered_map <std::string, std::unordered_map<std::string, std::size_t>> cacheSubdivisions;
     std::unordered_map<std::string, double> cacheLacunas;
 
     for (frac::Face const& f: s.allFaces()) {
         // fill the cache subdivision
-        std::unordered_map<std::string, std::size_t> map;
+        std::unordered_map <std::string, std::size_t> map;
         // get the number of each kind of subdivision
         for (frac::Face const& sub: f.subdivisions()) {
             if (map.find(sub.name()) != map.end()) {
@@ -873,7 +841,7 @@ void MainWindow::computeAreaPerimeter(QStringList const& files) {
     this->ui->label_nbLacunas->setText(QString::number(nbLacuna, 'f', 1));
 }
 
-std::size_t MainWindow::getNbCellsOfCell(std::string const& faceName, std::size_t level, std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>>& cacheSubdivisions) {
+std::size_t MainWindow::getNbCellsOfCell(std::string const& faceName, std::size_t level, std::unordered_map <std::string, std::unordered_map<std::string, std::size_t>>& cacheSubdivisions) {
     if (level == 0) {
         return 1;
     } else {
@@ -886,7 +854,7 @@ std::size_t MainWindow::getNbCellsOfCell(std::string const& faceName, std::size_
     }
 }
 
-double MainWindow::getNbLacunaOfCell(std::string const& faceName, std::size_t level, std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>>& cacheSubdivisions, std::unordered_map<std::string, double>& cacheLacunas) {
+double MainWindow::getNbLacunaOfCell(std::string const& faceName, std::size_t level, std::unordered_map <std::string, std::unordered_map<std::string, std::size_t>>& cacheSubdivisions, std::unordered_map<std::string, double>& cacheLacunas) {
     if (level == 0) {
         return 0.0;
     } else {
@@ -904,20 +872,20 @@ double MainWindow::getNbLacunaOfCell(std::string const& faceName, std::size_t le
     frac::Face::reset();
     frac::FilePrinter::reset();
 
-    std::vector<frac::Face> faces;
+    std::vector <frac::Face> faces;
     for (int i = 0; i < this->ui->listWidget_faces->count(); ++i) {
-        faces.push_back(toFace(this->ui->listWidget_faces->item(i)->text()));
+        faces.push_back(frac::Face::fromStr(this->ui->listWidget_faces->item(i)->text().toStdString()));
     }
 
     frac::Structure s { faces };
 
     // need to store for each face the number of subdivisions and their type (their face)
-    std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>> cacheSubdivisions;
+    std::unordered_map <std::string, std::unordered_map<std::string, std::size_t>> cacheSubdivisions;
     std::unordered_map<std::string, double> cacheLacunas;
 
     for (frac::Face const& f: s.allFaces()) {
         // fill the cache subdivision
-        std::unordered_map<std::string, std::size_t> map;
+        std::unordered_map <std::string, std::size_t> map;
         // get the number of each kind of subdivision
         for (frac::Face const& sub: f.subdivisions()) {
             if (map.find(sub.name()) != map.end()) {
@@ -988,7 +956,7 @@ double MainWindow::getNbLacunaOfCell(std::string const& faceName, std::size_t le
 }
 
 void MainWindow::canonicalizeStep() {
-    std::vector<QVector3D> oldPos;
+    std::vector <QVector3D> oldPos;
     for (auto const& v: m_mesh.vertices()) {
         oldPos.push_back(v->pos());
     }
@@ -1383,9 +1351,9 @@ void MainWindow::increaseInversion() {
     frac::Face::reset();
     frac::FilePrinter::reset();
 
-    std::vector<frac::Face> faces;
+    std::vector <frac::Face> faces;
     for (int i = 0; i < this->ui->listWidget_faces->count(); ++i) {
-        faces.push_back(toFace(this->ui->listWidget_faces->item(i)->text()));
+        faces.push_back(frac::Face::fromStr(this->ui->listWidget_faces->item(i)->text().toStdString()));
     }
 
     frac::Structure* newStruct = new frac::Structure(faces);
@@ -1425,14 +1393,14 @@ void MainWindow::increaseInversion() {
     QString file = QFileDialog::getOpenFileName(this, "Open an OFF File...", "../off", "OFF Files (*.off)");
     if (file != "") {
         m_chartPersistentHomology->removeAllSeries();
-        std::vector<QScatterSeries*> series;
+        std::vector < QScatterSeries * > series;
         QLineSeries* diag = new QLineSeries();
         diag->setName("Diagonal");
 
         // dim will never be greater than 4
         Qt::GlobalColor colors[4] = { Qt::darkGreen, Qt::blue, Qt::red, Qt::yellow };
 
-        std::vector<frac::PersistentHomology::Cycles> cycles = frac::PersistentHomology::computePersistenceHomology(file, static_cast<float>(this->ui->spinBox_persistenceR->value()), static_cast<float>(this->ui->spinBox_persistenceLifeTime->value()), this->ui->spinBox_persistenceDim->value());
+        std::vector <frac::PersistentHomology::Cycles> cycles = frac::PersistentHomology::computePersistenceHomology(file, static_cast<float>(this->ui->spinBox_persistenceR->value()), static_cast<float>(this->ui->spinBox_persistenceLifeTime->value()), this->ui->spinBox_persistenceDim->value());
         for (frac::PersistentHomology::Cycles const& c: cycles) {
             if (c.Death < 100.0f) { //not inf
                 while (series.size() < static_cast<std::size_t>(c.Dim) + 1) {
