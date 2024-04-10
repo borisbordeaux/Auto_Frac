@@ -463,1119 +463,23 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
         <string>Auto Subd 2D</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_3">
-        <item row="0" column="0">
-         <layout class="QVBoxLayout" name="verticalLayout_6">
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout_4">
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout">
-              <item>
-               <widget class="QLabel" name="label_4">
-                <property name="text">
-                 <string>Faces</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QListWidget" name="listWidget_faces">
-                <property name="font">
-                 <font>
-                  <pointsize>12</pointsize>
-                  <bold>true</bold>
-                 </font>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">QListWidget::item:selected{
-	background-color: #AEAEFE;
-	color: rgba(0, 0, 0, 0.66);
-}
-QListWidget::item{
-	padding: 5px;
-}
-QListWidget {
-	background-color: black;
-	outline: none;
-}</string>
-                </property>
-                <property name="spacing">
-                 <number>0</number>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_2">
-                <item>
-                 <spacer name="horizontalSpacer">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="pushButton_addFace">
-                  <property name="text">
-                   <string>+</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="pushButton_removeFace">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                  <property name="text">
-                   <string>-</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="pushButton_duplicateFace">
-                  <property name="text">
-                   <string>Duplicate</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer_2">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <spacer name="verticalSpacer_8">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout">
-              <item>
-               <layout class="QFormLayout" name="formLayout_3">
-                <item row="2" column="0">
-                 <widget class="QLabel" name="labelTopology_3">
-                  <property name="minimumSize">
-                   <size>
-                    <width>84</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Topology</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="1">
-                 <widget class="QComboBox" name="comboBox_adjEdgeTopology">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                  <property name="currentIndex">
-                   <number>0</number>
-                  </property>
-                  <item>
-                   <property name="text">
-                    <string>Cantor</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string notr="true">Bézier</string>
-                   </property>
-                  </item>
-                 </widget>
-                </item>
-                <item row="3" column="0">
-                 <widget class="QLabel" name="labelNumberOfSubdivisions_3">
-                  <property name="minimumSize">
-                   <size>
-                    <width>139</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Number of sub-edges</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="3" column="1">
-                 <widget class="QSpinBox" name="spinBox_adjEdgeNbSubdivisions">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                  <property name="minimum">
-                   <number>2</number>
-                  </property>
-                 </widget>
-                </item>
-                <item row="4" column="0">
-                 <widget class="QLabel" name="labelDelay_3">
-                  <property name="minimumSize">
-                   <size>
-                    <width>84</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Delay</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="4" column="1">
-                 <widget class="QSpinBox" name="spinBox_adjEdgeDelay">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="0" colspan="2">
-                 <widget class="QLabel" name="label_3">
-                  <property name="text">
-                   <string>Adjacency Edge</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignCenter</set>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_7">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <layout class="QFormLayout" name="formLayout_2">
-                <item row="1" column="0">
-                 <widget class="QLabel" name="labelTopology_2">
-                  <property name="minimumSize">
-                   <size>
-                    <width>84</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Topology</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="1">
-                 <widget class="QComboBox" name="comboBox_gapEdgeTopology">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                  <property name="currentIndex">
-                   <number>1</number>
-                  </property>
-                  <item>
-                   <property name="text">
-                    <string>Cantor</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string notr="true">Bézier</string>
-                   </property>
-                  </item>
-                 </widget>
-                </item>
-                <item row="2" column="0">
-                 <widget class="QLabel" name="labelNumberOfSubdivisions_2">
-                  <property name="minimumSize">
-                   <size>
-                    <width>139</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Number of sub-edges</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="1">
-                 <widget class="QSpinBox" name="spinBox_gapEdgeNbSubdivisions">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                  <property name="minimum">
-                   <number>2</number>
-                  </property>
-                 </widget>
-                </item>
-                <item row="3" column="0">
-                 <widget class="QLabel" name="labelDelay_2">
-                  <property name="minimumSize">
-                   <size>
-                    <width>84</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Delay</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="3" column="1">
-                 <widget class="QSpinBox" name="spinBox_gapEdgeDelay">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="0" colspan="2">
-                 <widget class="QLabel" name="label_2">
-                  <property name="text">
-                   <string>Lacuna Edge</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignCenter</set>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_8">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <layout class="QFormLayout" name="formLayout">
-                <item row="0" column="0" colspan="2">
-                 <widget class="QLabel" name="label">
-                  <property name="text">
-                   <string>Mid Cantor Edge</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="0">
-                 <widget class="QLabel" name="labelTopology">
-                  <property name="minimumSize">
-                   <size>
-                    <width>84</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Topology</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="1">
-                 <widget class="QComboBox" name="comboBox_reqEdgeTopology">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                  <property name="currentIndex">
-                   <number>1</number>
-                  </property>
-                  <item>
-                   <property name="text">
-                    <string>Cantor</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string notr="true">Bézier</string>
-                   </property>
-                  </item>
-                 </widget>
-                </item>
-                <item row="2" column="0">
-                 <widget class="QLabel" name="labelNumberOfSubdivisions">
-                  <property name="minimumSize">
-                   <size>
-                    <width>139</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Number of sub-edges</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="1">
-                 <widget class="QSpinBox" name="spinBox_reqEdgeNbSubdivisions">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                  <property name="minimum">
-                   <number>2</number>
-                  </property>
-                 </widget>
-                </item>
-                <item row="3" column="0">
-                 <widget class="QLabel" name="labelDelay">
-                  <property name="minimumSize">
-                   <size>
-                    <width>84</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Delay</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="3" column="1">
-                 <widget class="QSpinBox" name="spinBox_reqEdgeDelay">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_9">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <layout class="QFormLayout" name="formLayout_7">
-                <item row="1" column="0">
-                 <widget class="QLabel" name="label_13">
-                  <property name="text">
-                   <string>Delay</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="1">
-                 <widget class="QSpinBox" name="spinBox_faceDelay">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>70</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="0">
-                 <widget class="QLabel" name="label_23">
-                  <property name="text">
-                   <string>Algo</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="1">
-                 <widget class="QComboBox" name="comboBox_algorithm">
-                  <item>
-                   <property name="text">
-                    <string>LinksSurroundDelay</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>LinksSurroundDelayAndBezier</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>LinksOnCorners</string>
-                   </property>
-                  </item>
-                 </widget>
-                </item>
-                <item row="0" column="0" colspan="2">
-                 <widget class="QLabel" name="label_24">
-                  <property name="text">
-                   <string>Cell settings</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignCenter</set>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <spacer name="verticalSpacer_6">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>1010</width>
-              <height>13</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="Line" name="line">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="verticalSpacer_7">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>1010</width>
-              <height>13</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_5">
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_2">
-              <item>
-               <widget class="QLabel" name="label_5">
-                <property name="text">
-                 <string>Edges</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QListWidget" name="listWidget_edges">
-                <property name="font">
-                 <font>
-                  <pointsize>12</pointsize>
-                  <bold>true</bold>
-                 </font>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">QListWidget::item:selected{
-	background-color: #AEAEFE;
-	color: rgba(0, 0, 0, 0.66);
-}
-QListWidget::item{
-	padding: 5px;
-}
-QListWidget {
-	background-color: black;
-	outline: none;
-}</string>
-                </property>
-                <property name="spacing">
-                 <number>0</number>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_3">
-                <item>
-                 <spacer name="horizontalSpacer_4">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="pushButton_addEdge">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                  <property name="text">
-                   <string>+</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="pushButton_removeEdge">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                  <property name="text">
-                   <string>-</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer_3">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QFormLayout" name="formLayout_4">
-              <item row="1" column="0">
-               <widget class="QLabel" name="labelTopology_4">
-                <property name="minimumSize">
-                 <size>
-                  <width>84</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Topology</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QComboBox" name="comboBox_currentEdgeTopology">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <item>
-                 <property name="text">
-                  <string>Cantor</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string notr="true">Bézier</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="labelNumberOfSubdivisions_4">
-                <property name="minimumSize">
-                 <size>
-                  <width>139</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Number of sub-edges</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="QSpinBox" name="spinBox_currentEdgeNbSubdivisions">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="minimum">
-                 <number>2</number>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="QLabel" name="labelDelay_4">
-                <property name="minimumSize">
-                 <size>
-                  <width>84</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Delay</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1">
-               <widget class="QSpinBox" name="spinBox_currentEdgeDelay">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0" colspan="2">
-               <widget class="QLabel" name="label_6">
-                <property name="text">
-                 <string>Edge Info</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_10">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <spacer name="verticalSpacer_5">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>1010</width>
-              <height>13</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="Line" name="line_2">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="verticalSpacer_4">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>1010</width>
-              <height>13</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_6">
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_3">
-              <item>
-               <widget class="QLabel" name="label_7">
-                <property name="text">
-                 <string>Constraints</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QListWidget" name="listWidget_constraints">
-                <property name="font">
-                 <font>
-                  <pointsize>12</pointsize>
-                  <bold>true</bold>
-                 </font>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">QListWidget::item:selected{
-	background-color: #AEAEFE;
-	color: rgba(0, 0, 0, 0.66);
-}
-QListWidget::item{
-	padding: 5px;
-}
-QListWidget {
-	background-color: black;
-	outline: none;
-}</string>
-                </property>
-                <property name="spacing">
-                 <number>0</number>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_4">
-                <item>
-                 <spacer name="horizontalSpacer_6">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="pushButton_addConstraint">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                  <property name="text">
-                   <string>+</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="pushButton_removeConstraint">
-                  <property name="enabled">
-                   <bool>true</bool>
-                  </property>
-                  <property name="text">
-                   <string>-</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer_5">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_5">
-              <item>
-               <widget class="QLabel" name="label_12">
-                <property name="text">
-                 <string>Constraints Settings</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <layout class="QFormLayout" name="formLayout_5">
-                <item row="0" column="0">
-                 <widget class="QLabel" name="label_8">
-                  <property name="text">
-                   <string>Face 1</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="0">
-                 <widget class="QLabel" name="label_9">
-                  <property name="text">
-                   <string>Edge 1</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="3" column="0">
-                 <widget class="QLabel" name="label_10">
-                  <property name="text">
-                   <string>Face 2</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="4" column="0">
-                 <widget class="QLabel" name="label_11">
-                  <property name="text">
-                   <string>Edge 2</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="1">
-                 <widget class="QSpinBox" name="spinBox_constraintFace1"/>
-                </item>
-                <item row="1" column="1">
-                 <widget class="QSpinBox" name="spinBox_constraintEdge1"/>
-                </item>
-                <item row="3" column="1">
-                 <widget class="QSpinBox" name="spinBox_constraintFace2"/>
-                </item>
-                <item row="4" column="1">
-                 <widget class="QSpinBox" name="spinBox_constraintEdge2"/>
-                </item>
-                <item row="2" column="0" colspan="2">
-                 <widget class="Line" name="line_3">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <spacer name="verticalSpacer_2">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <widget class="Line" name="line_4">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QFormLayout" name="formLayout_6">
-              <item row="0" column="1">
-               <widget class="QSpinBox" name="spinBox_nbIterations"/>
-              </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_22">
-                <property name="text">
-                 <string>Number of iteration </string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QPushButton" name="pushButton_computeNbCells">
-                <property name="text">
-                 <string>Compute number of cells</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QLabel" name="label_nbCells">
-                <property name="text">
-                 <string/>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QPushButton" name="pushButton_computeNbLacunas">
-                <property name="text">
-                 <string>Compute number of lacunas</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="QLabel" name="label_nbLacunas">
-                <property name="text">
-                 <string/>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="1">
-               <spacer name="horizontalSpacer_15">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item row="4" column="0">
-               <widget class="QPushButton" name="pushButton_computePorosity">
-                <property name="text">
-                 <string>Compute porosity metric</string>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="0" colspan="2">
-               <widget class="QTableWidget" name="tableWidget_TopoMetrics">
-                <property name="horizontalScrollBarPolicy">
-                 <enum>Qt::ScrollBarAlwaysOff</enum>
-                </property>
-                <property name="selectionMode">
-                 <enum>QAbstractItemView::NoSelection</enum>
-                </property>
-                <property name="cornerButtonEnabled">
-                 <bool>false</bool>
-                </property>
-                <property name="columnCount">
-                 <number>3</number>
-                </property>
-                <attribute name="horizontalHeaderVisible">
-                 <bool>true</bool>
-                </attribute>
-                <attribute name="horizontalHeaderCascadingSectionResizes">
-                 <bool>false</bool>
-                </attribute>
-                <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
-                 <bool>false</bool>
-                </attribute>
-                <attribute name="horizontalHeaderStretchLastSection">
-                 <bool>true</bool>
-                </attribute>
-                <attribute name="verticalHeaderStretchLastSection">
-                 <bool>false</bool>
-                </attribute>
-                <column>
-                 <property name="text">
-                  <string>L</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>C</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>R</string>
-                 </property>
-                </column>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_7">
-            <item>
-             <spacer name="horizontalSpacer_13">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QPushButton" name="pushButton_EditCP">
-              <property name="text">
-               <string>Edit Control Points</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="pushButton_generateScript">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="text">
-               <string>Generate Script</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="checkBox_planarControlPoints">
-              <property name="text">
-               <string>Planar Control Points</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_14">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab_3">
-       <attribute name="title">
-        <string>Auto Subd 3D</string>
-       </attribute>
-       <widget class="QPushButton" name="pushButton_OBJ2Graph">
+       <widget class="QPushButton" name="pushButton_9">
         <property name="geometry">
          <rect>
-          <x>120</x>
-          <y>70</y>
-          <width>131</width>
-          <height>25</height>
+          <x>220</x>
+          <y>200</y>
+          <width>191</width>
+          <height>23</height>
          </rect>
         </property>
         <property name="text">
-         <string>Open OBJ File...</string>
+         <string>Auto Sub 2D</string>
         </property>
        </widget>
       </widget>
@@ -1813,194 +717,18 @@ QListWidget {
  <resources/>
  <connections>
   <connection>
-   <sender>pushButton_duplicateFace</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotDuplicateFace()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>729</x>
-     <y>272</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>4</x>
-     <y>285</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_computePorosity</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotComputePorosityMetrics()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>745</x>
-     <y>810</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1054</x>
-     <y>969</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_removeFace</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotRemoveFace()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>623</x>
-     <y>272</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>530</x>
-     <y>507</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_reqEdgeNbSubdivisions</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnFaceReqNbSubdivisionsChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>848</x>
-     <y>384</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>678</x>
-     <y>28</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>pushButton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>slotDisplayAreaCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>296</x>
-     <y>533</y>
+     <x>249</x>
+     <y>516</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
      <y>495</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_removeEdge</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotRemoveEdge()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>296</x>
-     <y>653</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>5</x>
-     <y>732</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_ExportAll</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotExportAllFaces()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>816</x>
-     <y>533</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>3</x>
-     <y>628</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_EditCP</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotEditCP()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>456</x>
-     <y>994</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>6</x>
-     <y>955</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_addFace</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotAddFace()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>515</x>
-     <y>272</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>31</x>
-     <y>23</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_reqEdgeDelay</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnFaceReqDelayChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>848</x>
-     <y>416</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1025</x>
-     <y>25</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_constraintEdge2</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnConstraintEdge2Changed(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>642</x>
-     <y>840</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1057</x>
-     <y>848</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>comboBox_reqEdgeTopology</sender>
-   <signal>activated(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnFaceReqTopologyChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>848</x>
-     <y>352</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>650</x>
-     <y>22</y>
     </hint>
    </hints>
   </connection>
@@ -2011,28 +739,12 @@ QListWidget {
    <slot>slotProjectCirclesClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>218</x>
-     <y>532</y>
+     <x>175</x>
+     <y>517</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
      <y>391</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>checkBox_displayMesh</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotDisplayMeshClicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>473</x>
-     <y>532</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1048</x>
-     <y>754</y>
     </hint>
    </hints>
   </connection>
@@ -2043,492 +755,12 @@ QListWidget {
    <slot>slotCanonizeMesh()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>541</x>
-     <y>533</y>
+     <x>484</x>
+     <y>516</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
      <y>428</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>comboBox_gapEdgeTopology</sender>
-   <signal>activated(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnFaceGapTopologyChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>520</x>
-     <y>352</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>519</x>
-     <y>22</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_addEdge</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotAddEdge()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>198</x>
-     <y>653</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>3</x>
-     <y>688</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_constraintFace1</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnConstraintFace1Changed(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>642</x>
-     <y>735</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1058</x>
-     <y>680</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_faceDelay</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnFaceDelayChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1139</x>
-     <y>353</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1053</x>
-     <y>370</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_adjEdgeDelay</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnFaceAdjDelayChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>191</x>
-     <y>422</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>530</x>
-     <y>507</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>comboBox_adjEdgeTopology</sender>
-   <signal>activated(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnFaceAdjTopologyChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>191</x>
-     <y>358</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>530</x>
-     <y>507</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_currentEdgeDelay</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnSelectedEdgeDelayChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>710</x>
-     <y>566</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1055</x>
-     <y>605</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_currentEdgeNbSubdivisions</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnSelectedEdgeNbSubdivisionsChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>710</x>
-     <y>534</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1054</x>
-     <y>530</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_gapEdgeDelay</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnFaceGapDelayChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>520</x>
-     <y>416</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>621</x>
-     <y>21</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_addConstraint</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotAddConstraint()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>216</x>
-     <y>959</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>4</x>
-     <y>849</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_generateScript</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotGenerateScript()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>599</x>
-     <y>994</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>227</x>
-     <y>108</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>checkBox_displayUnitSphere</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotDisplayUnitSphereChanged()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>397</x>
-     <y>532</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>6</x>
-     <y>541</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_removeConstraint</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotRemoveConstraint()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>307</x>
-     <y>959</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>6</x>
-     <y>899</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_constraintFace2</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnConstraintFace2Changed(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>642</x>
-     <y>808</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1056</x>
-     <y>773</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_2</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotIncreaseInversion()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>115</x>
-     <y>533</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>5</x>
-     <y>601</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_openOBJ</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOpenOBJFile()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>632</x>
-     <y>533</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>7</x>
-     <y>196</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_adjEdgeNbSubdivisions</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnFaceAdjNbSubdivisionsChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>191</x>
-     <y>390</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>530</x>
-     <y>507</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>listWidget_faces</sender>
-   <signal>currentRowChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnFaceSelected(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>112</x>
-     <y>116</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>530</x>
-     <y>507</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>comboBox_currentEdgeTopology</sender>
-   <signal>activated(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnSelectedEdgeTopologyChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>710</x>
-     <y>502</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>2</x>
-     <y>342</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_computeNbLacunas</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotComputeNbLacunas()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>745</x>
-     <y>773</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1049</x>
-     <y>921</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>listWidget_constraints</sender>
-   <signal>currentRowChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnConstraintSelected(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>53</x>
-     <y>768</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>3</x>
-     <y>798</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_constraintEdge1</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnConstraintEdge1Changed(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>642</x>
-     <y>767</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1057</x>
-     <y>725</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>checkBox_planarControlPoints</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotPlanarControlPointsChanged()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>726</x>
-     <y>993</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1201</x>
-     <y>993</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_gapEdgeNbSubdivisions</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnFaceGapNbSubdivisionsChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>520</x>
-     <y>384</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>537</x>
-     <y>27</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>comboBox_algorithm</sender>
-   <signal>currentIndexChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnFaceAlgoChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1071</x>
-     <y>384</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1051</x>
-     <y>441</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_computeNbCells</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotComputeNbCells()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>745</x>
-     <y>742</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1051</x>
-     <y>884</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_ExportSelectedFace</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotExportSelectedFace()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>907</x>
-     <y>533</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1064</x>
-     <y>385</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>listWidget_edges</sender>
-   <signal>currentRowChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOnEdgeSelected(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>67</x>
-     <y>529</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>530</x>
-     <y>507</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_3</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotDecreaseInversion()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>167</x>
-     <y>533</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>5</x>
-     <y>578</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_OBJ2Graph</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotFractalToGraph()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>176</x>
-     <y>118</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>255</x>
-     <y>5</y>
     </hint>
    </hints>
   </connection>
@@ -2539,8 +771,8 @@ QListWidget {
    <slot>slotExportOBJ()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>724</x>
-     <y>533</y>
+     <x>658</x>
+     <y>516</y>
     </hint>
     <hint type="destinationlabel">
      <x>1208</x>
@@ -2549,34 +781,50 @@ QListWidget {
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_5</sender>
+   <sender>pushButton_3</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>slotOpenPersistentHomologyWindow()</slot>
+   <slot>slotDecreaseInversion()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>154</x>
-     <y>60</y>
+     <x>129</x>
+     <y>516</y>
     </hint>
     <hint type="destinationlabel">
-     <x>109</x>
-     <y>5</y>
+     <x>5</x>
+     <y>578</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_6</sender>
+   <sender>checkBox_displayMesh</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>slotOpenDensityWindow()</slot>
+   <slot>slotDisplayMeshClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>233</x>
-     <y>227</y>
+     <x>421</x>
+     <y>517</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1203</x>
-     <y>265</y>
+     <x>1048</x>
+     <y>754</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_ExportAll</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotExportAllFaces()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>750</x>
+     <y>516</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>3</x>
+     <y>628</y>
     </hint>
    </hints>
   </connection>
@@ -2597,6 +845,70 @@ QListWidget {
    </hints>
   </connection>
   <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotIncreaseInversion()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>83</x>
+     <y>516</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>601</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_ExportSelectedFace</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotExportSelectedFace()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>836</x>
+     <y>516</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1064</x>
+     <y>385</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_6</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOpenDensityWindow()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>227</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1203</x>
+     <y>265</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_5</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOpenPersistentHomologyWindow()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>154</x>
+     <y>60</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>109</x>
+     <y>5</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
    <sender>pushButton_8</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
@@ -2612,48 +924,60 @@ QListWidget {
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>checkBox_displayUnitSphere</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotDisplayUnitSphereChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>348</x>
+     <y>517</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>6</x>
+     <y>541</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_openOBJ</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOpenOBJFile()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>572</x>
+     <y>516</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>196</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_9</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slotOpenAutoSub2DWindow()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>282</x>
+     <y>249</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>720</x>
+     <y>0</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
-  <slot>slotGenerateScript()</slot>
-  <slot>slotAddFace()</slot>
-  <slot>slotRemoveFace()</slot>
-  <slot>slotOnFaceSelected(int)</slot>
-  <slot>slotOnEdgeSelected(int)</slot>
-  <slot>slotOnFaceAdjTopologyChanged(int)</slot>
-  <slot>slotOnFaceAdjNbSubdivisionsChanged(int)</slot>
-  <slot>slotOnFaceAdjDelayChanged(int)</slot>
-  <slot>slotOnFaceGapTopologyChanged(int)</slot>
-  <slot>slotOnFaceGapNbSubdivisionsChanged(int)</slot>
-  <slot>slotOnFaceGapDelayChanged(int)</slot>
-  <slot>slotOnFaceReqTopologyChanged(int)</slot>
-  <slot>slotOnFaceReqNbSubdivisionsChanged(int)</slot>
-  <slot>slotOnFaceReqDelayChanged(int)</slot>
-  <slot>slotAddEdge()</slot>
-  <slot>slotRemoveEdge()</slot>
-  <slot>slotOnSelectedEdgeTopologyChanged(int)</slot>
-  <slot>slotOnSelectedEdgeNbSubdivisionsChanged(int)</slot>
-  <slot>slotOnSelectedEdgeDelayChanged(int)</slot>
-  <slot>slotOnFaceDelayChanged(int)</slot>
-  <slot>slotAddConstraint()</slot>
-  <slot>slotRemoveConstraint()</slot>
-  <slot>slotOnConstraintSelected(int)</slot>
-  <slot>slotOnConstraintFace1Changed(int)</slot>
-  <slot>slotOnConstraintEdge1Changed(int)</slot>
-  <slot>slotOnConstraintFace2Changed(int)</slot>
-  <slot>slotOnConstraintEdge2Changed(int)</slot>
   <slot>slotOpenOBJFile()</slot>
   <slot>slotChangeSelectionMode()</slot>
   <slot>slotExportAllFaces()</slot>
   <slot>slotExportSelectedFace()</slot>
-  <slot>slotFractalToGraph()</slot>
-  <slot>slotComputeFractalDimension()</slot>
-  <slot>slotComputeAreaPerimeterPNG()</slot>
-  <slot>slotComputeImageDensity()</slot>
-  <slot>slotComputeNbCells()</slot>
-  <slot>slotComputeNbLacunas()</slot>
-  <slot>slotComputePorosityMetrics()</slot>
-  <slot>slotOnFaceAlgoChanged(int)</slot>
-  <slot>slotComputeAreaPerimeterOBJ()</slot>
   <slot>slotDisplayUnitSphereChanged()</slot>
   <slot>slotCanonizeMesh()</slot>
   <slot>slotDisplayAreaCircles()</slot>
@@ -2661,14 +985,11 @@ QListWidget {
   <slot>slotIncreaseInversion()</slot>
   <slot>slotDecreaseInversion()</slot>
   <slot>slotProjectCirclesClicked()</slot>
-  <slot>slotEditCP()</slot>
-  <slot>slotPlanarControlPointsChanged()</slot>
-  <slot>slotComputePersistenceHomology()</slot>
-  <slot>slotDuplicateFace()</slot>
   <slot>slotExportOBJ()</slot>
   <slot>slotOpenPersistentHomologyWindow()</slot>
   <slot>slotOpenDensityWindow()</slot>
   <slot>slotOpenAreaPerimeterWindow()</slot>
   <slot>slotOpenFractalDimensionWindow()</slot>
+  <slot>slotOpenAutoSub2DWindow()</slot>
  </slots>
 </ui>

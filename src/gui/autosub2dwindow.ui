@@ -1,0 +1,2133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AutoSub2DWindow</class>
+ <widget class="QWidget" name="AutoSub2DWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1142</width>
+    <height>1074</height>
+   </rect>
+  </property>
+  <property name="palette">
+   <palette>
+    <active>
+     <colorrole role="WindowText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Button">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>36</red>
+        <green>31</green>
+        <blue>49</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Light">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>54</red>
+        <green>46</green>
+        <blue>73</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Midlight">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>45</red>
+        <green>38</green>
+        <blue>61</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Dark">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>18</red>
+        <green>15</green>
+        <blue>24</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Mid">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>24</red>
+        <green>21</green>
+        <blue>33</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Text">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="BrightText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ButtonText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Base">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>0</red>
+        <green>0</green>
+        <blue>0</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Window">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>36</red>
+        <green>31</green>
+        <blue>49</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Shadow">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>0</red>
+        <green>0</green>
+        <blue>0</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="AlternateBase">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>18</red>
+        <green>15</green>
+        <blue>24</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ToolTipBase">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>220</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ToolTipText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>0</red>
+        <green>0</green>
+        <blue>0</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="PlaceholderText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="127">
+        <red>255</red>
+        <green>255</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </active>
+    <inactive>
+     <colorrole role="WindowText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Button">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>36</red>
+        <green>31</green>
+        <blue>49</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Light">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>54</red>
+        <green>46</green>
+        <blue>73</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Midlight">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>45</red>
+        <green>38</green>
+        <blue>61</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Dark">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>18</red>
+        <green>15</green>
+        <blue>24</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Mid">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>24</red>
+        <green>21</green>
+        <blue>33</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Text">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="BrightText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ButtonText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Base">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>0</red>
+        <green>0</green>
+        <blue>0</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Window">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>36</red>
+        <green>31</green>
+        <blue>49</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Shadow">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>0</red>
+        <green>0</green>
+        <blue>0</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="AlternateBase">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>18</red>
+        <green>15</green>
+        <blue>24</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ToolTipBase">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>220</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ToolTipText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>0</red>
+        <green>0</green>
+        <blue>0</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="PlaceholderText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="127">
+        <red>255</red>
+        <green>255</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </inactive>
+    <disabled>
+     <colorrole role="WindowText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>18</red>
+        <green>15</green>
+        <blue>24</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Button">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>36</red>
+        <green>31</green>
+        <blue>49</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Light">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>54</red>
+        <green>46</green>
+        <blue>73</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Midlight">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>45</red>
+        <green>38</green>
+        <blue>61</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Dark">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>18</red>
+        <green>15</green>
+        <blue>24</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Mid">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>24</red>
+        <green>21</green>
+        <blue>33</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Text">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>18</red>
+        <green>15</green>
+        <blue>24</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="BrightText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ButtonText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>18</red>
+        <green>15</green>
+        <blue>24</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Base">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>36</red>
+        <green>31</green>
+        <blue>49</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Window">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>36</red>
+        <green>31</green>
+        <blue>49</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Shadow">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>0</red>
+        <green>0</green>
+        <blue>0</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="AlternateBase">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>36</red>
+        <green>31</green>
+        <blue>49</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ToolTipBase">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>220</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ToolTipText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>0</red>
+        <green>0</green>
+        <blue>0</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="PlaceholderText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="127">
+        <red>18</red>
+        <green>15</green>
+        <blue>24</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </disabled>
+   </palette>
+  </property>
+  <property name="windowTitle">
+   <string>AutoSub2DWindow</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <layout class="QVBoxLayout" name="verticalLayout_6">
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Faces</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QListWidget" name="listWidget_faces">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QListWidget::item:selected{
+	background-color: #AEAEFE;
+	color: rgba(0, 0, 0, 0.66);
+}
+QListWidget::item{
+	padding: 5px;
+}
+QListWidget {
+	background-color: black;
+	outline: none;
+}</string>
+           </property>
+           <property name="spacing">
+            <number>0</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_addFace">
+             <property name="text">
+              <string>+</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_removeFace">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="text">
+              <string>-</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_duplicateFace">
+             <property name="text">
+              <string>Duplicate</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_8">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <layout class="QFormLayout" name="formLayout_3">
+           <item row="2" column="0">
+            <widget class="QLabel" name="labelTopology_3">
+             <property name="minimumSize">
+              <size>
+               <width>84</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Topology</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QComboBox" name="comboBox_adjEdgeTopology">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="currentIndex">
+              <number>0</number>
+             </property>
+             <item>
+              <property name="text">
+               <string>Cantor</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string notr="true">Bézier</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="labelNumberOfSubdivisions_3">
+             <property name="minimumSize">
+              <size>
+               <width>139</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Number of sub-edges</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QSpinBox" name="spinBox_adjEdgeNbSubdivisions">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="minimum">
+              <number>2</number>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="labelDelay_3">
+             <property name="minimumSize">
+              <size>
+               <width>84</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Delay</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QSpinBox" name="spinBox_adjEdgeDelay">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0" colspan="2">
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Adjacency Edge</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_7">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <layout class="QFormLayout" name="formLayout_2">
+           <item row="1" column="0">
+            <widget class="QLabel" name="labelTopology_2">
+             <property name="minimumSize">
+              <size>
+               <width>84</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Topology</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QComboBox" name="comboBox_gapEdgeTopology">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="currentIndex">
+              <number>1</number>
+             </property>
+             <item>
+              <property name="text">
+               <string>Cantor</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string notr="true">Bézier</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="labelNumberOfSubdivisions_2">
+             <property name="minimumSize">
+              <size>
+               <width>139</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Number of sub-edges</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QSpinBox" name="spinBox_gapEdgeNbSubdivisions">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="minimum">
+              <number>2</number>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="labelDelay_2">
+             <property name="minimumSize">
+              <size>
+               <width>84</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Delay</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QSpinBox" name="spinBox_gapEdgeDelay">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0" colspan="2">
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Lacuna Edge</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_8">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <layout class="QFormLayout" name="formLayout">
+           <item row="0" column="0" colspan="2">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Mid Cantor Edge</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="labelTopology">
+             <property name="minimumSize">
+              <size>
+               <width>84</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Topology</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QComboBox" name="comboBox_reqEdgeTopology">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="currentIndex">
+              <number>1</number>
+             </property>
+             <item>
+              <property name="text">
+               <string>Cantor</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string notr="true">Bézier</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="labelNumberOfSubdivisions">
+             <property name="minimumSize">
+              <size>
+               <width>139</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Number of sub-edges</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QSpinBox" name="spinBox_reqEdgeNbSubdivisions">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="minimum">
+              <number>2</number>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="labelDelay">
+             <property name="minimumSize">
+              <size>
+               <width>84</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Delay</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QSpinBox" name="spinBox_reqEdgeDelay">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_9">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <layout class="QFormLayout" name="formLayout_7">
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_13">
+             <property name="text">
+              <string>Delay</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QSpinBox" name="spinBox_faceDelay">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>70</width>
+               <height>0</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_23">
+             <property name="text">
+              <string>Algo</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QComboBox" name="comboBox_algorithm">
+             <item>
+              <property name="text">
+               <string>LinksSurroundDelay</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>LinksSurroundDelayAndBezier</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>LinksOnCorners</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="0" column="0" colspan="2">
+            <widget class="QLabel" name="label_24">
+             <property name="text">
+              <string>Cell settings</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_6">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>1010</width>
+         <height>13</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_7">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>1010</width>
+         <height>13</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Edges</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QListWidget" name="listWidget_edges">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QListWidget::item:selected{
+	background-color: #AEAEFE;
+	color: rgba(0, 0, 0, 0.66);
+}
+QListWidget::item{
+	padding: 5px;
+}
+QListWidget {
+	background-color: black;
+	outline: none;
+}</string>
+           </property>
+           <property name="spacing">
+            <number>0</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <spacer name="horizontalSpacer_4">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_addEdge">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="text">
+              <string>+</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_removeEdge">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="text">
+              <string>-</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QFormLayout" name="formLayout_4">
+         <item row="1" column="0">
+          <widget class="QLabel" name="labelTopology_4">
+           <property name="minimumSize">
+            <size>
+             <width>84</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Topology</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="comboBox_currentEdgeTopology">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <item>
+            <property name="text">
+             <string>Cantor</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">Bézier</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="labelNumberOfSubdivisions_4">
+           <property name="minimumSize">
+            <size>
+             <width>139</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Number of sub-edges</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QSpinBox" name="spinBox_currentEdgeNbSubdivisions">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="minimum">
+            <number>2</number>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="labelDelay_4">
+           <property name="minimumSize">
+            <size>
+             <width>84</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Delay</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QSpinBox" name="spinBox_currentEdgeDelay">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" colspan="2">
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>Edge Info</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_10">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_5">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>1010</width>
+         <height>13</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="Line" name="line_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>1010</width>
+         <height>13</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_6">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QLabel" name="label_7">
+           <property name="text">
+            <string>Constraints</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QListWidget" name="listWidget_constraints">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QListWidget::item:selected{
+	background-color: #AEAEFE;
+	color: rgba(0, 0, 0, 0.66);
+}
+QListWidget::item{
+	padding: 5px;
+}
+QListWidget {
+	background-color: black;
+	outline: none;
+}</string>
+           </property>
+           <property name="spacing">
+            <number>0</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <spacer name="horizontalSpacer_6">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_addConstraint">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="text">
+              <string>+</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_removeConstraint">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="text">
+              <string>-</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_5">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_5">
+         <item>
+          <widget class="QLabel" name="label_12">
+           <property name="text">
+            <string>Constraints Settings</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QFormLayout" name="formLayout_5">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_8">
+             <property name="text">
+              <string>Face 1</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_9">
+             <property name="text">
+              <string>Edge 1</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_10">
+             <property name="text">
+              <string>Face 2</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_11">
+             <property name="text">
+              <string>Edge 2</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QSpinBox" name="spinBox_constraintFace1"/>
+           </item>
+           <item row="1" column="1">
+            <widget class="QSpinBox" name="spinBox_constraintEdge1"/>
+           </item>
+           <item row="3" column="1">
+            <widget class="QSpinBox" name="spinBox_constraintFace2"/>
+           </item>
+           <item row="4" column="1">
+            <widget class="QSpinBox" name="spinBox_constraintEdge2"/>
+           </item>
+           <item row="2" column="0" colspan="2">
+            <widget class="Line" name="line_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="Line" name="line_4">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QFormLayout" name="formLayout_6">
+         <item row="0" column="1">
+          <widget class="QSpinBox" name="spinBox_nbIterations"/>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_22">
+           <property name="text">
+            <string>Number of iteration </string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QPushButton" name="pushButton_computeNbCells">
+           <property name="text">
+            <string>Compute number of cells</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="label_nbCells">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QPushButton" name="pushButton_computeNbLacunas">
+           <property name="text">
+            <string>Compute number of lacunas</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="label_nbLacunas">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <spacer name="horizontalSpacer_15">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="4" column="0">
+          <widget class="QPushButton" name="pushButton_computePorosity">
+           <property name="text">
+            <string>Compute porosity metric</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0" colspan="2">
+          <widget class="QTableWidget" name="tableWidget_TopoMetrics">
+           <property name="horizontalScrollBarPolicy">
+            <enum>Qt::ScrollBarAlwaysOff</enum>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::NoSelection</enum>
+           </property>
+           <property name="cornerButtonEnabled">
+            <bool>false</bool>
+           </property>
+           <property name="columnCount">
+            <number>3</number>
+           </property>
+           <attribute name="horizontalHeaderVisible">
+            <bool>true</bool>
+           </attribute>
+           <attribute name="horizontalHeaderCascadingSectionResizes">
+            <bool>false</bool>
+           </attribute>
+           <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
+            <bool>false</bool>
+           </attribute>
+           <attribute name="horizontalHeaderStretchLastSection">
+            <bool>true</bool>
+           </attribute>
+           <attribute name="verticalHeaderStretchLastSection">
+            <bool>false</bool>
+           </attribute>
+           <column>
+            <property name="text">
+             <string>L</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>C</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>R</string>
+            </property>
+           </column>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_7">
+       <item>
+        <spacer name="horizontalSpacer_13">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_EditCP">
+         <property name="text">
+          <string>Edit Control Points</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_generateScript">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>Generate Script</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="checkBox_planarControlPoints">
+         <property name="text">
+          <string>Planar Control Points</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_14">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>comboBox_reqEdgeTopology</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotOnFaceReqTopologyChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>746</x>
+     <y>334</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1138</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_addFace</sender>
+   <signal>clicked()</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotAddFace()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>487</x>
+     <y>240</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>479</x>
+     <y>7</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_removeFace</sender>
+   <signal>clicked()</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotRemoveFace()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>567</x>
+     <y>235</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>543</x>
+     <y>1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_duplicateFace</sender>
+   <signal>clicked()</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotDuplicateFace()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>667</x>
+     <y>235</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>664</x>
+     <y>0</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_addEdge</sender>
+   <signal>clicked()</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotAddEdge()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>175</x>
+     <y>671</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>679</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_removeEdge</sender>
+   <signal>clicked()</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotRemoveEdge()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>272</x>
+     <y>663</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>657</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_addConstraint</sender>
+   <signal>clicked()</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotAddConstraint()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>205</x>
+     <y>1012</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>1019</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_removeConstraint</sender>
+   <signal>clicked()</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotRemoveConstraint()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>307</x>
+     <y>1013</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>3</x>
+     <y>1053</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_EditCP</sender>
+   <signal>clicked()</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotEditCP()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>393</x>
+     <y>1048</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>3</x>
+     <y>977</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_generateScript</sender>
+   <signal>clicked()</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotGenerateScript()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>566</x>
+     <y>1047</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1139</x>
+     <y>1051</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_planarControlPoints</sender>
+   <signal>clicked()</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotPlanarControlPointsChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>671</x>
+     <y>1052</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1136</x>
+     <y>969</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_computePorosity</sender>
+   <signal>clicked()</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotComputePorosityMetrics()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>755</x>
+     <y>824</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1133</x>
+     <y>829</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_computeNbLacunas</sender>
+   <signal>clicked()</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotComputeNbLacunas()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>786</x>
+     <y>796</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1133</x>
+     <y>785</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_computeNbCells</sender>
+   <signal>clicked()</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotComputeNbCells()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>779</x>
+     <y>766</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1139</x>
+     <y>759</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_constraintFace1</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotOnConstraintFace1Changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>588</x>
+     <y>761</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1138</x>
+     <y>588</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_constraintEdge1</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotOnConstraintEdge1Changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>571</x>
+     <y>784</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1137</x>
+     <y>615</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_constraintFace2</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotOnConstraintFace2Changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>608</x>
+     <y>822</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1134</x>
+     <y>644</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_constraintEdge2</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotOnConstraintEdge2Changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>620</x>
+     <y>856</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1136</x>
+     <y>680</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_currentEdgeDelay</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotOnSelectedEdgeDelayChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>653</x>
+     <y>542</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1137</x>
+     <y>560</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_currentEdgeNbSubdivisions</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotOnSelectedEdgeNbSubdivisionsChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>671</x>
+     <y>510</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1136</x>
+     <y>530</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_currentEdgeTopology</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotOnSelectedEdgeTopologyChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>626</x>
+     <y>487</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1138</x>
+     <y>485</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_algorithm</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotOnFaceAlgoChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1056</x>
+     <y>364</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1137</x>
+     <y>404</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_faceDelay</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotOnFaceDelayChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1009</x>
+     <y>332</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1135</x>
+     <y>301</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_reqEdgeNbSubdivisions</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotOnFaceReqNbSubdivisionsChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>777</x>
+     <y>357</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1136</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_reqEdgeDelay</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotOnFaceReqDelayChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>761</x>
+     <y>394</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1137</x>
+     <y>444</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_adjEdgeDelay</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotOnFaceAdjDelayChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>176</x>
+     <y>402</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>6</x>
+     <y>423</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_adjEdgeNbSubdivisions</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotOnFaceAdjNbSubdivisionsChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>205</x>
+     <y>367</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1</x>
+     <y>381</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_adjEdgeTopology</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotOnFaceAdjTopologyChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>192</x>
+     <y>341</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>2</x>
+     <y>354</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_gapEdgeDelay</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotOnFaceGapDelayChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>468</x>
+     <y>392</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>6</x>
+     <y>292</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_gapEdgeNbSubdivisions</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotOnFaceGapNbSubdivisionsChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>475</x>
+     <y>367</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>2</x>
+     <y>267</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>listWidget_faces</sender>
+   <signal>currentRowChanged(int)</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotOnFaceSelected(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>93</x>
+     <y>76</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>2</x>
+     <y>102</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>listWidget_edges</sender>
+   <signal>currentRowChanged(int)</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotOnEdgeSelected(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>104</x>
+     <y>531</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1</x>
+     <y>504</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>listWidget_constraints</sender>
+   <signal>currentRowChanged(int)</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotOnConstraintSelected(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>64</x>
+     <y>819</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>821</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_gapEdgeTopology</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotOnFaceGapTopologyChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>500</x>
+     <y>336</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>241</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>slotGenerateScript()</slot>
+  <slot>slotAddFace()</slot>
+  <slot>slotRemoveFace()</slot>
+  <slot>slotOnFaceSelected(int)</slot>
+  <slot>slotOnEdgeSelected(int)</slot>
+  <slot>slotOnFaceAdjTopologyChanged(int)</slot>
+  <slot>slotOnFaceAdjNbSubdivisionsChanged(int)</slot>
+  <slot>slotOnFaceAdjDelayChanged(int)</slot>
+  <slot>slotOnFaceGapTopologyChanged(int)</slot>
+  <slot>slotOnFaceGapNbSubdivisionsChanged(int)</slot>
+  <slot>slotOnFaceGapDelayChanged(int)</slot>
+  <slot>slotOnFaceReqTopologyChanged(int)</slot>
+  <slot>slotOnFaceReqNbSubdivisionsChanged(int)</slot>
+  <slot>slotOnFaceReqDelayChanged(int)</slot>
+  <slot>slotAddEdge()</slot>
+  <slot>slotRemoveEdge()</slot>
+  <slot>slotOnSelectedEdgeTopologyChanged(int)</slot>
+  <slot>slotOnSelectedEdgeNbSubdivisionsChanged(int)</slot>
+  <slot>slotOnSelectedEdgeDelayChanged(int)</slot>
+  <slot>slotOnFaceDelayChanged(int)</slot>
+  <slot>slotAddConstraint()</slot>
+  <slot>slotRemoveConstraint()</slot>
+  <slot>slotOnConstraintSelected(int)</slot>
+  <slot>slotOnConstraintFace1Changed(int)</slot>
+  <slot>slotOnConstraintEdge1Changed(int)</slot>
+  <slot>slotOnConstraintFace2Changed(int)</slot>
+  <slot>slotOnConstraintEdge2Changed(int)</slot>
+  <slot>slotEditCP()</slot>
+  <slot>slotPlanarControlPointsChanged()</slot>
+  <slot>slotDuplicateFace()</slot>
+  <slot>slotComputeNbCells()</slot>
+  <slot>slotComputeNbLacunas()</slot>
+  <slot>slotComputePorosityMetrics()</slot>
+  <slot>slotOnFaceAlgoChanged(int)</slot>
+ </slots>
+</ui>
