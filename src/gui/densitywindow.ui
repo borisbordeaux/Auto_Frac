@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DensityWindow</class>
+ <widget class="QWidget" name="DensityWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>932</width>
+    <height>209</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>DensityWindow</string>
+  </property>
+  <widget class="QLabel" name="label_21">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>60</y>
+     <width>81</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>window size:</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBox_showDensityImages">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>98</y>
+     <width>131</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Show all images</string>
+   </property>
+  </widget>
+  <widget class="QSlider" name="horizontalSlider_windowSize">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>68</y>
+     <width>661</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>3</number>
+   </property>
+   <property name="maximum">
+    <number>501</number>
+   </property>
+   <property name="singleStep">
+    <number>2</number>
+   </property>
+   <property name="pageStep">
+    <number>20</number>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="invertedAppearance">
+    <bool>false</bool>
+   </property>
+   <property name="tickPosition">
+    <enum>QSlider::NoTicks</enum>
+   </property>
+   <property name="tickInterval">
+    <number>0</number>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_computeDensity">
+   <property name="geometry">
+    <rect>
+     <x>400</x>
+     <y>138</y>
+     <width>181</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Compute image density</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_windowSize">
+   <property name="geometry">
+    <rect>
+     <x>154</x>
+     <y>65</y>
+     <width>54</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>3</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>pushButton_computeDensity</sender>
+   <signal>clicked()</signal>
+   <receiver>DensityWindow</receiver>
+   <slot>slotComputeImageDensity()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>484</x>
+     <y>156</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>290</x>
+     <y>159</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>slotComputeImageDensity()</slot>
+ </slots>
+</ui>

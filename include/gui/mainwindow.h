@@ -14,6 +14,11 @@
 #include "controlpointeditor.h"
 #include "fractal/structure.h"
 
+class PersistentHomologyWindow;
+class DensityWindow;
+class AreaPerimeterWindow;
+class FractalDimensionWindow;
+
 namespace Ui {
 class MainWindow;
 }
@@ -64,10 +69,6 @@ public slots:
     [[maybe_unused]] void slotOpenOBJFile();
     [[maybe_unused]] void slotExportAllFaces();
     [[maybe_unused]] void slotExportSelectedFace();
-    [[maybe_unused]] void slotComputeFractalDimension();
-    [[maybe_unused]] void slotComputeAreaPerimeterPNG();
-    [[maybe_unused]] void slotComputeAreaPerimeterOBJ();
-    [[maybe_unused]] void slotComputeImageDensity();
     [[maybe_unused]] void slotComputeNbCells();
     [[maybe_unused]] void slotComputeNbLacunas();
     [[maybe_unused]] void slotComputePorosityMetrics();
@@ -84,9 +85,13 @@ public slots:
     void increaseInversion();
     [[maybe_unused]] void slotPlanarControlPointsChanged();
     [[maybe_unused]] void slotEditCP();
-    [[maybe_unused]] void slotComputePersistenceHomology();
     [[maybe_unused]] void slotFractalToGraph();
     [[maybe_unused]] void slotExportOBJ();
+
+    [[maybe_unused]] void slotOpenPersistentHomologyWindow();
+    [[maybe_unused]] void slotOpenDensityWindow();
+    [[maybe_unused]] void slotOpenAreaPerimeterWindow();
+    [[maybe_unused]] void slotOpenFractalDimensionWindow();
 
 public:
     void projectCirclesToPlan();
@@ -97,7 +102,6 @@ private:
     static QString fromConstraint(frac::Adjacency const& constraint);
     static std::size_t getNbCellsOfCell(std::string const& faceName, std::size_t level, std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>>& cacheSubdivisions);
     static double getNbLacunaOfCell(std::string const& faceName, std::size_t level, std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>>& cacheSubdivisions, std::unordered_map<std::string, double>& cacheLacunas);
-    void computeAreaPerimeter(QStringList const& files);
     void updateEnablement();
     void updateEnablementPoly();
     void setInfo(std::string const& textInfo, int timeoutMs = 2000);
@@ -111,12 +115,6 @@ private:
     Model m_modelMesh;
     GLView* m_view;
     bool m_openedMesh;
-
-    QGraphicsScene m_sceneFractalDim;
-    QChart* m_chartFractalDim;
-
-    QGraphicsScene m_sceneAreaPerimeter;
-    QChart* m_chartAreaPerimeter;
 
     QTimer m_timerCanonicalize;
 
@@ -139,8 +137,10 @@ private:
     frac::ControlPointEditor* m_CPEditor;
     frac::Structure* m_currentStructureForCP = nullptr;
 
-    QGraphicsScene m_scenePersistentHomology;
-    QChart* m_chartPersistentHomology;
+    std::unique_ptr<PersistentHomologyWindow> m_persistentHomologyWindow;
+    std::unique_ptr<DensityWindow> m_densityWindow;
+    std::unique_ptr<AreaPerimeterWindow> m_areaPerimeterWindow;
+    std::unique_ptr<FractalDimensionWindow> m_fractalDimensionWindow;
 };
 
 #endif

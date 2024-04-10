@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PersistentHomologyWindow</class>
+ <widget class="QWidget" name="PersistentHomologyWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>909</width>
+    <height>936</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>PersistentHomologyWindow</string>
+  </property>
+  <widget class="QLabel" name="label_27">
+   <property name="geometry">
+    <rect>
+     <x>530</x>
+     <y>20</y>
+     <width>91</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Min Life time:</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_computePersistenceHomology">
+   <property name="geometry">
+    <rect>
+     <x>90</x>
+     <y>20</y>
+     <width>211</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Compute Persistence Homology</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_28">
+   <property name="geometry">
+    <rect>
+     <x>710</x>
+     <y>20</y>
+     <width>41</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Dim:</string>
+   </property>
+  </widget>
+  <widget class="QDoubleSpinBox" name="spinBox_persistenceLifeTime">
+   <property name="geometry">
+    <rect>
+     <x>620</x>
+     <y>20</y>
+     <width>71</width>
+     <height>30</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QDoubleSpinBox" name="spinBox_persistenceR">
+   <property name="geometry">
+    <rect>
+     <x>414</x>
+     <y>21</y>
+     <width>71</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="value">
+    <double>6.000000000000000</double>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="spinBox_persistenceDim">
+   <property name="geometry">
+    <rect>
+     <x>749</x>
+     <y>23</y>
+     <width>42</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>4</number>
+   </property>
+   <property name="value">
+    <number>2</number>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_26">
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>20</y>
+     <width>21</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>R:</string>
+   </property>
+  </widget>
+  <widget class="QGraphicsView" name="graphicsView_PersistentHomology">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>60</y>
+     <width>850</width>
+     <height>850</height>
+    </rect>
+   </property>
+   <property name="renderHints">
+    <set>QPainter::Antialiasing|QPainter::TextAntialiasing</set>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>pushButton_computePersistenceHomology</sender>
+   <signal>clicked()</signal>
+   <receiver>PersistentHomologyWindow</receiver>
+   <slot>slotComputePersistenceHomology()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>205</x>
+     <y>31</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>43</x>
+     <y>17</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>slotComputePersistenceHomology()</slot>
+ </slots>
+</ui>

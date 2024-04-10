@@ -16,23 +16,19 @@
 #include <QtWidgets>
 #include <iostream>
 
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc.hpp>
-
 #include <string>
-#include <QScatterSeries>
-#include <QValueAxis>
-#include <QLineSeries>
 
 #include "NazaraUtils/Algorithm.hpp"
 
 #include "gui/controlpointeditor.h"
 #include "utils/objwriter.h"
+#include "gui/persistenthomologywindow.h"
+#include "gui/densitywindow.h"
+#include "gui/areaperimeterwindow.h"
+#include "gui/fractaldimensionwindow.h"
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow), m_openedMesh(false),
-                                          m_chartFractalDim(new QChart()), m_chartAreaPerimeter(new QChart()),
-                                          m_inversionLevel(0), m_chartPersistentHomology(new QChart()) {
+                                          m_inversionLevel(0) {
     ui->setupUi(this);
 
 //    //to draw frac signal
@@ -66,37 +62,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     m_view = new GLView(&m_modelMesh, this);
     this->ui->verticalLayout_poly2D->addWidget(m_view);
 
-    this->ui->graphicsView_fractalDim->setScene(&m_sceneFractalDim);
-    m_chartFractalDim->setTheme(QChart::ChartTheme::ChartThemeDark);
-    m_chartFractalDim->legend()->hide();
-    m_chartFractalDim->setTitle("Fractal Dimension");
-    m_chartFractalDim->setPreferredSize(845, 845);
-    m_chartFractalDim->setAnimationOptions(QChart::AnimationOption::AllAnimations);
-    m_chartFractalDim->setAnimationDuration(1000);
-    m_sceneFractalDim.addItem(m_chartFractalDim);
-
-    this->ui->graphicsView_stats->setScene(&m_sceneAreaPerimeter);
-    m_chartAreaPerimeter->setTheme(QChart::ChartTheme::ChartThemeDark);
-    m_chartAreaPerimeter->setTitle("Area and Perimeter");
-    m_chartAreaPerimeter->setPreferredSize(845, 845);
-    m_chartAreaPerimeter->setAnimationOptions(QChart::AnimationOption::AllAnimations);
-    m_chartAreaPerimeter->setAnimationDuration(1000);
-    m_sceneAreaPerimeter.addItem(m_chartAreaPerimeter);
-
-    this->ui->graphicsView_PersistentHomology->setScene(&m_scenePersistentHomology);
-    m_chartPersistentHomology->setTheme(QChart::ChartTheme::ChartThemeDark);
-    m_chartPersistentHomology->setTitle("Persistent Homology");
-    m_chartPersistentHomology->setPreferredSize(845, 845);
-    m_chartPersistentHomology->setAnimationOptions(QChart::AnimationOption::AllAnimations);
-    m_chartPersistentHomology->setAnimationDuration(1000);
-    m_scenePersistentHomology.addItem(m_chartPersistentHomology);
-
-    connect(this->ui->horizontalSlider_windowSize, &QSlider::valueChanged, this->ui->label_windowSize, qOverload<int>(&QLabel::setNum));
-    connect(this->ui->horizontalSlider_windowSize, &QSlider::sliderMoved, this, [&](int value) {
-        if (value % 2 == 0) {
-            this->ui->horizontalSlider_windowSize->setValue(value - 1);
-        }
-    });
     connect(this->ui->spinBox_nbIterations, &QSpinBox::valueChanged, this, [&](int) { updateEnablement(); });
 
     connect(&m_timerCanonicalize, &QTimer::timeout, this, &MainWindow::canonicalizeStep);
@@ -117,7 +82,7 @@ MainWindow::~MainWindow() {
     frac::Face::reset();
     frac::FilePrinter::reset();
 
-    std::vector <frac::Face> faces;
+    std::vector<frac::Face> faces;
     for (int i = 0; i < this->ui->listWidget_faces->count(); ++i) {
         faces.push_back(frac::Face::fromStr(this->ui->listWidget_faces->item(i)->text().toStdString()));
     }
@@ -304,7 +269,7 @@ MainWindow::~MainWindow() {
     if (this->ui->listWidget_edges->count() == 3) { return; }
     frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     long int indexToRemove = this->ui->listWidget_edges->currentRow();
-    std::vector <frac::Edge> edges;
+    std::vector<frac::Edge> edges;
     int i = 0;
     for (frac::Edge const& e: f.constData()) {
         if (i != indexToRemove) {
@@ -519,244 +484,12 @@ void MainWindow::setInfo(std::string const& textInfo, int timeoutMs) {
     this->setInfo(info.str());
 }
 
-[[maybe_unused]] void MainWindow::slotComputeFractalDimension() {
-    QString file = QFileDialog::getOpenFileName(this, "Open a PNG File...", "../img", "PNG Files (*.png)", nullptr, QFileDialog::DontUseNativeDialog);
-
-    if (file != "") {
-        cv::destroyAllWindows();
-        cv::Mat img = cv::imread(file.toStdString(), cv::IMREAD_GRAYSCALE);
-        cv::threshold(img, img, 1, 255, cv::THRESH_BINARY);
-        cv::imshow("Image", img);
-
-        std::cout << "image size : " << img.size().width << " x " << img.size().height << std::endl;
-
-        // resize image to make it squared
-        if (img.cols != img.rows || !Nz::IsPow2(img.rows)) {
-            int max = Nz::RoundToPow2(std::max(img.cols, img.rows));
-            int top = (max - img.rows) / 2;
-            int bottom = (max - img.rows) - top;
-            int left = (max - img.cols) / 2;
-            int right = (max - img.cols) - left;
-            cv::copyMakeBorder(img, img, top, bottom, left, right, cv::BORDER_CONSTANT, cv::Scalar(0));
-        }
-
-        std::cout << "image size for fractal dimension : " << img.size().width << " x " << img.size().height << std::endl;
-
-        m_chartFractalDim->removeAllSeries();
-        QScatterSeries* series = new QScatterSeries();
-        QScatterSeries* seriesUnused = new QScatterSeries();
-
-        series->setColor(Qt::blue);
-        seriesUnused->setColor(Qt::black);
-
-        std::vector<int> res = frac::utils::computeFractalDimension(img);
-
-        std::vector <std::pair<float, float>> logRes;
-        logRes.reserve(res.size());
-        int i = 2;
-        for (auto x: res) {
-            logRes.emplace_back(std::log(static_cast<float>(i)), std::log(static_cast<float>(x)));
-            i *= 2;
-        }
-
-        int maxUsefulTerm = std::min(this->ui->spinBox_maxUsefulBox->value(), static_cast<int>(res.size()));
-        if (maxUsefulTerm == 0) {
-            maxUsefulTerm = static_cast<int>(res.size());
-        } else {
-            if (maxUsefulTerm == 1) { maxUsefulTerm = 2; }
-            this->ui->spinBox_maxUsefulBox->setValue(maxUsefulTerm);
-        }
-        int minUsefulTerm = std::min(this->ui->spinBox_minUsefulBox->value(), maxUsefulTerm - 2);
-        this->ui->spinBox_minUsefulBox->setValue(minUsefulTerm);
-        int current = 0;
-
-        std::cout << "dim fractale" << std::endl;
-        for (auto p: logRes) {
-            if (current >= minUsefulTerm && current < maxUsefulTerm) {
-                series->append(p.first, p.second);
-                std::cout << p.first << " " << p.second << std::endl;
-            } else {
-                seriesUnused->append(p.first, p.second);
-            }
-            current++;
-        }
-
-        series->setBestFitLineVisible(true);
-        series->setBestFitLineColor(Qt::yellow);
-        m_chartFractalDim->addSeries(series);
-        m_chartFractalDim->addSeries(seriesUnused);
-        m_chartFractalDim->createDefaultAxes();
-        QValueAxis* xAxis = dynamic_cast<QValueAxis*>(m_chartFractalDim->axes(Qt::Horizontal, series).first());
-        QValueAxis* yAxis = dynamic_cast<QValueAxis*>(m_chartFractalDim->axes(Qt::Vertical, series).first());
-        int max = std::max(qRound(xAxis->max() + 1.0), qRound(yAxis->max() + 1.0));
-        xAxis->setRange(0, max);
-        xAxis->setTickInterval(1.0);
-        xAxis->setTickCount(max + 1);
-        xAxis->setTitleText("log(1/e)");
-        yAxis->setRange(0, max);
-        yAxis->setTickInterval(1.0);
-        yAxis->setTickCount(max + 1);
-        yAxis->setTitleText("log(Ne)");
-
-        bool ok;
-        QPair <qreal, qreal> eq = series->bestFitLineEquation(ok);
-        if (ok) {
-            this->ui->label_fractalDimension->setText(QString::number(eq.first));
-            std::cout << eq.first << "x + " << eq.second << std::endl;
-        }
-    }
-}
-
-void MainWindow::computeAreaPerimeter(QStringList const& files) {
-    int currentFile = 0;
-    m_chartAreaPerimeter->removeAllSeries();
-    QScatterSeries* seriesArea = new QScatterSeries();
-    QScatterSeries* seriesPerimeter = new QScatterSeries();
-    seriesArea->setName("Area");
-    seriesPerimeter->setName("Perimeter");
-
-    seriesArea->setColor(Qt::blue);
-    seriesPerimeter->setColor(Qt::darkGreen);
-
-    std::vector<float> vectorArea;
-    std::vector<float> vectorPerimeter;
-
-    float firstArea = -1;
-    float firstPerimeter = -1;
-    for (QString const& file: files) {
-        float area = frac::utils::computeArea(file);
-        float perimeter = frac::utils::computePerimeter(file);
-        if (firstArea < 0.0f) {
-            firstArea = area;
-        }
-        if (firstPerimeter < 0.0f) {
-            firstPerimeter = perimeter;
-        }
-
-        this->ui->label_perimeter->setText(std::to_string(perimeter).c_str());
-        this->ui->label_area->setText(std::to_string(area).c_str());
-
-        float y1 = area / firstArea;
-        float y2 = perimeter / firstPerimeter;
-
-        vectorArea.push_back(area);
-        vectorPerimeter.push_back(perimeter);
-
-        seriesArea->append(static_cast<float>(currentFile), std::log(y1));
-        seriesPerimeter->append(static_cast<float>(currentFile), std::log((y2)));
-
-        this->ui->label_porosity->setText(QString::number(1.0f - y1));
-        currentFile++;
-    }
-
-    bool okArea;
-    bool okPerimeter;
-    QPair <qreal, qreal> areaReg = seriesArea->bestFitLineEquation(okArea);
-    QPair <qreal, qreal> perimeterReg = seriesPerimeter->bestFitLineEquation(okPerimeter);
-    if (okArea && okPerimeter) {
-        seriesArea->setBestFitLineColor(Qt::blue);
-        seriesArea->setBestFitLineVisible(true);
-        this->ui->label_coefArea->setText(std::to_string(std::exp(areaReg.first)).c_str());
-
-        seriesPerimeter->setBestFitLineColor(Qt::darkGreen);
-        seriesPerimeter->setBestFitLineVisible(true);
-        this->ui->label_coefPerimeter->setText(std::to_string(std::exp(perimeterReg.first)).c_str());
-    } else {
-        this->ui->label_coefArea->setText("");
-        this->ui->label_coefPerimeter->setText("");
-    }
-
-    m_chartAreaPerimeter->addSeries(seriesArea);
-    m_chartAreaPerimeter->addSeries(seriesPerimeter);
-    m_chartAreaPerimeter->createDefaultAxes();
-    QValueAxis* xAxis = dynamic_cast<QValueAxis*>(m_chartAreaPerimeter->axes(Qt::Horizontal).first());
-    QValueAxis* yAxis = dynamic_cast<QValueAxis*>(m_chartAreaPerimeter->axes(Qt::Vertical).first());
-    int maxX = qRound(xAxis->max()) + 1;
-    int maxY = qCeil(yAxis->max());
-    int minY = qFloor(yAxis->min());
-    xAxis->setRange(-1, maxX);
-    xAxis->setTickInterval(1.0);
-    xAxis->setTickCount(maxX + 2);
-    xAxis->setTitleText("Iteration level");
-
-    yAxis->setRange(minY, maxY);
-    yAxis->setTickInterval(1.0);
-    yAxis->setTickCount(maxY - minY + 1);
-    yAxis->setTitleText("log(A_i/A_0) or log(P_i/P_0)");
-
-    // add events on click
-    connect(seriesArea, &QScatterSeries::clicked, this, [&, vectorArea, vectorPerimeter, firstArea](QPointF point) {
-        int iter = qRound(point.x());
-        this->ui->label_area->setText(std::to_string(vectorArea[iter]).c_str());
-        this->ui->label_perimeter->setText(std::to_string(vectorPerimeter[iter]).c_str());
-        this->ui->label_porosity->setText(QString::number(1.0f - (vectorArea[iter] / firstArea)));
-    });
-    connect(seriesPerimeter, &QScatterSeries::clicked, this, [&, vectorPerimeter, vectorArea, firstArea](QPointF point) {
-        int iter = qRound(point.x());
-        this->ui->label_perimeter->setText(std::to_string(vectorPerimeter[iter]).c_str());
-        this->ui->label_area->setText(std::to_string(vectorArea[iter]).c_str());
-        this->ui->label_porosity->setText(QString::number(1.0f - (vectorArea[iter] / firstArea)));
-    });
-
-    // temp cout for python script
-    std::cout << "area log [";
-    for (float v: vectorArea) {
-        std::cout << std::log(v / firstArea) << ", ";
-    }
-    std::cout << "]" << std::endl;
-
-    std::cout << "area not log [";
-    for (float v: vectorArea) {
-        std::cout << v / firstArea << ", ";
-    }
-    std::cout << "]" << std::endl;
-
-    std::cout << areaReg.first << "x + " << areaReg.second << std::endl;
-
-    std::cout << "perimeter log [";
-    for (float v: vectorPerimeter) {
-        std::cout << std::log(v / firstPerimeter) << ", ";
-    }
-    std::cout << "]" << std::endl;
-
-    std::cout << "perimeter not log [";
-    for (float v: vectorPerimeter) {
-        std::cout << v / firstPerimeter << ", ";
-    }
-    std::cout << "]" << std::endl;
-
-    std::cout << perimeterReg.first << "x + " << perimeterReg.second << std::endl;
-}
-
-[[maybe_unused]] void MainWindow::slotComputeAreaPerimeterPNG() {
-    QStringList files = QFileDialog::getOpenFileNames(this, "Open PNG Files...", "../img", "PNG Files (*.png)", nullptr, QFileDialog::DontUseNativeDialog);
-    if (!files.isEmpty()) {
-        cv::destroyAllWindows();
-        this->computeAreaPerimeter(files);
-    }
-}
-
-[[maybe_unused]] void MainWindow::slotComputeAreaPerimeterOBJ() {
-    QStringList files = QFileDialog::getOpenFileNames(this, "Open OBJ Files...", "../obj", "OBJ Files (*.obj)", nullptr);//, QFileDialog::DontUseNativeDialog);
-    if (!files.isEmpty()) {
-        this->computeAreaPerimeter(files);
-    }
-}
-
-[[maybe_unused]] void MainWindow::slotComputeImageDensity() {
-    QString file = QFileDialog::getOpenFileName(this, "Open a PNG File...", "../img", "PNG Files (*.png)", nullptr, QFileDialog::DontUseNativeDialog);
-
-    if (file != "") {
-        frac::DensityComputation::computeDensity(file, this->ui->horizontalSlider_windowSize->value(), this->ui->checkBox_showDensityImages->isChecked());
-    }
-}
-
 [[maybe_unused]] void MainWindow::slotComputeNbCells() {
     // create the structure
     frac::Face::reset();
     frac::FilePrinter::reset();
 
-    std::vector <frac::Face> faces;
+    std::vector<frac::Face> faces;
     for (int i = 0; i < this->ui->listWidget_faces->count(); ++i) {
         faces.push_back(frac::Face::fromStr(this->ui->listWidget_faces->item(i)->text().toStdString()));
     }
@@ -764,10 +497,10 @@ void MainWindow::computeAreaPerimeter(QStringList const& files) {
     frac::Structure s { faces };
 
     // need to store for each face the number of subdivisions and their type (their face)
-    std::unordered_map <std::string, std::unordered_map<std::string, std::size_t>> cache;
+    std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>> cache;
 
     for (frac::Face const& f: s.allFaces()) {
-        std::unordered_map <std::string, std::size_t> map;
+        std::unordered_map<std::string, std::size_t> map;
         // get the number of each kind of subdivision
         for (frac::Face const& sub: f.subdivisions()) {
             if (map.find(sub.name()) != map.end()) {
@@ -792,7 +525,7 @@ void MainWindow::computeAreaPerimeter(QStringList const& files) {
     frac::Face::reset();
     frac::FilePrinter::reset();
 
-    std::vector <frac::Face> faces;
+    std::vector<frac::Face> faces;
     for (int i = 0; i < this->ui->listWidget_faces->count(); ++i) {
         faces.push_back(frac::Face::fromStr(this->ui->listWidget_faces->item(i)->text().toStdString()));
     }
@@ -800,12 +533,12 @@ void MainWindow::computeAreaPerimeter(QStringList const& files) {
     frac::Structure s { faces };
 
     // need to store for each face the number of subdivisions and their type (their face)
-    std::unordered_map <std::string, std::unordered_map<std::string, std::size_t>> cacheSubdivisions;
+    std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>> cacheSubdivisions;
     std::unordered_map<std::string, double> cacheLacunas;
 
     for (frac::Face const& f: s.allFaces()) {
         // fill the cache subdivision
-        std::unordered_map <std::string, std::size_t> map;
+        std::unordered_map<std::string, std::size_t> map;
         // get the number of each kind of subdivision
         for (frac::Face const& sub: f.subdivisions()) {
             if (map.find(sub.name()) != map.end()) {
@@ -841,7 +574,7 @@ void MainWindow::computeAreaPerimeter(QStringList const& files) {
     this->ui->label_nbLacunas->setText(QString::number(nbLacuna, 'f', 1));
 }
 
-std::size_t MainWindow::getNbCellsOfCell(std::string const& faceName, std::size_t level, std::unordered_map <std::string, std::unordered_map<std::string, std::size_t>>& cacheSubdivisions) {
+std::size_t MainWindow::getNbCellsOfCell(std::string const& faceName, std::size_t level, std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>>& cacheSubdivisions) {
     if (level == 0) {
         return 1;
     } else {
@@ -854,7 +587,7 @@ std::size_t MainWindow::getNbCellsOfCell(std::string const& faceName, std::size_
     }
 }
 
-double MainWindow::getNbLacunaOfCell(std::string const& faceName, std::size_t level, std::unordered_map <std::string, std::unordered_map<std::string, std::size_t>>& cacheSubdivisions, std::unordered_map<std::string, double>& cacheLacunas) {
+double MainWindow::getNbLacunaOfCell(std::string const& faceName, std::size_t level, std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>>& cacheSubdivisions, std::unordered_map<std::string, double>& cacheLacunas) {
     if (level == 0) {
         return 0.0;
     } else {
@@ -872,7 +605,7 @@ double MainWindow::getNbLacunaOfCell(std::string const& faceName, std::size_t le
     frac::Face::reset();
     frac::FilePrinter::reset();
 
-    std::vector <frac::Face> faces;
+    std::vector<frac::Face> faces;
     for (int i = 0; i < this->ui->listWidget_faces->count(); ++i) {
         faces.push_back(frac::Face::fromStr(this->ui->listWidget_faces->item(i)->text().toStdString()));
     }
@@ -880,12 +613,12 @@ double MainWindow::getNbLacunaOfCell(std::string const& faceName, std::size_t le
     frac::Structure s { faces };
 
     // need to store for each face the number of subdivisions and their type (their face)
-    std::unordered_map <std::string, std::unordered_map<std::string, std::size_t>> cacheSubdivisions;
+    std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>> cacheSubdivisions;
     std::unordered_map<std::string, double> cacheLacunas;
 
     for (frac::Face const& f: s.allFaces()) {
         // fill the cache subdivision
-        std::unordered_map <std::string, std::size_t> map;
+        std::unordered_map<std::string, std::size_t> map;
         // get the number of each kind of subdivision
         for (frac::Face const& sub: f.subdivisions()) {
             if (map.find(sub.name()) != map.end()) {
@@ -956,7 +689,7 @@ double MainWindow::getNbLacunaOfCell(std::string const& faceName, std::size_t le
 }
 
 void MainWindow::canonicalizeStep() {
-    std::vector <QVector3D> oldPos;
+    std::vector<QVector3D> oldPos;
     for (auto const& v: m_mesh.vertices()) {
         oldPos.push_back(v->pos());
     }
@@ -1351,7 +1084,7 @@ void MainWindow::increaseInversion() {
     frac::Face::reset();
     frac::FilePrinter::reset();
 
-    std::vector <frac::Face> faces;
+    std::vector<frac::Face> faces;
     for (int i = 0; i < this->ui->listWidget_faces->count(); ++i) {
         faces.push_back(frac::Face::fromStr(this->ui->listWidget_faces->item(i)->text().toStdString()));
     }
@@ -1389,75 +1122,6 @@ void MainWindow::increaseInversion() {
     this->updateEnablement();
 }
 
-[[maybe_unused]] void MainWindow::slotComputePersistenceHomology() {
-    QString file = QFileDialog::getOpenFileName(this, "Open an OFF File...", "../off", "OFF Files (*.off)");
-    if (file != "") {
-        m_chartPersistentHomology->removeAllSeries();
-        std::vector < QScatterSeries * > series;
-        QLineSeries* diag = new QLineSeries();
-        diag->setName("Diagonal");
-
-        // dim will never be greater than 4
-        Qt::GlobalColor colors[4] = { Qt::darkGreen, Qt::blue, Qt::red, Qt::yellow };
-
-        std::vector <frac::PersistentHomology::Cycles> cycles = frac::PersistentHomology::computePersistenceHomology(file, static_cast<float>(this->ui->spinBox_persistenceR->value()), static_cast<float>(this->ui->spinBox_persistenceLifeTime->value()), this->ui->spinBox_persistenceDim->value());
-        for (frac::PersistentHomology::Cycles const& c: cycles) {
-            if (c.Death < 100.0f) { //not inf
-                while (series.size() < static_cast<std::size_t>(c.Dim) + 1) {
-                    series.push_back(new QScatterSeries());
-                    series[series.size() - 1]->setName("Dim " + QString::number(c.Dim));
-                    series[series.size() - 1]->setColor(colors[series.size() - 1]);
-                }
-                series[c.Dim]->append(c.Birth, c.Death);
-            }
-        }
-
-        std::vector<int> addedSeries;
-        int i = 0;
-        for (auto* s: series) {
-            m_chartPersistentHomology->addSeries(s);
-            addedSeries.push_back(i);
-            i++;
-        }
-        m_chartPersistentHomology->createDefaultAxes();
-        QValueAxis* xAxis = dynamic_cast<QValueAxis*>(m_chartPersistentHomology->axes(Qt::Horizontal).first());
-        QValueAxis* yAxis = dynamic_cast<QValueAxis*>(m_chartPersistentHomology->axes(Qt::Vertical).first());
-
-        int max = qCeil(qMax(xAxis->max(), yAxis->max()));
-
-        xAxis->setRange(-1.0, max);
-        xAxis->setTickCount(2 * max + 3);
-        xAxis->setTitleText("Birth");
-
-        yAxis->setRange(-1.0, max);
-        yAxis->setTickCount(2 * max + 3);
-        yAxis->setTitleText("Death");
-
-        for (frac::PersistentHomology::Cycles const& c: cycles) {
-            if (c.Death > 100.0f) { //not inf
-                while (series.size() < static_cast<std::size_t>(c.Dim) + 1) {
-                    series.push_back(new QScatterSeries());
-                    series[series.size() - 1]->setName("Dim " + QString::number(c.Dim));
-                    series[series.size() - 1]->setColor(colors[series.size() - 1]);
-                }
-                series[c.Dim]->append(c.Birth, max);
-            }
-        }
-
-        i = 0;
-        for (auto* s: series) {
-            if (std::find(addedSeries.begin(), addedSeries.end(), i) == addedSeries.end()) {
-                m_chartPersistentHomology->addSeries(s);
-            }
-            i++;
-        }
-
-        diag->append(-1.0, -1.0);
-        diag->append(max, max);
-        m_chartPersistentHomology->addSeries(diag);
-    }
-}
-
 [[maybe_unused]] void MainWindow::slotFractalToGraph() {
     qDebug() << "clicked";
 }
@@ -1471,4 +1135,32 @@ void MainWindow::increaseInversion() {
             he::writer::writeOBJ(file, m_mesh);
         }
     }
+}
+
+[[maybe_unused]] void MainWindow::slotOpenPersistentHomologyWindow() {
+    if (m_persistentHomologyWindow == nullptr || m_persistentHomologyWindow->isHidden()) {
+        m_persistentHomologyWindow = std::make_unique<PersistentHomologyWindow>();
+    }
+    m_persistentHomologyWindow->show();
+}
+
+[[maybe_unused]] void MainWindow::slotOpenDensityWindow() {
+    if (m_densityWindow == nullptr || m_densityWindow->isHidden()) {
+        m_densityWindow = std::make_unique<DensityWindow>();
+    }
+    m_densityWindow->show();
+}
+
+[[maybe_unused]] void MainWindow::slotOpenAreaPerimeterWindow() {
+    if (m_areaPerimeterWindow == nullptr || m_areaPerimeterWindow->isHidden()) {
+        m_areaPerimeterWindow = std::make_unique<AreaPerimeterWindow>();
+    }
+    m_areaPerimeterWindow->show();
+}
+
+[[maybe_unused]] void MainWindow::slotOpenFractalDimensionWindow() {
+    if (m_fractalDimensionWindow == nullptr || m_fractalDimensionWindow->isHidden()) {
+        m_fractalDimensionWindow = std::make_unique<FractalDimensionWindow>();
+    }
+    m_fractalDimensionWindow->show();
 }
