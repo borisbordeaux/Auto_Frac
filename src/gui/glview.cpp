@@ -1,11 +1,11 @@
 #include "gui/glview.h"
 
 #include "gui/model.h"
-#include "gui/mainwindow.h"
+#include "gui/polytopal2dwindow.h"
 #include <QKeyEvent>
 #include <QtOpenGL/QOpenGLShaderProgram>
 
-GLView::GLView(Model* model, MainWindow* parent) :
+GLView::GLView(Model* model, Polytopal2DWindow* parent) :
         QOpenGLWidget(parent),
         m_camera(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.01f, 49.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)),
         m_rotationType(RotationType::CameraRotation),
@@ -650,57 +650,7 @@ void GLView::clickVertexManagement() {
 }
 
 void GLView::keyPressEvent(QKeyEvent* event) {
-    if (event->key() == Qt::Key_A) {
-        if (m_timerAnimation.isActive()) {
-            m_timerAnimation.stop();
-        } else {
-            m_timerAnimation.start(0);
-        }
-    }
-    if (event->key() == Qt::Key_D) {
-        m_model->toggleDisplayCircleDual();
-        this->updateDataCircles();
-        this->update();
-    }
-    if (event->key() == Qt::Key_F) {
-        m_pickingType = PickingType::PickingFace;
-        m_model->setSelectedFace(0);
-        m_model->setSelectedEdge(0);
-        m_model->setSelectedVertex(0);
-        m_model->updateDataFaces();
-        m_model->updateDataEdge();
-        m_model->updateDataVertices();
-        this->updateDataFaces();
-        this->updateDataEdge();
-        this->updateDataVertices();
-        this->update();
-    }
-    if (event->key() == Qt::Key_E) {
-        m_pickingType = PickingType::PickingEdge;
-        m_model->setSelectedFace(0);
-        m_model->setSelectedEdge(0);
-        m_model->setSelectedVertex(0);
-        m_model->updateDataFaces();
-        m_model->updateDataEdge();
-        m_model->updateDataVertices();
-        this->updateDataFaces();
-        this->updateDataEdge();
-        this->updateDataVertices();
-        this->update();
-    }
-    if (event->key() == Qt::Key_V) {
-        m_pickingType = PickingType::PickingVertex;
-        m_model->setSelectedFace(0);
-        m_model->setSelectedEdge(0);
-        m_model->setSelectedVertex(0);
-        m_model->updateDataFaces();
-        m_model->updateDataEdge();
-        m_model->updateDataVertices();
-        this->updateDataFaces();
-        this->updateDataEdge();
-        this->updateDataVertices();
-        this->update();
-    }
+
     if (event->key() == Qt::Key_S) {
         m_timerDisplaySphere.start();
     }
@@ -848,4 +798,26 @@ void GLView::updateDataVertices() {
     m_vboVertices.bind();
     m_vboVertices.allocate(m_model->constDataVertices(), m_model->countVertices() * static_cast<int>(sizeof(GLfloat)));
     m_vboVertices.release();
+}
+
+void GLView::slotAnimate() {
+    if (m_timerAnimation.isActive()) {
+        m_timerAnimation.stop();
+    } else {
+        m_timerAnimation.start(0);
+    }
+}
+
+void GLView::setPickingType(PickingType type) {
+    m_pickingType = type;
+    m_model->setSelectedFace(0);
+    m_model->setSelectedEdge(0);
+    m_model->setSelectedVertex(0);
+    m_model->updateDataFaces();
+    m_model->updateDataEdge();
+    m_model->updateDataVertices();
+    this->updateDataFaces();
+    this->updateDataEdge();
+    this->updateDataVertices();
+    this->update();
 }

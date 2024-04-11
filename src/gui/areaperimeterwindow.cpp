@@ -1,9 +1,11 @@
+#include "gui/areaperimeterwindow.h"
+
 #include <iostream>
+#include <QChart>
 #include <QValueAxis>
 #include <QScatterSeries>
 #include <QFileDialog>
 #include <opencv2/highgui.hpp>
-#include "gui/areaperimeterwindow.h"
 #include "ui_areaperimeterwindow.h"
 #include "utils/measures.h"
 
@@ -23,6 +25,11 @@ AreaPerimeterWindow::AreaPerimeterWindow(QWidget* parent) :
 
 AreaPerimeterWindow::~AreaPerimeterWindow() {
     delete ui;
+}
+
+void AreaPerimeterWindow::closeEvent(QCloseEvent* event) {
+    QWidget::closeEvent(event);
+    cv::destroyAllWindows();
 }
 
 [[maybe_unused]] void AreaPerimeterWindow::slotComputeAreaPerimeterPNG() {

@@ -24,7 +24,7 @@ class QOpenGLShaderProgram;
 
 class Model;
 
-class MainWindow;
+class Polytopal2DWindow;
 
 class GLView : public QOpenGLWidget, protected QOpenGLFunctions {
 Q_OBJECT
@@ -35,7 +35,7 @@ public:
      * @param model the model that has to be drawn
      * @param parent the parent of this widget
      */
-    explicit GLView(Model* model, MainWindow* parent = nullptr);
+    explicit GLView(Model* model, Polytopal2DWindow* parent = nullptr);
     ~GLView() override;
 
     /**
@@ -53,9 +53,13 @@ public:
 
     void stopAnimation();
 
+    void setPickingType(PickingType type);
+
 public slots:
     void animationStep();
     void animationCameraStep();
+
+    void slotAnimate();
 
 protected:
     // QOpenGLWidget interface
@@ -158,7 +162,7 @@ private:
     float m_tAnimCamera = 0.0f;
 
 private:
-    MainWindow* m_mainWindow;
+    Polytopal2DWindow* m_mainWindow;
     //for video animation
     QTimer m_timerDisplaySphere;
     QTimer m_timerCanonic;

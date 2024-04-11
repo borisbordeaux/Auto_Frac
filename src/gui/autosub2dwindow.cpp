@@ -43,8 +43,6 @@ AutoSub2DWindow::AutoSub2DWindow(QWidget* parent) :
     m_CPEditor = new frac::ControlPointEditor();
 
     this->ui->gridLayout->addWidget(m_statusBar);
-
-    this->setInfo("ceci est un test");
 }
 
 AutoSub2DWindow::~AutoSub2DWindow() {

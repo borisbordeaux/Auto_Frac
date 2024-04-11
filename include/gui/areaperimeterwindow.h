@@ -3,8 +3,8 @@
 
 #include <QWidget>
 #include <QGraphicsScene>
-#include <QChart>
 
+class QChart;
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class AreaPerimeterWindow; }
@@ -20,6 +20,9 @@ public:
 public slots:
     [[maybe_unused]] void slotComputeAreaPerimeterPNG();
     [[maybe_unused]] void slotComputeAreaPerimeterOBJ();
+
+protected:
+    void closeEvent(QCloseEvent* event) override;
 
 private:
     void computeAreaPerimeter(QStringList const& files);
