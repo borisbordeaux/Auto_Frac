@@ -93,6 +93,7 @@ float computePerimeter(const cv::Mat& img) {
     cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3), cv::Point(1, 1));
     cv::erode(img, eroded, kernel, cv::Point(1, 1), 1, cv::BORDER_CONSTANT, cv::Scalar::all(0));
     cv::subtract(img, eroded, eroded);
+
     return static_cast<float>(cv::countNonZero(eroded));
 }
 

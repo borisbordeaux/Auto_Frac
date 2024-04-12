@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1553</width>
+    <width>1757</width>
     <height>992</height>
    </rect>
   </property>
@@ -457,12 +457,26 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_8">
+    <layout class="QGridLayout" name="gridLayout">
      <property name="sizeConstraint">
       <enum>QLayout::SetMinimumSize</enum>
      </property>
-     <item>
-      <spacer name="horizontalSpacer_12">
+     <item row="0" column="5">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Selection type:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="6">
+      <widget class="QCheckBox" name="checkBox_projectCircles">
+       <property name="text">
+        <string>Project</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="14" rowspan="2">
+      <spacer name="horizontalSpacer_11">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -474,114 +488,8 @@
        </property>
       </spacer>
      </item>
-     <item>
-      <widget class="QPushButton" name="pushButton_2">
-       <property name="maximumSize">
-        <size>
-         <width>40</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>+</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButton_3">
-       <property name="maximumSize">
-        <size>
-         <width>40</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>-</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBox_projectCircles">
-       <property name="text">
-        <string>Project</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButton">
-       <property name="text">
-        <string>Display Circles</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBox_displayUnitSphere">
-       <property name="text">
-        <string>Sphere</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBox_displayMesh">
-       <property name="text">
-        <string>Mesh</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButton_canonizeMesh">
-       <property name="text">
-        <string>Canonicalize</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButton_openOBJ">
-       <property name="text">
-        <string>Open OBJ...</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButton_4">
-       <property name="text">
-        <string>Export OBJ...</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButton_ExportAll">
-       <property name="text">
-        <string>Export All</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButton_ExportSelectedFace">
-       <property name="text">
-        <string>Export Selected</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBox_polytopalPlanarControlPoints">
-       <property name="text">
-        <string>Planar CP</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBox_animations">
-       <property name="text">
-        <string>Animations</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="comboBox">
+     <item row="0" column="6">
+      <widget class="QComboBox" name="comboBox_SelectionType">
        <item>
         <property name="text">
          <string>Face</string>
@@ -599,8 +507,111 @@
        </item>
       </widget>
      </item>
-     <item>
-      <spacer name="horizontalSpacer_11">
+     <item row="0" column="4">
+      <widget class="QPushButton" name="pushButton_ExportOBJ">
+       <property name="text">
+        <string>Export OBJ...</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="7">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Rotation Type</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="10">
+      <widget class="QPushButton" name="pushButton_ExportAll">
+       <property name="text">
+        <string>Export All</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="9">
+      <widget class="QPushButton" name="pushButton_ExportSelectedFace">
+       <property name="text">
+        <string>Export Selected</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="4">
+      <widget class="QPushButton" name="pushButton_DisplayCircles">
+       <property name="text">
+        <string>Display Circles</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="8">
+      <widget class="QComboBox" name="comboBox_RotationType">
+       <item>
+        <property name="text">
+         <string>Camera</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Polyhedron</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="1" column="13">
+      <widget class="QPushButton" name="pushButton_VideoAnimation">
+       <property name="text">
+        <string>Video Animation</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QPushButton" name="pushButton_IncrementIteration">
+       <property name="maximumSize">
+        <size>
+         <width>40</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>+</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="5">
+      <widget class="QPushButton" name="pushButton">
+       <property name="text">
+        <string>Display Dual Circles</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QPushButton" name="pushButton_DecrementIteration">
+       <property name="maximumSize">
+        <size>
+         <width>40</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>-</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="3">
+      <widget class="QPushButton" name="pushButton_canonizeMesh">
+       <property name="text">
+        <string>Canonicalize</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3">
+      <widget class="QPushButton" name="pushButton_openOBJ">
+       <property name="text">
+        <string>Open OBJ...</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0" rowspan="2">
+      <spacer name="horizontalSpacer_12">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -612,6 +623,44 @@
        </property>
       </spacer>
      </item>
+     <item row="0" column="13">
+      <widget class="QCheckBox" name="checkBox_displayMesh">
+       <property name="text">
+        <string>Mesh</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="12">
+      <widget class="QCheckBox" name="checkBox_displayUnitSphere">
+       <property name="text">
+        <string>Sphere</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="11">
+      <widget class="QCheckBox" name="checkBox_polytopalPlanarControlPoints">
+       <property name="text">
+        <string>Planar CP</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="12">
+      <widget class="QPushButton" name="pushButton_2">
+       <property name="text">
+        <string>Animate Rotation</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="11">
+      <widget class="QCheckBox" name="checkBox_animations">
+       <property name="text">
+        <string>Animations</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
   </layout>
@@ -619,13 +668,13 @@
  <resources/>
  <connections>
   <connection>
-   <sender>pushButton_2</sender>
+   <sender>pushButton_IncrementIteration</sender>
    <signal>clicked()</signal>
    <receiver>Polytopal2DWindow</receiver>
    <slot>slotIncreaseInversion()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>270</x>
+     <x>190</x>
      <y>507</y>
     </hint>
     <hint type="destinationlabel">
@@ -635,13 +684,13 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_3</sender>
+   <sender>pushButton_DecrementIteration</sender>
    <signal>clicked()</signal>
    <receiver>Polytopal2DWindow</receiver>
    <slot>slotDecreaseInversion()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>316</x>
+     <x>236</x>
      <y>507</y>
     </hint>
     <hint type="destinationlabel">
@@ -657,7 +706,7 @@
    <slot>slotProjectCirclesClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>388</x>
+     <x>308</x>
      <y>506</y>
     </hint>
     <hint type="destinationlabel">
@@ -667,13 +716,13 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton</sender>
+   <sender>pushButton_DisplayCircles</sender>
    <signal>clicked()</signal>
    <receiver>Polytopal2DWindow</receiver>
    <slot>slotDisplayAreaCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>483</x>
+     <x>403</x>
      <y>507</y>
     </hint>
     <hint type="destinationlabel">
@@ -689,7 +738,7 @@
    <slot>slotDisplayUnitSphereChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>554</x>
+     <x>598</x>
      <y>506</y>
     </hint>
     <hint type="destinationlabel">
@@ -705,7 +754,7 @@
    <slot>slotDisplayMeshClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>616</x>
+     <x>660</x>
      <y>506</y>
     </hint>
     <hint type="destinationlabel">
@@ -721,7 +770,7 @@
    <slot>slotCanonizeMesh()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>702</x>
+     <x>746</x>
      <y>507</y>
     </hint>
     <hint type="destinationlabel">
@@ -737,7 +786,7 @@
    <slot>slotOpenOBJFile()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>788</x>
+     <x>832</x>
      <y>507</y>
     </hint>
     <hint type="destinationlabel">
@@ -747,13 +796,13 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_4</sender>
+   <sender>pushButton_ExportOBJ</sender>
    <signal>clicked()</signal>
    <receiver>Polytopal2DWindow</receiver>
    <slot>slotExportOBJ()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>874</x>
+     <x>918</x>
      <y>507</y>
     </hint>
     <hint type="destinationlabel">
@@ -769,7 +818,7 @@
    <slot>slotExportAllFaces()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>960</x>
+     <x>1004</x>
      <y>507</y>
     </hint>
     <hint type="destinationlabel">
@@ -785,7 +834,7 @@
    <slot>slotExportSelectedFace()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1062</x>
+     <x>1106</x>
      <y>507</y>
     </hint>
     <hint type="destinationlabel">
@@ -795,18 +844,82 @@
    </hints>
   </connection>
   <connection>
-   <sender>comboBox</sender>
+   <sender>comboBox_SelectionType</sender>
    <signal>currentIndexChanged(int)</signal>
    <receiver>Polytopal2DWindow</receiver>
    <slot>slotTypeSelectionChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1294</x>
-     <y>496</y>
+     <x>1448</x>
+     <y>507</y>
     </hint>
     <hint type="destinationlabel">
      <x>1551</x>
      <y>434</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_RotationType</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>Polytopal2DWindow</receiver>
+   <slot>slotTypeRotationChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1564</x>
+     <y>500</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1550</x>
+     <y>536</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_VideoAnimation</sender>
+   <signal>clicked()</signal>
+   <receiver>Polytopal2DWindow</receiver>
+   <slot>slotStartVideoAnimation()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1704</x>
+     <y>499</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1553</x>
+     <y>472</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>Polytopal2DWindow</receiver>
+   <slot>slotAnimationRotation()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>83</x>
+     <y>498</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>517</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Polytopal2DWindow</receiver>
+   <slot>slotDisplayDualAreaCircles()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>452</x>
+     <y>489</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>408</y>
     </hint>
    </hints>
   </connection>
@@ -824,5 +937,9 @@
   <slot>slotProjectCirclesClicked()</slot>
   <slot>slotExportOBJ()</slot>
   <slot>slotTypeSelectionChanged(int)</slot>
+  <slot>slotTypeRotationChanged(int)</slot>
+  <slot>slotStartVideoAnimation()</slot>
+  <slot>slotAnimationRotation()</slot>
+  <slot>slotDisplayDualAreaCircles()</slot>
  </slots>
 </ui>

@@ -183,7 +183,7 @@ void Polytopal2DWindow::canonicalizeStep() {
     }
 }
 
-[[maybe_unused]] void Polytopal2DWindow::slotDisplayAreaCirclesDual() {
+[[maybe_unused]] void Polytopal2DWindow::slotDisplayDualAreaCircles() {
     m_modelMesh.toggleDisplayCircleDual();
     m_view->updateDataCircles();
     m_view->update();
@@ -547,4 +547,25 @@ void Polytopal2DWindow::updateEnablementPoly() {
         default:
             break;
     }
+}
+
+[[maybe_unused]] void Polytopal2DWindow::slotTypeRotationChanged(int index) {
+    switch (index) {
+        case 0:
+            m_view->setRotationType(RotationType::CameraRotation);
+            break;
+        case 1:
+            m_view->setRotationType(RotationType::PolyhedronRotation);
+            break;
+        default:
+            break;
+    }
+}
+
+[[maybe_unused]] void Polytopal2DWindow::slotStartVideoAnimation() {
+    m_view->startVideoAnimation();
+}
+
+[[maybe_unused]] void Polytopal2DWindow::slotAnimationRotation() {
+    m_view->rotationAnimation();
 }

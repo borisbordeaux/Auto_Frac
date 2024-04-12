@@ -32,6 +32,7 @@ public slots:
     [[maybe_unused]] void slotCanonizeMesh();
     void canonicalizeStep();
     [[maybe_unused]] void slotDisplayAreaCircles();
+    [[maybe_unused]] void slotDisplayDualAreaCircles();
     [[maybe_unused]] void slotDisplayMeshClicked();
     [[maybe_unused]] void slotIncreaseInversion();
     [[maybe_unused]] void slotDecreaseInversion();
@@ -41,8 +42,10 @@ public slots:
     void increaseInversion();
     [[maybe_unused]] void slotExportOBJ();
 
-    [[maybe_unused]] void slotDisplayAreaCirclesDual();
     [[maybe_unused]] void slotTypeSelectionChanged(int index);
+    [[maybe_unused]] void slotTypeRotationChanged(int index);
+    [[maybe_unused]] void slotStartVideoAnimation();
+    [[maybe_unused]] void slotAnimationRotation();
 
 private:
     void updateEnablementPoly();

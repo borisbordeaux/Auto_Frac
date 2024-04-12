@@ -54,12 +54,13 @@ public:
     void stopAnimation();
 
     void setPickingType(PickingType type);
+    void setRotationType(RotationType type);
+    void startVideoAnimation();
+    void rotationAnimation();
 
 public slots:
     void animationStep();
     void animationCameraStep();
-
-    void slotAnimate();
 
 protected:
     // QOpenGLWidget interface
@@ -72,7 +73,6 @@ protected:
     void mouseMoveEvent(QMouseEvent* event) override;
     void wheelEvent(QWheelEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
-    void keyPressEvent(QKeyEvent* event) override;
 
     void hideEvent(QHideEvent* event) override;
 

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1119</width>
+    <width>918</width>
     <height>983</height>
    </rect>
   </property>
@@ -458,7 +458,7 @@
   <widget class="QGraphicsView" name="graphicsView_stats">
    <property name="geometry">
     <rect>
-     <x>100</x>
+     <x>30</x>
      <y>60</y>
      <width>850</width>
      <height>850</height>
@@ -471,7 +471,7 @@
   <widget class="QLabel" name="label_coefArea">
    <property name="geometry">
     <rect>
-     <x>750</x>
+     <x>630</x>
      <y>20</y>
      <width>91</width>
      <height>21</height>
@@ -484,7 +484,7 @@
   <widget class="QLabel" name="label_area">
    <property name="geometry">
     <rect>
-     <x>390</x>
+     <x>270</x>
      <y>20</y>
      <width>91</width>
      <height>21</height>
@@ -523,7 +523,7 @@
   <widget class="QLabel" name="label_coefPerimeter">
    <property name="geometry">
     <rect>
-     <x>950</x>
+     <x>830</x>
      <y>20</y>
      <width>91</width>
      <height>21</height>
@@ -536,7 +536,7 @@
   <widget class="QLabel" name="label_17">
    <property name="geometry">
     <rect>
-     <x>490</x>
+     <x>370</x>
      <y>20</y>
      <width>71</width>
      <height>21</height>
@@ -554,7 +554,7 @@
   <widget class="QLabel" name="label_perimeter">
    <property name="geometry">
     <rect>
-     <x>570</x>
+     <x>450</x>
      <y>20</y>
      <width>91</width>
      <height>21</height>
@@ -567,7 +567,7 @@
   <widget class="QLabel" name="label_16">
    <property name="geometry">
     <rect>
-     <x>350</x>
+     <x>230</x>
      <y>20</y>
      <width>41</width>
      <height>21</height>
@@ -598,7 +598,7 @@
   <widget class="QLabel" name="label_18">
    <property name="geometry">
     <rect>
-     <x>680</x>
+     <x>560</x>
      <y>20</y>
      <width>71</width>
      <height>21</height>
@@ -616,7 +616,7 @@
   <widget class="QLabel" name="label_19">
    <property name="geometry">
     <rect>
-     <x>850</x>
+     <x>730</x>
      <y>20</y>
      <width>101</width>
      <height>21</height>
@@ -634,7 +634,7 @@
   <widget class="QPushButton" name="pushButton_computeAreaPerimeter">
    <property name="geometry">
     <rect>
-     <x>170</x>
+     <x>50</x>
      <y>20</y>
      <width>161</width>
      <height>23</height>
@@ -642,19 +642,6 @@
    </property>
    <property name="text">
     <string>Choose PNG...</string>
-   </property>
-  </widget>
-  <widget class="QCheckBox" name="checkBox_displayContours">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>20</y>
-     <width>131</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Display contours</string>
    </property>
   </widget>
  </widget>

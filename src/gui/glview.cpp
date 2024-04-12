@@ -1,8 +1,7 @@
 #include "gui/glview.h"
-
 #include "gui/model.h"
 #include "gui/polytopal2dwindow.h"
-#include <QKeyEvent>
+#include <QMouseEvent>
 #include <QtOpenGL/QOpenGLShaderProgram>
 
 GLView::GLView(Model* model, Polytopal2DWindow* parent) :
@@ -649,21 +648,6 @@ void GLView::clickVertexManagement() {
     glEnable(GL_MULTISAMPLE);
 }
 
-void GLView::keyPressEvent(QKeyEvent* event) {
-
-    if (event->key() == Qt::Key_S) {
-        m_timerDisplaySphere.start();
-    }
-    if (event->key() == Qt::Key_R) {
-        if (m_rotationType == RotationType::CameraRotation) {
-            m_rotationType = RotationType::PolyhedronRotation;
-        } else {
-            m_rotationType = RotationType::CameraRotation;
-        }
-    }
-    QWidget::keyPressEvent(event);
-}
-
 void GLView::animationStep() {
     m_camera.rotateAzimuth(qDegreesToRadians(1.0f));
     m_uniformsDirty = true;
@@ -800,7 +784,7 @@ void GLView::updateDataVertices() {
     m_vboVertices.release();
 }
 
-void GLView::slotAnimate() {
+void GLView::rotationAnimation() {
     if (m_timerAnimation.isActive()) {
         m_timerAnimation.stop();
     } else {
@@ -820,4 +804,12 @@ void GLView::setPickingType(PickingType type) {
     this->updateDataEdge();
     this->updateDataVertices();
     this->update();
+}
+
+void GLView::setRotationType(RotationType type) {
+    m_rotationType = type;
+}
+
+void GLView::startVideoAnimation() {
+    m_timerDisplaySphere.start();
 }
