@@ -49,6 +49,7 @@ public:
     void updateDataSphere();
     void updateDataEdge();
     void updateDataCircles();
+    void updateDataCirclesDual();
     void updateDataVertices();
 
     void stopAnimation();
@@ -100,11 +101,13 @@ private:
     QOpenGLVertexArrayObject m_vaoSphere;
     QOpenGLVertexArrayObject m_vaoEdges;
     QOpenGLVertexArrayObject m_vaoCircles;
+    QOpenGLVertexArrayObject m_vaoCirclesDual;
     QOpenGLVertexArrayObject m_vaoVertices;
     QOpenGLBuffer m_vboFaces;
     QOpenGLBuffer m_vboSphere;
     QOpenGLBuffer m_vboEdges;
     QOpenGLBuffer m_vboCircles;
+    QOpenGLBuffer m_vboCirclesDual;
     QOpenGLBuffer m_vboVertices;
     QOpenGLShaderProgram* m_programFaces = nullptr;
     QOpenGLShaderProgram* m_programFacesPicking = nullptr;

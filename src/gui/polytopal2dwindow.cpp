@@ -53,6 +53,7 @@ void Polytopal2DWindow::setInfo(const std::string& textInfo, int timeoutMs) {
         m_circlesDual.clear();
         he::reader::readOBJ(file, m_mesh);
         m_modelMesh.resetCircles();
+        m_modelMesh.resetCirclesDual();
         m_modelMesh.setMesh(&m_mesh);
         m_view->updateData();
         m_view->update();
@@ -155,7 +156,6 @@ void Polytopal2DWindow::canonicalizeStep() {
 
         if (m_circles.empty()) {
             m_circles = frac::PolyCircle::computeIlluminatedCircles(m_mesh);
-            m_circlesDual = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh);
 
             for (poly::Circle const& c: m_circles) {
                 if (this->ui->checkBox_projectCircles->isChecked()) {
@@ -164,17 +164,8 @@ void Polytopal2DWindow::canonicalizeStep() {
                     m_modelMesh.addCircle(c.inverseStereographicProject());
                 }
             }
-
-            for (poly::Circle const& c: m_circlesDual) {
-                if (this->ui->checkBox_projectCircles->isChecked()) {
-                    m_modelMesh.addCircleDual(c);
-                } else {
-                    m_modelMesh.addCircleDual(c.inverseStereographicProject());
-                }
-            }
         } else {
             m_circles.clear();
-            m_circlesDual.clear();
         }
 
         m_modelMesh.updateDataCircles();
@@ -184,9 +175,27 @@ void Polytopal2DWindow::canonicalizeStep() {
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotDisplayDualAreaCircles() {
-    m_modelMesh.toggleDisplayCircleDual();
-    m_view->updateDataCircles();
-    m_view->update();
+    if (!m_mesh.vertices().empty()) {
+        m_modelMesh.resetCirclesDual();
+
+        if (m_circlesDual.empty()) {
+            m_circlesDual = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh);
+
+            for (poly::Circle const& c: m_circlesDual) {
+                if (this->ui->checkBox_projectCircles->isChecked()) {
+                    m_modelMesh.addCircleDual(c);
+                } else {
+                    m_modelMesh.addCircleDual(c.inverseStereographicProject());
+                }
+            }
+        } else {
+            m_circlesDual.clear();
+        }
+
+        m_modelMesh.updateDataCirclesDual();
+        m_view->updateDataCirclesDual();
+        m_view->update();
+    }
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotDisplayMeshClicked() {
@@ -224,7 +233,6 @@ void Polytopal2DWindow::canonicalizeStep() {
     m_modelMesh.resetCircles();
 
     m_circles = frac::PolyCircle::computeIlluminatedCircles(m_mesh);
-    m_circlesDual = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh);
 
     for (int i = 0; i < inversionLevel; i++) {
         std::size_t index = m_circlesIndex;
@@ -244,14 +252,6 @@ void Polytopal2DWindow::canonicalizeStep() {
         }
     }
 
-    for (poly::Circle const& c: m_circlesDual) {
-        if (this->ui->checkBox_projectCircles->isChecked()) {
-            m_modelMesh.addCircleDual(c);
-        } else {
-            m_modelMesh.addCircleDual(c.inverseStereographicProject());
-        }
-    }
-
     this->setInfo("Iteration level : " + std::to_string(m_inversionLevel) + ", " + std::to_string(m_circles.size()) + " circles in total", 4000);
 
     m_modelMesh.updateDataCircles();
@@ -266,6 +266,7 @@ void Polytopal2DWindow::canonicalizeStep() {
         m_timerAnimProject.start();
     } else {
         m_modelMesh.resetCircles();
+        m_modelMesh.resetCirclesDual();
 
         for (poly::Circle const& c: m_circles) {
             if (this->ui->checkBox_projectCircles->isChecked()) {
@@ -284,7 +285,9 @@ void Polytopal2DWindow::canonicalizeStep() {
         }
 
         m_modelMesh.updateDataCircles();
+        m_modelMesh.updateDataCirclesDual();
         m_view->updateDataCircles();
+        m_view->updateDataCirclesDual();
         m_view->update();
     }
 }
@@ -296,6 +299,7 @@ void Polytopal2DWindow::animProjectStep() {
     }
 
     m_modelMesh.resetCircles();
+    m_modelMesh.resetCirclesDual();
     for (size_t i = 0; i < m_circlesAnimProject.size(); i++) {
         if (!this->ui->checkBox_projectCircles->isChecked()) {
             m_circlesAnimProject[i].setRadius((1 - m_tAnimProject) * m_circles[i].radius() + m_tAnimProject * m_circles[i].inverseStereographicProject().radius());
@@ -332,6 +336,7 @@ void Polytopal2DWindow::animProjectStep() {
         m_timerAnimProject.stop();
         m_tAnimProject = 0.0f;
         m_modelMesh.resetCircles();
+        m_modelMesh.resetCirclesDual();
 
         for (poly::Circle const& c: m_circles) {
             if (this->ui->checkBox_projectCircles->isChecked()) {
@@ -351,7 +356,9 @@ void Polytopal2DWindow::animProjectStep() {
     }
 
     m_modelMesh.updateDataCircles();
+    m_modelMesh.updateDataCirclesDual();
     m_view->updateDataCircles();
+    m_view->updateDataCirclesDual();
     m_view->update();
 }
 
@@ -468,16 +475,20 @@ void Polytopal2DWindow::updateCircles() {
                     m_modelMesh.addCircle(c.inverseStereographicProject());
                 }
             }
-
-            for (poly::Circle const& c: m_circlesDual) {
-                if (this->ui->checkBox_projectCircles->isChecked()) {
-                    m_modelMesh.addCircleDual(c);
-                } else {
-                    m_modelMesh.addCircleDual(c.inverseStereographicProject());
-                }
-            }
         }
         m_modelMesh.updateDataCircles();
+    }
+}
+
+void Polytopal2DWindow::updateCirclesDual() {
+    //if there were circles
+    if (!m_circlesDual.empty()) {
+        //clear circles
+        this->slotDisplayDualAreaCircles();
+        //set circles
+        this->slotDisplayDualAreaCircles();
+
+        m_modelMesh.updateDataCirclesDual();
     }
 }
 
@@ -502,14 +513,6 @@ void Polytopal2DWindow::increaseInversion() {
         }
     }
 
-    for (poly::Circle const& c: m_circlesDual) {
-        if (this->ui->checkBox_projectCircles->isChecked()) {
-            m_modelMesh.addCircleDual(c);
-        } else {
-            m_modelMesh.addCircleDual(c.inverseStereographicProject());
-        }
-    }
-
     this->setInfo("Iteration level : " + std::to_string(m_inversionLevel) + ", " + std::to_string(m_circles.size()) + " circles in total", 4000);
 
     m_modelMesh.updateDataCircles();
@@ -519,8 +522,6 @@ void Polytopal2DWindow::increaseInversion() {
 
 [[maybe_unused]] void Polytopal2DWindow::slotExportOBJ() {
     if (!m_mesh.vertices().empty()) {
-        this->grabKeyboard();
-        this->releaseKeyboard();
         QString file = QFileDialog::getSaveFileName(this, "Choose an OBJ File...", "../obj", "OBJ Files (*.obj)");
         if (file != "") {
             he::writer::writeOBJ(file, m_mesh);

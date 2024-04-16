@@ -27,6 +27,8 @@ public:
 
     [[nodiscard]] const float* constDataCircles() const { return m_dataCircles.constData(); }
 
+    [[nodiscard]] const float* constDataCirclesDual() const { return m_dataCirclesDual.constData(); }
+
     [[nodiscard]] const float* constDataVertices() const { return m_dataVertices.constData(); }
 
     //the number of floats of vertices (in GPU POV)
@@ -38,6 +40,8 @@ public:
 
     [[nodiscard]] int countCircles() const { return m_countCircle; }
 
+    [[nodiscard]] int countCirclesDual() const { return m_countCircleDual; }
+
     [[nodiscard]] int countVertices() const { return m_countVertices; }
 
     //the number of vertices (in GPU POV)
@@ -48,6 +52,8 @@ public:
     [[nodiscard]] int vertexCountEdge() const { return m_countEdge / 8; }
 
     [[nodiscard]] int vertexCountCircles() const { return m_countCircle / 8; }
+
+    [[nodiscard]] int vertexCountCirclesDual() const { return m_countCircleDual / 8; }
 
     [[nodiscard]] int vertexCountVertices() const { return m_countVertices / 8; }
 
@@ -65,6 +71,7 @@ public:
     void updateDataSphere();
     void updateDataEdge();
     void updateDataCircles();
+    void updateDataCirclesDual();
     void updateDataVertices();
 
     /**
@@ -104,6 +111,7 @@ public:
      */
     void addCircleDual(poly::Circle const& circle);
     void resetCircles();
+    void resetCirclesDual();
 
     /**
      * @brief Sets the selected face index
@@ -128,11 +136,6 @@ public:
      * @return a pointer to the selected face, nullptr if no face is selected
      */
     [[nodiscard]] he::Face* selectedFace();
-
-    /**
-     * @brief Toggles the display of the dual circles
-     */
-    void toggleDisplayCircleDual();
 
 
 private:
@@ -166,6 +169,8 @@ private:
 
     void addVertexCircle(QVector3D const& v, QVector3D const& color, float ID, float isSelected);
 
+    void addVertexCircleDual(QVector3D const& v, QVector3D const& color, float ID, float isSelected);
+
     void addVertex(QVector3D const& v, QVector3D const& color, float ID, float isSelected);
 
     /**
@@ -187,7 +192,8 @@ private:
      */
     static qsizetype findNbOfTriangle(he::Mesh* mesh);
 
-    qsizetype findNbOfSegments() const;
+    qsizetype findNbOfSegmentsCircles() const;
+    qsizetype findNbOfSegmentsCirclesDual() const;
 
 private:
     //the data of this model
@@ -195,6 +201,7 @@ private:
     QVector<float> m_dataSphere;
     QVector<float> m_dataEdge;
     QVector<float> m_dataCircles;
+    QVector<float> m_dataCirclesDual;
     QVector<float> m_dataVertices;
 
     //the amount of data
@@ -202,6 +209,7 @@ private:
     int m_countSphere = 0;
     int m_countEdge = 0;
     int m_countCircle = 0;
+    int m_countCircleDual = 0;
     int m_countVertices = 0;
 
     //the mesh the model is based on
@@ -216,8 +224,7 @@ private:
     int m_selectedVertex = 0;
     int m_selectedEdge = 0;
 
-    float m_dashLength = 90.0f;
-    bool m_displayCircleDual = false;
+    const float m_dashLength = 90.0f;
 };
 
 #endif // MODEL_H

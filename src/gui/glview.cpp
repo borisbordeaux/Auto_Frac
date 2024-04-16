@@ -132,6 +132,28 @@ void GLView::initBuffers() {
     m_vboCircles.release();
     m_vaoCircles.release();
 
+    //------for the circles dual ------//
+    m_vaoCirclesDual.bind();
+    m_vboCirclesDual.bind();
+    //allocate necessary memory
+    m_vboCirclesDual.allocate(m_model->constDataCirclesDual(), m_model->countCirclesDual() * static_cast<int>(sizeof(GLfloat)));
+
+    //enable enough attrib array for all the data of the edge's vertex
+    glEnableVertexAttribArray(0); //coordinates
+    glEnableVertexAttribArray(1); //color
+    glEnableVertexAttribArray(2); //ID for picking
+    glEnableVertexAttribArray(3); //is selected
+    //coordinates of the vertex
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), nullptr);
+    //color of the edge
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
+    //the ID
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(6 * sizeof(GLfloat)));
+    //whether it's selected or not, to simplify the code, a negative value means not selected while a positive value means selected
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(7 * sizeof(GLfloat)));
+    m_vboCirclesDual.release();
+    m_vaoCirclesDual.release();
+
     //------for the vertices------//
     m_vaoVertices.bind();
     m_vboVertices.bind();
@@ -280,12 +302,14 @@ void GLView::initializeGL() {
     m_vaoSphere.create();
     m_vaoEdges.create();
     m_vaoCircles.create();
+    m_vaoCirclesDual.create();
     m_vaoVertices.create();
 
     m_vboFaces.create();
     m_vboSphere.create();
     m_vboEdges.create();
     m_vboCircles.create();
+    m_vboCirclesDual.create();
     m_vboVertices.create();
 
     //background
@@ -374,6 +398,10 @@ void GLView::paintGL() {
     m_vaoCircles.bind();
     glDrawArrays(GL_LINES, 0, m_model->vertexCountCircles());
 
+    //draw circles dual
+    m_vaoCirclesDual.bind();
+    glDrawArrays(GL_LINES, 0, m_model->vertexCountCirclesDual());
+
     //draw edges
     m_vaoEdges.bind();
     glDrawArrays(GL_LINES, 0, m_model->vertexCountEdge());
@@ -396,7 +424,6 @@ void GLView::resizeGL(int w, int h) {
 }
 
 void GLView::mousePressEvent(QMouseEvent* event) {
-    this->grabKeyboard();
     if (event->button() & Qt::MouseButton::LeftButton || event->button() & Qt::MouseButton::RightButton) {
         //update the mouse positions
         m_lastPos = event->pos().toPointF();
@@ -423,6 +450,7 @@ void GLView::mouseMoveEvent(QMouseEvent* event) {
             m_world.rotate(static_cast<float>(dx) / 4.0f, 0, 1, 0);
             m_model->transformMesh(m_world);
             m_mainWindow->updateCircles();
+            m_mainWindow->updateCirclesDual();
             this->updateData();
         }
         update();
@@ -439,6 +467,7 @@ void GLView::mouseMoveEvent(QMouseEvent* event) {
             m_world.rotate(static_cast<float>(dy) / 4.0f, 0, 1, 0);
             m_model->transformMesh(m_world);
             m_mainWindow->updateCircles();
+            m_mainWindow->updateCirclesDual();
             this->updateData();
         }
         update();
@@ -656,7 +685,6 @@ void GLView::animationStep() {
 
 void GLView::hideEvent(QHideEvent* event) {
     this->stopAnimation();
-    this->releaseKeyboard();
     QWidget::hideEvent(event);
 }
 
@@ -697,8 +725,8 @@ void GLView::connectTimers() {
         m_timerDisplayCircle.stop();
     });
     connect(&m_timerDisplayCircleDual, &QTimer::timeout, this, [&]() {
-        m_model->toggleDisplayCircleDual();
-        this->updateDataCircles();
+        m_mainWindow->slotDisplayDualAreaCircles();
+        m_model->updateDataCirclesDual();
         m_timerResetCamera.start(9000);
         m_timerDisplayCircleDual.stop();
     });
@@ -731,8 +759,8 @@ void GLView::connectTimers() {
         }
     });
     connect(&m_timerHideCircleDual, &QTimer::timeout, this, [&]() {
-        m_model->toggleDisplayCircleDual();
-        this->updateDataCircles();
+        m_mainWindow->slotDisplayDualAreaCircles();
+        m_model->updateDataCirclesDual();
         m_timerHideCircleDual.stop();
         m_timerZoom.start();
     });
@@ -751,6 +779,7 @@ void GLView::updateData() {
     this->updateDataSphere();
     this->updateDataEdge();
     this->updateDataCircles();
+    this->updateDataCirclesDual();
     this->updateDataVertices();
 }
 
@@ -776,6 +805,12 @@ void GLView::updateDataCircles() {
     m_vboCircles.bind();
     m_vboCircles.allocate(m_model->constDataCircles(), m_model->countCircles() * static_cast<int>(sizeof(GLfloat)));
     m_vboCircles.release();
+}
+
+void GLView::updateDataCirclesDual() {
+    m_vboCirclesDual.bind();
+    m_vboCirclesDual.allocate(m_model->constDataCirclesDual(), m_model->countCirclesDual() * static_cast<int>(sizeof(GLfloat)));
+    m_vboCirclesDual.release();
 }
 
 void GLView::updateDataVertices() {
@@ -813,3 +848,4 @@ void GLView::setRotationType(RotationType type) {
 void GLView::startVideoAnimation() {
     m_timerDisplaySphere.start();
 }
+

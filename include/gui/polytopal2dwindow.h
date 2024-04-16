@@ -23,6 +23,7 @@ public:
     int inversionLevel() const { return m_inversionLevel; }
     void projectCirclesToPlan();
     void updateCircles();
+    void updateCirclesDual();
 
 public slots:
     [[maybe_unused]] void slotOpenOBJFile();
