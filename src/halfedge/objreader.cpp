@@ -1,4 +1,4 @@
-#include "utils/objreader.h"
+#include "halfedge/objreader.h"
 
 #include "halfedge/mesh.h"
 #include "halfedge/face.h"

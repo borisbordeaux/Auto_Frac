@@ -4,14 +4,14 @@
 #include <QStatusBar>
 #include <QFileDialog>
 #include "gui/glview.h"
+#include "halfedge/objreader.h"
+#include "halfedge/objwriter.h"
 #include "polytopal/face.h"
 #include "polytopal/circle.h"
-#include "utils/objreader.h"
 #include "polytopal/structure.h"
-#include "utils/fileprinter.h"
 #include "polytopal/structureprinter.h"
-#include "computations/computation.h"
-#include "utils/objwriter.h"
+#include "polytopal/polytopal.h"
+#include "utils/fileprinter.h"
 
 Polytopal2DWindow::Polytopal2DWindow(QWidget* parent) :
         QWidget(parent), ui(new Ui::Polytopal2DWindow), m_statusBar(new QStatusBar(this)), m_openedMesh(false),
@@ -115,7 +115,7 @@ void Polytopal2DWindow::setInfo(const std::string& textInfo, int timeoutMs) {
 
 [[maybe_unused]] void Polytopal2DWindow::slotCanonizeMesh() {
     if (!m_mesh.vertices().empty()) {
-        frac::Canonizer::setMeshToOrigin(m_mesh);
+        poly::setMeshToOrigin(m_mesh);
         m_timerCanonicalize.start(0);
     }
 }
@@ -126,7 +126,7 @@ void Polytopal2DWindow::canonicalizeStep() {
         oldPos.push_back(v->pos());
     }
 
-    frac::Canonizer::canonicalizeMesh(m_mesh);
+    poly::canonicalizeMesh(m_mesh);
     m_modelMesh.updateDataFaces();
     m_modelMesh.updateDataEdge();
     m_modelMesh.updateDataVertices();
@@ -155,7 +155,7 @@ void Polytopal2DWindow::canonicalizeStep() {
         m_modelMesh.resetCircles();
 
         if (m_circles.empty()) {
-            m_circles = frac::PolyCircle::computeIlluminatedCircles(m_mesh);
+            m_circles = poly::computeIlluminatedCircles(m_mesh);
 
             for (poly::Circle const& c: m_circles) {
                 if (this->ui->checkBox_projectCircles->isChecked()) {
@@ -179,7 +179,7 @@ void Polytopal2DWindow::canonicalizeStep() {
         m_modelMesh.resetCirclesDual();
 
         if (m_circlesDual.empty()) {
-            m_circlesDual = frac::PolyCircle::computeIlluminatedCirclesDual(m_mesh);
+            m_circlesDual = poly::computeIlluminatedCirclesDual(m_mesh);
 
             for (poly::Circle const& c: m_circlesDual) {
                 if (this->ui->checkBox_projectCircles->isChecked()) {
@@ -215,7 +215,7 @@ void Polytopal2DWindow::canonicalizeStep() {
         if (!m_timerAnimInversion.isActive()) {
             std::size_t index = m_circlesIndex;
             m_circlesIndex = m_circles.size();
-            m_nbInversions = frac::PolyCircle::computeInversions(m_circles, m_circlesDual, index);
+            m_nbInversions = poly::computeInversions(m_circles, m_circlesDual, index);
             m_timerAnimInversion.start();
         }
     } else {
@@ -232,12 +232,12 @@ void Polytopal2DWindow::canonicalizeStep() {
 
     m_modelMesh.resetCircles();
 
-    m_circles = frac::PolyCircle::computeIlluminatedCircles(m_mesh);
+    m_circles = poly::computeIlluminatedCircles(m_mesh);
 
     for (int i = 0; i < inversionLevel; i++) {
         std::size_t index = m_circlesIndex;
         m_circlesIndex = m_circles.size();
-        m_nbInversions = frac::PolyCircle::computeInversions(m_circles, m_circlesDual, index);
+        m_nbInversions = poly::computeInversions(m_circles, m_circlesDual, index);
 
         if (m_nbInversions != 0) {
             m_inversionLevel++;
@@ -460,7 +460,7 @@ void Polytopal2DWindow::updateCircles() {
         for (int i = 0; i < inversionLevel; i++) {
             std::size_t index = m_circlesIndex;
             m_circlesIndex = m_circles.size();
-            m_nbInversions = frac::PolyCircle::computeInversions(m_circles, m_circlesDual, index);
+            m_nbInversions = poly::computeInversions(m_circles, m_circlesDual, index);
 
             if (m_nbInversions == 0) { return; }
 
@@ -497,7 +497,7 @@ void Polytopal2DWindow::increaseInversion() {
 
     std::size_t index = m_circlesIndex;
     m_circlesIndex = m_circles.size();
-    m_nbInversions = frac::PolyCircle::computeInversions(m_circles, m_circlesDual, index);
+    m_nbInversions = poly::computeInversions(m_circles, m_circlesDual, index);
 
     if (m_nbInversions == 0) { return; }
 

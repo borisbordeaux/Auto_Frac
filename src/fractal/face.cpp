@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-frac::UniqueVector<frac::Face> frac::Face::s_existingFaces;
+frac::Set<frac::Face> frac::Face::s_existingFaces;
 std::map<std::string, std::string> frac::Face::s_incidenceConstraints;
 std::map<std::string, std::string> frac::Face::s_adjacencyConstraints;
 std::unordered_map<std::string, std::vector<frac::Face>> frac::Face::s_subdivisions;
@@ -153,13 +153,13 @@ int frac::Face::computeOffset(frac::Face const& face, frac::Face const& other) {
     return -1;
 }
 
-frac::UniqueVector<frac::Face> frac::Face::allSubdivisions() const {
-    frac::UniqueVector<frac::Face> res;
+frac::Set<frac::Face> frac::Face::allSubdivisions() const {
+    frac::Set<frac::Face> res;
     res.add(*this);
     std::size_t i = 0;
     bool changed = true;
     while (changed) {
-        frac::UniqueVector<frac::Face> added;
+        frac::Set<frac::Face> added;
         for (std::size_t j = i; j < res.size(); ++j) {
             std::vector<frac::Face> subs = res[j].subdivisions();
             for (frac::Face const& f: subs) {

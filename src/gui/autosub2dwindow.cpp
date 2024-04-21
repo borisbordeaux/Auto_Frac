@@ -632,3 +632,10 @@ void AutoSub2DWindow::updateEnablement() {
 void AutoSub2DWindow::setInfo(std::string const& textInfo, int timeoutMs) {
     m_statusBar->showMessage(textInfo.c_str(), timeoutMs);
 }
+
+void AutoSub2DWindow::hideEvent(QHideEvent* event) {
+    if (m_CPEditor != nullptr && !m_CPEditor->isHidden()) {
+        m_CPEditor->close();
+    }
+    QWidget::hideEvent(event);
+}

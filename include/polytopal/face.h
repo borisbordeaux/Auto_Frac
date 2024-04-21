@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "edge.h"
-#include "utils/uniquevector.h"
+#include "utils/set.h"
 
 namespace he {
 class Face;
@@ -41,7 +41,7 @@ private:
     void init();
     static void addAdjacencyConstraint(poly::Face const& face, unsigned int indexSubFace1, unsigned int indexBordFace1, unsigned int indexSubFace2, unsigned int indexBordFace2);
     static void addIncidenceConstraint(poly::Face const& face, unsigned int indexParentEdge, unsigned int indexSubEdge, unsigned int indexSubFaceEdge, unsigned int indexSubFace);
-    static frac::UniqueVector<poly::Face> s_existingFaces;
+    static frac::Set<poly::Face> s_existingFaces;
 
     he::Face* m_face;
     std::vector<he::HalfEdge*> m_halfEdges;

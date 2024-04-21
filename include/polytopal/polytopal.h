@@ -1,5 +1,5 @@
-#ifndef AUTOFRAC_COMPUTATION_H
-#define AUTOFRAC_COMPUTATION_H
+#ifndef AUTOFRAC_POLYTOPAL_H
+#define AUTOFRAC_POLYTOPAL_H
 
 #include "polytopal/circle.h"
 
@@ -7,15 +7,7 @@ namespace he {
 class Mesh;
 }
 
-class QString;
-
-namespace frac {
-
-namespace DensityComputation {
-void computeDensity(QString const& file, int value, bool showAllImages);
-}
-
-namespace Canonizer {
+namespace poly {
 /**
  * Canonizes a mesh by checking all the following conditions<br>
  * - All edges of the mesh are tangent to the unit sphere.<br>
@@ -30,27 +22,11 @@ void canonicalizeMesh(he::Mesh& m);
  * @param m the mesh to recenter
  */
 void setMeshToOrigin(he::Mesh& m);
-}
 
-namespace PolyCircle {
 std::vector<poly::Circle> computeIlluminatedCircles(he::Mesh const& m);
 std::vector<poly::Circle> computeIlluminatedCirclesDual(he::Mesh const& m);
 std::size_t computeInversions(std::vector<poly::Circle>& circlesToInverse, std::vector<poly::Circle>& circlesInvertive, std::size_t index);
-}
 
-namespace PersistentHomology {
+} // poly
 
-struct Cycles {
-    int Dim;
-    float Birth;
-    float Death;
-
-    Cycles(int dim, float birth, float death) : Dim(dim), Birth(birth), Death(death) {}
-};
-
-std::vector<Cycles> computePersistenceHomology(QString const& off_file_points, float r, float minLifeTime, int dimension);
-}
-
-} // frac
-
-#endif //AUTOFRAC_COMPUTATION_H
+#endif //AUTOFRAC_POLYTOPAL_H

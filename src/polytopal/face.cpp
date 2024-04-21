@@ -6,7 +6,7 @@
 #include "halfedge/mesh.h"
 #include "utils/utils.h"
 
-frac::UniqueVector<poly::Face> poly::Face::s_existingFaces;
+frac::Set<poly::Face> poly::Face::s_existingFaces;
 he::Mesh const* poly::Face::s_mesh = nullptr;
 std::map<std::string, std::string> poly::Face::s_incidenceConstraints;
 std::map<std::string, std::string> poly::Face::s_adjacencyConstraints;

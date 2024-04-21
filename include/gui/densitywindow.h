@@ -15,6 +15,9 @@ public:
     explicit DensityWindow(QWidget* parent = nullptr);
     ~DensityWindow() override;
 
+protected:
+    void hideEvent(QHideEvent* event) override;
+
 public slots:
     [[maybe_unused]] void slotComputeImageDensity();
 

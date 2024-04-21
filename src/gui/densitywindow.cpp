@@ -1,7 +1,8 @@
-#include <QFileDialog>
 #include "gui/densitywindow.h"
 #include "ui_densitywindow.h"
-#include "computations/computation.h"
+#include <QFileDialog>
+#include <opencv2/highgui.hpp>
+#include "density/density.h"
 
 
 DensityWindow::DensityWindow(QWidget* parent) :
@@ -24,6 +25,11 @@ DensityWindow::~DensityWindow() {
     QString file = QFileDialog::getOpenFileName(this, "Open a PNG File...", "../img", "PNG Files (*.png)", nullptr);
 
     if (file != "") {
-        frac::DensityComputation::computeDensity(file, this->ui->horizontalSlider_windowSize->value(), this->ui->checkBox_showDensityImages->isChecked());
+        frac::computeDensity(file, this->ui->horizontalSlider_windowSize->value(), this->ui->checkBox_showDensityImages->isChecked());
     }
+}
+
+void DensityWindow::hideEvent(QHideEvent* event) {
+    cv::destroyAllWindows();
+    QWidget::hideEvent(event);
 }

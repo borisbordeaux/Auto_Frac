@@ -7,7 +7,7 @@
 #include <unordered_map>
 
 #include "fractal/edge.h"
-#include "utils/uniquevector.h"
+#include "utils/set.h"
 
 namespace frac {
 
@@ -45,7 +45,7 @@ public:
     void setFirstInterior(int index);
     void setAlgo(AlgorithmSubdivision algo);
     [[nodiscard]] std::vector<frac::Face> subdivisions() const;
-    [[nodiscard]] UniqueVector<frac::Face> allSubdivisions() const;
+    [[nodiscard]] Set<frac::Face> allSubdivisions() const;
 
     frac::Edge const& operator[](std::size_t index) const;
     bool operator==(frac::Face const& other) const;
@@ -76,7 +76,7 @@ private:
     int m_firstInterior;
     AlgorithmSubdivision m_algo;
 
-    static frac::UniqueVector<frac::Face> s_existingFaces;
+    static frac::Set<frac::Face> s_existingFaces;
 
 
     static int computeOffset(frac::Face const& face, frac::Face const& other);

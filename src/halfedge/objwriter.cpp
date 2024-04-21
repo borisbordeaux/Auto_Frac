@@ -1,4 +1,4 @@
-#include "utils/objwriter.h"
+#include "halfedge/objwriter.h"
 #include <QFile>
 #include <QTextStream>
 #include "halfedge/mesh.h"

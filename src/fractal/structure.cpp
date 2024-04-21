@@ -10,9 +10,9 @@ void frac::Structure::addAdjacency(std::size_t indexFace1, std::size_t indexEdge
     }
 }
 
-frac::UniqueVector<frac::Edge> frac::Structure::allEdges() const {
-    frac::UniqueVector<frac::Edge> res;
-    frac::UniqueVector<frac::Face> faces = this->allFaces();
+frac::Set<frac::Edge> frac::Structure::allEdges() const {
+    frac::Set<frac::Edge> res;
+    frac::Set<frac::Face> faces = this->allFaces();
     for (frac::Face const& f: faces.data()) {
         for (frac::Edge const& e: f.constData()) {
             res.add(e);
@@ -21,13 +21,13 @@ frac::UniqueVector<frac::Edge> frac::Structure::allEdges() const {
     return res;
 }
 
-frac::UniqueVector<frac::Face> frac::Structure::allFaces() const {
-    frac::UniqueVector<frac::Face> res;
+frac::Set<frac::Face> frac::Structure::allFaces() const {
+    frac::Set<frac::Face> res;
     for (frac::Face const& f: this->m_faces) {
         res.add(f);
     }
     for (frac::Face const& f: this->m_faces) {
-        frac::UniqueVector<frac::Face> subdivisions = f.allSubdivisions();
+        frac::Set<frac::Face> subdivisions = f.allSubdivisions();
         for (frac::Face const& sub: subdivisions.data()) {
             res.add(sub);
         }

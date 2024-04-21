@@ -4,7 +4,7 @@
 #include <QValueAxis>
 #include "gui/persistenthomologywindow.h"
 #include "ui_persistenthomologywindow.h"
-#include "computations/computation.h"
+#include "persistenthomology/persistenthomology.h"
 
 
 PersistentHomologyWindow::PersistentHomologyWindow(QWidget* parent) :

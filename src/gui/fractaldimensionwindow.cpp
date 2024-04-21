@@ -7,7 +7,7 @@
 #include "gui/fractaldimensionwindow.h"
 #include "ui_fractaldimensionwindow.h"
 #include "NazaraUtils/Algorithm.hpp"
-#include "utils/measures.h"
+#include "fractaldimension/fractaldimension.h"
 
 
 FractalDimensionWindow::FractalDimensionWindow(QWidget* parent) :
@@ -58,7 +58,7 @@ FractalDimensionWindow::~FractalDimensionWindow() {
         series->setColor(Qt::blue);
         seriesUnused->setColor(Qt::black);
 
-        std::vector<int> res = frac::utils::computeFractalDimension(img);
+        std::vector<int> res = frac::computeFractalDimension(img);
 
         std::vector<std::pair<float, float>> logRes;
         logRes.reserve(res.size());
@@ -114,4 +114,9 @@ FractalDimensionWindow::~FractalDimensionWindow() {
             std::cout << eq.first << "x + " << eq.second << std::endl;
         }
     }
+}
+
+void FractalDimensionWindow::hideEvent(QHideEvent* event) {
+    cv::destroyAllWindows();
+    QWidget::hideEvent(event);
 }

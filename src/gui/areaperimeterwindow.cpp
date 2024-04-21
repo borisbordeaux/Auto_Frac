@@ -7,7 +7,7 @@
 #include <QFileDialog>
 #include <opencv2/highgui.hpp>
 #include "ui_areaperimeterwindow.h"
-#include "utils/measures.h"
+#include "areaperimeter/areaperimeter.h"
 
 
 AreaPerimeterWindow::AreaPerimeterWindow(QWidget* parent) :
@@ -64,8 +64,8 @@ void AreaPerimeterWindow::computeAreaPerimeter(const QStringList& files) {
     float firstArea = -1;
     float firstPerimeter = -1;
     for (QString const& file: files) {
-        float area = frac::utils::computeArea(file);
-        float perimeter = frac::utils::computePerimeter(file);
+        float area = frac::computeArea(file);
+        float perimeter = frac::computePerimeter(file);
         if (firstArea < 0.0f) {
             firstArea = area;
         }

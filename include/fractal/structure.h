@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "fractal/face.h"
-#include "utils/uniquevector.h"
+#include "utils/set.h"
 
 namespace frac {
 
@@ -31,8 +31,8 @@ public:
     void addAdjacency(std::size_t indexFace1, std::size_t indexEdgeFace1, std::size_t indexFace2, std::size_t indexEdgeFace2);
     std::string strAdjacencies() const;
     std::vector<Adjacency> const& adjacencies() const;
-    frac::UniqueVector<frac::Edge> allEdges() const;
-    frac::UniqueVector<frac::Face> allFaces() const;
+    frac::Set<frac::Edge> allEdges() const;
+    frac::Set<frac::Face> allFaces() const;
 
     std::vector<frac::Face> const& faces() const;
 

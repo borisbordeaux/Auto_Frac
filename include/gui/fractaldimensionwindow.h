@@ -17,6 +17,8 @@ public:
     explicit FractalDimensionWindow(QWidget* parent = nullptr);
     ~FractalDimensionWindow() override;
 
+protected:
+    void hideEvent(QHideEvent* event) override;
 public slots:
     [[maybe_unused]] void slotComputeFractalDimension();
 

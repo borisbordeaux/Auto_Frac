@@ -1,34 +1,12 @@
-#include <opencv2/highgui.hpp>
-#include <opencv2/imgproc.hpp>
-#include "computations/computation.h"
-#include "utils/measures.h"
-#include <QString>
-#include <QHash>
-#include <QDebug>
-#include <QColor>
+#include "polytopal/polytopal.h"
 
+#include <QHash>
+#include <QColor>
 #include "halfedge/mesh.h"
 #include "halfedge/vertex.h"
 #include "halfedge/halfedge.h"
 #include "halfedge/face.h"
 #include "utils/utils.h"
-#include "polytopal/inversivecoordinates.h"
-
-#include <gudhi/Rips_complex.h>
-#include <gudhi/distance_functions.h>
-#include <gudhi/Simplex_tree.h>
-#include <gudhi/Persistent_cohomology.h>
-#include <gudhi/Persistent_cohomology/Multi_field.h>
-#include <gudhi/Points_off_io.h>
-
-void frac::DensityComputation::computeDensity(QString const& file, int value, bool showAllImages) {
-    cv::destroyAllWindows();
-    cv::Mat img = cv::imread(file.toStdString(), cv::IMREAD_GRAYSCALE);
-    cv::threshold(img, img, 1, 255, cv::THRESH_BINARY);
-    cv::imshow(std::string("Image"), img);
-
-    frac::utils::computeDensity(img, value, showAllImages);
-}
 
 namespace {
 
@@ -137,18 +115,13 @@ void tangentify(he::Mesh& m) {
     for (std::pair<he::Vertex*, QVector3D> p: transforms.asKeyValueRange()) {
         p.first->setPos(p.second);
     }
-
 }
 
 void recenter(he::Mesh& m) {
-    std::vector<he::HalfEdge*> alreadyTreated;
     std::vector<QVector3D> positions;
 
-    for (he::HalfEdge* he: m.halfEdges()) {
-        if (std::find(alreadyTreated.begin(), alreadyTreated.end(), he) == alreadyTreated.end()) {
-            positions.push_back(closestPoint(he->origin()->pos(), he->next()->origin()->pos()));
-            alreadyTreated.push_back(he->twin());
-        }
+    for (he::Vertex* v: m.vertices()) {
+        positions.push_back(v->pos());
     }
 
     QVector3D bary = barycenter(positions);
@@ -157,11 +130,6 @@ void recenter(he::Mesh& m) {
         v->setPos(v->pos() - bary);
     }
 }
-
-} //end anonymous namespace for local functions
-
-
-namespace {
 
 void projectToPlan(QVector3D& point) {
     point.setX(point.x() / (1.0f - point.z()));
@@ -188,32 +156,23 @@ QColor colors[16] = {
         QColor(Qt::white)
 };
 
+} //end anonymous namespace for local functions
+
+
+void poly::setMeshToOrigin(he::Mesh& m) {
+    recenter(m);
 }
 
-void frac::Canonizer::setMeshToOrigin(he::Mesh& m) {
-    std::vector<QVector3D> positions;
-
-    for (he::Vertex* v: m.vertices()) {
-        positions.push_back(v->pos());
-    }
-
-    QVector3D bary = barycenter(positions);
-
-    for (he::Vertex* v: m.vertices()) {
-        v->setPos(v->pos() - bary);
-    }
-}
-
-void frac::Canonizer::canonicalizeMesh(he::Mesh& m) {
+void poly::canonicalizeMesh(he::Mesh& m) {
     tangentify(m);
     recenter(m);
     planarize(m);
 }
 
-std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCircles(const he::Mesh& m) {
+std::vector<poly::Circle> poly::computeIlluminatedCircles(const he::Mesh& m) {
     std::vector<poly::Circle> res;
 
-    int i = 14;
+    int colorIndex = 14;
 
     for (he::Vertex* v: m.vertices()) {
 #if 0
@@ -231,22 +190,20 @@ std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCircles(const he::
             poly::Circle c { v1, v2, v3 };
             c.setAxisX({ 1, 0, 0 });
             c.setAxisY({ 0, 1, 0 });
-            c.setColor({ colors[i % 16].redF(), colors[i % 16].greenF(), colors[i % 16].blueF() });
-            res.push_back(c);
         }
 #else
         float coef = 1.0f / qSqrt(v->pos().lengthSquared() - 1.0f);
         poly::Circle c { coef * v->pos().x(), coef * v->pos().y(), coef * v->pos().z(), coef };
-        c.setColor({ colors[i % 16].redF(), colors[i % 16].greenF(), colors[i % 16].blueF() });
-        res.push_back(c);
 #endif
-        //i++;
+        c.setColor({ colors[colorIndex % 16].redF(), colors[colorIndex % 16].greenF(), colors[colorIndex % 16].blueF() });
+        res.push_back(c);
+        //colorIndex++;
     }
 
     return res;
 }
 
-std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCirclesDual(he::Mesh const& m) {
+std::vector<poly::Circle> poly::computeIlluminatedCirclesDual(he::Mesh const& m) {
     std::vector<poly::Circle> res;
 
     for (he::Face* f: m.faces()) {
@@ -272,7 +229,7 @@ std::vector<poly::Circle> frac::PolyCircle::computeIlluminatedCirclesDual(he::Me
     return res;
 }
 
-std::size_t frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circlesToInverse, std::vector<poly::Circle>& circlesInvertive, std::size_t index) {
+std::size_t poly::computeInversions(std::vector<poly::Circle>& circlesToInverse, std::vector<poly::Circle>& circlesInvertive, std::size_t index) {
     std::vector<poly::Circle> res;
     res.reserve((circlesToInverse.size() - index) * circlesInvertive.size());
     std::size_t count = 0;
@@ -300,47 +257,4 @@ std::size_t frac::PolyCircle::computeInversions(std::vector<poly::Circle>& circl
     circlesToInverse.insert(circlesToInverse.end(), res.begin(), res.end());
 
     return count;
-}
-
-// Types definition
-using SimplexTree = Gudhi::Simplex_tree<Gudhi::Simplex_tree_options_fast_persistence>;
-using RipsComplex = Gudhi::rips_complex::Rips_complex<SimplexTree::Filtration_value>;
-using MultiField = Gudhi::persistent_cohomology::Multi_field;
-using PersistentCohomology = Gudhi::persistent_cohomology::Persistent_cohomology<SimplexTree, MultiField>;
-using Point = std::vector<double>;
-using PointsOffReader = Gudhi::Points_off_reader<Point>;
-
-std::vector<frac::PersistentHomology::Cycles> frac::PersistentHomology::computePersistenceHomology(QString const& off_file_points, float r, float minLifeTime, int dimension) {
-    PointsOffReader offReader(off_file_points.toStdString());
-    RipsComplex ripsComplexFromFile(offReader.get_point_cloud(), r, Gudhi::Euclidean_distance());
-
-    SimplexTree simplexTree;
-    ripsComplexFromFile.create_complex(simplexTree, dimension);
-
-    PersistentCohomology persistentCohomology(simplexTree);
-    persistentCohomology.init_coefficients(2, 3);
-    persistentCohomology.compute_persistent_cohomology(minLifeTime);
-
-    std::vector<Cycles> res;
-    std::cout << "end" << std::endl;
-
-    std::stringstream stringStream;
-    persistentCohomology.output_diagram(stringStream);
-
-    std::string str;
-    std::cout << "Results: " << std::endl;
-    while (std::getline(stringStream, str)) {
-        // all lines have 5 words
-        // first is ignored and second is empty (2 spaces in output diagram)
-        // third is dimension, fourth is birth, fifth is death
-        std::vector<std::string> words = frac::utils::split(str, ' ');
-        std::replace(words[3].begin(), words[3].end(), '.', ',');
-        std::replace(words[4].begin(), words[4].end(), '.', ',');
-
-        res.emplace_back(std::stoi(words[2]), std::stof(words[3]), std::stof(words[4]));
-        std::cout << str << std::endl;
-    }
-    std::cout << std::to_string(res.size()) << " points" << std::endl;
-
-    return res;
 }

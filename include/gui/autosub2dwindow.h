@@ -18,6 +18,9 @@ public:
     explicit AutoSub2DWindow(QWidget* parent = nullptr);
     ~AutoSub2DWindow() override;
 
+protected:
+    void hideEvent(QHideEvent* event) override;
+
 public slots:
     [[maybe_unused]] void slotGenerateScript();
     [[maybe_unused]] void slotAddFace();

@@ -1,111 +1,17 @@
-#include "utils/measures.h"
-#include "halfedge/mesh.h"
-#include "utils/objreader.h"
-#include "halfedge/halfedge.h"
-#include "halfedge/vertex.h"
-#include "halfedge/face.h"
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
+#include "density/density.h"
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
-#include <thread>
-#include <iostream>
 #include <QString>
+#include <thread>
 
-namespace frac::utils {
-std::vector<int> computeFractalDimension(cv::Mat const& img) {
-    int iter = 1;
-    std::vector<int> result;
-    //define max size
-    int maxSize = img.size().width;
-    while (maxSize > 1) {
-        maxSize /= 2;
-        iter *= 2;
+void frac::computeDensity(QString const& file, int value, bool showAllImages) {
+    cv::destroyAllWindows();
+    cv::Mat img = cv::imread(file.toStdString(), cv::IMREAD_GRAYSCALE);
+    cv::threshold(img, img, 1, 255, cv::THRESH_BINARY);
+    cv::imshow(std::string("Image"), img);
 
-        std::cout << "sub image size is " << maxSize << std::endl;
-
-        //compute number of squares overlapping the fractal
-        int nbOverlappingSquares = 0;
-        for (int i = 0; i < iter; i++) {
-            for (int j = 0; j < iter; j++) {
-                cv::Range rangeX { i * maxSize, (i + 1) * maxSize };
-                cv::Range rangeY { j * maxSize, (j + 1) * maxSize };
-
-                cv::Mat sub = img(rangeY, rangeX);
-
-                bool coverForm = cv::countNonZero(sub) != 0;
-
-                if (coverForm) {
-                    nbOverlappingSquares++;
-                }
-            }
-        }
-        //save each number into a vector
-        result.emplace_back(nbOverlappingSquares);
-    }
-
-    return result;
-}
-
-float computeArea(QString const& filename) {
-    if (filename.split(".")[1] == "png") {
-        cv::Mat img = cv::imread(filename.toStdString(), cv::IMREAD_GRAYSCALE);
-        cv::threshold(img, img, 1, 255, cv::THRESH_BINARY);
-        cv::imshow(filename.toStdString(), img);
-        return computeArea(img);
-    }
-    if (filename.split(".")[1] == "obj") {
-        he::Mesh mesh;
-        he::reader::readOBJ(filename, mesh);
-        return computeArea(mesh);
-    }
-    return 0;
-}
-
-float computePerimeter(QString const& filename) {
-    if (filename.split(".")[1] == "png") {
-        cv::Mat img = cv::imread(filename.toStdString(), cv::IMREAD_GRAYSCALE);
-        cv::threshold(img, img, 1, 255, cv::THRESH_BINARY);
-        cv::imshow(filename.toStdString(), img);
-        return computePerimeter(img);
-    }
-    if (filename.split(".")[1] == "obj") {
-        he::Mesh mesh;
-        he::reader::readOBJ(filename, mesh);
-        return computePerimeter(mesh);
-    }
-    return 0;
-}
-
-float computeArea(const cv::Mat& img) {
-    return static_cast<float>(cv::countNonZero(img));
-}
-
-float computeArea(he::Mesh const& mesh) {
-    float res = 0.0f;
-    for (he::Face* f: mesh.faces()) {
-        res += f->area();
-    }
-    return res;
-}
-
-float computePerimeter(const cv::Mat& img) {
-    cv::Mat eroded;
-    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3), cv::Point(1, 1));
-    cv::erode(img, eroded, kernel, cv::Point(1, 1), 1, cv::BORDER_CONSTANT, cv::Scalar::all(0));
-    cv::subtract(img, eroded, eroded);
-
-    return static_cast<float>(cv::countNonZero(eroded));
-}
-
-float computePerimeter(he::Mesh const& mesh) {
-    float res = 0.0f;
-    for (he::HalfEdge* he: mesh.halfEdges()) {
-        // compute length only if half edge is on the perimeter
-        if (he->face() == nullptr) {
-            res += he->length();
-        }
-    }
-    return res;
+    computeDensity(img, value, showAllImages);
 }
 
 void normalizeMat(cv::Mat& img) {
@@ -117,7 +23,7 @@ void normalizeMat(cv::Mat& img) {
     }
 }
 
-void computeDensity(cv::Mat const& img, int size, bool showAllImages) {
+void frac::computeDensity(cv::Mat const& img, int size, bool showAllImages) {
     cv::Mat res;
     img.copyTo(res); //copy in order to have same size and type
 
@@ -204,6 +110,3 @@ void computeDensity(cv::Mat const& img, int size, bool showAllImages) {
 
     cv::imshow("Colored normalized, W=" + std::to_string(size), res);
 }
-
-}
-

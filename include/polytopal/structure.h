@@ -3,7 +3,7 @@
 
 #include "face.h"
 #include "halfedge/mesh.h"
-#include "utils/uniquevector.h"
+#include "utils/set.h"
 
 namespace poly {
 
@@ -13,8 +13,8 @@ public:
 
     void addAdjacency(std::size_t indexFace1, std::size_t indexEdgeFace1, std::size_t indexFace2, std::size_t indexEdgeFace2);
     [[nodiscard]] std::string adjacencies() const;
-    [[nodiscard]] frac::UniqueVector<poly::Edge> allEdges() const;
-    [[nodiscard]] frac::UniqueVector<poly::Face> allFaces() const;
+    [[nodiscard]] frac::Set<poly::Edge> allEdges() const;
+    [[nodiscard]] frac::Set<poly::Face> allFaces() const;
 
     [[nodiscard]] std::vector<poly::Face> faces() const;
 

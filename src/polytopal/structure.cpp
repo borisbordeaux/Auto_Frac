@@ -29,8 +29,8 @@ std::string poly::Structure::adjacencies() const {
     return this->m_adj;
 }
 
-frac::UniqueVector<poly::Edge> poly::Structure::allEdges() const {
-    frac::UniqueVector<poly::Edge> res;
+frac::Set<poly::Edge> poly::Structure::allEdges() const {
+    frac::Set<poly::Edge> res;
     for (poly::Face const& f: this->m_faces) {
         for (poly::Edge const& e: f.constData()) {
             res.add(e);
@@ -39,8 +39,8 @@ frac::UniqueVector<poly::Edge> poly::Structure::allEdges() const {
     return res;
 }
 
-frac::UniqueVector<poly::Face> poly::Structure::allFaces() const {
-    frac::UniqueVector<poly::Face> res;
+frac::Set<poly::Face> poly::Structure::allFaces() const {
+    frac::Set<poly::Face> res;
     for (poly::Face const& f: this->m_faces) {
         res.add(f);
     }
