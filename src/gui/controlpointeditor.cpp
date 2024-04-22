@@ -104,26 +104,49 @@ void ControlPointEditor::redraw(bool useCurrentCoordinates) {
     m_scene.clear();
     m_scene.addLine(0, -10, 0, 10);
     m_scene.addLine(-10, 0, 10, 0);
-    float thick = 15.0f;
+    float thick = 12.0f;
     this->updateWithAdjacencies();
     for (std::size_t i = 0; i < coords.size(); i++) {
+        QPainterPath shapePath;
         //draw lines
         for (std::size_t j = 0; j < coords[i].size(); j++) {
             bool nextIsIntern = m_structure->isInternControlPoint((j + 1) % coords[i].size(), i);
-            QPen pen { nextIsIntern ? Qt::green : Qt::blue, j == 0 ? 3.0 : 2.0 };
+            //QPen pen { nextIsIntern ? Qt::green : Qt::blue, j == 0 ? 3.0 : 2.0 };
             if (nextIsIntern) {
-                QPainterPath path;
-                path.moveTo(coords[i][j]);
-                path.quadTo(coords[i][j + 1], coords[i][(j + 2) % coords[i].size()]);
-                m_scene.addPath(path, pen);
+                if (shapePath.isEmpty())
+                    shapePath.moveTo(coords[i][j]);
+                shapePath.quadTo(coords[i][j + 1], coords[i][(j + 2) % coords[i].size()]);
                 j++;
             } else {
-                m_scene.addLine(coords[i][j].x(), coords[i][j].y(), coords[i][(j + 1) % coords[i].size()].x(), coords[i][(j + 1) % coords[i].size()].y(), pen);
+                if (shapePath.isEmpty())
+                    shapePath.moveTo(coords[i][j].x(), coords[i][j].y());
+                shapePath.lineTo(coords[i][(j + 1) % coords[i].size()].x(), coords[i][(j + 1) % coords[i].size()].y());
+                //m_scene.addLine(coords[i][j].x(), coords[i][j].y(), coords[i][(j + 1) % coords[i].size()].x(), coords[i][(j + 1) % coords[i].size()].y(), pen);
             }
         }
-        //draw points
+        shapePath.setFillRule(Qt::FillRule::WindingFill);
+        m_scene.addPath(shapePath, QPen(), QBrush(Qt::GlobalColor::lightGray));
+
+        //draw gaps
+        QPointF center(0, 0);
+        for (auto j : coords[i]) {
+            center += j;
+        }
+        center /= static_cast<float>(coords[i].size());
+        float meanDistanceToCenter = 0.0f;
+        for (auto j : coords[i]) {
+            meanDistanceToCenter += QVector2D(center - j).length();
+        }
+        meanDistanceToCenter /= static_cast<float>(coords[i].size());
+        float diameter = meanDistanceToCenter * 0.8f;
+        m_scene.addEllipse(center.x() - diameter / 2.0f, center.y() - diameter / 2.0f, diameter, diameter, QPen(), QBrush(Qt::white));
+
+        //draw control points
+        bool secondIsIntern = m_structure->isInternControlPoint(1, i);
         for (std::size_t j = 0; j < coords[i].size(); j++) {
-            QBrush brush = m_structure->isInternControlPoint(j, i) ? Qt::blue : Qt::black;
+            bool isIntern = m_structure->isInternControlPoint(j, i);
+            bool isFirstEdge = (j == 0 || (j == 1 && !secondIsIntern) || (j == 2 && secondIsIntern));
+            QBrush brush = isFirstEdge ? Qt::green : (isIntern ? Qt::blue : Qt::black);
             QGraphicsRectItem* r = m_scene.addRect(coords[i][j].x() - thick / 2.0f, coords[i][j].y() - thick / 2.0f, thick, thick, QPen(), brush);
             r->setData(0, static_cast<int>(i));
             r->setData(1, static_cast<int>(j));
