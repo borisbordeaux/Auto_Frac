@@ -4,6 +4,7 @@
 #include <QWidget>
 #include "controlpointeditor.h"
 #include "fractal/structure.h"
+#include "schemewindow.h"
 
 class QStatusBar;
 
@@ -71,8 +72,7 @@ private:
     QStatusBar *m_statusBar;
 
     //for gui fractal control points
-    frac::ControlPointEditor* m_CPEditor;
-    frac::Structure* m_currentStructureForCP = nullptr;
+    std::unique_ptr<SchemeWindow> m_schemeWindow;
 };
 
 

@@ -40,14 +40,12 @@ AutoSub2DWindow::AutoSub2DWindow(QWidget* parent) :
     this->updateEnablement();
 
     connect(this->ui->spinBox_nbIterations, &QSpinBox::valueChanged, this, [&](int) { this->updateEnablement(); });
-    m_CPEditor = new frac::ControlPointEditor();
 
     this->ui->gridLayout->addWidget(m_statusBar);
 }
 
 AutoSub2DWindow::~AutoSub2DWindow() {
     delete ui;
-    delete m_CPEditor;
 }
 
 [[maybe_unused]] void AutoSub2DWindow::slotGenerateScript() {
@@ -81,8 +79,8 @@ AutoSub2DWindow::~AutoSub2DWindow() {
     std::ostringstream info;
 
     try {
-        if (m_CPEditor->isValidForStructure(&s)) {
-            frac::StructurePrinter::exportStruct(s, this->ui->checkBox_planarControlPoints->isChecked(), "../output/result.py", m_CPEditor->coordinates());
+        if (m_schemeWindow->isValidForStructure(&s)) {
+            frac::StructurePrinter::exportStruct(s, this->ui->checkBox_planarControlPoints->isChecked(), "../output/result.py", m_schemeWindow->coordinates());
         } else {
             frac::StructurePrinter::exportStruct(s, this->ui->checkBox_planarControlPoints->isChecked(), "../output/result.py");
         }
@@ -344,7 +342,6 @@ AutoSub2DWindow::~AutoSub2DWindow() {
 
 [[maybe_unused]] void AutoSub2DWindow::slotEditCP() {
     frac::Face::reset();
-    frac::FilePrinter::reset();
 
     std::vector<frac::Face> faces;
     for (int i = 0; i < this->ui->listWidget_faces->count(); ++i) {
@@ -370,14 +367,17 @@ AutoSub2DWindow::~AutoSub2DWindow() {
         }
     }
 
-    if (m_CPEditor->isValidForStructure(newStruct)) {
-        delete newStruct;
+    if (m_schemeWindow == nullptr) {
+        m_schemeWindow = std::make_unique<SchemeWindow>(newStruct);
     } else {
-        delete m_currentStructureForCP;
-        m_currentStructureForCP = newStruct;
-        m_CPEditor->setStructure(m_currentStructureForCP);
+        if (m_schemeWindow->isValidForStructure(newStruct)) {
+            delete newStruct;
+        } else {
+            m_schemeWindow = std::make_unique<SchemeWindow>(newStruct);
+        }
     }
-    m_CPEditor->show();
+
+    m_schemeWindow->show();
 }
 
 [[maybe_unused]] void AutoSub2DWindow::slotPlanarControlPointsChanged() {
@@ -634,8 +634,8 @@ void AutoSub2DWindow::setInfo(std::string const& textInfo, int timeoutMs) {
 }
 
 void AutoSub2DWindow::hideEvent(QHideEvent* event) {
-    if (m_CPEditor != nullptr && !m_CPEditor->isHidden()) {
-        m_CPEditor->close();
+    if (m_schemeWindow != nullptr && !m_schemeWindow->isHidden()) {
+        m_schemeWindow->close();
     }
     QWidget::hideEvent(event);
 }

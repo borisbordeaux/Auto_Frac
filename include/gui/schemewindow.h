@@ -1,0 +1,57 @@
+#ifndef AUTOFRAC_SCHEMEWINDOW_H
+#define AUTOFRAC_SCHEMEWINDOW_H
+
+#include <QWidget>
+#include <QGraphicsScene>
+#include "controlpointeditor.h"
+
+namespace frac {
+class Structure;
+}
+
+QT_BEGIN_NAMESPACE
+namespace Ui { class SchemeWindow; }
+QT_END_NAMESPACE
+
+class SchemeWindow : public QWidget {
+Q_OBJECT
+
+public:
+    explicit SchemeWindow(frac::Structure* structure);
+    ~SchemeWindow() override;
+
+    bool isValidForStructure(frac::Structure* structure) const;
+    std::vector<std::vector<QPointF>> const& coordinates() const;
+
+    void setCoords(size_t indexFace, size_t indexControlPoint, QPointF newPos);
+    void redraw(bool useCurrentCoordinates = true);
+    void setSelected(int indexFace, int indexControlPoint);
+
+public slots:
+    void valid();
+    void changeXCoordControlPoint(double value);
+    void changeYCoordControlPoint(double value);
+    void save();
+    void load();
+    void rotateFace();
+    void translateFace();
+    void localDistFace();
+
+private:
+    void updateWithAdjacencies();
+
+private:
+    Ui::SchemeWindow* ui;
+    frac::Structure* m_structure = nullptr;
+    QGraphicsScene m_scene;
+    QGraphicsView* m_graphicsView;
+
+    std::vector<std::vector<QPointF>> m_coordinates;
+    std::vector<std::vector<QPointF>> m_coordinatesTemp;
+
+    int m_lastFaceIndex = -1;
+    int m_lastControlPointIndex = -1;
+};
+
+
+#endif //AUTOFRAC_SCHEMEWINDOW_H
