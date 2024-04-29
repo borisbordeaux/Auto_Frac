@@ -10,11 +10,10 @@ ControlPointEditor::ControlPointEditor(SchemeWindow& schemeWindow) : QGraphicsVi
 
 void ControlPointEditor::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
-        QPointF sceneCoords = this->mapToScene(event->pos()) - QPointF(this->pos().x(), -this->pos().y());
+        QPointF sceneCoords = this->mapToScene(event->pos());// - QPointF(this->pos().x(), -this->pos().y());
         for (QGraphicsItem* item: scene()->items()) {
             if (item->data(0).isValid() && item->contains(sceneCoords)) {
                 m_pressedItem = { item->data(0).toUInt(), item->data(1).toUInt() };
-                qDebug() << "item pressed !" << m_pressedItem->first << m_pressedItem->second;
                 m_schemeWindow.setSelected(static_cast<int>(m_pressedItem->first), static_cast<int>(m_pressedItem->second));
             }
         }
@@ -24,19 +23,15 @@ void ControlPointEditor::mousePressEvent(QMouseEvent* event) {
 
 void ControlPointEditor::mouseReleaseEvent(QMouseEvent* event) {
     m_pressedItem = std::nullopt;
-    qDebug() << "mouse released";
     QGraphicsView::mouseReleaseEvent(event);
 }
 
 void ControlPointEditor::mouseMoveEvent(QMouseEvent* event) {
     if (m_pressedItem.has_value()) {
-        QPointF sceneCoords = this->mapToScene(event->pos()) - QPointF(this->pos().x(), -this->pos().y());
+        QPointF sceneCoords = this->mapToScene(event->pos());// - QPointF(this->pos().x(), -this->pos().y());
         m_schemeWindow.setCoords(m_pressedItem->first, m_pressedItem->second, sceneCoords);
-        qDebug() << "item moved at" << sceneCoords;
         m_schemeWindow.redraw();
         this->update();
-    } else {
-        qDebug() << "pressed item has no value";
     }
     QGraphicsView::mouseMoveEvent(event);
 }

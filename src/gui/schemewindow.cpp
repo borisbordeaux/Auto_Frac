@@ -24,6 +24,8 @@ SchemeWindow::SchemeWindow(frac::Structure* structure) :
 
     m_coordinates.clear();
     m_coordinatesTemp.clear();
+
+    //roughly display faces with their control points on a circle
     float radius = 100.0f;
     float t = 220.0f;
     for (std::size_t i = 0; i < structure->faces().size(); i++) {
@@ -35,6 +37,15 @@ SchemeWindow::SchemeWindow(frac::Structure* structure) :
             m_coordinates[i].emplace_back(radius * qCos(static_cast<float>(j) * 2.0f * 3.1415926f / static_cast<float>(nbCtrlPts)) + t * static_cast<float>(i), radius * qSin(static_cast<float>(j) * 2.0f * 3.1415926f / static_cast<float>(nbCtrlPts)));
             m_coordinatesTemp[i].emplace_back(m_coordinates[i][j]);
         }
+    }
+
+    //then set a better position for the control points (for both temp and no temp coordinates)
+    for (std::size_t i = 0; i < m_coordinatesTemp.size(); i++) {
+        this->localDistributionFace(i, false);
+    }
+
+    for (std::size_t i = 0; i < m_coordinatesTemp.size(); i++) {
+        this->localDistributionFace(i, true);
     }
 
     connect(this->ui->pushButton_ok, &QPushButton::clicked, this, &SchemeWindow::valid);
@@ -223,49 +234,13 @@ void SchemeWindow::translateFace() {
 
 void SchemeWindow::localDistFace() {
     if (m_lastFaceIndex != -1) {
-        //barycenter coordinates
-        qreal x = 0.0;
-        qreal y = 0.0;
-
-        //number of control points that are not intern (equivalent to the number of corners)
-        float nbCtrlPtsF = 0.0f;
-        for (std::size_t i = 0; i < m_coordinatesTemp[m_lastFaceIndex].size(); i++) {
-            x += m_coordinatesTemp[m_lastFaceIndex][i].x();
-            y += m_coordinatesTemp[m_lastFaceIndex][i].y();
-            if (!m_structure->isInternControlPoint(i, m_lastFaceIndex)) {
-                nbCtrlPtsF += 1.0f;
-            }
-        }
-        x /= static_cast<float>(m_coordinatesTemp[m_lastFaceIndex].size());
-        y /= static_cast<float>(m_coordinatesTemp[m_lastFaceIndex].size());
-
-        //distribute points around the origin and add the computed barycenter to place correctly the face
-        double radius = 100.0;
-
-        //for not intern control points
-        float j = 0.0f;
-        for (std::size_t i = 0; i < m_coordinatesTemp[m_lastFaceIndex].size(); i++) {
-            if (!m_structure->isInternControlPoint(i, m_lastFaceIndex)) {
-                m_coordinatesTemp[m_lastFaceIndex][i].setX(radius * qCos(static_cast<float>(j) * 2.0f * 3.1415926f / nbCtrlPtsF) + x);
-                m_coordinatesTemp[m_lastFaceIndex][i].setY(radius * qSin(static_cast<float>(j) * 2.0f * 3.1415926f / nbCtrlPtsF) + y);
-                j+= 1.0f;
-            }
-        }
-
-        int nbCtrlPts = static_cast<int>(m_coordinatesTemp[m_lastFaceIndex].size());
-        for (int i = 0; i < static_cast<int>(m_coordinatesTemp[m_lastFaceIndex].size()); i++) {
-            if (m_structure->isInternControlPoint(i, m_lastFaceIndex)) {
-                m_coordinatesTemp[m_lastFaceIndex][i].setX((m_coordinatesTemp[m_lastFaceIndex][frac::utils::mod(i - 1, nbCtrlPts)].x() + m_coordinatesTemp[m_lastFaceIndex][frac::utils::mod(i + 1, nbCtrlPts)].x()) / 2.0);
-                m_coordinatesTemp[m_lastFaceIndex][i].setY((m_coordinatesTemp[m_lastFaceIndex][frac::utils::mod(i - 1, nbCtrlPts)].y() + m_coordinatesTemp[m_lastFaceIndex][frac::utils::mod(i + 1, nbCtrlPts)].y()) / 2.0);
-            }
-        }
-
+        this->localDistributionFace(m_lastFaceIndex, true);
         this->redraw(true);
     }
 }
 
-void SchemeWindow::redraw(bool useCurrentCoordinates) {
-    auto const& coords = useCurrentCoordinates ? m_coordinatesTemp : m_coordinates;
+void SchemeWindow::redraw(bool useTempCoordinates) {
+    auto const& coords = useTempCoordinates ? m_coordinatesTemp : m_coordinates;
     m_scene.clear();
     m_scene.addLine(0, -10, 0, 10);
     m_scene.addLine(-10, 0, 10, 0);
@@ -278,13 +253,15 @@ void SchemeWindow::redraw(bool useCurrentCoordinates) {
             bool nextIsIntern = m_structure->isInternControlPoint((j + 1) % coords[i].size(), i);
             //QPen pen { nextIsIntern ? Qt::green : Qt::blue, j == 0 ? 3.0 : 2.0 };
             if (nextIsIntern) {
-                if (shapePath.isEmpty())
+                if (shapePath.isEmpty()) {
                     shapePath.moveTo(coords[i][j]);
+                }
                 shapePath.quadTo(coords[i][j + 1], coords[i][(j + 2) % coords[i].size()]);
                 j++;
             } else {
-                if (shapePath.isEmpty())
+                if (shapePath.isEmpty()) {
                     shapePath.moveTo(coords[i][j].x(), coords[i][j].y());
+                }
                 shapePath.lineTo(coords[i][(j + 1) % coords[i].size()].x(), coords[i][(j + 1) % coords[i].size()].y());
             }
         }
@@ -314,7 +291,6 @@ void SchemeWindow::redraw(bool useCurrentCoordinates) {
             QGraphicsRectItem* r = m_scene.addRect(coords[i][j].x() - thick / 2.0f, coords[i][j].y() - thick / 2.0f, thick, thick, QPen(), brush);
             r->setData(0, static_cast<int>(i));
             r->setData(1, static_cast<int>(j));
-            //r->setFlag(QGraphicsRectItem::GraphicsItemFlag::ItemIsMovable);
         }
     }
 }
@@ -345,11 +321,61 @@ void SchemeWindow::changeYCoordControlPoint(double value) {
     }
 }
 
-void SchemeWindow::setCoords(size_t indexFace, size_t indexControlPoint, QPointF newPos) {
+void SchemeWindow::setCoords(std::size_t indexFace, std::size_t indexControlPoint, QPointF newPos) {
     m_coordinatesTemp[indexFace][indexControlPoint] = newPos;
 }
 
 void SchemeWindow::setSelected(int indexFace, int indexControlPoint) {
     m_lastFaceIndex = indexFace;
     m_lastControlPointIndex = indexControlPoint;
+}
+
+void SchemeWindow::localDistributionFace(std::size_t indexFace, bool useTempCoordinates) {
+    auto& coords = useTempCoordinates ? m_coordinatesTemp : m_coordinates;
+    //barycenter coordinates
+    qreal x = 0.0;
+    qreal y = 0.0;
+
+    //number of control points that are not intern (equivalent to the number of corners)
+    float nbCtrlPtsF = 0.0f;
+    for (std::size_t i = 0; i < coords[indexFace].size(); i++) {
+        x += coords[indexFace][i].x();
+        y += coords[indexFace][i].y();
+        if (!m_structure->isInternControlPoint(i, indexFace)) {
+            nbCtrlPtsF += 1.0f;
+        }
+    }
+    x /= static_cast<float>(coords[indexFace].size());
+    y /= static_cast<float>(coords[indexFace].size());
+
+    //distribute points around the origin and add the computed barycenter to place correctly the face
+    double radius = 100.0;
+
+    //for not intern control points
+    float j = 0.0f;
+    for (std::size_t i = 0; i < coords[indexFace].size(); i++) {
+        if (!m_structure->isInternControlPoint(i, indexFace)) {
+            coords[indexFace][i].setX(radius * qCos(static_cast<float>(j) * 2.0f * 3.1415926f / nbCtrlPtsF) + x);
+            coords[indexFace][i].setY(radius * qSin(static_cast<float>(j) * 2.0f * 3.1415926f / nbCtrlPtsF) + y);
+            j += 1.0f;
+        }
+    }
+
+    int nbCtrlPts = static_cast<int>(coords[indexFace].size());
+    for (int i = 0; i < static_cast<int>(coords[indexFace].size()); i++) {
+        if (m_structure->isInternControlPoint(i, indexFace)) {
+            coords[indexFace][i].setX((coords[indexFace][frac::utils::mod(i - 1, nbCtrlPts)].x() + coords[indexFace][frac::utils::mod(i + 1, nbCtrlPts)].x()) / 2.0);
+            coords[indexFace][i].setY((coords[indexFace][frac::utils::mod(i - 1, nbCtrlPts)].y() + coords[indexFace][frac::utils::mod(i + 1, nbCtrlPts)].y()) / 2.0);
+        }
+    }
+}
+
+void SchemeWindow::closeEvent(QCloseEvent* event) {
+    for (std::size_t i = 0; i < m_coordinates.size(); i++) {
+        for (std::size_t j = 0; j < m_coordinates[i].size(); j++) {
+            m_coordinatesTemp[i][j] = m_coordinates[i][j];
+        }
+    }
+    qDebug() << "close event";
+    QWidget::closeEvent(event);
 }

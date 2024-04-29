@@ -23,8 +23,8 @@ public:
     bool isValidForStructure(frac::Structure* structure) const;
     std::vector<std::vector<QPointF>> const& coordinates() const;
 
-    void setCoords(size_t indexFace, size_t indexControlPoint, QPointF newPos);
-    void redraw(bool useCurrentCoordinates = true);
+    void setCoords(std::size_t indexFace, std::size_t indexControlPoint, QPointF newPos);
+    void redraw(bool useTempCoordinates = true);
     void setSelected(int indexFace, int indexControlPoint);
 
 public slots:
@@ -37,7 +37,11 @@ public slots:
     void translateFace();
     void localDistFace();
 
+protected:
+    void closeEvent(QCloseEvent* event) override;
+
 private:
+    void localDistributionFace(std::size_t indexFace, bool useTempCoordinates);
     void updateWithAdjacencies();
 
 private:
