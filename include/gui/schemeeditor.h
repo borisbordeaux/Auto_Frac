@@ -1,5 +1,5 @@
-#ifndef AUTOFRAC_CONTROLPOINTEDITOR_H
-#define AUTOFRAC_CONTROLPOINTEDITOR_H
+#ifndef AUTOFRAC_SCHEMEEDITOR_H
+#define AUTOFRAC_SCHEMEEDITOR_H
 
 #include <QGraphicsView>
 
@@ -7,10 +7,10 @@ class SchemeWindow;
 
 namespace frac {
 
-class ControlPointEditor : public QGraphicsView {
+class SchemeEditor : public QGraphicsView {
 
 public:
-    explicit ControlPointEditor(SchemeWindow& schemeWindow);
+    explicit SchemeEditor(SchemeWindow& schemeWindow);
 
 protected:
     void mousePressEvent(QMouseEvent* event) override;
@@ -24,4 +24,4 @@ private:
 
 } // frac
 
-#endif //AUTOFRAC_CONTROLPOINTEDITOR_H
+#endif //AUTOFRAC_SCHEMEEDITOR_H

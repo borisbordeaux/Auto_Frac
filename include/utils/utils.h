@@ -2,8 +2,8 @@
 #define AUTOFRAC_UTILS_H
 
 #include <algorithm>
-#include <iostream>
 #include <sstream>
+#include <vector>
 
 namespace frac::utils {
 
@@ -57,6 +57,20 @@ inline std::vector<std::string> split(std::string const& str, std::string const&
     }
     strings.push_back(str.substr(start));
     return strings;
+}
+
+inline std::vector<float> get_bezier_transformation(unsigned int i, unsigned int n) {
+    float denominator = static_cast<float>(n * n);
+    return { static_cast<float>((i - n) * (i - n)) / denominator,
+             static_cast<float>((i - n) * (1 + i - n)) / denominator,
+             static_cast<float>((1 + i - n) * (1 + i - n)) / denominator,
+             static_cast<float>(2 * i * (n - i)) / denominator,
+             static_cast<float>(n + 2 * i * n - 2 * i * (i + 1)) / denominator,
+             static_cast<float>(-2 * (1 + i - n) * (1 + i)) / denominator,
+             static_cast<float>(i * i) / denominator,
+             static_cast<float>(i * (1 + i)) / denominator,
+             static_cast<float>((i + 1) * (i + 1)) / denominator
+    };
 }
 
 }

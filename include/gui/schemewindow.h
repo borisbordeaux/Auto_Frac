@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QGraphicsScene>
-#include "controlpointeditor.h"
+#include "schemeeditor.h"
 
 namespace frac {
 class Structure;

@@ -1,14 +1,14 @@
-#include "gui/controlpointeditor.h"
+#include "gui/schemeeditor.h"
 
 #include "gui/schemewindow.h"
 #include <QGraphicsRectItem>
 #include <QMouseEvent>
 
 namespace frac {
-ControlPointEditor::ControlPointEditor(SchemeWindow& schemeWindow) : QGraphicsView(), m_schemeWindow(schemeWindow) {
+SchemeEditor::SchemeEditor(SchemeWindow& schemeWindow) : QGraphicsView(), m_schemeWindow(schemeWindow) {
 }
 
-void ControlPointEditor::mousePressEvent(QMouseEvent* event) {
+void SchemeEditor::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
         QPointF sceneCoords = this->mapToScene(event->pos());// - QPointF(this->pos().x(), -this->pos().y());
         for (QGraphicsItem* item: scene()->items()) {
@@ -21,12 +21,12 @@ void ControlPointEditor::mousePressEvent(QMouseEvent* event) {
     QGraphicsView::mousePressEvent(event);
 }
 
-void ControlPointEditor::mouseReleaseEvent(QMouseEvent* event) {
+void SchemeEditor::mouseReleaseEvent(QMouseEvent* event) {
     m_pressedItem = std::nullopt;
     QGraphicsView::mouseReleaseEvent(event);
 }
 
-void ControlPointEditor::mouseMoveEvent(QMouseEvent* event) {
+void SchemeEditor::mouseMoveEvent(QMouseEvent* event) {
     if (m_pressedItem.has_value()) {
         QPointF sceneCoords = this->mapToScene(event->pos());// - QPointF(this->pos().x(), -this->pos().y());
         m_schemeWindow.setCoords(m_pressedItem->first, m_pressedItem->second, sceneCoords);

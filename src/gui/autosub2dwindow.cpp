@@ -372,6 +372,7 @@ AutoSub2DWindow::~AutoSub2DWindow() {
     } else {
         if (m_schemeWindow->isValidForStructure(newStruct)) {
             delete newStruct;
+            m_schemeWindow->redraw(false);
         } else {
             m_schemeWindow = std::make_unique<SchemeWindow>(newStruct);
         }

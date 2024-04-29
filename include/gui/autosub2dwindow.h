@@ -2,7 +2,7 @@
 #define AUTOFRAC_AUTOSUB2DWINDOW_H
 
 #include <QWidget>
-#include "controlpointeditor.h"
+#include "schemeeditor.h"
 #include "fractal/structure.h"
 #include "schemewindow.h"
 

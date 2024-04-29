@@ -15,7 +15,7 @@ class MainWindow;
 }
 
 namespace frac {
-class ControlPointEditor;
+class SchemeEditor;
 }
 
 class MainWindow : public QMainWindow {

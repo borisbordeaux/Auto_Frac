@@ -3,7 +3,8 @@
 
 #include <vector>
 #include <string>
-#include <QPointF>
+
+class QPointF;
 
 namespace frac {
 
@@ -29,7 +30,6 @@ private:
     static void print_cantor_n_state_impl(unsigned int n);
     static void print_delay_bezier_impl(unsigned int n, unsigned int delay_count);
     static void print_bezier_state_impl(unsigned int n);
-    static std::vector<float> get_bezier_transformation(unsigned int i, unsigned int n);
     static void print_init_subds(Structure const& structure);
     static void print_edges_of_cell(frac::Face const& cell);
     static void print_subd_of_cell(frac::Face const& cell);
@@ -38,7 +38,6 @@ private:
     static void print_edge_adjacencies_of_cell(frac::Face const& cell);
     static void print_plan_control_points(frac::Structure const& structure);
     static void print_plan_control_points(std::vector<std::vector<QPointF>> const& coords);
-    [[maybe_unused]] static void print_init_ctrl_pts_8_bezier();
     static void print_footer();
 };
 }

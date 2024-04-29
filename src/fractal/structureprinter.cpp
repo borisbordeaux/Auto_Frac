@@ -1,5 +1,7 @@
 #include "fractal/structureprinter.h"
 
+#include <QPointF>
+
 #include "fractal/face.h"
 #include "fractal/structure.h"
 #include "utils/fileprinter.h"
@@ -93,7 +95,6 @@ void frac::StructurePrinter::exportStruct(const frac::Structure& structure, bool
             StructurePrinter::print_plan_control_points(structure);
         }
     }
-    // StructurePrinter::print_init_ctrl_pts_8_bezier();
 
     StructurePrinter::print_footer();
     FilePrinter::printToFile(filename);
@@ -262,25 +263,11 @@ void frac::StructurePrinter::print_bezier_state_impl(unsigned int n) {
     FilePrinter::append_nl("    B" + std::to_string(n) + ".prim.elems = [Figure(1, [Bord_('0'), Bord_('1')])]");
     for (unsigned int i = 0; i < n; ++i) {  // for each subdivision T0, T1, ... Tn-1
         FilePrinter::append_nl("    B" + std::to_string(n) + ".initMat[Sub_('" + std::to_string(i) + "')] = FMat([");
-        std::vector<float> t = StructurePrinter::get_bezier_transformation(i, n);
+        std::vector<float> t = frac::utils::get_bezier_transformation(i, n);
         FilePrinter::append_nl("        [" + frac::utils::to_string(t[0]) + ", " + frac::utils::to_string(t[1]) + ", " + frac::utils::to_string(t[2]) + "],");
         FilePrinter::append_nl("        [" + frac::utils::to_string(t[3]) + ", " + frac::utils::to_string(t[4]) + ", " + frac::utils::to_string(t[5]) + "],");
         FilePrinter::append_nl("        [" + frac::utils::to_string(t[6]) + ", " + frac::utils::to_string(t[7]) + ", " + frac::utils::to_string(t[8]) + "]]).setTyp('Const')");
     }
-}
-
-std::vector<float> frac::StructurePrinter::get_bezier_transformation(unsigned int i, unsigned int n) {
-    float denominator { static_cast<float>(n * n) };
-    return { static_cast<float>((i - n) * (i - n)) / denominator,
-             static_cast<float>((i - n) * (1 + i - n)) / denominator,
-             static_cast<float>((1 + i - n) * (1 + i - n)) / denominator,
-             static_cast<float>(2 * i * (n - i)) / denominator,
-             static_cast<float>(n + 2 * i * n - 2 * i * (i + 1)) / denominator,
-             static_cast<float>(-2 * (1 + i - n) * (1 + i)) / denominator,
-             static_cast<float>(i * i) / denominator,
-             static_cast<float>(i * (1 + i)) / denominator,
-             static_cast<float>((i + 1) * (i + 1)) / denominator
-    };
 }
 
 void frac::StructurePrinter::print_init_subds(const frac::Structure& structure) {
@@ -429,16 +416,6 @@ void frac::StructurePrinter::print_plan_control_points(const std::vector<std::ve
         FilePrinter::append_nl("        init.initMat[Sub_('" + std::to_string(index_face) + "')][2, i].setTyp('Const')");
         FilePrinter::append_nl("");
     }
-}
-
-[[maybe_unused]] void frac::StructurePrinter::print_init_ctrl_pts_8_bezier() {
-    FilePrinter::append_nl("    a = 5");
-    FilePrinter::append_nl("    b = 10");
-    FilePrinter::append_nl("    init.initMat[Sub_('0')] = FMat([");
-    FilePrinter::append_nl("        [-a, 0, a, a, b, b, b, a, a, 0,-a,-a,-b,-b,-b,-a],");
-    FilePrinter::append_nl("        [ b, b, b, a, a, 0,-a,-a,-b,-b,-b,-a,-a, 0, a, a],");
-    FilePrinter::append_nl("        [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],");
-    FilePrinter::append_nl("        [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]).setTyp('Var') # weight of control points");
 }
 
 void frac::StructurePrinter::print_footer() {

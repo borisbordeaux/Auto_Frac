@@ -13,7 +13,7 @@
 #include "utils/utils.h"
 
 SchemeWindow::SchemeWindow(frac::Structure* structure) :
-        QWidget(nullptr), ui(new Ui::SchemeWindow), m_structure(structure), m_graphicsView(new frac::ControlPointEditor(*this)) {
+        QWidget(nullptr), ui(new Ui::SchemeWindow), m_structure(structure), m_graphicsView(new frac::SchemeEditor(*this)) {
     ui->setupUi(this);
     this->ui->graphicsViewLayout->addWidget(m_graphicsView);
     m_graphicsView->setScene(&m_scene);
@@ -26,7 +26,6 @@ SchemeWindow::SchemeWindow(frac::Structure* structure) :
     m_coordinatesTemp.clear();
 
     //roughly display faces with their control points on a circle
-    float radius = 100.0f;
     float t = 220.0f;
     for (std::size_t i = 0; i < structure->faces().size(); i++) {
         //add face to drawing
@@ -34,7 +33,7 @@ SchemeWindow::SchemeWindow(frac::Structure* structure) :
         m_coordinates.emplace_back();
         m_coordinatesTemp.emplace_back();
         for (std::size_t j = 0; j < nbCtrlPts; j++) {
-            m_coordinates[i].emplace_back(radius * qCos(static_cast<float>(j) * 2.0f * 3.1415926f / static_cast<float>(nbCtrlPts)) + t * static_cast<float>(i), radius * qSin(static_cast<float>(j) * 2.0f * 3.1415926f / static_cast<float>(nbCtrlPts)));
+            m_coordinates[i].emplace_back(t * static_cast<float>(i), 0);
             m_coordinatesTemp[i].emplace_back(m_coordinates[i][j]);
         }
     }
@@ -244,7 +243,6 @@ void SchemeWindow::redraw(bool useTempCoordinates) {
     m_scene.clear();
     m_scene.addLine(0, -10, 0, 10);
     m_scene.addLine(-10, 0, 10, 0);
-    float thick = 12.0f;
     this->updateWithAdjacencies();
     for (std::size_t i = 0; i < coords.size(); i++) {
         QPainterPath shapePath;
@@ -283,6 +281,7 @@ void SchemeWindow::redraw(bool useTempCoordinates) {
         m_scene.addEllipse(center.x() - diameter / 2.0f, center.y() - diameter / 2.0f, diameter, diameter, QPen(), QBrush(Qt::white));
 
         //draw control points
+        float thick = 12.0f;
         bool secondIsIntern = m_structure->isInternControlPoint(1, i);
         for (std::size_t j = 0; j < coords[i].size(); j++) {
             bool isIntern = m_structure->isInternControlPoint(j, i);
@@ -323,11 +322,15 @@ void SchemeWindow::changeYCoordControlPoint(double value) {
 
 void SchemeWindow::setCoords(std::size_t indexFace, std::size_t indexControlPoint, QPointF newPos) {
     m_coordinatesTemp[indexFace][indexControlPoint] = newPos;
+    this->ui->doubleSpinBox_controlPointX->setValue(m_coordinatesTemp[m_lastFaceIndex][m_lastControlPointIndex].x());
+    this->ui->doubleSpinBox_controlPointY->setValue(m_coordinatesTemp[m_lastFaceIndex][m_lastControlPointIndex].y());
 }
 
 void SchemeWindow::setSelected(int indexFace, int indexControlPoint) {
     m_lastFaceIndex = indexFace;
     m_lastControlPointIndex = indexControlPoint;
+    this->ui->doubleSpinBox_controlPointX->setValue(m_coordinatesTemp[m_lastFaceIndex][m_lastControlPointIndex].x());
+    this->ui->doubleSpinBox_controlPointY->setValue(m_coordinatesTemp[m_lastFaceIndex][m_lastControlPointIndex].y());
 }
 
 void SchemeWindow::localDistributionFace(std::size_t indexFace, bool useTempCoordinates) {
@@ -376,6 +379,5 @@ void SchemeWindow::closeEvent(QCloseEvent* event) {
             m_coordinatesTemp[i][j] = m_coordinates[i][j];
         }
     }
-    qDebug() << "close event";
     QWidget::closeEvent(event);
 }
