@@ -118,14 +118,15 @@ void tangentify(he::Mesh& m) {
 }
 
 void recenter(he::Mesh& m) {
+    std::vector<he::HalfEdge*> alreadyTreated;
     std::vector<QVector3D> positions;
-
-    for (he::Vertex* v: m.vertices()) {
-        positions.push_back(v->pos());
+    for (he::HalfEdge* he: m.halfEdges()) {
+        if (std::find(alreadyTreated.begin(), alreadyTreated.end(), he) == alreadyTreated.end()) {
+            positions.push_back(closestPoint(he->origin()->pos(), he->next()->origin()->pos()));
+            alreadyTreated.push_back(he->twin());
+        }
     }
-
     QVector3D bary = barycenter(positions);
-
     for (he::Vertex* v: m.vertices()) {
         v->setPos(v->pos() - bary);
     }
@@ -160,7 +161,17 @@ QColor colors[16] = {
 
 
 void poly::setMeshToOrigin(he::Mesh& m) {
-    recenter(m);
+    std::vector<QVector3D> positions;
+
+    for (he::Vertex* v: m.vertices()) {
+        positions.push_back(v->pos());
+    }
+
+    QVector3D bary = barycenter(positions);
+
+    for (he::Vertex* v: m.vertices()) {
+        v->setPos(v->pos() - bary);
+    }
 }
 
 void poly::canonicalizeMesh(he::Mesh& m) {
