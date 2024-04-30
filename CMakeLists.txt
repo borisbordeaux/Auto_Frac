@@ -13,10 +13,10 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets OpenGLWidgets Charts)
 find_package(OpenCV REQUIRED COMPONENTS core highgui imgcodecs imgproc features2d calib3d)
 
 file(GLOB_RECURSE FILES "src/*.cpp")
-file(GLOB_RECURSE WINDOWS "include/gui/*window.h")
+file(GLOB_RECURSE WINDOWS "include/gui/*window.h" "include/gui/glview.h")
 
 # add *window.h files for the ui
-add_executable(AutoFrac ${FILES} ${WINDOWS} include/gui/glview.h)
+add_executable(AutoFrac ${FILES} ${WINDOWS})
 
 target_include_directories(AutoFrac PUBLIC include)
 target_include_directories(AutoFrac PUBLIC vendor/NazaraUtils/include)
