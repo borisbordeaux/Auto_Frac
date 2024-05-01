@@ -31,11 +31,11 @@ AutoSub2DWindow::AutoSub2DWindow(QWidget* parent) :
     //this->ui->listWidget_faces->addItem("B_3_0 - B_3_0 - B_3_0 - B_3_0 / B_3_0 - B_3_0 - B_3_0 / 0 / 2");
     this->ui->listWidget_faces->setCurrentRow(this->ui->listWidget_faces->count() - 1);
     // constraints to draw cells connected
-    this->ui->listWidget_constraints->addItem("0.0 / 1.0");
-    this->ui->listWidget_constraints->addItem("0.3 / 2.0");
-    this->ui->listWidget_constraints->addItem("2.2 / 4.0");
-    this->ui->listWidget_constraints->addItem("1.4 / 3.0");
-    this->ui->listWidget_constraints->setCurrentRow(this->ui->listWidget_constraints->count() - 1);
+//    this->ui->listWidget_constraints->addItem("0.0 / 1.0");
+//    this->ui->listWidget_constraints->addItem("0.3 / 2.0");
+//    this->ui->listWidget_constraints->addItem("2.2 / 4.0");
+//    this->ui->listWidget_constraints->addItem("1.4 / 3.0");
+//    this->ui->listWidget_constraints->setCurrentRow(this->ui->listWidget_constraints->count() - 1);
 
     this->updateEnablement();
 
@@ -79,7 +79,7 @@ AutoSub2DWindow::~AutoSub2DWindow() {
     std::ostringstream info;
 
     try {
-        if (m_schemeWindow->isValidForStructure(&s)) {
+        if (m_schemeWindow != nullptr && m_schemeWindow->isValidForStructure(&s)) {
             frac::StructurePrinter::exportStruct(s, this->ui->checkBox_planarControlPoints->isChecked(), "../output/result.py", m_schemeWindow->coordinates());
         } else {
             frac::StructurePrinter::exportStruct(s, this->ui->checkBox_planarControlPoints->isChecked(), "../output/result.py");

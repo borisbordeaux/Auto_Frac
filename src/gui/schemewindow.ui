@@ -621,7 +621,7 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <widget class="QRadioButton" name="radioButton_2">
+         <widget class="QRadioButton" name="radioButton_scheme">
           <property name="text">
            <string>Scheme</string>
           </property>
@@ -631,14 +631,14 @@
          </widget>
         </item>
         <item>
-         <widget class="QRadioButton" name="radioButton">
+         <widget class="QRadioButton" name="radioButton_subdScheme">
           <property name="text">
            <string>Subdivision scheme</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QCheckBox" name="checkBox">
+         <widget class="QCheckBox" name="checkBox_controlPoints">
           <property name="text">
            <string>Control points</string>
           </property>

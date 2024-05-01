@@ -55,6 +55,9 @@ SchemeWindow::SchemeWindow(frac::Structure* structure) :
     connect(this->ui->pushButton_rotation, &QPushButton::clicked, this, &SchemeWindow::rotateFace);
     connect(this->ui->pushButton_translation, &QPushButton::clicked, this, &SchemeWindow::translateFace);
     connect(this->ui->pushButton_localDistribution, &QPushButton::clicked, this, &SchemeWindow::localDistFace);
+    connect(this->ui->radioButton_scheme, &QRadioButton::released, this, &SchemeWindow::updateTempDraw);
+    connect(this->ui->radioButton_subdScheme, &QRadioButton::released, this, &SchemeWindow::updateTempDraw);
+    connect(this->ui->checkBox_controlPoints, &QCheckBox::released, this, &SchemeWindow::updateTempDraw);
 
     this->redraw(false);
 }
@@ -239,58 +242,17 @@ void SchemeWindow::localDistFace() {
 }
 
 void SchemeWindow::redraw(bool useTempCoordinates) {
-    auto const& coords = useTempCoordinates ? m_coordinatesTemp : m_coordinates;
+    std::vector<std::vector<QPointF>> const& coords = useTempCoordinates ? m_coordinatesTemp : m_coordinates;
     m_scene.clear();
-    m_scene.addLine(0, -10, 0, 10);
-    m_scene.addLine(-10, 0, 10, 0);
     this->updateWithAdjacencies();
     for (std::size_t i = 0; i < coords.size(); i++) {
-        QPainterPath shapePath;
-        //draw lines
-        for (std::size_t j = 0; j < coords[i].size(); j++) {
-            bool nextIsIntern = m_structure->isInternControlPoint((j + 1) % coords[i].size(), i);
-            //QPen pen { nextIsIntern ? Qt::green : Qt::blue, j == 0 ? 3.0 : 2.0 };
-            if (nextIsIntern) {
-                if (shapePath.isEmpty()) {
-                    shapePath.moveTo(coords[i][j]);
-                }
-                shapePath.quadTo(coords[i][j + 1], coords[i][(j + 2) % coords[i].size()]);
-                j++;
-            } else {
-                if (shapePath.isEmpty()) {
-                    shapePath.moveTo(coords[i][j].x(), coords[i][j].y());
-                }
-                shapePath.lineTo(coords[i][(j + 1) % coords[i].size()].x(), coords[i][(j + 1) % coords[i].size()].y());
-            }
-        }
-        shapePath.setFillRule(Qt::FillRule::WindingFill);
-        m_scene.addPath(shapePath, QPen(), QBrush(Qt::GlobalColor::lightGray));
+        if (this->ui->radioButton_scheme->isChecked())
+            this->drawScheme(i, coords);
+        else
+            this->drawSubdScheme(i, coords);
 
-        //draw gaps
-        QPointF center(0, 0);
-        for (auto j: coords[i]) {
-            center += j;
-        }
-        center /= static_cast<float>(coords[i].size());
-        float meanDistanceToCenter = 0.0f;
-        for (auto j: coords[i]) {
-            meanDistanceToCenter += QVector2D(center - j).length();
-        }
-        meanDistanceToCenter /= static_cast<float>(coords[i].size());
-        float diameter = meanDistanceToCenter * 0.8f;
-        m_scene.addEllipse(center.x() - diameter / 2.0f, center.y() - diameter / 2.0f, diameter, diameter, QPen(), QBrush(Qt::white));
-
-        //draw control points
-        float thick = 12.0f;
-        bool secondIsIntern = m_structure->isInternControlPoint(1, i);
-        for (std::size_t j = 0; j < coords[i].size(); j++) {
-            bool isIntern = m_structure->isInternControlPoint(j, i);
-            bool isFirstEdge = (j == 0 || (j == 1 && !secondIsIntern) || (j == 2 && secondIsIntern));
-            QBrush brush = isFirstEdge ? Qt::green : (isIntern ? Qt::blue : Qt::black);
-            QGraphicsRectItem* r = m_scene.addRect(coords[i][j].x() - thick / 2.0f, coords[i][j].y() - thick / 2.0f, thick, thick, QPen(), brush);
-            r->setData(0, static_cast<int>(i));
-            r->setData(1, static_cast<int>(j));
-        }
+        if (this->ui->checkBox_controlPoints->isChecked())
+            this->drawControlPoints(i, coords);
     }
 }
 
@@ -380,4 +342,130 @@ void SchemeWindow::closeEvent(QCloseEvent* event) {
         }
     }
     QWidget::closeEvent(event);
+}
+
+void SchemeWindow::drawScheme(std::size_t i, std::vector<std::vector<QPointF>> const& coords) {
+    QPainterPath shapePath;
+    for (std::size_t j = 0; j < coords[i].size(); j++) {
+        bool nextIsIntern = m_structure->isInternControlPoint((j + 1) % coords[i].size(), i);
+        //QPen pen { nextIsIntern ? Qt::green : Qt::blue, j == 0 ? 3.0 : 2.0 };
+        if (nextIsIntern) {
+            if (shapePath.isEmpty()) {
+                shapePath.moveTo(coords[i][j]);
+            }
+            shapePath.quadTo(coords[i][j + 1], coords[i][(j + 2) % coords[i].size()]);
+            j++;
+        } else {
+            if (shapePath.isEmpty()) {
+                shapePath.moveTo(coords[i][j].x(), coords[i][j].y());
+            }
+            shapePath.lineTo(coords[i][(j + 1) % coords[i].size()].x(), coords[i][(j + 1) % coords[i].size()].y());
+        }
+    }
+    shapePath.setFillRule(Qt::FillRule::WindingFill);
+    m_scene.addPath(shapePath, QPen(), QBrush(Qt::GlobalColor::lightGray));
+}
+
+void SchemeWindow::drawControlPoints(std::size_t i, std::vector<std::vector<QPointF>> const& coords) {
+    float thick = 12.0f;
+    bool secondIsIntern = m_structure->isInternControlPoint(1, i);
+    for (std::size_t j = 0; j < coords[i].size(); j++) {
+        bool isIntern = m_structure->isInternControlPoint(j, i);
+        bool isFirstEdge = (j == 0 || (j == 1 && !secondIsIntern) || (j == 2 && secondIsIntern));
+        QBrush brush = isFirstEdge ? Qt::green : (isIntern ? Qt::blue : Qt::black);
+        QGraphicsEllipseItem* point = m_scene.addEllipse(coords[i][j].x() - thick / 2.0f, coords[i][j].y() - thick / 2.0f, thick, thick, QPen(), brush);
+        point->setData(0, static_cast<int>(i));
+        point->setData(1, static_cast<int>(j));
+    }
+}
+
+void SchemeWindow::drawSubdScheme(std::size_t i, std::vector<std::vector<QPointF>> const& coords) {
+    //some useful variables
+    QPointF center(0, 0);
+    for (auto p: coords[i]) {
+        center += p;
+    }
+    center /= static_cast<float>(coords[i].size());
+    float meanDistanceToCenter = 0.0f;
+    for (auto p: coords[i]) {
+        meanDistanceToCenter += QVector2D(center - p).length();
+    }
+    meanDistanceToCenter /= static_cast<float>(coords[i].size());
+    float diameter = meanDistanceToCenter * 0.8f;
+    float radius = diameter / 2.0f;
+
+    frac::Face const& f = m_structure->faces()[i];
+
+    //draw subdivided edges
+    QPainterPath shapePath;
+    std::size_t j = 0;
+    for (frac::Edge const& e: f.constData()) {
+        if (shapePath.isEmpty()) {
+            shapePath.moveTo(coords[i][j]);
+        }
+
+        std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? 2 : 1;
+        QPointF end = coords[i][frac::utils::mod(j + nextStepJ, coords[i].size())];
+
+        if (e.edgeType() == frac::EdgeType::BEZIER) {
+            shapePath.quadTo(coords[i][j + 1], end);
+        } else { // CANTOR
+            QPointF begin = coords[i][j];
+            QPointF dir = QPointF(end - begin);
+            unsigned int n = e.nbActualSubdivisions();
+            float prop = 1.0f / static_cast<float>(n + n - 1);
+            dir *= prop;
+            for (unsigned int k = 0; k < n; k++) {
+                if (k != 0) {
+                    QPointF centerLine = shapePath.currentPosition() + dir * 0.5f;
+                    shapePath.quadTo(centerLine + (QVector2D(center - centerLine).normalized() * QVector2D(dir).length()).toPointF(), shapePath.currentPosition() + dir);
+                }
+                shapePath.lineTo(shapePath.currentPosition() + dir);
+            }
+        }
+        j += nextStepJ;
+    }
+    shapePath.setFillRule(Qt::FillRule::WindingFill);
+    m_scene.addPath(shapePath, QPen(), QBrush(Qt::GlobalColor::lightGray));
+
+
+//    //then draw interior depending on the algorithm
+//    switch (f.algo()) {
+//        case frac::AlgorithmSubdivision::LinksSurroundDelay:
+//            break;
+//        case frac::AlgorithmSubdivision::LinksSurroundDelayAndBezier:
+//            break;
+//        case frac::AlgorithmSubdivision::LinksOnCorners:
+//            j = 0;
+//            for (frac::Edge const& e: f.constData()) {
+//                std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? 2 : 1;
+//                QPointF end = coords[i][frac::utils::mod(j + nextStepJ, coords[i].size())];
+//
+//                if (e.edgeType() == frac::EdgeType::BEZIER) {
+//                    shapePath.quadTo(coords[i][j + 1], end);
+//                } else { // CANTOR
+//                    QPointF begin = coords[i][j];
+//                    QPointF dir = QPointF(end - begin);
+//                    unsigned int n = e.nbActualSubdivisions();
+//                    float prop = 1.0f / static_cast<float>(n + n - 1);
+//                    dir *= prop;
+//                    for (unsigned int k = 0; k < n; k++) {
+//                        if (k != 0) {
+//                            QPointF centerLine = shapePath.currentPosition() + dir * 0.5f;
+//                            shapePath.quadTo(centerLine + (QVector2D(center - centerLine).normalized() * QVector2D(dir).length()).toPointF(), shapePath.currentPosition() + dir);
+//                        }
+//                        shapePath.lineTo(shapePath.currentPosition() + dir);
+//                    }
+//                }
+//                j += nextStepJ;
+//            }
+//            break;
+//    }
+
+    //draw central lacuna
+    m_scene.addEllipse(center.x() - radius, center.y() - radius, diameter, diameter, QPen(), QBrush(Qt::white));
+}
+
+void SchemeWindow::updateTempDraw() {
+    this->redraw();
 }

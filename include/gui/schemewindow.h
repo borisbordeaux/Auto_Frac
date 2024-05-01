@@ -24,8 +24,8 @@ public:
     std::vector<std::vector<QPointF>> const& coordinates() const;
 
     void setCoords(std::size_t indexFace, std::size_t indexControlPoint, QPointF newPos);
-    void redraw(bool useTempCoordinates = true);
     void setSelected(int indexFace, int indexControlPoint);
+    void redraw(bool useTempCoordinates = true);
 
 public slots:
     void valid();
@@ -36,6 +36,7 @@ public slots:
     void rotateFace();
     void translateFace();
     void localDistFace();
+    void updateTempDraw();
 
 protected:
     void closeEvent(QCloseEvent* event) override;
@@ -43,6 +44,10 @@ protected:
 private:
     void localDistributionFace(std::size_t indexFace, bool useTempCoordinates);
     void updateWithAdjacencies();
+
+    void drawScheme(std::size_t i, std::vector<std::vector<QPointF>> const& coords);
+    void drawControlPoints(std::size_t i, std::vector<std::vector<QPointF>> const& coords);
+    void drawSubdScheme(std::size_t i, std::vector<std::vector<QPointF>> const& coords);
 
 private:
     Ui::SchemeWindow* ui;
