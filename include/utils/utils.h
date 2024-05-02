@@ -73,6 +73,14 @@ inline std::vector<float> get_bezier_transformation(unsigned int i, unsigned int
     };
 }
 
+inline std::pair<float, float> coordOfPointOnQuadCurveAt(float t, float p0x, float p0y, float p1x, float p1y, float p2x, float p2y) {
+    return { (1.0f - t) * (1.0f - t) * p0x + 2.0f * t * (1.0f - t) * p1x + t * t * p2x, (1.0f - t) * (1.0f - t) * p0y + 2.0f * t * (1.0f - t) * p1y + t * t * p2y };
+}
+
+inline std::pair<float, float> coordOfPointOnLineAt(float t, float p0x, float p0y, float p1x, float p1y) {
+    return { (1 - t) * p0x + t * p1x, (1 - t) * p0y + t * p1y };
+}
+
 }
 
 #endif //AUTOFRAC_UTILS_H

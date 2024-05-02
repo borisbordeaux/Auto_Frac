@@ -17,15 +17,17 @@ class SchemeWindow : public QWidget {
 Q_OBJECT
 
 public:
-    explicit SchemeWindow(frac::Structure* structure);
+    explicit SchemeWindow(std::unique_ptr<frac::Structure> structure);
     ~SchemeWindow() override;
 
-    bool isValidForStructure(frac::Structure* structure) const;
+    bool isValidForStructure(frac::Structure const& structure) const;
     std::vector<std::vector<QPointF>> const& coordinates() const;
 
     void setCoords(std::size_t indexFace, std::size_t indexControlPoint, QPointF newPos);
     void setSelected(int indexFace, int indexControlPoint);
     void redraw(bool useTempCoordinates = true);
+
+    void setStruct(std::unique_ptr<frac::Structure> structure);
 
 public slots:
     void valid();
@@ -51,7 +53,7 @@ private:
 
 private:
     Ui::SchemeWindow* ui;
-    frac::Structure* m_structure = nullptr;
+    std::unique_ptr<frac::Structure> m_structure;
     QGraphicsScene m_scene;
     QGraphicsView* m_graphicsView;
 

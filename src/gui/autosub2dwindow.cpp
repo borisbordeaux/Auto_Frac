@@ -13,23 +13,23 @@ AutoSub2DWindow::AutoSub2DWindow(QWidget* parent) :
     ui->setupUi(this);
 
     //    //to draw frac signal
-//    this->ui->listWidget_faces->addItem("C_2_1 - B_2_1 - C_2_1 - B_2_1 - C_2_1 - B_2_1 / C_2_0 - B_2_0 - B_2_0 / 1 / 1");
-//    this->ui->listWidget_faces->addItem("C_2_1 - B_2_0 - C_2_1 - B_2_0 - C_2_1 - B_2_0 - C_2_0 - B_2_0 / C_2_0 - B_2_0 - B_2_0 / 0 / 1");
-//    this->ui->listWidget_faces->addItem("C_2_0 - B_2_0 - C_2_0 - B_2_0 - C_2_0 - B_2_0 / C_2_0 - B_2_0 - B_2_0 / 0 / 1");
-//    this->ui->listWidget_faces->setCurrentRow(this->ui->listWidget_faces->count() - 1);
-//    this->ui->listWidget_constraints->addItem("1.2 / 0.0");
-//    this->ui->listWidget_constraints->addItem("1.6 / 2.0");
-//    this->ui->listWidget_constraints->setCurrentRow(this->ui->listWidget_constraints->count() - 1);
+    this->ui->listWidget_faces->addItem("C_2_1 - B_2_1 - C_2_1 - B_2_1 - C_2_1 - B_2_1 / C_2_0 - B_2_0 - B_2_0 / 1 / 1");
+    this->ui->listWidget_faces->addItem("C_2_1 - B_2_0 - C_2_1 - B_2_0 - C_2_1 - B_2_0 - C_2_0 - B_2_0 / C_2_0 - B_2_0 - B_2_0 / 0 / 1");
+    this->ui->listWidget_faces->addItem("C_2_0 - B_2_0 - C_2_0 - B_2_0 - C_2_0 - B_2_0 / C_2_0 - B_2_0 - B_2_0 / 0 / 1");
+    this->ui->listWidget_faces->setCurrentRow(this->ui->listWidget_faces->count() - 1);
+    this->ui->listWidget_constraints->addItem("1.2 / 0.0");
+    this->ui->listWidget_constraints->addItem("1.6 / 2.0");
+    this->ui->listWidget_constraints->setCurrentRow(this->ui->listWidget_constraints->count() - 1);
 
     // classic algo
-    this->ui->listWidget_faces->addItem("C_2_0 - B_2_0 - C_2_0 - B_2_0 - C_2_0 - B_2_0 / C_2_0 - B_2_0 - B_2_0 / 0 / 1");
-    this->ui->listWidget_faces->addItem("C_2_0 - C_2_0 - C_2_0 - C_2_0 - C_2_0 - C_2_0 - C_2_0 / C_2_0 - C_2_0 - C_2_0 / 0 / 1");
-    this->ui->listWidget_faces->addItem("B_2_0 - B_2_0 - B_2_0 - B_2_0 - B_2_0 / B_2_0 - B_2_0 - B_2_0 / 0 / 1");
-    // corner algo
-    this->ui->listWidget_faces->addItem("C_2_0 - C_2_0 - C_2_0 - C_2_0 - C_2_0 / C_2_0 - C_2_0 - C_2_0 / 0 / 2");
-    this->ui->listWidget_faces->addItem("B_2_0 - B_2_0 - B_2_0 - B_2_0 / B_2_0 - B_2_0 - B_2_0 / 0 / 2");
-    //this->ui->listWidget_faces->addItem("B_3_0 - B_3_0 - B_3_0 - B_3_0 / B_3_0 - B_3_0 - B_3_0 / 0 / 2");
-    this->ui->listWidget_faces->setCurrentRow(this->ui->listWidget_faces->count() - 1);
+//    this->ui->listWidget_faces->addItem("C_2_0 - B_2_0 - C_2_0 - B_2_0 - C_2_0 - B_2_0 / C_2_0 - B_2_0 - B_2_0 / 0 / 1");
+//    this->ui->listWidget_faces->addItem("C_2_0 - C_2_0 - C_2_0 - C_2_0 - C_2_0 - C_2_0 - C_2_0 / C_2_0 - C_2_0 - C_2_0 / 0 / 1");
+//    this->ui->listWidget_faces->addItem("B_2_0 - B_2_0 - B_2_0 - B_2_0 - B_2_0 / B_2_0 - B_2_0 - B_2_0 / 0 / 1");
+//    // corner algo
+//    this->ui->listWidget_faces->addItem("C_2_0 - C_2_0 - C_2_0 - C_2_0 - C_2_0 / C_2_0 - C_2_0 - C_2_0 / 0 / 2");
+//    this->ui->listWidget_faces->addItem("B_2_0 - B_2_0 - B_2_0 - B_2_0 / B_2_0 - B_2_0 - B_2_0 / 0 / 2");
+//    this->ui->listWidget_faces->addItem("B_3_0 - B_3_0 - B_3_0 - B_3_0 / B_3_0 - B_3_0 - B_3_0 / 0 / 2");
+//    this->ui->listWidget_faces->setCurrentRow(this->ui->listWidget_faces->count() - 1);
     // constraints to draw cells connected
 //    this->ui->listWidget_constraints->addItem("0.0 / 1.0");
 //    this->ui->listWidget_constraints->addItem("0.3 / 2.0");
@@ -79,7 +79,7 @@ AutoSub2DWindow::~AutoSub2DWindow() {
     std::ostringstream info;
 
     try {
-        if (m_schemeWindow != nullptr && m_schemeWindow->isValidForStructure(&s)) {
+        if (m_schemeWindow && m_schemeWindow->isValidForStructure(s)) {
             frac::StructurePrinter::exportStruct(s, this->ui->checkBox_planarControlPoints->isChecked(), "../output/result.py", m_schemeWindow->coordinates());
         } else {
             frac::StructurePrinter::exportStruct(s, this->ui->checkBox_planarControlPoints->isChecked(), "../output/result.py");
@@ -348,7 +348,7 @@ AutoSub2DWindow::~AutoSub2DWindow() {
         faces.push_back(frac::Face::fromStr(this->ui->listWidget_faces->item(i)->text().toStdString()));
     }
 
-    frac::Structure* newStruct = new frac::Structure(faces);
+    std::unique_ptr<frac::Structure> newStruct = std::make_unique<frac::Structure>(faces);
 
     for (int i = 0; i < this->ui->listWidget_constraints->count(); ++i) {
         frac::Adjacency c = toConstraint(this->ui->listWidget_constraints->item(i)->text());
@@ -367,14 +367,15 @@ AutoSub2DWindow::~AutoSub2DWindow() {
         }
     }
 
-    if (m_schemeWindow == nullptr) {
-        m_schemeWindow = std::make_unique<SchemeWindow>(newStruct);
+    if (!m_schemeWindow) {
+        m_schemeWindow = std::make_unique<SchemeWindow>(std::move(newStruct));
     } else {
-        if (m_schemeWindow->isValidForStructure(newStruct)) {
-            delete newStruct;
-            m_schemeWindow->redraw(false);
+        if (m_schemeWindow->isValidForStructure(*newStruct)) {
+            //set the structure in order to update it if the edges
+            //or the delay of subdivision has changed
+            m_schemeWindow->setStruct(std::move(newStruct));
         } else {
-            m_schemeWindow = std::make_unique<SchemeWindow>(newStruct);
+            m_schemeWindow = std::make_unique<SchemeWindow>(std::move(newStruct));
         }
     }
 
