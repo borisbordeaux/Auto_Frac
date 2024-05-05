@@ -40,6 +40,7 @@ public:
     std::vector<std::size_t> controlPointIndices(std::size_t indexEdge, std::size_t indexFace, bool reverse = false) const;
 
     bool isInternControlPoint(std::size_t indexControlPoint, std::size_t indexFace) const;
+    bool isControlPointBelongEdge(std::size_t indexControlPoint, std::size_t indexFace, std::size_t indexEdge) const;
 
     friend std::ostream& operator<<(std::ostream& os, const frac::Structure& structure);
     frac::Face const& operator[](std::size_t index) const;

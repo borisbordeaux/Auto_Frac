@@ -347,25 +347,46 @@ void SchemeWindow::closeEvent(QCloseEvent* event) {
 }
 
 void SchemeWindow::drawScheme(std::size_t i, std::vector<std::vector<QPointF>> const& coords) {
+    std::vector<std::pair<QLineF, QPen>> cantors;
+    std::vector<std::pair<QPainterPath, QPen>> beziers;
+    std::vector<QPointF> points;
     QPainterPath shapePath;
-    for (std::size_t j = 0; j < coords[i].size(); j++) {
-        bool nextIsIntern = m_structure->isInternControlPoint((j + 1) % coords[i].size(), i);
-        //QPen pen { nextIsIntern ? Qt::green : Qt::blue, j == 0 ? 3.0 : 2.0 };
-        if (nextIsIntern) {
-            if (shapePath.isEmpty()) {
-                shapePath.moveTo(coords[i][j]);
-            }
-            shapePath.quadTo(coords[i][j + 1], coords[i][(j + 2) % coords[i].size()]);
-            j++;
-        } else {
-            if (shapePath.isEmpty()) {
-                shapePath.moveTo(coords[i][j].x(), coords[i][j].y());
-            }
-            shapePath.lineTo(coords[i][(j + 1) % coords[i].size()].x(), coords[i][(j + 1) % coords[i].size()].y());
+    shapePath.moveTo(coords[i][0]);
+    std::size_t j = 0;
+    for (frac::Edge const& e: m_structure->faces()[i].constData()) {
+        std::vector<std::size_t> indices = m_structure->controlPointIndices(j, i);
+        points.emplace_back(coords[i][indices[0]]);
+        if (indices.size() == 2) { //CANTOR
+            cantors.emplace_back(QLineF(coords[i][indices[0]], coords[i][indices[1]]), SchemeWindow::penOfEdge(e));
+
+            shapePath.lineTo(coords[i][indices[1]]);
         }
+        if (indices.size() == 3) { //BEZIER
+            QPainterPath path;
+            path.moveTo(coords[i][indices[0]]);
+            path.quadTo(coords[i][indices[1]], coords[i][indices[2]]);
+            beziers.emplace_back(path, SchemeWindow::penOfEdge(e));
+
+            shapePath.quadTo(coords[i][indices[1]], coords[i][indices[2]]);
+        }
+        j++;
     }
     shapePath.setFillRule(Qt::FillRule::WindingFill);
-    m_scene.addPath(shapePath, QPen(), QBrush(Qt::GlobalColor::lightGray));
+    QPen pen;
+    pen.setBrush(Qt::transparent);
+    m_scene.addPath(shapePath, pen, QBrush(QColor("skyblue")));
+
+    for (auto const& c: cantors) {
+        m_scene.addLine(c.first, c.second);
+    }
+    for (auto const& p: beziers) {
+        m_scene.addPath(p.first, p.second);
+    }
+
+    float thick = 6.0f;
+    for (auto const& p: points) {
+        m_scene.addEllipse(p.x() - thick / 2.0f, p.y() - thick / 2.0f, thick, thick, QPen(), Qt::black);
+    }
 }
 
 void SchemeWindow::drawControlPoints(std::size_t i, std::vector<std::vector<QPointF>> const& coords) {
@@ -376,8 +397,20 @@ void SchemeWindow::drawControlPoints(std::size_t i, std::vector<std::vector<QPoi
         bool isFirstEdge = (j == 0 || (j == 1 && !secondIsIntern) || (j == 2 && secondIsIntern));
         QBrush brush = isFirstEdge ? Qt::green : (isIntern ? Qt::blue : Qt::black);
         QGraphicsEllipseItem* point = m_scene.addEllipse(coords[i][j].x() - thick / 2.0f, coords[i][j].y() - thick / 2.0f, thick, thick, QPen(), brush);
-        point->setData(0, static_cast<int>(i));
-        point->setData(1, static_cast<int>(j));
+        int data0 = static_cast<int>(i);
+        int data1 = static_cast<int>(j);
+        bool onConstraint = false;
+        for (frac::Adjacency const& adj: m_structure->adjacencies()) {
+            if (adj.Face2 == i) {
+                if (m_structure->isControlPointBelongEdge(j, i, adj.Edge2)) {
+                    onConstraint = true;
+                }
+            }
+        }
+        if (!onConstraint) {
+            point->setData(0, data0);
+            point->setData(1, data1);
+        }
     }
 }
 
@@ -399,19 +432,27 @@ void SchemeWindow::drawSubdScheme(std::size_t i, std::vector<std::vector<QPointF
     frac::Face const& f = m_structure->faces()[i];
 
     //draw subdivided edges
+    std::vector<std::pair<QLineF, QPen>> cantors;
+    std::vector<std::pair<QPainterPath, QPen>> beziers;
+    std::vector<QPointF> points;
+    std::vector<QPointF> pointsOnCentralLacuna;
     QPainterPath shapePath;
+    shapePath.moveTo(coords[i][0]);
     std::size_t j = 0;
     for (frac::Edge const& e: f.constData()) {
-        if (shapePath.isEmpty()) {
-            shapePath.moveTo(coords[i][j]);
-        }
-
         std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? 2 : 1;
         QPointF nextBegin = coords[i][frac::utils::mod(j + nextStepJ, coords[i].size())];
         QPointF currentBegin = coords[i][j];
 
+        points.emplace_back(currentBegin);
+
         if (e.edgeType() == frac::EdgeType::BEZIER) {
             shapePath.quadTo(coords[i][j + 1], nextBegin);
+
+            QPainterPath path;
+            path.moveTo(currentBegin);
+            path.quadTo(coords[i][j + 1], nextBegin);
+            beziers.emplace_back(path, SchemeWindow::penOfEdge(e.subdivisions(f.reqEdge())[0]));
         } else { // CANTOR
             unsigned int n = e.nbActualSubdivisions();
             QVector2D v = QVector2D(nextBegin - currentBegin);
@@ -424,97 +465,175 @@ void SchemeWindow::drawSubdScheme(std::size_t i, std::vector<std::vector<QPointF
                 std::pair<float, float> pe = frac::utils::coordOfPointOnLineAt(static_cast<float>(2 * k + 1) / static_cast<float>(n + n - 1), static_cast<float>(coords[i][j].x()), static_cast<float>(coords[i][j].y()), static_cast<float>(nextBegin.x()), static_cast<float>(nextBegin.y()));
                 QPointF end { pe.first, pe.second };
                 if (k != 0) {
+                    //draw of required edge
                     std::pair<float, float> peb = frac::utils::coordOfPointOnLineAt(static_cast<float>(2 * k - 1) / static_cast<float>(n + n - 1), static_cast<float>(coords[i][j].x()), static_cast<float>(coords[i][j].y()), static_cast<float>(nextBegin.x()), static_cast<float>(nextBegin.y()));
                     QPointF endBefore { peb.first, peb.second };
-                    //draw curve before
                     QPointF centerLine = (begin + endBefore) * 0.5f;
-                    shapePath.quadTo(centerLine + (normal * length).toPointF(), begin);
+                    if (f.reqEdge().edgeType() == frac::EdgeType::CANTOR) {
+                        auto pos = frac::utils::coordOfPointOnQuadCurveAt(0.5f, static_cast<float>(endBefore.x()), static_cast<float>(endBefore.y()), static_cast<float>((centerLine + (normal * length).toPointF()).x()), static_cast<float>((centerLine + (normal * length).toPointF()).y()), static_cast<float>(begin.x()), static_cast<float>(begin.y()));
+                        shapePath.lineTo(pos.first, pos.second);
+                        shapePath.lineTo(begin);
+
+                        cantors.emplace_back(QLineF(endBefore, { pos.first, pos.second }), SchemeWindow::penOfEdge(f.reqEdge()));
+                        cantors.emplace_back(QLineF({ pos.first, pos.second }, begin), SchemeWindow::penOfEdge(f.reqEdge()));
+                    } else {
+                        shapePath.quadTo(centerLine + (normal * length).toPointF(), begin);
+
+                        QPainterPath path;
+                        path.moveTo(endBefore);
+                        path.quadTo(centerLine + (normal * length).toPointF(), begin);
+                        beziers.emplace_back(path, SchemeWindow::penOfEdge(f.reqEdge()));
+                    }
+
+                    points.emplace_back(endBefore);
+                    points.emplace_back(begin);
                 }
                 //draw sub cantor
                 shapePath.lineTo(end);
+                cantors.emplace_back(QLineF(begin, end), SchemeWindow::penOfEdge(e.subdivisions(f.reqEdge())[0]));
             }
         }
         j += nextStepJ;
     }
     shapePath.setFillRule(Qt::FillRule::WindingFill);
-    m_scene.addPath(shapePath, QPen(), QBrush(Qt::GlobalColor::lightGray));
+    QPen pen;
+    pen.setBrush(Qt::transparent);
+    m_scene.addPath(shapePath, pen, QBrush(QColor("skyblue")));
 
+    for (auto const& c: cantors) {
+        m_scene.addLine(c.first, c.second);
+    }
+    for (auto const& p: beziers) {
+        m_scene.addPath(p.first, p.second);
+    }
 
     //then draw interior depending on the algorithm
     //there are some lines that are always here if face has no delay
-    if (f.delay() != 0) { return; } //no adjacency edge nor central lacuna
-    j = 0;
-    for (frac::Edge const& e: f.constData()) {
-        std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? 2 : 1;
-        QPointF nextBegin = coords[i][frac::utils::mod(j + nextStepJ, coords[i].size())];
-        QPointF currentBegin = coords[i][j];
-        if (e.edgeType() == frac::EdgeType::BEZIER) {
-            //there is a line between each subdivision
-            unsigned int n = e.nbActualSubdivisions();
-            for (unsigned int k = 0; k < n - 1; k++) {
-                std::pair<float, float> c = frac::utils::coordOfPointOnQuadCurveAt(static_cast<float>(k + 1) / static_cast<float>(n), static_cast<float>(currentBegin.x()), static_cast<float>(currentBegin.y()), static_cast<float>(coords[i][j + 1].x()), static_cast<float>(coords[i][j + 1].y()), static_cast<float>(nextBegin.x()), static_cast<float>(nextBegin.y()));
-                QPointF begin { c.first, c.second };
-                //point from begin to central lacuna
-                m_scene.addLine(QLineF(begin, center));
-            }
-        } else { //CANTOR
-            //there is a line between each subdivision
-            unsigned int n = e.nbActualSubdivisions();
-            QVector2D v = QVector2D(nextBegin - currentBegin);
-            float length = v.length() / static_cast<float>(n + n - 1);
-            QVector2D normal(-v.y(), v.x()); //rotation 90°
-            normal.normalize();
-            for (unsigned int k = 1; k < n; k++) {
-                std::pair<float, float> pb = frac::utils::coordOfPointOnLineAt(static_cast<float>(2 * k) / static_cast<float>(n + n - 1), static_cast<float>(currentBegin.x()), static_cast<float>(currentBegin.y()), static_cast<float>(nextBegin.x()), static_cast<float>(nextBegin.y()));
-                QPointF begin { pb.first, pb.second };
+    if (f.delay() == 0) {
+        j = 0;
+        for (frac::Edge const& e: f.constData()) {
+            std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? 2 : 1;
+            QPointF nextBegin = coords[i][(j + nextStepJ) % coords[i].size()];
+            QPointF currentBegin = coords[i][j];
+            if (e.edgeType() == frac::EdgeType::BEZIER) {
+                //there is a line between each subdivision
+                unsigned int n = e.nbActualSubdivisions();
+                for (unsigned int k = 0; k < n - 1; k++) {
+                    std::pair<float, float> c = frac::utils::coordOfPointOnQuadCurveAt(static_cast<float>(k + 1) / static_cast<float>(n), static_cast<float>(currentBegin.x()), static_cast<float>(currentBegin.y()), static_cast<float>(coords[i][j + 1].x()), static_cast<float>(coords[i][j + 1].y()), static_cast<float>(nextBegin.x()), static_cast<float>(nextBegin.y()));
+                    QPointF begin { c.first, c.second };
+                    //point from begin to central lacuna
+                    QPointF end(begin + (QVector2D(center - begin).normalized() * (QVector2D(center - begin).length() - radius)).toPointF());
+                    m_scene.addLine(QLineF(begin, end), SchemeWindow::penOfEdge(f.adjEdge()));
 
-                std::pair<float, float> peb = frac::utils::coordOfPointOnLineAt(static_cast<float>(2 * k - 1) / static_cast<float>(n + n - 1), static_cast<float>(currentBegin.x()), static_cast<float>(currentBegin.y()), static_cast<float>(nextBegin.x()), static_cast<float>(nextBegin.y()));
-                QPointF endBefore { peb.first, peb.second };
-
-                QPointF centerLine = (begin + endBefore) * 0.5f;
-
-                std::pair<float, float> pbl = frac::utils::coordOfPointOnQuadCurveAt(0.5, static_cast<float>(endBefore.x()), static_cast<float>(endBefore.y()), static_cast<float>((centerLine + (normal * length).toPointF()).x()), static_cast<float>((centerLine + (normal * length).toPointF()).y()), static_cast<float>(begin.x()), static_cast<float>(begin.y()));
-                QPointF beginLine { pbl.first, pbl.second };
-                //draw sub cantor
-                m_scene.addLine(QLineF(beginLine, center));
-            }
-        }
-        j += nextStepJ;
-    }
-
-    //then some lines are added depending on the algorithm of the face
-    switch (f.algo()) {
-        case frac::AlgorithmSubdivision::LinksSurroundDelay:
-            j = 0;
-            for (frac::Edge const& e: f.constData()) {
-                std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? 2 : 1;
-                if (e.isDelay()) {
-                    QPointF begin = coords[i][j];
-                    QPointF end = coords[i][frac::utils::mod(j + nextStepJ, coords[i].size())];
-                    m_scene.addLine(QLineF(begin, center));
-                    m_scene.addLine(QLineF(end, center));
+                    points.emplace_back(begin);
+                    points.emplace_back(end);
+                    pointsOnCentralLacuna.emplace_back(end);
                 }
-                j += nextStepJ;
+            } else { //CANTOR
+                //there is a line between each subdivision
+                unsigned int n = e.nbActualSubdivisions();
+                QVector2D v = QVector2D(nextBegin - currentBegin);
+                float length = v.length() / static_cast<float>(n + n - 1);
+                QVector2D normal(-v.y(), v.x()); //rotation 90°
+                normal.normalize();
+                for (unsigned int k = 1; k < n; k++) {
+                    std::pair<float, float> pb = frac::utils::coordOfPointOnLineAt(static_cast<float>(2 * k) / static_cast<float>(n + n - 1), static_cast<float>(currentBegin.x()), static_cast<float>(currentBegin.y()), static_cast<float>(nextBegin.x()), static_cast<float>(nextBegin.y()));
+                    QPointF begin { pb.first, pb.second };
+
+                    std::pair<float, float> peb = frac::utils::coordOfPointOnLineAt(static_cast<float>(2 * k - 1) / static_cast<float>(n + n - 1), static_cast<float>(currentBegin.x()), static_cast<float>(currentBegin.y()), static_cast<float>(nextBegin.x()), static_cast<float>(nextBegin.y()));
+                    QPointF endBefore { peb.first, peb.second };
+
+                    QPointF centerLine = (begin + endBefore) * 0.5f;
+
+                    std::pair<float, float> pbl = frac::utils::coordOfPointOnQuadCurveAt(0.5, static_cast<float>(endBefore.x()), static_cast<float>(endBefore.y()), static_cast<float>((centerLine + (normal * length).toPointF()).x()), static_cast<float>((centerLine + (normal * length).toPointF()).y()), static_cast<float>(begin.x()), static_cast<float>(begin.y()));
+                    QPointF beginLine { pbl.first, pbl.second };
+
+                    QPointF end(beginLine + (QVector2D(center - beginLine).normalized() * (QVector2D(center - beginLine).length() - radius)).toPointF());
+                    m_scene.addLine(QLineF(beginLine, end), SchemeWindow::penOfEdge(f.adjEdge()));
+
+                    points.emplace_back(beginLine);
+                    points.emplace_back(end);
+                    pointsOnCentralLacuna.emplace_back(end);
+                }
             }
-            break;
-        case frac::AlgorithmSubdivision::LinksOnCorners:
-            j = 0;
-            for (frac::Edge const& e: f.constData()) {
-                std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? 2 : 1;
-                QPointF begin = coords[i][j];
-                //line from begin to central lacuna
-                QVector2D dir(center - begin);
-                QPointF end = begin + dir.toPointF();
-                m_scene.addLine(QLineF(begin, end));
-                j += nextStepJ;
+            j += nextStepJ;
+        }
+
+        //then some lines are added depending on the algorithm of the face
+        switch (f.algo()) {
+            case frac::AlgorithmSubdivision::LinksSurroundDelay:
+                j = 0;
+                for (frac::Edge const& e: f.constData()) {
+                    std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? 2 : 1;
+                    if (e.isDelay()) {
+                        QPointF begin = coords[i][j];
+                        QPointF end = coords[i][frac::utils::mod(j + nextStepJ, coords[i].size())];
+                        QPointF endBeginLine(begin + (QVector2D(center - begin).normalized() * (QVector2D(center - begin).length() - radius)).toPointF());
+                        QPointF endEndLine(end + (QVector2D(center - end).normalized() * (QVector2D(center - end).length() - radius)).toPointF());
+                        m_scene.addLine(QLineF(begin, endBeginLine), SchemeWindow::penOfEdge(f.adjEdge()));
+                        m_scene.addLine(QLineF(end, endEndLine), SchemeWindow::penOfEdge(f.adjEdge()));
+
+                        points.emplace_back(endBeginLine);
+                        points.emplace_back(endEndLine);
+                        pointsOnCentralLacuna.emplace_back(endBeginLine);
+                        pointsOnCentralLacuna.emplace_back(endEndLine);
+                    }
+                    j += nextStepJ;
+                }
+                break;
+            case frac::AlgorithmSubdivision::LinksOnCorners:
+                j = 0;
+                for (frac::Edge const& e: f.constData()) {
+                    std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? 2 : 1;
+                    QPointF begin = coords[i][j];
+                    QPointF end(begin + (QVector2D(center - begin).normalized() * (QVector2D(center - begin).length() - radius)).toPointF());
+                    m_scene.addLine(QLineF(begin, end), SchemeWindow::penOfEdge(f.adjEdge()));
+                    points.emplace_back(end);
+                    pointsOnCentralLacuna.emplace_back(end);
+                    j += nextStepJ;
+                }
+                break;
+            default:
+                break;
+        }
+
+        //draw central lacuna
+        if (f.gapEdge().edgeType() == frac::EdgeType::BEZIER) {
+            m_scene.addEllipse(center.x() - radius, center.y() - radius, diameter, diameter, SchemeWindow::penOfEdge(f.gapEdge()), QBrush(Qt::white));
+        } else {
+            //need to sort the points based on their angle from the vertical line
+            std::sort(pointsOnCentralLacuna.begin(), pointsOnCentralLacuna.end(), [center](QPointF a, QPointF b) -> bool {
+                //compute the vectors from the center to the points
+                QVector2D u1(a - center);
+                QVector2D u2(b - center);
+                //compute their angle compared to vertical
+                float theta1 = qRadiansToDegrees(std::atan2(u1.x(), u1.y()));
+                float theta2 = qRadiansToDegrees(std::atan2(u2.x(), u2.y()));
+                //the angle above starts from 0 (vertical up vector) to 180 (vertical down vector)
+                //the sign is positive if vector points to right, negative otherwise.
+                //so we adjust the angle to have a value between 0 and 360
+                if (theta1 < 0) {
+                    theta1 += 360.0f;
+                }
+                if (theta2 < 0) {
+                    theta2 += 360.0f;
+                }
+                //the sort function will compare the angles
+                return theta1 < theta2;
+            });
+            //draw polygon with sorted points
+            QPolygonF polygon;
+            for (auto const& p: pointsOnCentralLacuna) {
+                polygon << p;
             }
-            break;
-        default:
-            break;
+            m_scene.addPolygon(polygon, SchemeWindow::penOfEdge(f.gapEdge()), QBrush(Qt::white));
+        }
     }
 
-    //draw central lacuna
-    m_scene.addEllipse(center.x() - radius, center.y() - radius, diameter, diameter, QPen(), QBrush(Qt::white));
+    float thick = 6.0f;
+    for (auto const& p: points) {
+        m_scene.addEllipse(p.x() - thick / 2.0f, p.y() - thick / 2.0f, thick, thick, QPen(), Qt::black);
+    }
 }
 
 void SchemeWindow::updateTempDraw() {
@@ -524,4 +643,20 @@ void SchemeWindow::updateTempDraw() {
 void SchemeWindow::setStruct(std::unique_ptr<frac::Structure> structure) {
     m_structure = std::move(structure);
     this->redraw();
+}
+
+QPen SchemeWindow::penOfEdge(frac::Edge const& e) {
+    QPen pen;
+    pen.setJoinStyle(Qt::RoundJoin);
+    if (e.isDelay()) {
+        pen.setStyle(Qt::DotLine);
+
+    }
+    if (e.edgeType() == frac::EdgeType::BEZIER) {
+        pen.setBrush(QBrush(QColor(0, std::max(0, 205 - static_cast<int>(e.nbSubdivisions() - 2) * 50), 0)));
+    } else {
+        pen.setBrush(QBrush(QColor(0, 0, std::max(0, 255 - static_cast<int>(e.nbSubdivisions() - 2) * 50))));
+    }
+    pen.setWidth(3);
+    return pen;
 }

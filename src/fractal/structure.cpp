@@ -99,3 +99,20 @@ bool frac::Structure::isInternControlPoint(std::size_t indexControlPoint, std::s
     }
     return res;
 }
+
+bool frac::Structure::isControlPointBelongEdge(std::size_t indexControlPoint, std::size_t indexFace, std::size_t indexEdge) const {
+    bool res = false;
+    std::size_t current = 0;
+    for (std::size_t i = 0; i < m_faces[indexFace].constData().size(); i++) {
+        if (i == indexEdge) {
+            if (current == indexControlPoint || current + 1 == indexControlPoint) {
+                res = true;
+            }
+            if (m_faces[indexFace][i].edgeType() == EdgeType::BEZIER && current + 2 == indexControlPoint) {
+                res = true;
+            }
+        }
+        current += m_faces[indexFace][i].edgeType() == EdgeType::BEZIER ? 2 : 1;
+    }
+    return res;
+}

@@ -7,6 +7,7 @@
 
 namespace frac {
 class Structure;
+class Edge;
 }
 
 QT_BEGIN_NAMESPACE
@@ -50,6 +51,7 @@ private:
     void drawScheme(std::size_t i, std::vector<std::vector<QPointF>> const& coords);
     void drawControlPoints(std::size_t i, std::vector<std::vector<QPointF>> const& coords);
     void drawSubdScheme(std::size_t i, std::vector<std::vector<QPointF>> const& coords);
+    static QPen penOfEdge(frac::Edge const& e);
 
 private:
     Ui::SchemeWindow* ui;
