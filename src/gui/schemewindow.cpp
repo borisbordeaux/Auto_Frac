@@ -22,9 +22,6 @@ SchemeWindow::SchemeWindow(std::unique_ptr<frac::Structure> structure) :
     m_lastControlPointIndex = -1;
     m_lastFaceIndex = -1;
 
-    m_coordinates.clear();
-    m_coordinatesTemp.clear();
-
     //roughly display faces with their control points on a circle
     float t = 420.0f;
     for (std::size_t i = 0; i < m_structure->faces().size(); i++) {
@@ -36,6 +33,9 @@ SchemeWindow::SchemeWindow(std::unique_ptr<frac::Structure> structure) :
             m_coordinates[i].emplace_back(t * static_cast<float>(i), 0);
             m_coordinatesTemp[i].emplace_back(m_coordinates[i][j]);
         }
+
+        //set by default no rotation
+        m_faceRotations.emplace_back(0);
     }
 
     //then set a better position for the control points (for both temp and no temp coordinates)
@@ -52,8 +52,7 @@ SchemeWindow::SchemeWindow(std::unique_ptr<frac::Structure> structure) :
     connect(this->ui->doubleSpinBox_controlPointY, &QDoubleSpinBox::valueChanged, this, &SchemeWindow::changeYCoordControlPoint);
     connect(this->ui->pushButton_save, &QPushButton::clicked, this, &SchemeWindow::save);
     connect(this->ui->pushButton_load, &QPushButton::clicked, this, &SchemeWindow::load);
-    connect(this->ui->pushButton_rotation, &QPushButton::clicked, this, &SchemeWindow::rotateFace);
-    connect(this->ui->pushButton_translation, &QPushButton::clicked, this, &SchemeWindow::translateFace);
+    connect(this->ui->dial_rotationAngle, &QDial::valueChanged, this, &SchemeWindow::rotateFace);
     connect(this->ui->pushButton_localDistribution, &QPushButton::clicked, this, &SchemeWindow::localDistFace);
     connect(this->ui->radioButton_scheme, &QRadioButton::released, this, &SchemeWindow::updateTempDraw);
     connect(this->ui->radioButton_subdScheme, &QRadioButton::released, this, &SchemeWindow::updateTempDraw);
@@ -196,9 +195,12 @@ void SchemeWindow::load() {
     }
 }
 
-void SchemeWindow::rotateFace() {
+void SchemeWindow::rotateFace(int value) {
+    this->ui->label_rotationAngle->setText(QString::number(value) + "°");
     if (m_lastFaceIndex != -1) {
-        qreal degrees = this->ui->doubleSpinBox_rotationAngle->value();
+        qreal degrees = value - m_faceRotations[m_lastFaceIndex];
+        if (degrees == 0) { return; }
+        m_faceRotations[m_lastFaceIndex] = value;
         qreal radians = qDegreesToRadians(degrees);
         QPointF barycenter { 0.0, 0.0 };
         for (QPointF& p: m_coordinatesTemp[m_lastFaceIndex]) {
@@ -222,21 +224,11 @@ void SchemeWindow::rotateFace() {
     }
 }
 
-void SchemeWindow::translateFace() {
-    if (m_lastFaceIndex != -1) {
-        qreal x = this->ui->doubleSpinBox_translationX->value();
-        qreal y = this->ui->doubleSpinBox_translationY->value();
-        for (QPointF& p: m_coordinatesTemp[m_lastFaceIndex]) {
-            p.setX(p.x() + x);
-            p.setY(p.y() + y);
-        }
-        this->redraw(true);
-    }
-}
-
 void SchemeWindow::localDistFace() {
     if (m_lastFaceIndex != -1) {
         this->localDistributionFace(m_lastFaceIndex, true);
+        m_faceRotations[m_lastFaceIndex] = 0;
+        this->ui->dial_rotationAngle->setValue(0);
         this->redraw(true);
     }
 }
@@ -291,10 +283,15 @@ void SchemeWindow::setCoords(std::size_t indexFace, std::size_t indexControlPoin
 }
 
 void SchemeWindow::setSelected(int indexFace, int indexControlPoint) {
-    m_lastFaceIndex = indexFace;
+    setSelected(indexFace);
     m_lastControlPointIndex = indexControlPoint;
     this->ui->doubleSpinBox_controlPointX->setValue(m_coordinatesTemp[m_lastFaceIndex][m_lastControlPointIndex].x());
     this->ui->doubleSpinBox_controlPointY->setValue(m_coordinatesTemp[m_lastFaceIndex][m_lastControlPointIndex].y());
+}
+
+void SchemeWindow::setSelected(int indexFace) {
+    m_lastFaceIndex = indexFace;
+    this->ui->dial_rotationAngle->setValue(m_faceRotations[indexFace]);
 }
 
 void SchemeWindow::localDistributionFace(std::size_t indexFace, bool useTempCoordinates) {
@@ -374,7 +371,8 @@ void SchemeWindow::drawScheme(std::size_t i, std::vector<std::vector<QPointF>> c
     shapePath.setFillRule(Qt::FillRule::WindingFill);
     QPen pen;
     pen.setBrush(Qt::transparent);
-    m_scene.addPath(shapePath, pen, QBrush(QColor("skyblue")));
+    auto pathItem = m_scene.addPath(shapePath, pen, QBrush(QColor("skyblue")));
+    pathItem->setData(2, static_cast<unsigned int>(i));
 
     for (auto const& c: cantors) {
         m_scene.addLine(c.first, c.second);
@@ -498,7 +496,8 @@ void SchemeWindow::drawSubdScheme(std::size_t i, std::vector<std::vector<QPointF
     shapePath.setFillRule(Qt::FillRule::WindingFill);
     QPen pen;
     pen.setBrush(Qt::transparent);
-    m_scene.addPath(shapePath, pen, QBrush(QColor("skyblue")));
+    auto pathItem = m_scene.addPath(shapePath, pen, QBrush(QColor("skyblue")));
+    pathItem->setData(2, static_cast<unsigned int>(i));
 
     for (auto const& c: cantors) {
         m_scene.addLine(c.first, c.second);
@@ -643,6 +642,14 @@ void SchemeWindow::updateTempDraw() {
 void SchemeWindow::setStruct(std::unique_ptr<frac::Structure> structure) {
     m_structure = std::move(structure);
     this->redraw();
+}
+
+void SchemeWindow::translateFaceOf(std::size_t indexFace, QPointF translation) {
+    for (QPointF& p: m_coordinatesTemp[indexFace]) {
+        p.setX(p.x() + translation.x());
+        p.setY(p.y() + translation.y());
+    }
+    this->redraw(true);
 }
 
 QPen SchemeWindow::penOfEdge(frac::Edge const& e) {

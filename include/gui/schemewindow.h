@@ -26,9 +26,12 @@ public:
 
     void setCoords(std::size_t indexFace, std::size_t indexControlPoint, QPointF newPos);
     void setSelected(int indexFace, int indexControlPoint);
+    void setSelected(int indexFace);
     void redraw(bool useTempCoordinates = true);
 
     void setStruct(std::unique_ptr<frac::Structure> structure);
+
+    void translateFaceOf(std::size_t indexFace, QPointF translation);
 
 public slots:
     void valid();
@@ -36,8 +39,7 @@ public slots:
     void changeYCoordControlPoint(double value);
     void save();
     void load();
-    void rotateFace();
-    void translateFace();
+    void rotateFace(int value);
     void localDistFace();
     void updateTempDraw();
 
@@ -61,6 +63,8 @@ private:
 
     std::vector<std::vector<QPointF>> m_coordinates;
     std::vector<std::vector<QPointF>> m_coordinatesTemp;
+
+    std::vector<int> m_faceRotations;
 
     int m_lastFaceIndex = -1;
     int m_lastControlPointIndex = -1;

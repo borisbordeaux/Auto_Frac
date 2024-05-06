@@ -470,75 +470,40 @@
         <string>Current Face</string>
        </property>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="1" column="1">
-         <widget class="QLabel" name="label_4">
-          <property name="text">
-           <string>X :</string>
+        <item row="0" column="1">
+         <widget class="QDial" name="dial_rotationAngle">
+          <property name="maximum">
+           <number>360</number>
           </property>
-         </widget>
-        </item>
-        <item row="0" column="1" colspan="2">
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Angle in degree</string>
+          <property name="invertedAppearance">
+           <bool>true</bool>
           </property>
-         </widget>
-        </item>
-        <item row="2" column="0" colspan="5">
-         <widget class="QPushButton" name="pushButton_localDistribution">
-          <property name="text">
-           <string>Local distribution of control points</string>
+          <property name="wrapping">
+           <bool>true</bool>
+          </property>
+          <property name="notchesVisible">
+           <bool>false</bool>
           </property>
          </widget>
         </item>
         <item row="0" column="0">
-         <widget class="QPushButton" name="pushButton_rotation">
+         <widget class="QLabel" name="label">
           <property name="text">
-           <string>Rotate by</string>
+           <string>Rotation</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="3">
-         <widget class="QLabel" name="label_5">
+        <item row="0" column="2">
+         <widget class="QLabel" name="label_rotationAngle">
           <property name="text">
-           <string>Y :</string>
+           <string>0</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="2">
-         <widget class="QDoubleSpinBox" name="doubleSpinBox_translationX">
-          <property name="minimum">
-           <double>-1000.000000000000000</double>
-          </property>
-          <property name="maximum">
-           <double>1000.000000000000000</double>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QPushButton" name="pushButton_translation">
+        <item row="1" column="0" colspan="3">
+         <widget class="QPushButton" name="pushButton_localDistribution">
           <property name="text">
-           <string>Translation by</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="4">
-         <widget class="QDoubleSpinBox" name="doubleSpinBox_translationY">
-          <property name="minimum">
-           <double>-1000.000000000000000</double>
-          </property>
-          <property name="maximum">
-           <double>1000.000000000000000</double>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="3" colspan="2">
-         <widget class="QDoubleSpinBox" name="doubleSpinBox_rotationAngle">
-          <property name="minimum">
-           <double>-360.000000000000000</double>
-          </property>
-          <property name="maximum">
-           <double>360.000000000000000</double>
+           <string>Local distribution of control points</string>
           </property>
          </widget>
         </item>
