@@ -64,12 +64,38 @@ inline std::vector<float> get_bezier_transformation(unsigned int i, unsigned int
     return { static_cast<float>((i - n) * (i - n)) / denominator,
              static_cast<float>((i - n) * (1 + i - n)) / denominator,
              static_cast<float>((1 + i - n) * (1 + i - n)) / denominator,
+
              static_cast<float>(2 * i * (n - i)) / denominator,
              static_cast<float>(n + 2 * i * n - 2 * i * (i + 1)) / denominator,
              static_cast<float>(-2 * (1 + i - n) * (1 + i)) / denominator,
+
              static_cast<float>(i * i) / denominator,
              static_cast<float>(i * (1 + i)) / denominator,
              static_cast<float>((i + 1) * (i + 1)) / denominator
+    };
+}
+
+inline std::vector<float> get_bezier_cubic_transformation(unsigned int i, unsigned int n) {
+    float denominator = static_cast<float>(n * n * n);
+    return { static_cast<float>(-(i - n) * (i - n) * (i - n)) / denominator,
+             static_cast<float>(-(i - n) * (i - n) * (i - n + 1)) / denominator,
+             static_cast<float>(-(i - n) * (i - n + 1) * (i - n + 1)) / denominator,
+             static_cast<float>(-(i - n + 1) * (i - n + 1) * (i - n + 1)) / denominator,
+
+             static_cast<float>(3 * i * (i - n) * (i - n)) / denominator,
+             static_cast<float>((i - n) * (3 * i * (i - n + 1) - n)) / denominator,
+             static_cast<float>((i - n + 1) * (3 * i * (i - n + 1) - 2 * n)) / denominator,
+             static_cast<float>(3 * (1 + i) * (i - n + 1) * (i - n + 1)) / denominator,
+
+             static_cast<float>(3 * i * i * (n - i)) / denominator,
+             static_cast<float>(i * (n * (3 * i + 2) - 3 * i * (i + 1))) / denominator,
+             static_cast<float>((i + 1) * (3 * i * n + n - 3 * i * (i + 1))) / denominator,
+             static_cast<float>(-3 * (i + 1) * (i + 1) * (i - n + 1)) / denominator,
+
+             static_cast<float>(i * i * i) / denominator,
+             static_cast<float>(i * i * (i + 1)) / denominator,
+             static_cast<float>(i * (i + 1) * (i + 1)) / denominator,
+             static_cast<float>((i + 1) * (i + 1) * (i + 1)) / denominator,
     };
 }
 

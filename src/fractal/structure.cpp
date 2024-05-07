@@ -35,8 +35,8 @@ frac::Set<frac::Face> frac::Structure::allFaces() const {
     return res;
 }
 
-std::size_t frac::Structure::nbControlPointsOfFace(std::size_t indexFace) const {
-    return m_faces[indexFace].nbControlPoints();
+std::size_t frac::Structure::nbControlPointsOfFace(std::size_t indexFace, bool bezierCubic) const {
+    return m_faces[indexFace].nbControlPoints(bezierCubic);
 }
 
 namespace frac {
@@ -72,10 +72,10 @@ std::vector<std::size_t> frac::Structure::controlPointIndices(std::size_t indexE
         current += m_faces[indexFace][i].edgeType() == EdgeType::BEZIER ? 2 : 1;
     }
     res.emplace_back(current);
-    res.emplace_back((current + 1) % this->nbControlPointsOfFace(indexFace));
+    res.emplace_back((current + 1) % this->nbControlPointsOfFace(indexFace, false));
 
     if (m_faces[indexFace][indexEdge].edgeType() == EdgeType::BEZIER) {
-        res.emplace_back((current + 2) % this->nbControlPointsOfFace(indexFace));
+        res.emplace_back((current + 2) % this->nbControlPointsOfFace(indexFace, false));
     }
 
     if (reverse) {

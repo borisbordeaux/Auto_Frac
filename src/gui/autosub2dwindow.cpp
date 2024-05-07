@@ -79,10 +79,11 @@ AutoSub2DWindow::~AutoSub2DWindow() {
     std::ostringstream info;
 
     try {
+        bool isBezierCubic = this->ui->comboBox_typeBezier->currentIndex() == 1; //0: quad, 1: cubic
         if (m_schemeWindow && m_schemeWindow->isValidForStructure(s)) {
-            frac::StructurePrinter::exportStruct(s, this->ui->checkBox_planarControlPoints->isChecked(), "../output/result.py", m_schemeWindow->coordinates());
+            frac::StructurePrinter::exportStruct(s, this->ui->checkBox_planarControlPoints->isChecked(), "../output/result.py", isBezierCubic,m_schemeWindow->coordinates());
         } else {
-            frac::StructurePrinter::exportStruct(s, this->ui->checkBox_planarControlPoints->isChecked(), "../output/result.py");
+            frac::StructurePrinter::exportStruct(s, this->ui->checkBox_planarControlPoints->isChecked(), "../output/result.py", isBezierCubic);
         }
     } catch (std::runtime_error const& error) {
         info << error.what();

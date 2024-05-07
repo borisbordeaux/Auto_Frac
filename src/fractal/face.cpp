@@ -243,10 +243,10 @@ std::optional<frac::Edge> frac::Face::edgeIfRequired(const frac::Edge& edge) con
     }
 }
 
-std::size_t frac::Face::nbControlPoints() const {
+std::size_t frac::Face::nbControlPoints(bool bezierCubic) const {
     std::size_t res = 0;
     for (Edge const& e: m_data) {
-        res += e.edgeType() == EdgeType::BEZIER ? 3 : 2;
+        res += e.edgeType() == EdgeType::BEZIER ? (bezierCubic ? 4 : 3) : 2;
         res--;
     }
     return res;

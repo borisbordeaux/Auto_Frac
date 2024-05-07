@@ -7,20 +7,20 @@
 #include "utils/fileprinter.h"
 #include "utils/utils.h"
 
-void frac::StructurePrinter::exportStruct(const frac::Structure& structure, bool planarControlPoints, std::string const& filename, std::vector<std::vector<QPointF>> const& coords) {
+void frac::StructurePrinter::exportStruct(const frac::Structure& structure, bool planarControlPoints, std::string const& filename, bool bezierCubic, std::vector<std::vector<QPointF>> const& coords) {
     StructurePrinter::print_header();
     StructurePrinter::print_vertex_state();
     FilePrinter::append_nl("    ##############################");
     FilePrinter::append_nl("    # all edges states");
     auto edges = structure.allEdges();
     for (auto const& edge: edges.data()) {
-        StructurePrinter::print_decl_of_edge(edge);
+        StructurePrinter::print_decl_of_edge(edge, bezierCubic);
     }
 
     FilePrinter::append_nl("    ##############################");
     FilePrinter::append_nl("    # all edges impl");
     for (auto const& edge: edges.data()) {
-        StructurePrinter::print_impl_of_edge(edge);
+        StructurePrinter::print_impl_of_edge(edge, bezierCubic);
     }
 
     FilePrinter::append_nl("    ##############################");
@@ -92,7 +92,7 @@ void frac::StructurePrinter::exportStruct(const frac::Structure& structure, bool
         if (!coords.empty()) {
             StructurePrinter::print_plan_control_points(coords);
         } else {
-            StructurePrinter::print_plan_control_points(structure);
+            StructurePrinter::print_plan_control_points(structure, bezierCubic);
         }
     }
 
@@ -122,7 +122,7 @@ void frac::StructurePrinter::print_vertex_state() {
     FilePrinter::append_nl("    s.buildIntern()");
 }
 
-void frac::StructurePrinter::print_decl_of_edge(const frac::Edge& edge) {
+void frac::StructurePrinter::print_decl_of_edge(const frac::Edge& edge, bool bezierCubic) {
     if (edge.edgeType() == EdgeType::CANTOR) {
         if (edge.isDelay()) {
             StructurePrinter::print_delay_cantor_decl(edge.nbSubdivisions(), edge.delay());
@@ -131,9 +131,9 @@ void frac::StructurePrinter::print_decl_of_edge(const frac::Edge& edge) {
         }
     } else {
         if (edge.isDelay()) {
-            StructurePrinter::print_delay_bezier_decl(edge.nbSubdivisions(), edge.delay());
+            StructurePrinter::print_delay_bezier_decl(edge.nbSubdivisions(), edge.delay(), bezierCubic);
         } else {
-            StructurePrinter::print_bezier_state_decl(edge.nbSubdivisions());
+            StructurePrinter::print_bezier_state_decl(edge.nbSubdivisions(), bezierCubic);
         }
     }
 }
@@ -150,19 +150,19 @@ void frac::StructurePrinter::print_cantor_n_state_decl(unsigned int n) {
     FilePrinter::append_nl("    C" + std::to_string(n) + ".permuts = {Permut('0'): C" + std::to_string(n) + "}");
 }
 
-void frac::StructurePrinter::print_delay_bezier_decl(unsigned int n, unsigned int delay_count) {
-    FilePrinter::append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + " = Etat('B" + std::to_string(n) + "_" + std::to_string(delay_count) + "', 1)");
+void frac::StructurePrinter::print_delay_bezier_decl(unsigned int n, unsigned int delay_count, bool bezierCubic) {
+    FilePrinter::append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + " = Etat('B" + std::to_string(n) + "_" + std::to_string(delay_count) + "', " + (bezierCubic ? "2" : "1") + ")");
     FilePrinter::append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + ".bords = {Bord('0'): s, Bord('1'): s}");
     FilePrinter::append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + ".permuts = {Permut('0'): B" + std::to_string(n) + "_" + std::to_string(delay_count) + "}");
 }
 
-void frac::StructurePrinter::print_bezier_state_decl(unsigned int n) {
-    FilePrinter::append_nl("    B" + std::to_string(n) + " = Etat('B" + std::to_string(n) + "', 1)");
+void frac::StructurePrinter::print_bezier_state_decl(unsigned int n, bool bezierCubic) {
+    FilePrinter::append_nl("    B" + std::to_string(n) + " = Etat('B" + std::to_string(n) + "', " + (bezierCubic ? "2" : "1") + ")");
     FilePrinter::append_nl("    B" + std::to_string(n) + ".bords = {Bord('0'): s, Bord('1'): s}");
     FilePrinter::append_nl("    B" + std::to_string(n) + ".permuts = {Permut('0'): B" + std::to_string(n) + "}");
 }
 
-void frac::StructurePrinter::print_impl_of_edge(const frac::Edge& edge) {
+void frac::StructurePrinter::print_impl_of_edge(const frac::Edge& edge, bool bezierCubic) {
     if (edge.edgeType() == EdgeType::CANTOR) {
         if (edge.isDelay()) {
             StructurePrinter::print_delay_cantor_impl(edge.nbSubdivisions(), edge.delay());
@@ -173,7 +173,7 @@ void frac::StructurePrinter::print_impl_of_edge(const frac::Edge& edge) {
         if (edge.isDelay()) {
             StructurePrinter::print_delay_bezier_impl(edge.nbSubdivisions(), edge.delay());
         } else {
-            StructurePrinter::print_bezier_state_impl(edge.nbSubdivisions());
+            StructurePrinter::print_bezier_state_impl(edge.nbSubdivisions(), bezierCubic ? 2 : 1);
         }
     }
 }
@@ -245,28 +245,57 @@ void frac::StructurePrinter::print_delay_bezier_impl(unsigned int n, unsigned in
     FilePrinter::append_nl("        [0.0]]).setTyp('Const')");
 }
 
-void frac::StructurePrinter::print_bezier_state_impl(unsigned int n) {
+void frac::StructurePrinter::print_bezier_state_impl(unsigned int n, int nb) {
     FilePrinter::append("    B" + std::to_string(n) + ".subs = {");
     for (unsigned int i = 0; i < n - 1; ++i) {
         FilePrinter::append("Sub('" + std::to_string(i) + "'): B" + std::to_string(n) + ", ");
     }
     FilePrinter::append_nl("Sub('" + std::to_string(n - 1) + "'): B" + std::to_string(n) + "}");
     FilePrinter::append_nl("    B" + std::to_string(n) + ".buildIntern()");
-    FilePrinter::append_nl("    B" + std::to_string(n) + ".space = [Bord_('0'), Intern_(''), Bord_('1')]");
+    if (nb == 1) {
+        FilePrinter::append_nl("    B" + std::to_string(n) + ".space = [Bord_('0'), Intern_(''), Bord_('1')]");
+    }
+    if (nb == 2) {
+        FilePrinter::append_nl("    B" + std::to_string(n) + ".space = [Bord_('0'), Intern_('0'), Intern_('1'), Bord_('1')]");
+    }
     FilePrinter::append_nl("    B" + std::to_string(n) + "(Permut('0') + Bord('0'), Bord('1'))");
     FilePrinter::append_nl("    B" + std::to_string(n) + "(Permut('0') + Bord('1'), Bord('0'))");
-    FilePrinter::append_nl("    B" + std::to_string(n) + "(Permut('0') + Intern(''), Intern(''))");
+    if (nb == 1) {
+        FilePrinter::append_nl("    B" + std::to_string(n) + "(Permut('0') + Intern(''), Intern(''))");
+    }
+    if (nb == 2) {
+        FilePrinter::append_nl("    B" + std::to_string(n) + "(Permut('0') + Intern('0'), Intern('1'))");
+        FilePrinter::append_nl("    B" + std::to_string(n) + "(Permut('0') + Intern('1'), Intern('0'))");
+    }
     for (unsigned int i = 0; i < n; ++i) {
         FilePrinter::append_nl("    B" + std::to_string(n) + "(Permut('0') + Sub(" + std::to_string(i) + "), Sub(" + std::to_string(n - i - 1) + ") + Permut('0'))");
     }
-    FilePrinter::append_nl("    B" + std::to_string(n) + ".grid.elems = [Figure(1, [Bord_('0'), Intern_(''), Bord_('1')])]");
+    if (nb == 1) {
+        FilePrinter::append_nl("    B" + std::to_string(n) + ".grid.elems = [Figure(1, [Bord_('0'), Intern_(''), Bord_('1')])]");
+    }
+    if (nb == 2) {
+        FilePrinter::append_nl("    B" + std::to_string(n) + ".grid.elems = [Figure(1, [Bord_('0'), Intern_('0'), Intern_('1'), Bord_('1')])]");
+    }
+
     FilePrinter::append_nl("    B" + std::to_string(n) + ".prim.elems = [Figure(1, [Bord_('0'), Bord_('1')])]");
-    for (unsigned int i = 0; i < n; ++i) {  // for each subdivision T0, T1, ... Tn-1
-        FilePrinter::append_nl("    B" + std::to_string(n) + ".initMat[Sub_('" + std::to_string(i) + "')] = FMat([");
-        std::vector<float> t = frac::utils::get_bezier_transformation(i, n);
-        FilePrinter::append_nl("        [" + frac::utils::to_string(t[0]) + ", " + frac::utils::to_string(t[1]) + ", " + frac::utils::to_string(t[2]) + "],");
-        FilePrinter::append_nl("        [" + frac::utils::to_string(t[3]) + ", " + frac::utils::to_string(t[4]) + ", " + frac::utils::to_string(t[5]) + "],");
-        FilePrinter::append_nl("        [" + frac::utils::to_string(t[6]) + ", " + frac::utils::to_string(t[7]) + ", " + frac::utils::to_string(t[8]) + "]]).setTyp('Const')");
+    if (nb == 1) {
+        for (unsigned int i = 0; i < n; ++i) {  // for each subdivision T0, T1, ... Tn-1
+            FilePrinter::append_nl("    B" + std::to_string(n) + ".initMat[Sub_('" + std::to_string(i) + "')] = FMat([");
+            std::vector<float> t = frac::utils::get_bezier_transformation(i, n);
+            FilePrinter::append_nl("        [" + frac::utils::to_string(t[0]) + ", " + frac::utils::to_string(t[1]) + ", " + frac::utils::to_string(t[2]) + "],");
+            FilePrinter::append_nl("        [" + frac::utils::to_string(t[3]) + ", " + frac::utils::to_string(t[4]) + ", " + frac::utils::to_string(t[5]) + "],");
+            FilePrinter::append_nl("        [" + frac::utils::to_string(t[6]) + ", " + frac::utils::to_string(t[7]) + ", " + frac::utils::to_string(t[8]) + "]]).setTyp('Const')");
+        }
+    }
+    if (nb == 2) {
+        for (unsigned int i = 0; i < n; ++i) {  // for each subdivision T0, T1, ... Tn-1
+            FilePrinter::append_nl("    B" + std::to_string(n) + ".initMat[Sub_('" + std::to_string(i) + "')] = FMat([");
+            std::vector<float> t = frac::utils::get_bezier_cubic_transformation(i, n);
+            FilePrinter::append_nl("        [" + frac::utils::to_string(t[0]) + ", " + frac::utils::to_string(t[1]) + ", " + frac::utils::to_string(t[2]) + ", " + frac::utils::to_string(t[3]) + "],");
+            FilePrinter::append_nl("        [" + frac::utils::to_string(t[4]) + ", " + frac::utils::to_string(t[5]) + ", " + frac::utils::to_string(t[6]) + ", " + frac::utils::to_string(t[7]) + "],");
+            FilePrinter::append_nl("        [" + frac::utils::to_string(t[8]) + ", " + frac::utils::to_string(t[9]) + ", " + frac::utils::to_string(t[10]) + ", " + frac::utils::to_string(t[11]) + "],");
+            FilePrinter::append_nl("        [" + frac::utils::to_string(t[12]) + ", " + frac::utils::to_string(t[13]) + ", " + frac::utils::to_string(t[14]) + ", " + frac::utils::to_string(t[15]) + "]]).setTyp('Const')");
+        }
     }
 }
 
@@ -352,10 +381,10 @@ void frac::StructurePrinter::print_edge_adjacencies_of_cell(const frac::Face& ce
     }
 }
 
-void frac::StructurePrinter::print_plan_control_points(const frac::Structure& structure) {
+void frac::StructurePrinter::print_plan_control_points(const frac::Structure& structure, bool bezierCubic) {
     std::size_t max = structure.faces().size();
     for (std::size_t index_face = 0; index_face < max; ++index_face) {
-        std::size_t nb_pts = structure.nbControlPointsOfFace(index_face);
+        std::size_t nb_pts = structure.nbControlPointsOfFace(index_face, bezierCubic);
         FilePrinter::append_nl("    init.initMat[Sub_('" + std::to_string(index_face) + "')] = FMat([");
         for (int j = 0; j < 3; ++j) {
             // x, y, z set to 0

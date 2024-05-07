@@ -1529,6 +1529,20 @@ QListWidget {
         </widget>
        </item>
        <item>
+        <widget class="QComboBox" name="comboBox_typeBezier">
+         <item>
+          <property name="text">
+           <string>Quadratic Bezier</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Cubic Bezier</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
         <spacer name="horizontalSpacer_14">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>

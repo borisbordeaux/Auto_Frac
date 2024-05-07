@@ -36,7 +36,7 @@ public:
 
     std::vector<frac::Face> const& faces() const;
 
-    std::size_t nbControlPointsOfFace(std::size_t indexFace) const;
+    std::size_t nbControlPointsOfFace(std::size_t indexFace, bool bezierCubic) const;
     std::vector<std::size_t> controlPointIndices(std::size_t indexEdge, std::size_t indexFace, bool reverse = false) const;
 
     bool isInternControlPoint(std::size_t indexControlPoint, std::size_t indexFace) const;

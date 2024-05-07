@@ -143,8 +143,10 @@ void Polytopal2DWindow::canonicalizeStep() {
         }
     }
     if (maxError < 0.000001f) {
-        this->setInfo("stopped at error of " + std::to_string(maxError));
+        this->setInfo("Stopped at error of " + std::to_string(maxError));
         m_timerCanonicalize.stop();
+    }else{
+        this->setInfo("Error of " + std::to_string(maxError));
     }
 }
 
