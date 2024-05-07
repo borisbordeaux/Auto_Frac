@@ -1,7 +1,7 @@
 #include "fractal/structure.h"
 #include <iostream>
 
-frac::Structure::Structure(std::vector<Face> const& faces) : m_faces(faces) {}
+frac::Structure::Structure(std::vector<Face> const& faces, bool bezierCubic) : m_faces(faces), m_bezierCubic(bezierCubic) {}
 
 void frac::Structure::addAdjacency(std::size_t indexFace1, std::size_t indexEdgeFace1, std::size_t indexFace2, std::size_t indexEdgeFace2) {
     if (m_faces[indexFace1][indexEdgeFace1] == m_faces[indexFace2][indexEdgeFace2]) {
@@ -35,8 +35,8 @@ frac::Set<frac::Face> frac::Structure::allFaces() const {
     return res;
 }
 
-std::size_t frac::Structure::nbControlPointsOfFace(std::size_t indexFace, bool bezierCubic) const {
-    return m_faces[indexFace].nbControlPoints(bezierCubic);
+std::size_t frac::Structure::nbControlPointsOfFace(std::size_t indexFace) const {
+    return m_faces[indexFace].nbControlPoints(m_bezierCubic);
 }
 
 namespace frac {
@@ -72,10 +72,10 @@ std::vector<std::size_t> frac::Structure::controlPointIndices(std::size_t indexE
         current += m_faces[indexFace][i].edgeType() == EdgeType::BEZIER ? 2 : 1;
     }
     res.emplace_back(current);
-    res.emplace_back((current + 1) % this->nbControlPointsOfFace(indexFace, false));
+    res.emplace_back((current + 1) % this->nbControlPointsOfFace(indexFace));
 
     if (m_faces[indexFace][indexEdge].edgeType() == EdgeType::BEZIER) {
-        res.emplace_back((current + 2) % this->nbControlPointsOfFace(indexFace, false));
+        res.emplace_back((current + 2) % this->nbControlPointsOfFace(indexFace));
     }
 
     if (reverse) {
@@ -115,4 +115,8 @@ bool frac::Structure::isControlPointBelongEdge(std::size_t indexControlPoint, st
         current += m_faces[indexFace][i].edgeType() == EdgeType::BEZIER ? 2 : 1;
     }
     return res;
+}
+
+bool frac::Structure::isBezierCubic() const {
+    return m_bezierCubic;
 }

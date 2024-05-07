@@ -64,17 +64,17 @@ void Polytopal2DWindow::setInfo(const std::string& textInfo, int timeoutMs) {
 
 [[maybe_unused]] void Polytopal2DWindow::slotExportAllFaces() {
     poly::Structure structure { m_mesh };
-    frac::FilePrinter::reset();
 
     std::ostringstream info;
 
     try {
-        poly::StructurePrinter::exportStruct(structure, this->ui->checkBox_polytopalPlanarControlPoints->isChecked(), "../output/result_poly.py");
+        poly::StructurePrinter structurePrinter(structure, this->ui->checkBox_polytopalPlanarControlPoints->isChecked(), "../output/result_poly.py");
+        structurePrinter.exportStruct();
+        info << "[Finished] Result in ../output/result_poly.py";
     } catch (std::runtime_error const& error) {
         info << error.what();
     }
 
-    info << "[Finished] Result in ../output/result_poly.py";
     this->setInfo(info.str());
 }
 
@@ -85,17 +85,17 @@ void Polytopal2DWindow::setInfo(const std::string& textInfo, int timeoutMs) {
     }
 
     poly::Structure structure { m_mesh, m_modelMesh.selectedFace() };
-    frac::FilePrinter::reset();
 
     std::ostringstream info;
 
     try {
-        poly::StructurePrinter::exportStruct(structure, this->ui->checkBox_polytopalPlanarControlPoints->isChecked(), "../output/result_poly.py");
+        poly::StructurePrinter structurePrinter(structure, this->ui->checkBox_polytopalPlanarControlPoints->isChecked(), "../output/result_poly.py");
+        structurePrinter.exportStruct();
+        info << "[Finished] Result in ../output/result_poly.py";
     } catch (std::runtime_error const& error) {
         info << error.what();
     }
 
-    info << "[Finished] Result in ../output/result_poly.py";
     this->setInfo(info.str());
 }
 
@@ -145,7 +145,7 @@ void Polytopal2DWindow::canonicalizeStep() {
     if (maxError < 0.000001f) {
         this->setInfo("Stopped at error of " + std::to_string(maxError));
         m_timerCanonicalize.stop();
-    }else{
+    } else {
         this->setInfo("Error of " + std::to_string(maxError));
     }
 }

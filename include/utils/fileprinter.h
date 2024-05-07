@@ -7,12 +7,12 @@ namespace frac {
 
 class FilePrinter {
 public:
-    static void append(std::string const& text);
-    static void append_nl(std::string const& text);
-    static void printToFile(std::string const& filename);
-    static void reset();
+    FilePrinter() = default;
+    void append(std::string const& text);
+    void append_nl(std::string const& text);
+    void printToFile(std::string const& filename);
 private:
-    static std::string s_output;
+    std::string m_output;
 };
 }
 

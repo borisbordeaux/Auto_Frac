@@ -50,14 +50,13 @@ AutoSub2DWindow::~AutoSub2DWindow() {
 
 [[maybe_unused]] void AutoSub2DWindow::slotGenerateScript() {
     frac::Face::reset();
-    frac::FilePrinter::reset();
 
     std::vector<frac::Face> faces;
     for (int i = 0; i < this->ui->listWidget_faces->count(); ++i) {
         faces.push_back(frac::Face::fromStr(this->ui->listWidget_faces->item(i)->text().toStdString()));
     }
 
-    frac::Structure s { faces };
+    frac::Structure s { faces, this->ui->comboBox_typeBezier->currentIndex() == 1 };
 
     for (int i = 0; i < this->ui->listWidget_constraints->count(); ++i) {
         frac::Adjacency c = toConstraint(this->ui->listWidget_constraints->item(i)->text());
@@ -79,11 +78,12 @@ AutoSub2DWindow::~AutoSub2DWindow() {
     std::ostringstream info;
 
     try {
-        bool isBezierCubic = this->ui->comboBox_typeBezier->currentIndex() == 1; //0: quad, 1: cubic
         if (m_schemeWindow && m_schemeWindow->isValidForStructure(s)) {
-            frac::StructurePrinter::exportStruct(s, this->ui->checkBox_planarControlPoints->isChecked(), "../output/result.py", isBezierCubic,m_schemeWindow->coordinates());
+            frac::StructurePrinter printer(s, this->ui->checkBox_planarControlPoints->isChecked(), "../output/result.py", m_schemeWindow->coordinates());
+            printer.exportStruct();
         } else {
-            frac::StructurePrinter::exportStruct(s, this->ui->checkBox_planarControlPoints->isChecked(), "../output/result.py", isBezierCubic);
+            frac::StructurePrinter printer(s, this->ui->checkBox_planarControlPoints->isChecked(), "../output/result.py");
+            printer.exportStruct();
         }
     } catch (std::runtime_error const& error) {
         info << error.what();
@@ -349,7 +349,7 @@ AutoSub2DWindow::~AutoSub2DWindow() {
         faces.push_back(frac::Face::fromStr(this->ui->listWidget_faces->item(i)->text().toStdString()));
     }
 
-    std::unique_ptr<frac::Structure> newStruct = std::make_unique<frac::Structure>(faces);
+    std::unique_ptr<frac::Structure> newStruct = std::make_unique<frac::Structure>(faces, this->ui->comboBox_typeBezier->currentIndex() == 1);
 
     for (int i = 0; i < this->ui->listWidget_constraints->count(); ++i) {
         frac::Adjacency c = toConstraint(this->ui->listWidget_constraints->item(i)->text());
@@ -390,14 +390,13 @@ AutoSub2DWindow::~AutoSub2DWindow() {
 [[maybe_unused]] void AutoSub2DWindow::slotComputeNbCells() {
     // create the structure
     frac::Face::reset();
-    frac::FilePrinter::reset();
 
     std::vector<frac::Face> faces;
     for (int i = 0; i < this->ui->listWidget_faces->count(); ++i) {
         faces.push_back(frac::Face::fromStr(this->ui->listWidget_faces->item(i)->text().toStdString()));
     }
 
-    frac::Structure s { faces };
+    frac::Structure s { faces, this->ui->comboBox_typeBezier->currentIndex() == 1 };
 
     // need to store for each face the number of subdivisions and their type (their face)
     std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>> cache;
@@ -426,14 +425,13 @@ AutoSub2DWindow::~AutoSub2DWindow() {
 [[maybe_unused]] void AutoSub2DWindow::slotComputeNbLacunas() {
     // create the structure
     frac::Face::reset();
-    frac::FilePrinter::reset();
 
     std::vector<frac::Face> faces;
     for (int i = 0; i < this->ui->listWidget_faces->count(); ++i) {
         faces.push_back(frac::Face::fromStr(this->ui->listWidget_faces->item(i)->text().toStdString()));
     }
 
-    frac::Structure s { faces };
+    frac::Structure s { faces, this->ui->comboBox_typeBezier->currentIndex() == 1 };
 
     // need to store for each face the number of subdivisions and their type (their face)
     std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>> cacheSubdivisions;
@@ -480,14 +478,13 @@ AutoSub2DWindow::~AutoSub2DWindow() {
 [[maybe_unused]] void AutoSub2DWindow::slotComputePorosityMetrics() {
     // create the structure
     frac::Face::reset();
-    frac::FilePrinter::reset();
 
     std::vector<frac::Face> faces;
     for (int i = 0; i < this->ui->listWidget_faces->count(); ++i) {
         faces.push_back(frac::Face::fromStr(this->ui->listWidget_faces->item(i)->text().toStdString()));
     }
 
-    frac::Structure s { faces };
+    frac::Structure s { faces, this->ui->comboBox_typeBezier->currentIndex() == 1 };
 
     // need to store for each face the number of subdivisions and their type (their face)
     std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>> cacheSubdivisions;

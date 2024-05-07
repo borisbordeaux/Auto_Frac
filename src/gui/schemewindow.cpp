@@ -26,7 +26,7 @@ SchemeWindow::SchemeWindow(std::unique_ptr<frac::Structure> structure) :
     float t = 420.0f;
     for (std::size_t i = 0; i < m_structure->faces().size(); i++) {
         //add face to drawing
-        std::size_t nbCtrlPts = m_structure->nbControlPointsOfFace(i, false);
+        std::size_t nbCtrlPts = m_structure->nbControlPointsOfFace(i);
         m_coordinates.emplace_back();
         m_coordinatesTemp.emplace_back();
         for (std::size_t j = 0; j < nbCtrlPts; j++) {
@@ -71,7 +71,7 @@ bool SchemeWindow::isValidForStructure(frac::Structure const& structure) const {
     if (structure.faces().size() == m_coordinatesTemp.size()) {
         res = true;
         for (std::size_t i = 0; i < structure.faces().size(); i++) {
-            if (m_coordinatesTemp[i].size() != structure.nbControlPointsOfFace(i, false)) {
+            if (m_coordinatesTemp[i].size() != structure.nbControlPointsOfFace(i)) {
                 res = false;
             }
         }
@@ -128,7 +128,7 @@ void SchemeWindow::save() {
         a["y"] = arrayY;
         faces.append(a);
     }
-    json["coords"] = faces;
+    json["m_coords"] = faces;
     saveFile.write(QJsonDocument(json).toJson());
     qDebug() << "Coordinates saved";
 }
@@ -148,7 +148,7 @@ void SchemeWindow::load() {
 
     std::vector<std::vector<QPointF>> coords;
 
-    if (const QJsonValue v = json["coords"]; v.isArray()) {
+    if (const QJsonValue v = json["m_coords"]; v.isArray()) {
         const QJsonArray faces = v.toArray();
         for (QJsonValueConstRef const& face: faces) {
             coords.emplace_back();

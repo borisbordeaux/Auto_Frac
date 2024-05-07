@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "halfedge/mesh.h"
+#include "utils/fileprinter.h"
 
 namespace poly {
 
@@ -16,21 +17,27 @@ class Face;
 
 class StructurePrinter {
 public:
-    static void exportStruct(poly::Structure const& s, bool planarControlPoints, std::string const& filename);
+    StructurePrinter(poly::Structure const& s, bool planarControlPoints, std::string filename);
+    void exportStruct();
 private:
-    static void print_header();
-    static void print_vertex_state();
-    static void print_bezier_state_decl(unsigned int n);
-    static void print_bezier_state_impl(unsigned int n);
-    static std::vector<float> get_bezier_transformation(unsigned int i, unsigned int n);
-    static void print_init_subds(Structure const& structure);
-    static void print_edges_of_cell(poly::Face const& cell);
-    static void print_subd_of_cell(poly::Face const& cell);
-    static void print_space_of_cell(poly::Face const& cell);
-    static void print_prim_of_cell(poly::Face const& cell);
-    static void print_edge_adjacencies_of_cell(poly::Face const& cell);
-    static void print_plan_control_points(poly::Structure const& structure);
-    static void print_footer();
+     void print_header();
+     void print_vertex_state();
+     void print_bezier_state_decl(unsigned int n);
+     void print_bezier_state_impl(unsigned int n);
+     void print_init_subds();
+     void print_edges_of_cell(poly::Face const& cell);
+     void print_subd_of_cell(poly::Face const& cell);
+     void print_space_of_cell(poly::Face const& cell);
+     void print_prim_of_cell(poly::Face const& cell);
+     void print_edge_adjacencies_of_cell(poly::Face const& cell);
+     void print_plan_control_points();
+     void print_footer();
+
+private:
+    poly::Structure const& m_structure;
+    bool m_planarControlPoints;
+    std::string const m_filename;
+    frac::FilePrinter m_filePrinter;
 };
 
 } // poly

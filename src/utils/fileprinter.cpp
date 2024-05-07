@@ -2,22 +2,17 @@
 #include <fstream>
 #include <ostream>
 
-std::string frac::FilePrinter::s_output;
-
-void frac::FilePrinter::append(const std::string& text) {
-    FilePrinter::s_output += text;
+void frac::FilePrinter::append(std::string const& text) {
+    m_output += text;
 }
 
-void frac::FilePrinter::append_nl(const std::string& text) {
-    FilePrinter::s_output += text + '\n';
+void frac::FilePrinter::append_nl(std::string const& text) {
+    m_output += text + '\n';
 }
 
-void frac::FilePrinter::printToFile(const std::string& filename) {
+void frac::FilePrinter::printToFile(std::string const& filename) {
     std::ofstream file;
     file.open(filename, std::ofstream::out | std::ofstream::trunc);
-    file << FilePrinter::s_output;
-}
-
-void frac::FilePrinter::reset() {
-    FilePrinter::s_output.clear();
+    file << m_output;
+    file.close();
 }
