@@ -500,10 +500,29 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="0" colspan="3">
+        <item row="1" column="0" colspan="2">
          <widget class="QPushButton" name="pushButton_localDistribution">
           <property name="text">
-           <string>Local distribution of control points</string>
+           <string>Reset control points</string>
+          </property>
+          <property name="autoDefault">
+           <bool>false</bool>
+          </property>
+          <property name="default">
+           <bool>false</bool>
+          </property>
+          <property name="flat">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QDoubleSpinBox" name="doubleSpinBox_radiusDistribControlPoints">
+          <property name="maximum">
+           <double>1000.000000000000000</double>
+          </property>
+          <property name="value">
+           <double>200.000000000000000</double>
           </property>
          </widget>
         </item>

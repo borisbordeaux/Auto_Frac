@@ -169,10 +169,8 @@ void SchemeWindow::load() {
     }
 
     bool sameSize = m_coordinatesTemp.size() == coords.size();
-    qDebug() << "current number of faces" << m_coordinatesTemp.size() << "read number of faces" << coords.size() << Qt::endl << "----------";
     if (sameSize) {
         for (std::size_t i = 0; i < coords.size(); i++) {
-            qDebug() << "size of read coord" << coords[i].size() << "size of current coord" << m_coordinatesTemp[i].size();
             if (coords[i].size() != m_coordinatesTemp[i].size()) {
                 sameSize = false;
             }
@@ -318,7 +316,7 @@ void SchemeWindow::localDistributionFace(std::size_t indexFace, bool useTempCoor
     y /= static_cast<float>(coords[indexFace].size());
 
     //distribute points around the origin and add the computed barycenter to place correctly the face
-    double radius = 200.0;
+    double radius = this->ui->doubleSpinBox_radiusDistribControlPoints->value();
 
     //for not intern control points
     float j = 0.0f;
