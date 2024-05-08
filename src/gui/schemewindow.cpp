@@ -22,7 +22,7 @@ SchemeWindow::SchemeWindow(std::unique_ptr<frac::Structure> structure) :
     m_lastControlPointIndex = -1;
     m_lastFaceIndex = -1;
 
-    //roughly display faces with their control points on a circle
+    //roughly display faces with their control points all at same position
     float t = 420.0f;
     for (std::size_t i = 0; i < m_structure->faces().size(); i++) {
         //add face to drawing
@@ -34,17 +34,12 @@ SchemeWindow::SchemeWindow(std::unique_ptr<frac::Structure> structure) :
             m_coordinatesTemp[i].emplace_back(m_coordinates[i][j]);
         }
 
+        //then set a better position for the control points
+        this->localDistributionFace(i, false);
+        this->localDistributionFace(i, true);
+
         //set by default no rotation
         m_faceRotations.emplace_back(0);
-    }
-
-    //then set a better position for the control points (for both temp and no temp coordinates)
-    for (std::size_t i = 0; i < m_coordinatesTemp.size(); i++) {
-        this->localDistributionFace(i, false);
-    }
-
-    for (std::size_t i = 0; i < m_coordinatesTemp.size(); i++) {
-        this->localDistributionFace(i, true);
     }
 
     connect(this->ui->pushButton_ok, &QPushButton::clicked, this, &SchemeWindow::valid);
@@ -128,7 +123,7 @@ void SchemeWindow::save() {
         a["y"] = arrayY;
         faces.append(a);
     }
-    json["m_coords"] = faces;
+    json["coords"] = faces;
     saveFile.write(QJsonDocument(json).toJson());
     qDebug() << "Coordinates saved";
 }
@@ -148,7 +143,7 @@ void SchemeWindow::load() {
 
     std::vector<std::vector<QPointF>> coords;
 
-    if (const QJsonValue v = json["m_coords"]; v.isArray()) {
+    if (const QJsonValue v = json["coords"]; v.isArray()) {
         const QJsonArray faces = v.toArray();
         for (QJsonValueConstRef const& face: faces) {
             coords.emplace_back();
@@ -174,8 +169,10 @@ void SchemeWindow::load() {
     }
 
     bool sameSize = m_coordinatesTemp.size() == coords.size();
+    qDebug() << "current number of faces" << m_coordinatesTemp.size() << "read number of faces" << coords.size() << Qt::endl << "----------";
     if (sameSize) {
         for (std::size_t i = 0; i < coords.size(); i++) {
+            qDebug() << "size of read coord" << coords[i].size() << "size of current coord" << m_coordinatesTemp[i].size();
             if (coords[i].size() != m_coordinatesTemp[i].size()) {
                 sameSize = false;
             }
@@ -278,15 +275,23 @@ void SchemeWindow::changeYCoordControlPoint(double value) {
 
 void SchemeWindow::setCoords(std::size_t indexFace, std::size_t indexControlPoint, QPointF newPos) {
     m_coordinatesTemp[indexFace][indexControlPoint] = newPos;
+    this->ui->doubleSpinBox_controlPointX->blockSignals(true);
+    this->ui->doubleSpinBox_controlPointY->blockSignals(true);
     this->ui->doubleSpinBox_controlPointX->setValue(m_coordinatesTemp[m_lastFaceIndex][m_lastControlPointIndex].x());
     this->ui->doubleSpinBox_controlPointY->setValue(m_coordinatesTemp[m_lastFaceIndex][m_lastControlPointIndex].y());
+    this->ui->doubleSpinBox_controlPointX->blockSignals(false);
+    this->ui->doubleSpinBox_controlPointY->blockSignals(false);
 }
 
 void SchemeWindow::setSelected(int indexFace, int indexControlPoint) {
     setSelected(indexFace);
     m_lastControlPointIndex = indexControlPoint;
+    this->ui->doubleSpinBox_controlPointX->blockSignals(true);
+    this->ui->doubleSpinBox_controlPointY->blockSignals(true);
     this->ui->doubleSpinBox_controlPointX->setValue(m_coordinatesTemp[m_lastFaceIndex][m_lastControlPointIndex].x());
     this->ui->doubleSpinBox_controlPointY->setValue(m_coordinatesTemp[m_lastFaceIndex][m_lastControlPointIndex].y());
+    this->ui->doubleSpinBox_controlPointX->blockSignals(false);
+    this->ui->doubleSpinBox_controlPointY->blockSignals(false);
 }
 
 void SchemeWindow::setSelected(int indexFace) {
@@ -326,10 +331,29 @@ void SchemeWindow::localDistributionFace(std::size_t indexFace, bool useTempCoor
     }
 
     int nbCtrlPts = static_cast<int>(coords[indexFace].size());
+    bool firstInternCP = true;
     for (int i = 0; i < static_cast<int>(coords[indexFace].size()); i++) {
         if (m_structure->isInternControlPoint(i, indexFace)) {
-            coords[indexFace][i].setX((coords[indexFace][frac::utils::mod(i - 1, nbCtrlPts)].x() + coords[indexFace][frac::utils::mod(i + 1, nbCtrlPts)].x()) / 2.0);
-            coords[indexFace][i].setY((coords[indexFace][frac::utils::mod(i - 1, nbCtrlPts)].y() + coords[indexFace][frac::utils::mod(i + 1, nbCtrlPts)].y()) / 2.0);
+            if (m_structure->isBezierCubic()) {
+                if (firstInternCP) {
+                    QPointF P0 = coords[indexFace][frac::utils::mod(i - 1, nbCtrlPts)];
+                    QPointF P1 = coords[indexFace][(i + 2) % nbCtrlPts];
+                    auto c = frac::utils::coordOfPointOnLineAt(1.f / 3.f, static_cast<float>(P0.x()), static_cast<float>(P0.y()), static_cast<float>(P1.x()), static_cast<float>(P1.y()));
+                    coords[indexFace][i].setX(c.first);
+                    coords[indexFace][i].setY(c.second);
+                    firstInternCP = false;
+                } else {
+                    QPointF P0 = coords[indexFace][frac::utils::mod(i - 2, nbCtrlPts)];
+                    QPointF P1 = coords[indexFace][(i + 1) % nbCtrlPts];
+                    auto c = frac::utils::coordOfPointOnLineAt(2.f / 3.f, static_cast<float>(P0.x()), static_cast<float>(P0.y()), static_cast<float>(P1.x()), static_cast<float>(P1.y()));
+                    coords[indexFace][i].setX(c.first);
+                    coords[indexFace][i].setY(c.second);
+                    firstInternCP = true;
+                }
+            } else {
+                coords[indexFace][i].setX((coords[indexFace][frac::utils::mod(i - 1, nbCtrlPts)].x() + coords[indexFace][(i + 1) % nbCtrlPts].x()) / 2.0);
+                coords[indexFace][i].setY((coords[indexFace][frac::utils::mod(i - 1, nbCtrlPts)].y() + coords[indexFace][(i + 1) % nbCtrlPts].y()) / 2.0);
+            }
         }
     }
 }
@@ -358,13 +382,21 @@ void SchemeWindow::drawScheme(std::size_t i, std::vector<std::vector<QPointF>> c
 
             shapePath.lineTo(coords[i][indices[1]]);
         }
-        if (indices.size() == 3) { //BEZIER
+        if (indices.size() == 3) { //BEZIER QUAD
             QPainterPath path;
             path.moveTo(coords[i][indices[0]]);
             path.quadTo(coords[i][indices[1]], coords[i][indices[2]]);
             beziers.emplace_back(path, SchemeWindow::penOfEdge(e));
 
             shapePath.quadTo(coords[i][indices[1]], coords[i][indices[2]]);
+        }
+        if (indices.size() == 4) { //BEZIER CUBIC
+            QPainterPath path;
+            path.moveTo(coords[i][indices[0]]);
+            path.cubicTo(coords[i][indices[1]], coords[i][indices[2]], coords[i][indices[3]]);
+            beziers.emplace_back(path, SchemeWindow::penOfEdge(e));
+
+            shapePath.cubicTo(coords[i][indices[1]], coords[i][indices[2]], coords[i][indices[3]]);
         }
         j++;
     }
@@ -390,9 +422,10 @@ void SchemeWindow::drawScheme(std::size_t i, std::vector<std::vector<QPointF>> c
 void SchemeWindow::drawControlPoints(std::size_t i, std::vector<std::vector<QPointF>> const& coords) {
     float thick = 12.0f;
     bool secondIsIntern = m_structure->isInternControlPoint(1, i);
+    bool thirdIsIntern = m_structure->isInternControlPoint(2, i);
     for (std::size_t j = 0; j < coords[i].size(); j++) {
         bool isIntern = m_structure->isInternControlPoint(j, i);
-        bool isFirstEdge = (j == 0 || (j == 1 && !secondIsIntern) || (j == 2 && secondIsIntern));
+        bool isFirstEdge = (j == 0 || (j == 1 && !secondIsIntern) || (j == 2 && secondIsIntern && !thirdIsIntern) || (j == 3 && secondIsIntern && thirdIsIntern));
         QBrush brush = isFirstEdge ? Qt::green : (isIntern ? Qt::blue : Qt::black);
         QGraphicsEllipseItem* point = m_scene.addEllipse(coords[i][j].x() - thick / 2.0f, coords[i][j].y() - thick / 2.0f, thick, thick, QPen(), brush);
         int data0 = static_cast<int>(i);
@@ -438,19 +471,28 @@ void SchemeWindow::drawSubdScheme(std::size_t i, std::vector<std::vector<QPointF
     shapePath.moveTo(coords[i][0]);
     std::size_t j = 0;
     for (frac::Edge const& e: f.constData()) {
-        std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? 2 : 1;
+        std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->isBezierCubic() ? 3 : 2) : 1;
         QPointF nextBegin = coords[i][frac::utils::mod(j + nextStepJ, coords[i].size())];
         QPointF currentBegin = coords[i][j];
 
         points.emplace_back(currentBegin);
 
         if (e.edgeType() == frac::EdgeType::BEZIER) {
-            shapePath.quadTo(coords[i][j + 1], nextBegin);
+            if (m_structure->isBezierCubic()) {
+                shapePath.cubicTo(coords[i][j + 1], coords[i][j + 2], nextBegin);
 
-            QPainterPath path;
-            path.moveTo(currentBegin);
-            path.quadTo(coords[i][j + 1], nextBegin);
-            beziers.emplace_back(path, SchemeWindow::penOfEdge(e.subdivisions(f.reqEdge())[0]));
+                QPainterPath path;
+                path.moveTo(currentBegin);
+                path.cubicTo(coords[i][j + 1], coords[i][j + 2], nextBegin);
+                beziers.emplace_back(path, SchemeWindow::penOfEdge(e.subdivisions(f.reqEdge())[0]));
+            } else {
+                shapePath.quadTo(coords[i][j + 1], nextBegin);
+
+                QPainterPath path;
+                path.moveTo(currentBegin);
+                path.quadTo(coords[i][j + 1], nextBegin);
+                beziers.emplace_back(path, SchemeWindow::penOfEdge(e.subdivisions(f.reqEdge())[0]));
+            }
         } else { // CANTOR
             unsigned int n = e.nbActualSubdivisions();
             QVector2D v = QVector2D(nextBegin - currentBegin);
@@ -511,14 +553,19 @@ void SchemeWindow::drawSubdScheme(std::size_t i, std::vector<std::vector<QPointF
     if (f.delay() == 0) {
         j = 0;
         for (frac::Edge const& e: f.constData()) {
-            std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? 2 : 1;
+            std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->isBezierCubic() ? 3 : 2) : 1;
             QPointF nextBegin = coords[i][(j + nextStepJ) % coords[i].size()];
             QPointF currentBegin = coords[i][j];
             if (e.edgeType() == frac::EdgeType::BEZIER) {
                 //there is a line between each subdivision
                 unsigned int n = e.nbActualSubdivisions();
                 for (unsigned int k = 0; k < n - 1; k++) {
-                    std::pair<float, float> c = frac::utils::coordOfPointOnQuadCurveAt(static_cast<float>(k + 1) / static_cast<float>(n), static_cast<float>(currentBegin.x()), static_cast<float>(currentBegin.y()), static_cast<float>(coords[i][j + 1].x()), static_cast<float>(coords[i][j + 1].y()), static_cast<float>(nextBegin.x()), static_cast<float>(nextBegin.y()));
+                    std::pair<float, float> c;
+                    if (m_structure->isBezierCubic()) {
+                        c = frac::utils::coordOfPointOnCubicCurveAt(static_cast<float>(k + 1) / static_cast<float>(n), static_cast<float>(currentBegin.x()), static_cast<float>(currentBegin.y()), static_cast<float>(coords[i][j + 1].x()), static_cast<float>(coords[i][j + 1].y()), static_cast<float>(coords[i][j + 2].x()), static_cast<float>(coords[i][j + 2].y()), static_cast<float>(nextBegin.x()), static_cast<float>(nextBegin.y()));
+                    } else {
+                        c = frac::utils::coordOfPointOnQuadCurveAt(static_cast<float>(k + 1) / static_cast<float>(n), static_cast<float>(currentBegin.x()), static_cast<float>(currentBegin.y()), static_cast<float>(coords[i][j + 1].x()), static_cast<float>(coords[i][j + 1].y()), static_cast<float>(nextBegin.x()), static_cast<float>(nextBegin.y()));
+                    }
                     QPointF begin { c.first, c.second };
                     //point from begin to central lacuna
                     QPointF end(begin + (QVector2D(center - begin).normalized() * (QVector2D(center - begin).length() - radius)).toPointF());
@@ -563,10 +610,10 @@ void SchemeWindow::drawSubdScheme(std::size_t i, std::vector<std::vector<QPointF
             case frac::AlgorithmSubdivision::LinksSurroundDelay:
                 j = 0;
                 for (frac::Edge const& e: f.constData()) {
-                    std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? 2 : 1;
+                    std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->isBezierCubic() ? 3 : 2) : 1;
                     if (e.isDelay()) {
                         QPointF begin = coords[i][j];
-                        QPointF end = coords[i][frac::utils::mod(j + nextStepJ, coords[i].size())];
+                        QPointF end = coords[i][(j + nextStepJ) % coords[i].size()];
                         QPointF endBeginLine(begin + (QVector2D(center - begin).normalized() * (QVector2D(center - begin).length() - radius)).toPointF());
                         QPointF endEndLine(end + (QVector2D(center - end).normalized() * (QVector2D(center - end).length() - radius)).toPointF());
                         m_scene.addLine(QLineF(begin, endBeginLine), SchemeWindow::penOfEdge(f.adjEdge()));
@@ -583,7 +630,7 @@ void SchemeWindow::drawSubdScheme(std::size_t i, std::vector<std::vector<QPointF
             case frac::AlgorithmSubdivision::LinksOnCorners:
                 j = 0;
                 for (frac::Edge const& e: f.constData()) {
-                    std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? 2 : 1;
+                    std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->isBezierCubic() ? 3 : 2) : 1;
                     QPointF begin = coords[i][j];
                     QPointF end(begin + (QVector2D(center - begin).normalized() * (QVector2D(center - begin).length() - radius)).toPointF());
                     m_scene.addLine(QLineF(begin, end), SchemeWindow::penOfEdge(f.adjEdge()));

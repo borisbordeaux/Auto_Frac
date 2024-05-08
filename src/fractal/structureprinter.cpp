@@ -91,7 +91,7 @@ void frac::StructurePrinter::exportStruct() {
 
     m_filePrinter.append_nl("    # control points");
     if (m_planarControlPoints) {
-        if (!m_coords.empty()) {
+        if (m_coords.empty()) {
             this->print_plan_control_points();
         } else {
             this->print_plan_coords_control_points();

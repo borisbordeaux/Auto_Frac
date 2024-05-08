@@ -69,20 +69,29 @@ std::vector<std::size_t> frac::Structure::controlPointIndices(std::size_t indexE
     std::vector<std::size_t> res = {};
     std::size_t current = 0;
     for (std::size_t i = 0; i < indexEdge; i++) {
-        current += m_faces[indexFace][i].edgeType() == EdgeType::BEZIER ? 2 : 1;
+        current += m_faces[indexFace][i].edgeType() == EdgeType::BEZIER ? (m_bezierCubic ? 3 : 2) : 1;
     }
     res.emplace_back(current);
     res.emplace_back((current + 1) % this->nbControlPointsOfFace(indexFace));
 
     if (m_faces[indexFace][indexEdge].edgeType() == EdgeType::BEZIER) {
         res.emplace_back((current + 2) % this->nbControlPointsOfFace(indexFace));
+        if (m_bezierCubic) {
+            res.emplace_back((current + 3) % this->nbControlPointsOfFace(indexFace));
+        }
     }
 
     if (reverse) {
-        // max 3 control points, so reverse is trivial
+        //reverse extremities
         std::size_t temp = res[0];
         res[0] = res[res.size() - 1];
         res[res.size() - 1] = temp;
+        if (m_bezierCubic) {
+            //reverse the 2 points in the middle
+            temp = res[1];
+            res[1] = res[2];
+            res[2] = temp;
+        }
     }
 
     return res;
@@ -92,7 +101,7 @@ bool frac::Structure::isInternControlPoint(std::size_t indexControlPoint, std::s
     bool res = indexControlPoint != 0;
     std::size_t current = 0;
     for (std::size_t i = 0; i < m_faces[indexFace].constData().size(); i++) {
-        current += m_faces[indexFace][i].edgeType() == EdgeType::BEZIER ? 2 : 1;
+        current += m_faces[indexFace][i].edgeType() == EdgeType::BEZIER ? (m_bezierCubic ? 3 : 2) : 1;
         if (current == indexControlPoint) {
             res = false;
         }
@@ -108,11 +117,19 @@ bool frac::Structure::isControlPointBelongEdge(std::size_t indexControlPoint, st
             if (current == indexControlPoint || current + 1 == indexControlPoint) {
                 res = true;
             }
-            if (m_faces[indexFace][i].edgeType() == EdgeType::BEZIER && current + 2 == indexControlPoint) {
-                res = true;
+            if (m_faces[indexFace][i].edgeType() == EdgeType::BEZIER) {
+                if (m_bezierCubic) {
+                    if (current + 2 == indexControlPoint || current + 3 == indexControlPoint) {
+                        res = true;
+                    }
+                } else {
+                    if (current + 2 == indexControlPoint) {
+                        res = true;
+                    }
+                }
             }
         }
-        current += m_faces[indexFace][i].edgeType() == EdgeType::BEZIER ? 2 : 1;
+        current += m_faces[indexFace][i].edgeType() == EdgeType::BEZIER ? (m_bezierCubic ? 3 : 2) : 1;
     }
     return res;
 }

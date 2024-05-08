@@ -99,12 +99,18 @@ inline std::vector<float> get_bezier_cubic_transformation(unsigned int i, unsign
     };
 }
 
-inline std::pair<float, float> coordOfPointOnQuadCurveAt(float t, float p0x, float p0y, float p1x, float p1y, float p2x, float p2y) {
-    return { (1.0f - t) * (1.0f - t) * p0x + 2.0f * t * (1.0f - t) * p1x + t * t * p2x, (1.0f - t) * (1.0f - t) * p0y + 2.0f * t * (1.0f - t) * p1y + t * t * p2y };
-}
-
 inline std::pair<float, float> coordOfPointOnLineAt(float t, float p0x, float p0y, float p1x, float p1y) {
     return { (1 - t) * p0x + t * p1x, (1 - t) * p0y + t * p1y };
+}
+
+inline std::pair<float, float> coordOfPointOnQuadCurveAt(float t, float p0x, float p0y, float p1x, float p1y, float p2x, float p2y) {
+    return { (1.0f - t) * (1.0f - t) * p0x + 2.0f * t * (1.0f - t) * p1x + t * t * p2x,
+             (1.0f - t) * (1.0f - t) * p0y + 2.0f * t * (1.0f - t) * p1y + t * t * p2y };
+}
+
+inline std::pair<float, float> coordOfPointOnCubicCurveAt(float t, float p0x, float p0y, float p1x, float p1y, float p2x, float p2y, float p3x, float p3y) {
+    return { (1.0f - t) * (1.0f - t) * (1.0f - t) * p0x + 3.0f * t * (1.0f - t) * (1.0f - t) * p1x + 3.0f * t * t * (1.0f - t) * p2x + t * t * t * p3x,
+             (1.0f - t) * (1.0f - t) * (1.0f - t) * p0y + 3.0f * t * (1.0f - t) * (1.0f - t) * p1y + 3.0f * t * t * (1.0f - t) * p2y + t * t * t * p3y, };
 }
 
 }
