@@ -548,61 +548,66 @@ void SchemeWindow::drawSubdScheme(std::size_t i, std::vector<std::vector<QPointF
 
     //then draw interior depending on the algorithm
     //there are some lines that are always here if face has no delay
-    if (f.delay() == 0) {
-        j = 0;
-        for (frac::Edge const& e: f.constData()) {
-            std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->isBezierCubic() ? 3 : 2) : 1;
-            QPointF nextBegin = coords[i][(j + nextStepJ) % coords[i].size()];
-            QPointF currentBegin = coords[i][j];
-            if (e.edgeType() == frac::EdgeType::BEZIER) {
-                //there is a line between each subdivision
-                unsigned int n = e.nbActualSubdivisions();
-                for (unsigned int k = 0; k < n - 1; k++) {
-                    std::pair<float, float> c;
-                    if (m_structure->isBezierCubic()) {
-                        c = frac::utils::coordOfPointOnCubicCurveAt(static_cast<float>(k + 1) / static_cast<float>(n), static_cast<float>(currentBegin.x()), static_cast<float>(currentBegin.y()), static_cast<float>(coords[i][j + 1].x()), static_cast<float>(coords[i][j + 1].y()), static_cast<float>(coords[i][j + 2].x()), static_cast<float>(coords[i][j + 2].y()), static_cast<float>(nextBegin.x()), static_cast<float>(nextBegin.y()));
-                    } else {
-                        c = frac::utils::coordOfPointOnQuadCurveAt(static_cast<float>(k + 1) / static_cast<float>(n), static_cast<float>(currentBegin.x()), static_cast<float>(currentBegin.y()), static_cast<float>(coords[i][j + 1].x()), static_cast<float>(coords[i][j + 1].y()), static_cast<float>(nextBegin.x()), static_cast<float>(nextBegin.y()));
-                    }
-                    QPointF begin { c.first, c.second };
-                    //point from begin to central lacuna
-                    QPointF end(begin + (QVector2D(center - begin).normalized() * (QVector2D(center - begin).length() - radius)).toPointF());
+    j = 0;
+    for (frac::Edge const& e: f.constData()) {
+        std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->isBezierCubic() ? 3 : 2) : 1;
+        QPointF nextBegin = coords[i][(j + nextStepJ) % coords[i].size()];
+        QPointF currentBegin = coords[i][j];
+        if (e.edgeType() == frac::EdgeType::BEZIER) {
+            //there is a line between each subdivision
+            unsigned int n = e.nbActualSubdivisions();
+            for (unsigned int k = 0; k < n - 1; k++) {
+                std::pair<float, float> c;
+                if (m_structure->isBezierCubic()) {
+                    c = frac::utils::coordOfPointOnCubicCurveAt(static_cast<float>(k + 1) / static_cast<float>(n), static_cast<float>(currentBegin.x()), static_cast<float>(currentBegin.y()), static_cast<float>(coords[i][j + 1].x()), static_cast<float>(coords[i][j + 1].y()), static_cast<float>(coords[i][j + 2].x()), static_cast<float>(coords[i][j + 2].y()), static_cast<float>(nextBegin.x()), static_cast<float>(nextBegin.y()));
+                } else {
+                    c = frac::utils::coordOfPointOnQuadCurveAt(static_cast<float>(k + 1) / static_cast<float>(n), static_cast<float>(currentBegin.x()), static_cast<float>(currentBegin.y()), static_cast<float>(coords[i][j + 1].x()), static_cast<float>(coords[i][j + 1].y()), static_cast<float>(nextBegin.x()), static_cast<float>(nextBegin.y()));
+                }
+                QPointF begin { c.first, c.second };
+                //point from begin to central lacuna
+                QPointF end(begin + (QVector2D(center - begin).normalized() * (QVector2D(center - begin).length() - radius)).toPointF());
+
+                if (f.delay() == 0) {
                     m_scene.addLine(QLineF(begin, end), SchemeWindow::penOfEdge(f.adjEdge()));
-
-                    points.emplace_back(begin);
-                    points.emplace_back(end);
                     pointsOnCentralLacuna.emplace_back(end);
-                }
-            } else { //CANTOR
-                //there is a line between each subdivision
-                unsigned int n = e.nbActualSubdivisions();
-                QVector2D v = QVector2D(nextBegin - currentBegin);
-                float length = v.length() / static_cast<float>(n + n - 1);
-                QVector2D normal(-v.y(), v.x()); //rotation 90°
-                normal.normalize();
-                for (unsigned int k = 1; k < n; k++) {
-                    std::pair<float, float> pb = frac::utils::coordOfPointOnLineAt(static_cast<float>(2 * k) / static_cast<float>(n + n - 1), static_cast<float>(currentBegin.x()), static_cast<float>(currentBegin.y()), static_cast<float>(nextBegin.x()), static_cast<float>(nextBegin.y()));
-                    QPointF begin { pb.first, pb.second };
-
-                    std::pair<float, float> peb = frac::utils::coordOfPointOnLineAt(static_cast<float>(2 * k - 1) / static_cast<float>(n + n - 1), static_cast<float>(currentBegin.x()), static_cast<float>(currentBegin.y()), static_cast<float>(nextBegin.x()), static_cast<float>(nextBegin.y()));
-                    QPointF endBefore { peb.first, peb.second };
-
-                    QPointF centerLine = (begin + endBefore) * 0.5f;
-
-                    std::pair<float, float> pbl = frac::utils::coordOfPointOnQuadCurveAt(0.5, static_cast<float>(endBefore.x()), static_cast<float>(endBefore.y()), static_cast<float>((centerLine + (normal * length).toPointF()).x()), static_cast<float>((centerLine + (normal * length).toPointF()).y()), static_cast<float>(begin.x()), static_cast<float>(begin.y()));
-                    QPointF beginLine { pbl.first, pbl.second };
-
-                    QPointF end(beginLine + (QVector2D(center - beginLine).normalized() * (QVector2D(center - beginLine).length() - radius)).toPointF());
-                    m_scene.addLine(QLineF(beginLine, end), SchemeWindow::penOfEdge(f.adjEdge()));
-
-                    points.emplace_back(beginLine);
                     points.emplace_back(end);
-                    pointsOnCentralLacuna.emplace_back(end);
                 }
+
+                points.emplace_back(begin);
             }
-            j += nextStepJ;
-        }
+        } else { //CANTOR
+            //there is a line between each subdivision
+            unsigned int n = e.nbActualSubdivisions();
+            QVector2D v = QVector2D(nextBegin - currentBegin);
+            float length = v.length() / static_cast<float>(n + n - 1);
+            QVector2D normal(-v.y(), v.x()); //rotation 90°
+            normal.normalize();
+            for (unsigned int k = 1; k < n; k++) {
+                std::pair<float, float> pb = frac::utils::coordOfPointOnLineAt(static_cast<float>(2 * k) / static_cast<float>(n + n - 1), static_cast<float>(currentBegin.x()), static_cast<float>(currentBegin.y()), static_cast<float>(nextBegin.x()), static_cast<float>(nextBegin.y()));
+                QPointF begin { pb.first, pb.second };
 
+                std::pair<float, float> peb = frac::utils::coordOfPointOnLineAt(static_cast<float>(2 * k - 1) / static_cast<float>(n + n - 1), static_cast<float>(currentBegin.x()), static_cast<float>(currentBegin.y()), static_cast<float>(nextBegin.x()), static_cast<float>(nextBegin.y()));
+                QPointF endBefore { peb.first, peb.second };
+
+                QPointF centerLine = (begin + endBefore) * 0.5f;
+
+                std::pair<float, float> pbl = frac::utils::coordOfPointOnQuadCurveAt(0.5, static_cast<float>(endBefore.x()), static_cast<float>(endBefore.y()), static_cast<float>((centerLine + (normal * length).toPointF()).x()), static_cast<float>((centerLine + (normal * length).toPointF()).y()), static_cast<float>(begin.x()), static_cast<float>(begin.y()));
+                QPointF beginLine { pbl.first, pbl.second };
+
+                QPointF end(beginLine + (QVector2D(center - beginLine).normalized() * (QVector2D(center - beginLine).length() - radius)).toPointF());
+
+                if (f.delay() == 0) {
+                    m_scene.addLine(QLineF(beginLine, end), SchemeWindow::penOfEdge(f.adjEdge()));
+                    points.emplace_back(end);
+                    pointsOnCentralLacuna.emplace_back(end);
+                }
+                points.emplace_back(beginLine);
+            }
+        }
+        j += nextStepJ;
+    }
+
+    if (f.delay() == 0) {
         //then some lines are added depending on the algorithm of the face
         switch (f.algo()) {
             case frac::AlgorithmSubdivision::LinksSurroundDelay:
