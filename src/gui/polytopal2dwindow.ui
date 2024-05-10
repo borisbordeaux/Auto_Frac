@@ -468,13 +468,6 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="6">
-      <widget class="QCheckBox" name="checkBox_projectCircles">
-       <property name="text">
-        <string>Project</string>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="14" rowspan="2">
       <spacer name="horizontalSpacer_11">
        <property name="orientation">
@@ -535,13 +528,6 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="4">
-      <widget class="QPushButton" name="pushButton_DisplayCircles">
-       <property name="text">
-        <string>Display Circles</string>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="8">
       <widget class="QComboBox" name="comboBox_RotationType">
        <item>
@@ -573,13 +559,6 @@
        </property>
        <property name="text">
         <string>+</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="5">
-      <widget class="QPushButton" name="pushButton">
-       <property name="text">
-        <string>Display Dual Circles</string>
        </property>
       </widget>
      </item>
@@ -638,6 +617,9 @@
        <property name="text">
         <string>Sphere</string>
        </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
      <item row="0" column="11">
@@ -661,6 +643,50 @@
        </property>
       </widget>
      </item>
+     <item row="1" column="4">
+      <widget class="QSlider" name="horizontalSlider_precision">
+       <property name="minimum">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <number>16</number>
+       </property>
+       <property name="value">
+        <number>6</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="8">
+      <widget class="QCheckBox" name="checkBox_projectCircles">
+       <property name="text">
+        <string>Project</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="7">
+      <widget class="QPushButton" name="pushButton_displayCirclesDual">
+       <property name="text">
+        <string>Display Dual Circles</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="6">
+      <widget class="QPushButton" name="pushButton_displayCircles">
+       <property name="text">
+        <string>Display Circles</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="5">
+      <widget class="QLabel" name="label_precision">
+       <property name="text">
+        <string>1e-6</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
   </layout>
@@ -674,8 +700,8 @@
    <slot>slotIncreaseInversion()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>190</x>
-     <y>507</y>
+     <x>254</x>
+     <y>673</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -690,8 +716,8 @@
    <slot>slotDecreaseInversion()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>236</x>
-     <y>507</y>
+     <x>300</x>
+     <y>673</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -706,8 +732,8 @@
    <slot>slotProjectCirclesClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>308</x>
-     <y>506</y>
+     <x>1017</x>
+     <y>672</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -716,14 +742,14 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_DisplayCircles</sender>
+   <sender>pushButton_displayCircles</sender>
    <signal>clicked()</signal>
    <receiver>Polytopal2DWindow</receiver>
    <slot>slotDisplayAreaCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>403</x>
-     <y>507</y>
+     <x>785</x>
+     <y>673</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -738,8 +764,8 @@
    <slot>slotDisplayUnitSphereChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>598</x>
-     <y>506</y>
+     <x>1428</x>
+     <y>337</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -754,8 +780,8 @@
    <slot>slotDisplayMeshClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>660</x>
-     <y>506</y>
+     <x>1541</x>
+     <y>337</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -770,8 +796,8 @@
    <slot>slotCanonizeMesh()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>746</x>
-     <y>507</y>
+     <x>388</x>
+     <y>673</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -786,8 +812,8 @@
    <slot>slotOpenOBJFile()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>832</x>
-     <y>507</y>
+     <x>388</x>
+     <y>338</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -802,8 +828,8 @@
    <slot>slotExportOBJ()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>918</x>
-     <y>507</y>
+     <x>592</x>
+     <y>338</y>
     </hint>
     <hint type="destinationlabel">
      <x>1</x>
@@ -818,8 +844,8 @@
    <slot>slotExportAllFaces()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1004</x>
-     <y>507</y>
+     <x>1211</x>
+     <y>338</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -834,8 +860,8 @@
    <slot>slotExportSelectedFace()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1106</x>
-     <y>507</y>
+     <x>1125</x>
+     <y>338</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -850,8 +876,8 @@
    <slot>slotTypeSelectionChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1448</x>
-     <y>507</y>
+     <x>785</x>
+     <y>338</y>
     </hint>
     <hint type="destinationlabel">
      <x>1551</x>
@@ -866,8 +892,8 @@
    <slot>slotTypeRotationChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1564</x>
-     <y>500</y>
+     <x>1017</x>
+     <y>338</y>
     </hint>
     <hint type="destinationlabel">
      <x>1550</x>
@@ -882,8 +908,8 @@
    <slot>slotStartVideoAnimation()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1704</x>
-     <y>499</y>
+     <x>1541</x>
+     <y>673</y>
     </hint>
     <hint type="destinationlabel">
      <x>1553</x>
@@ -898,8 +924,8 @@
    <slot>slotAnimationRotation()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>83</x>
-     <y>498</y>
+     <x>1399</x>
+     <y>673</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -908,18 +934,34 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton</sender>
+   <sender>pushButton_displayCirclesDual</sender>
    <signal>clicked()</signal>
    <receiver>Polytopal2DWindow</receiver>
    <slot>slotDisplayDualAreaCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>452</x>
-     <y>489</y>
+     <x>914</x>
+     <y>673</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
      <y>408</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSlider_precision</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>Polytopal2DWindow</receiver>
+   <slot>slotUpdateLabelPrecision(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>446</x>
+     <y>660</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>2</x>
+     <y>757</y>
     </hint>
    </hints>
   </connection>
@@ -941,5 +983,6 @@
   <slot>slotStartVideoAnimation()</slot>
   <slot>slotAnimationRotation()</slot>
   <slot>slotDisplayDualAreaCircles()</slot>
+  <slot>slotUpdateLabelPrecision(int)</slot>
  </slots>
 </ui>

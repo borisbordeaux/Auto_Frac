@@ -3,6 +3,7 @@
 
 #include <QStatusBar>
 #include <QFileDialog>
+#include <QProgressBar>
 #include "gui/glview.h"
 #include "halfedge/objreader.h"
 #include "halfedge/objwriter.h"
@@ -29,6 +30,15 @@ Polytopal2DWindow::Polytopal2DWindow(QWidget* parent) :
     connect(&m_timerCanonicalize, &QTimer::timeout, this, &Polytopal2DWindow::canonicalizeStep);
     connect(&m_timerAnimProject, &QTimer::timeout, this, &Polytopal2DWindow::animProjectStep);
     connect(&m_timerAnimInversion, &QTimer::timeout, this, &Polytopal2DWindow::animInversionStep);
+
+    he::reader::readOBJ("../obj/unit_sphere.obj", m_sphereMesh);
+    m_modelMesh.setSphereMesh(&m_sphereMesh);
+    m_view->updateDataSphere();
+    m_view->updateDataVertices(); //for projection point
+
+    m_progressBar = new QProgressBar();
+    m_progressBar->setRange(0, 100);
+    m_statusBar->insertPermanentWidget(0, m_progressBar);
 }
 
 Polytopal2DWindow::~Polytopal2DWindow() {
@@ -37,6 +47,10 @@ Polytopal2DWindow::~Polytopal2DWindow() {
 
 void Polytopal2DWindow::setInfo(const std::string& textInfo, int timeoutMs) {
     m_statusBar->showMessage(textInfo.c_str(), timeoutMs);
+}
+
+void Polytopal2DWindow::setInfoAdvancement(int percent) {
+    m_progressBar->setValue(percent);
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotOpenOBJFile() {
@@ -58,6 +72,7 @@ void Polytopal2DWindow::setInfo(const std::string& textInfo, int timeoutMs) {
         m_view->updateData();
         m_view->update();
         m_openedMesh = true;
+        m_canonicalized = false;
         this->updateEnablementPoly();
     }
 }
@@ -101,9 +116,6 @@ void Polytopal2DWindow::setInfo(const std::string& textInfo, int timeoutMs) {
 
 [[maybe_unused]] void Polytopal2DWindow::slotDisplayUnitSphereChanged() {
     if (m_modelMesh.sphereMesh() == nullptr) {
-        if (m_sphereMesh.vertices().empty()) {
-            he::reader::readOBJ("../obj/unit_sphere.obj", m_sphereMesh);
-        }
         m_modelMesh.setSphereMesh(&m_sphereMesh);
     } else {
         m_modelMesh.setSphereMesh(nullptr);
@@ -114,19 +126,51 @@ void Polytopal2DWindow::setInfo(const std::string& textInfo, int timeoutMs) {
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotCanonizeMesh() {
-    if (!m_mesh.vertices().empty()) {
+    if (!m_mesh.vertices().empty() && m_step == 0) {
+        m_mesh.updateDoublePosFromFloatPos();
         poly::setMeshToOrigin(m_mesh);
         m_timerCanonicalize.start(0);
     }
 }
 
 void Polytopal2DWindow::canonicalizeStep() {
-    std::vector<QVector3D> oldPos;
-    for (auto const& v: m_mesh.vertices()) {
-        oldPos.push_back(v->pos());
+    std::vector<he::Point3D> oldPos;
+    for (he::Vertex const* v: m_mesh.vertices()) {
+        oldPos.push_back(v->posD());
     }
 
     poly::canonicalizeMesh(m_mesh);
+
+    //compute the difference of positions for the point that moved the more
+    double maxError = -1.0;
+    for (size_t i = 0; i < m_mesh.vertices().size(); i++) {
+        double error = (m_mesh.vertices()[i]->posD() - oldPos[i]).length();
+        if (error > maxError) {
+            maxError = error;
+        }
+    }
+    double threshold = std::pow(10.0, -this->ui->horizontalSlider_precision->value());
+    if (maxError < threshold) {
+        this->setInfo("Stopped at error of " + QString::number(maxError, 'g', 3).toStdString());
+        //qDebug() << "Step" << m_step << ":" << QString::number(maxError, 'g', 16);
+        m_canonicalized = true;
+        m_timerCanonicalize.stop();
+        m_progressBar->reset();
+        m_step = 0;
+    } else {
+        if (m_firstError < 0.) {
+            m_firstError = maxError;
+        }
+
+        double dist = std::log(m_firstError) - std::log(threshold);
+        double percent = 100.0 - 100.0 * (std::log(maxError) - std::log(threshold)) / dist;
+
+        this->setInfoAdvancement(static_cast<int>(percent));
+        this->setInfo("Error of " + QString::number(maxError, 'g', 3).toStdString());
+        //qDebug() << "Step" << m_step << ":" << QString::number(maxError, 'g', 16);
+        m_step++;
+    }
+
     m_modelMesh.updateDataFaces();
     m_modelMesh.updateDataEdge();
     m_modelMesh.updateDataVertices();
@@ -134,20 +178,6 @@ void Polytopal2DWindow::canonicalizeStep() {
     m_view->updateDataEdge();
     m_view->updateDataVertices();
     m_view->update();
-
-    float maxError = -1.0f;
-    for (size_t i = 0; i < m_mesh.vertices().size(); i++) {
-        float error = (m_mesh.vertices()[i]->pos() - oldPos[i]).length();
-        if (error > maxError) {
-            maxError = error;
-        }
-    }
-    if (maxError < 0.000001f) {
-        this->setInfo("Stopped at error of " + std::to_string(maxError));
-        m_timerCanonicalize.stop();
-    } else {
-        this->setInfo("Error of " + std::to_string(maxError));
-    }
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotDisplayAreaCircles() {
@@ -526,7 +556,7 @@ void Polytopal2DWindow::increaseInversion() {
     if (!m_mesh.vertices().empty()) {
         QString file = QFileDialog::getSaveFileName(this, "Choose an OBJ File...", "../obj", "OBJ Files (*.obj)");
         if (file != "") {
-            he::writer::writeOBJ(file, m_mesh);
+            he::writer::writeOBJ(file, m_mesh, m_canonicalized);
         }
     }
 }
@@ -534,6 +564,9 @@ void Polytopal2DWindow::increaseInversion() {
 void Polytopal2DWindow::updateEnablementPoly() {
     this->ui->pushButton_ExportAll->setEnabled(m_openedMesh);
     this->ui->pushButton_ExportSelectedFace->setEnabled(m_openedMesh);
+    this->ui->pushButton_canonizeMesh->setEnabled(m_openedMesh);
+    this->ui->pushButton_displayCircles->setEnabled(m_openedMesh);
+    this->ui->pushButton_displayCirclesDual->setEnabled(m_openedMesh);
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotTypeSelectionChanged(int index) {
@@ -571,4 +604,9 @@ void Polytopal2DWindow::updateEnablementPoly() {
 
 [[maybe_unused]] void Polytopal2DWindow::slotAnimationRotation() {
     m_view->rotationAnimation();
+}
+
+[[maybe_unused]] void Polytopal2DWindow::slotUpdateLabelPrecision(int value) {
+    double valD = std::pow(10.0, -value);
+    this->ui->label_precision->setText(QString::number(valD, 'e', 0));
 }

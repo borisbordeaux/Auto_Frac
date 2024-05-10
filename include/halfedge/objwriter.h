@@ -9,7 +9,7 @@ class Mesh;
 
 namespace he::writer {
 
-void writeOBJ(QString const& filename, he::Mesh const& mesh);
+void writeOBJ(QString const& filename, he::Mesh const& mesh, bool usePreciseCoords = false);
 
 } // he::reader
 

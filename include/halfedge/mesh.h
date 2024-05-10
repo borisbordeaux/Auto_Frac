@@ -34,6 +34,9 @@ public:
 
     std::optional<std::size_t> indexOf(he::Vertex* v) const;
 
+    void updateFloatPosFromDoublePos();
+    void updateDoublePosFromFloatPos();
+
 private:
     std::vector<he::Vertex*> m_vertices;
     std::vector<he::HalfEdge*> m_halfEdges;

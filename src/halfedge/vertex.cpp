@@ -5,7 +5,7 @@
 
 
 he::Vertex::Vertex(float x, float y, float z, QString name) :
-        m_pos(x, y, z), m_halfEdge(nullptr), m_name(std::move(name)) {
+        m_pos(x, y, z), m_posD(static_cast<qreal>(x), static_cast<qreal>(y), static_cast<qreal>(z)), m_halfEdge(nullptr), m_name(std::move(name)) {
 
 }
 
@@ -15,6 +15,14 @@ QVector3D he::Vertex::pos() const {
 
 void he::Vertex::setPos(QVector3D const& pos) {
     m_pos = pos;
+}
+
+he::Point3D he::Vertex::posD() const {
+    return m_posD;
+}
+
+void he::Vertex::setPosD(he::Point3D const& posD) {
+    m_posD = posD;
 }
 
 he::HalfEdge* he::Vertex::halfEdge() {

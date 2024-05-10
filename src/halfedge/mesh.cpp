@@ -118,3 +118,15 @@ std::optional<std::size_t> he::Mesh::indexOf(he::Vertex* v) const {
     }
     return {};
 }
+
+void he::Mesh::updateFloatPosFromDoublePos() {
+    for (he::Vertex* v: m_vertices) {
+        v->setPos(v->posD().toQVector3D());
+    }
+}
+
+void he::Mesh::updateDoublePosFromFloatPos() {
+    for (he::Vertex* v: m_vertices) {
+        v->setPosD({ static_cast<double>(v->pos().x()), static_cast<double>(v->pos().y()), static_cast<double>(v->pos().z()) });
+    }
+}

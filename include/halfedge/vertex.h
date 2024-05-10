@@ -4,12 +4,14 @@
 #include <QString>
 #include <QVector>
 #include <QVector3D>
+#include "point3d.h"
 
 namespace he {
 
 class HalfEdge;
 
 class Face;
+
 
 class Vertex {
 public:
@@ -32,6 +34,18 @@ public:
      * @param pos the new position of the vertex
      */
     void setPos(QVector3D const& pos);
+
+    /**
+     * @brief getter
+     * @return the precise position of this vertex
+     */
+    [[nodiscard]] Point3D posD() const;
+
+    /**
+     * setter
+     * @param posD the new precise position of the vertex
+     */
+    void setPosD(Point3D const& posD);
 
     /**
      * @brief getter
@@ -58,10 +72,11 @@ public:
     void addHalfEdge(he::HalfEdge* halfEdge);
     QVector<he::HalfEdge*>& otherHalfEdges();
 
-
 private:
     //coordinates of this vertex
     QVector3D m_pos;
+    //more precise coordinates of the vertex
+    he::Point3D m_posD;
     //a half-edge from which this point is the origin
     he::HalfEdge* m_halfEdge;
     //all other half-edges from which this point is the origin

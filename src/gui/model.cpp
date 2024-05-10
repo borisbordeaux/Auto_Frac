@@ -474,6 +474,7 @@ void Model::transformMesh(QMatrix4x4 const& transform) {
     for (he::Vertex* v: m_mesh->vertices()) {
         v->setPos((transform * v->pos().toVector4D()).toVector3D());
     }
+    m_mesh->updateDoublePosFromFloatPos();
     this->updateDataFaces();
     this->updateDataEdge();
     this->updateDataVertices();

@@ -10,45 +10,54 @@
 
 namespace {
 
+he::Point3D closestPoint(he::Point3D const& p1, he::Point3D const& p2) {
+    he::Point3D u = p2 - p1;
+    u.normalize();
+    he::Point3D ba = -p1;
+
+    he::Point3D BH = u * he::Point3D::dotProduct(ba, u);
+    return p1 + BH;
+}
+
 QVector3D closestPoint(QVector3D const& p1, QVector3D const& p2) {
     QVector3D u = p2 - p1;
     u.normalize();
     QVector3D ba = -p1;
 
-    QVector3D BH = (QVector3D::dotProduct(ba, u)) * u;
+    QVector3D BH = u * QVector3D::dotProduct(ba, u);
     return p1 + BH;
 }
 
-QVector3D barycenter(std::vector<QVector3D> const& positions) {
-    QVector3D res { 0, 0, 0 };
-    for (QVector3D const& p: positions) {
+he::Point3D barycenter(std::vector<he::Point3D> const& positions) {
+    he::Point3D res { 0, 0, 0 };
+    for (he::Point3D const& p: positions) {
         res += p;
     }
-    res /= static_cast<float>(positions.size());
+    res /= static_cast<double>(positions.size());
     return res;
 }
 
-QVector3D barycenter(std::vector<he::Vertex*> const& positions) {
-    QVector3D res { 0, 0, 0 };
+he::Point3D barycenter(std::vector<he::Vertex*> const& positions) {
+    he::Point3D res { 0, 0, 0 };
     for (he::Vertex* v: positions) {
-        res += v->pos();
+        res += v->posD();
     }
-    res /= static_cast<float>(positions.size());
+    res /= static_cast<double>(positions.size());
     return res;
 }
 
-QVector3D approxNormal(std::vector<he::Vertex*> const& vertices) {
-    QVector3D n { 0, 0, 0 };
+he::Point3D approxNormal(std::vector<he::Vertex*> const& vertices) {
+    he::Point3D n { 0, 0, 0 };
     int s = static_cast<int>(vertices.size());
     for (int i = 0; i < s; i++) {
-        QVector3D cur = vertices[i]->pos();
-        QVector3D nxt = vertices[frac::utils::mod(i + 1, s)]->pos();
-        QVector3D prv = vertices[frac::utils::mod(i - 1, s)]->pos();
-        QVector3D x = nxt - cur;
-        QVector3D y = prv - cur;
-        n += QVector3D::crossProduct(x, y);
+        he::Point3D cur = vertices[i]->posD();
+        he::Point3D nxt = vertices[frac::utils::mod(i + 1, s)]->posD();
+        he::Point3D prv = vertices[frac::utils::mod(i - 1, s)]->posD();
+        he::Point3D x = nxt - cur;
+        he::Point3D y = prv - cur;
+        n += he::Point3D::crossProduct(x, y);
     }
-    n /= static_cast<float>(s);
+    n /= static_cast<double>(s);
     return n;
 }
 
@@ -62,47 +71,49 @@ void planarize(he::Face* f) {
     } while (heNxt != he);
     if (vertices.size() > 3) {
         //point the plan pass through
-        QVector3D A = barycenter(vertices);
+        he::Point3D A = barycenter(vertices);
         //approx normal of the plan
-        QVector3D n = approxNormal(vertices);
+        he::Point3D n = approxNormal(vertices);
         //plan equation
-        float a = n.x();
-        float b = n.y();
-        float c = n.z();
-        float d = -n.x() * A.x() - n.y() * A.y() - n.z() * A.z();
+        double a = n.x();
+        double b = n.y();
+        double c = n.z();
+        double d = -n.x() * A.x() - n.y() * A.y() - n.z() * A.z();
         //projection of all points on the plan
         for (he::Vertex* v: vertices) {
-            float lambda = (a * v->pos().x() + b * v->pos().y() + c * v->pos().z() + d) / (a * a + b * b + c * c);
-            v->setPos(v->pos() - lambda * n * 0.2f);
+            double lambda = (a * v->posD().x() + b * v->posD().y() + c * v->posD().z() + d) / (a * a + b * b + c * c);
+            v->setPosD(v->posD() - n * lambda * 0.2);
         }
     }
 }
 
 void planarize(he::Mesh& m) {
     for (he::Face* f: m.faces()) {
-        planarize(f);
+        if (f->nbEdges() > 3) {
+            planarize(f);
+        }
     }
 }
 
 void tangentify(he::Mesh& m) {
     std::vector<he::HalfEdge*> alreadyTreated;
-    QHash<he::Vertex*, QVector3D> transforms;
+    QHash<he::Vertex*, he::Point3D> transforms;
 
     for (he::HalfEdge* he: m.halfEdges()) {
         if (std::find(alreadyTreated.begin(), alreadyTreated.end(), he) == alreadyTreated.end()) {
             he::Vertex* p1 = he->origin();
             he::Vertex* p2 = he->next()->origin();
-            QVector3D closest = closestPoint(p1->pos(), p2->pos());
+            he::Point3D closest = closestPoint(p1->posD(), p2->posD());
 
             // difference between the closest point and the sphere
-            float l = 1.0f - closest.length();
-            QVector3D c = closest * l * 0.3f;
+            double l = 1.0 - closest.length();
+            he::Point3D c = closest * l * 0.3;
 
             if (!transforms.contains(p1)) {
-                transforms[p1] = p1->pos();
+                transforms[p1] = p1->posD();
             }
             if (!transforms.contains(p2)) {
-                transforms[p2] = p2->pos();
+                transforms[p2] = p2->posD();
             }
 
             transforms[p1] = transforms[p1] + c;
@@ -112,23 +123,23 @@ void tangentify(he::Mesh& m) {
         }
     }
 
-    for (std::pair<he::Vertex*, QVector3D> p: transforms.asKeyValueRange()) {
-        p.first->setPos(p.second);
+    for (std::pair<he::Vertex*, he::Point3D> p: transforms.asKeyValueRange()) {
+        p.first->setPosD(p.second);
     }
 }
 
 void recenter(he::Mesh& m) {
     std::vector<he::HalfEdge*> alreadyTreated;
-    std::vector<QVector3D> positions;
+    std::vector<he::Point3D> positions;
     for (he::HalfEdge* he: m.halfEdges()) {
         if (std::find(alreadyTreated.begin(), alreadyTreated.end(), he) == alreadyTreated.end()) {
-            positions.push_back(closestPoint(he->origin()->pos(), he->next()->origin()->pos()));
+            positions.push_back(closestPoint(he->origin()->posD(), he->next()->origin()->posD()));
             alreadyTreated.push_back(he->twin());
         }
     }
-    QVector3D bary = barycenter(positions);
+    he::Point3D bary = barycenter(positions);
     for (he::Vertex* v: m.vertices()) {
-        v->setPos(v->pos() - bary);
+        v->setPosD(v->posD() - bary);
     }
 }
 
@@ -161,16 +172,16 @@ QColor colors[16] = {
 
 
 void poly::setMeshToOrigin(he::Mesh& m) {
-    std::vector<QVector3D> positions;
+    std::vector<he::Point3D> positions;
 
     for (he::Vertex* v: m.vertices()) {
-        positions.push_back(v->pos());
+        positions.push_back(v->posD());
     }
 
-    QVector3D bary = barycenter(positions);
+    he::Point3D bary = barycenter(positions);
 
     for (he::Vertex* v: m.vertices()) {
-        v->setPos(v->pos() - bary);
+        v->setPosD(v->posD() - bary);
     }
 }
 
@@ -178,6 +189,7 @@ void poly::canonicalizeMesh(he::Mesh& m) {
     tangentify(m);
     recenter(m);
     planarize(m);
+    m.updateFloatPosFromDoublePos();
 }
 
 std::vector<poly::Circle> poly::computeIlluminatedCircles(const he::Mesh& m) {

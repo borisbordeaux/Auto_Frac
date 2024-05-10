@@ -7,6 +7,7 @@
 #include "model.h"
 
 class QStatusBar;
+class QProgressBar;
 class GLView;
 
 QT_BEGIN_NAMESPACE
@@ -47,10 +48,12 @@ public slots:
     [[maybe_unused]] void slotTypeRotationChanged(int index);
     [[maybe_unused]] void slotStartVideoAnimation();
     [[maybe_unused]] void slotAnimationRotation();
+    [[maybe_unused]] void slotUpdateLabelPrecision(int value);
 
 private:
     void updateEnablementPoly();
     void setInfo(std::string const& textInfo, int timeoutMs = 2000);
+    void setInfoAdvancement(int percent);
 
 private:
     Ui::Polytopal2DWindow* ui;
@@ -75,6 +78,13 @@ private:
     QTimer m_timerAnimInversion;
     float m_tAnimInversion = 0.0f;
     std::size_t m_nbInversions = 0;
+
+    double m_firstError = -1.0;
+
+    QProgressBar* m_progressBar = nullptr;
+
+    bool m_canonicalized = false;
+    int m_step = 0;
 };
 
 

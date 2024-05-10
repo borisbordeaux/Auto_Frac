@@ -6,7 +6,7 @@
 #include "halfedge/face.h"
 #include "halfedge/halfedge.h"
 
-void he::writer::writeOBJ(QString const& filename, he::Mesh const& mesh) {
+void he::writer::writeOBJ(QString const& filename, he::Mesh const& mesh, bool usePreciseCoords) {
     QFile file(filename);
 
     //open the file
@@ -15,8 +15,13 @@ void he::writer::writeOBJ(QString const& filename, he::Mesh const& mesh) {
         QTextStream stream(&file);
 
         for (he::Vertex* v: mesh.vertices()) {
-            QVector3D pos = v->pos();
-            stream << "v " << pos.x() << " " << pos.y() << " " << pos.z() << Qt::endl;
+            if (usePreciseCoords) {
+                he::Point3D pos = v->posD();
+                stream << "v " << QString::number(pos.x(), 'g', 16) << " " << QString::number(pos.y(), 'g', 16) << " " << QString::number(pos.z(), 'g', 16) << Qt::endl;
+            } else {
+                QVector3D pos = v->pos();
+                stream << "v " << QString::number(pos.x()) << " " << QString::number(pos.y()) << " " << QString::number(pos.z()) << Qt::endl;
+            }
         }
 
         for (he::Face* f: mesh.faces()) {
