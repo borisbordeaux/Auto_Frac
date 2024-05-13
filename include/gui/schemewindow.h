@@ -7,6 +7,7 @@
 
 namespace frac {
 class Structure;
+
 class Edge;
 }
 
@@ -32,6 +33,9 @@ public:
     void setStruct(std::unique_ptr<frac::Structure> structure);
 
     void translateFaceOf(std::size_t indexFace, QPointF translation);
+    void translateStructOf(QPointF translation);
+
+    void scaleStructBy(float scale);
 
 public slots:
     void valid();

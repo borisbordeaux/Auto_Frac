@@ -238,7 +238,8 @@ void SchemeWindow::redraw(bool useTempCoordinates) {
         } else {
             this->drawSubdScheme(i, coords);
         }
-
+    }
+    for (std::size_t i = 0; i < coords.size(); i++) {
         if (this->ui->checkBox_controlPoints->isChecked()) {
             this->drawControlPoints(i, coords);
         }
@@ -702,6 +703,26 @@ void SchemeWindow::translateFaceOf(std::size_t indexFace, QPointF translation) {
     this->redraw(true);
 }
 
+void SchemeWindow::translateStructOf(QPointF translation) {
+    for (std::vector<QPointF>& face: m_coordinatesTemp) {
+        for (QPointF& point: face) {
+            point.setX(point.x() + translation.x());
+            point.setY(point.y() + translation.y());
+        }
+    }
+    this->redraw(true);
+}
+
+void SchemeWindow::scaleStructBy(float scale) {
+    for (std::vector<QPointF>& face: m_coordinatesTemp) {
+        for (QPointF& point: face) {
+            point.setX(point.x() * scale);
+            point.setY(point.y() * scale);
+        }
+    }
+    this->redraw(true);
+}
+
 QPen SchemeWindow::penOfEdge(frac::Edge const& e) {
     QPen pen;
     pen.setJoinStyle(Qt::RoundJoin);
@@ -717,3 +738,5 @@ QPen SchemeWindow::penOfEdge(frac::Edge const& e) {
     pen.setWidth(3);
     return pen;
 }
+
+

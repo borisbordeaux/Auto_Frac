@@ -149,7 +149,7 @@ AutoSub2DWindow::~AutoSub2DWindow() {
 }
 
 [[maybe_unused]] void AutoSub2DWindow::slotOnFaceAdjTopologyChanged(int row) {
-    if (this->ui->listWidget_faces->currentItem() == nullptr) return;
+    if (this->ui->listWidget_faces->currentItem() == nullptr) { return; }
     frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     frac::Edge e { row == 0 ? frac::EdgeType::CANTOR : frac::EdgeType::BEZIER, f.adjEdge().nbSubdivisions(), f.adjEdge().delay() };
     f.setAdjEdge(e);
@@ -157,7 +157,7 @@ AutoSub2DWindow::~AutoSub2DWindow() {
 }
 
 [[maybe_unused]] void AutoSub2DWindow::slotOnFaceAdjNbSubdivisionsChanged(int value) {
-    if (this->ui->listWidget_faces->currentItem() == nullptr) return;
+    if (this->ui->listWidget_faces->currentItem() == nullptr) { return; }
     frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     frac::Edge e { f.adjEdge().edgeType(), static_cast<unsigned int>(value), f.adjEdge().delay() };
     f.setAdjEdge(e);
@@ -165,7 +165,7 @@ AutoSub2DWindow::~AutoSub2DWindow() {
 }
 
 [[maybe_unused]] void AutoSub2DWindow::slotOnFaceAdjDelayChanged(int value) {
-    if (this->ui->listWidget_faces->currentItem() == nullptr) return;
+    if (this->ui->listWidget_faces->currentItem() == nullptr) { return; }
     frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     frac::Edge e { f.adjEdge().edgeType(), f.adjEdge().nbSubdivisions(), static_cast<unsigned int>(value) };
     f.setAdjEdge(e);
@@ -173,7 +173,7 @@ AutoSub2DWindow::~AutoSub2DWindow() {
 }
 
 [[maybe_unused]] void AutoSub2DWindow::slotOnFaceGapTopologyChanged(int row) {
-    if (this->ui->listWidget_faces->currentItem() == nullptr) return;
+    if (this->ui->listWidget_faces->currentItem() == nullptr) { return; }
     frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     frac::Edge e { row == 0 ? frac::EdgeType::CANTOR : frac::EdgeType::BEZIER, f.gapEdge().nbSubdivisions(), f.gapEdge().delay() };
     f.setGapEdge(e);
@@ -181,7 +181,7 @@ AutoSub2DWindow::~AutoSub2DWindow() {
 }
 
 [[maybe_unused]] void AutoSub2DWindow::slotOnFaceGapNbSubdivisionsChanged(int value) {
-    if (this->ui->listWidget_faces->currentItem() == nullptr) return;
+    if (this->ui->listWidget_faces->currentItem() == nullptr) { return; }
     frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     frac::Edge e { f.gapEdge().edgeType(), static_cast<unsigned int>(value), f.gapEdge().delay() };
     f.setGapEdge(e);
@@ -189,7 +189,7 @@ AutoSub2DWindow::~AutoSub2DWindow() {
 }
 
 [[maybe_unused]] void AutoSub2DWindow::slotOnFaceGapDelayChanged(int value) {
-    if (this->ui->listWidget_faces->currentItem() == nullptr) return;
+    if (this->ui->listWidget_faces->currentItem() == nullptr) { return; }
     frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     frac::Edge e { f.gapEdge().edgeType(), f.gapEdge().nbSubdivisions(), static_cast<unsigned int>(value) };
     f.setGapEdge(e);
@@ -197,7 +197,7 @@ AutoSub2DWindow::~AutoSub2DWindow() {
 }
 
 [[maybe_unused]] void AutoSub2DWindow::slotOnFaceReqTopologyChanged(int row) {
-    if (this->ui->listWidget_faces->currentItem() == nullptr) return;
+    if (this->ui->listWidget_faces->currentItem() == nullptr) { return; }
     frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     frac::Edge e { row == 0 ? frac::EdgeType::CANTOR : frac::EdgeType::BEZIER, f.reqEdge().nbSubdivisions(), f.reqEdge().delay() };
     f.setReqEdge(e);
@@ -205,7 +205,7 @@ AutoSub2DWindow::~AutoSub2DWindow() {
 }
 
 [[maybe_unused]] void AutoSub2DWindow::slotOnFaceReqNbSubdivisionsChanged(int value) {
-    if (this->ui->listWidget_faces->currentItem() == nullptr) return;
+    if (this->ui->listWidget_faces->currentItem() == nullptr) { return; }
     frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     frac::Edge e { f.reqEdge().edgeType(), static_cast<unsigned int>(value), f.reqEdge().delay() };
     f.setReqEdge(e);
@@ -213,7 +213,7 @@ AutoSub2DWindow::~AutoSub2DWindow() {
 }
 
 [[maybe_unused]] void AutoSub2DWindow::slotOnFaceReqDelayChanged(int value) {
-    if (this->ui->listWidget_faces->currentItem() == nullptr) return;
+    if (this->ui->listWidget_faces->currentItem() == nullptr) { return; }
     frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     frac::Edge e { f.reqEdge().edgeType(), f.reqEdge().nbSubdivisions(), static_cast<unsigned int>(value) };
     f.setReqEdge(e);
@@ -221,21 +221,21 @@ AutoSub2DWindow::~AutoSub2DWindow() {
 }
 
 [[maybe_unused]] void AutoSub2DWindow::slotOnFaceDelayChanged(int value) {
-    if (this->ui->listWidget_faces->currentItem() == nullptr) return;
+    if (this->ui->listWidget_faces->currentItem() == nullptr) { return; }
     frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     f.setDelay(value);
     this->ui->listWidget_faces->currentItem()->setText(f.toString().c_str());
 }
 
 [[maybe_unused]] void AutoSub2DWindow::slotOnFaceAlgoChanged(int row) {
-    if (this->ui->listWidget_faces->currentItem() == nullptr) return;
+    if (this->ui->listWidget_faces->currentItem() == nullptr) { return; }
     frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     f.setAlgo(static_cast<frac::AlgorithmSubdivision>(row));
     this->ui->listWidget_faces->currentItem()->setText(f.toString().c_str());
 }
 
 [[maybe_unused]] void AutoSub2DWindow::slotAddEdge() {
-    if (this->ui->listWidget_faces->currentItem() == nullptr) return;
+    if (this->ui->listWidget_faces->currentItem() == nullptr) { return; }
     frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     frac::Edge e { frac::EdgeType::CANTOR, 2, 0 };
     auto it = f.data().begin();
@@ -249,8 +249,8 @@ AutoSub2DWindow::~AutoSub2DWindow() {
 }
 
 [[maybe_unused]] void AutoSub2DWindow::slotRemoveEdge() {
-    if (this->ui->listWidget_edges->count() == 3) return;
-    if (this->ui->listWidget_faces->currentItem() == nullptr) return;
+    if (this->ui->listWidget_edges->count() == 3) { return; }
+    if (this->ui->listWidget_faces->currentItem() == nullptr) { return; }
     frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     long int indexToRemove = this->ui->listWidget_edges->currentRow();
     std::vector<frac::Edge> edges;
@@ -271,7 +271,7 @@ AutoSub2DWindow::~AutoSub2DWindow() {
 }
 
 [[maybe_unused]] void AutoSub2DWindow::slotOnSelectedEdgeTopologyChanged(int row) {
-    if (this->ui->listWidget_faces->currentItem() == nullptr) return;
+    if (this->ui->listWidget_faces->currentItem() == nullptr) { return; }
     frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     f.data().at(this->ui->listWidget_edges->currentRow()).setEdgeType(row == 0 ? frac::EdgeType::CANTOR : frac::EdgeType::BEZIER);
 
@@ -280,7 +280,7 @@ AutoSub2DWindow::~AutoSub2DWindow() {
 }
 
 [[maybe_unused]] void AutoSub2DWindow::slotOnSelectedEdgeNbSubdivisionsChanged(int value) {
-    if (this->ui->listWidget_faces->currentItem() == nullptr) return;
+    if (this->ui->listWidget_faces->currentItem() == nullptr) { return; }
     frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     f.data().at(this->ui->listWidget_edges->currentRow()).setNbSubdivisions(static_cast<unsigned int>(value));
 
@@ -289,7 +289,7 @@ AutoSub2DWindow::~AutoSub2DWindow() {
 }
 
 [[maybe_unused]] void AutoSub2DWindow::slotOnSelectedEdgeDelayChanged(int value) {
-    if (this->ui->listWidget_faces->currentItem() == nullptr) return;
+    if (this->ui->listWidget_faces->currentItem() == nullptr) { return; }
     frac::Face f = frac::Face::fromStr(this->ui->listWidget_faces->currentItem()->text().toStdString());
     f.data().at(this->ui->listWidget_edges->currentRow()).setDelay(static_cast<unsigned int>(value));
 

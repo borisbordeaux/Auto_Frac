@@ -66,7 +66,7 @@ std::vector<frac::Adjacency> const& frac::Structure::adjacencies() const {
 }
 
 std::vector<std::size_t> frac::Structure::controlPointIndices(std::size_t indexEdge, std::size_t indexFace, bool reverse) const {
-    std::vector<std::size_t> res = {};
+    std::vector <std::size_t> res = {};
     std::size_t current = 0;
     for (std::size_t i = 0; i < indexEdge; i++) {
         current += m_faces[indexFace][i].edgeType() == EdgeType::BEZIER ? (m_bezierCubic ? 3 : 2) : 1;
@@ -86,7 +86,7 @@ std::vector<std::size_t> frac::Structure::controlPointIndices(std::size_t indexE
         std::size_t temp = res[0];
         res[0] = res[res.size() - 1];
         res[res.size() - 1] = temp;
-        if (m_bezierCubic) {
+        if (m_bezierCubic && m_faces[indexFace][indexEdge].edgeType() == EdgeType::BEZIER) {
             //reverse the 2 points in the middle
             temp = res[1];
             res[1] = res[2];
