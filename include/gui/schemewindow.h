@@ -57,6 +57,14 @@ private:
     void drawScheme(std::size_t i, std::vector<std::vector<QPointF>> const& coords);
     void drawControlPoints(std::size_t i, std::vector<std::vector<QPointF>> const& coords);
     void drawSubdScheme(std::size_t i, std::vector<std::vector<QPointF>> const& coords);
+
+    void drawSubdFace(std::size_t i, std::vector<std::vector<QPointF>> const& coords);
+    void drawSubdEdges(std::size_t i, std::vector<std::vector<QPointF>> const& coords);
+    void drawSubdReqEdges(std::size_t i, std::vector<std::vector<QPointF>> const& coords);
+    void drawSubdInterior(std::size_t i, std::vector<std::vector<QPointF>> const& coords);
+    void drawSubdLacuna(std::size_t i, std::vector<std::vector<QPointF>> const& coords);
+    void drawSubdBlackPointsOnBoundary(std::size_t i, std::vector<std::vector<QPointF>> const& coords);
+    void drawSubdBlackPointsOnLacuna(std::size_t i, std::vector<std::vector<QPointF>> const& coords);
     static QPen penOfEdge(frac::Edge const& e);
 
 private:
