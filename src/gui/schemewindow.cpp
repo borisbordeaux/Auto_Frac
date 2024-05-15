@@ -411,7 +411,7 @@ void SchemeWindow::drawScheme(std::size_t i, std::vector<std::vector<QPointF>> c
         m_scene.addPath(p.first, p.second);
     }
 
-    float thick = 6.0f;
+    float thick = 10.0f;
     for (auto const& p: points) {
         m_scene.addEllipse(p.x() - thick / 2.0f, p.y() - thick / 2.0f, thick, thick, QPen(), Qt::black);
     }
@@ -637,10 +637,6 @@ void SchemeWindow::drawSubdInterior(std::size_t i, std::vector<std::vector<QPoin
     float radius = diameter / 2.0f;
 
     frac::Face const& f = m_structure->faces()[i];
-
-    //draw subdivided edges
-    std::vector<std::pair<QLineF, QPen>> cantors;
-    std::vector<std::pair<QPainterPath, QPen>> beziers;
 
     //there are some lines that are always here if face has no delay
     std::size_t j = 0;
@@ -931,7 +927,7 @@ void SchemeWindow::drawSubdBlackPointsOnBoundary(std::size_t i, std::vector<std:
         j += nextStepJ;
     }
 
-    float thick = 6.0f;
+    float thick = 10.0f;
     for (auto const& p: points) {
         m_scene.addEllipse(p.x() - thick / 2.0f, p.y() - thick / 2.0f, thick, thick, QPen(), Qt::black);
     }
@@ -1037,7 +1033,7 @@ void SchemeWindow::drawSubdBlackPointsOnLacuna(std::size_t i, std::vector<std::v
 
     }
 
-    float thick = 6.0f;
+    float thick = 10.0f;
     for (auto const& p: pointsOnCentralLacuna) {
         m_scene.addEllipse(p.x() - thick / 2.0f, p.y() - thick / 2.0f, thick, thick, QPen(), Qt::black);
     }
@@ -1088,10 +1084,10 @@ QPen SchemeWindow::penOfEdge(frac::Edge const& e) {
 
     }
     if (e.edgeType() == frac::EdgeType::BEZIER) {
-        pen.setBrush(QBrush(QColor(0, std::max(0, 205 - static_cast<int>(e.nbSubdivisions() - 2) * 50), 0)));
+        pen.setColor(QColor(0, std::max(0, 205 - static_cast<int>(e.nbSubdivisions() - 2) * 50), 0));
     } else {
-        pen.setBrush(QBrush(QColor(0, 0, std::max(0, 255 - static_cast<int>(e.nbSubdivisions() - 2) * 50))));
+        pen.setColor(QColor(0, 0, std::max(0, 255 - static_cast<int>(e.nbSubdivisions() - 2) * 50)));
     }
-    pen.setWidth(3);
+    pen.setWidth(5);
     return pen;
 }
