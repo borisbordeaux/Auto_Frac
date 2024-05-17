@@ -28,18 +28,20 @@ Then export the structure in a python file that will be interpreted by another s
 Import a polyhedron and display the sphere packing.  
 Export the fractal structure associated in a python file that will be interpreted by another software (link coming soon...).
 
-### Compute of Fractal Dimension
+### Computations on fractals
+
+#### Compute of Fractal Dimension
 
 Compute fractal dimension using box counting method on an image.
 
-### Compute of Area and Perimeter
+#### Compute of Area and Perimeter
 
 Compute the area and the perimeter of an image or an OBJ file.
 
-### Compute of Density
+#### Compute of Density
 
 Compute the density of a structure on an image et displays for each pixel its density.
 
-### Compute of Persistent Homology
+#### Compute of Persistent Homology
 
 Compute the persistent homology of an OBJ file and display the persistent cohomology diagram.
