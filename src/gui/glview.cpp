@@ -449,8 +449,8 @@ void GLView::mouseMoveEvent(QMouseEvent* event) {
             m_world.rotate(static_cast<float>(dy) / 4.0f, 1, 0, 0);
             m_world.rotate(static_cast<float>(dx) / 4.0f, 0, 1, 0);
             m_model->transformMesh(m_world);
-            m_mainWindow->updateCircles();
             m_mainWindow->updateCirclesDual();
+            m_mainWindow->updateCircles();
             this->updateData();
         }
         update();
@@ -466,8 +466,8 @@ void GLView::mouseMoveEvent(QMouseEvent* event) {
             m_world.rotate(static_cast<float>(-dx) / 4.0f, 0, 0, 1);
             m_world.rotate(static_cast<float>(dy) / 4.0f, 0, 1, 0);
             m_model->transformMesh(m_world);
-            m_mainWindow->updateCircles();
             m_mainWindow->updateCirclesDual();
+            m_mainWindow->updateCircles();
             this->updateData();
         }
         update();
