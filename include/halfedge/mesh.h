@@ -1,7 +1,6 @@
 #ifndef AUTOFRAC_HE_MESH_H
 #define AUTOFRAC_HE_MESH_H
 
-#include <QHash>
 #include <QString>
 #include <vector>
 
