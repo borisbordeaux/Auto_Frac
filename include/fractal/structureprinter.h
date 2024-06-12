@@ -5,19 +5,19 @@
 #include <string>
 #include "utils/fileprinter.h"
 
-class QPointF;
-
 namespace frac {
-
-class Structure;
-
-class Face;
 
 class Edge;
 
+class Face;
+
+class Point2D;
+
+class Structure;
+
 class StructurePrinter {
 public:
-    explicit StructurePrinter(frac::Structure const& structure, bool planarControlPoints, std::string filename, std::vector<std::vector<QPointF>> const& coords = {});
+    explicit StructurePrinter(frac::Structure const& structure, bool planarControlPoints, std::string filename, std::vector<std::vector<Point2D>> const& coords = {});
     void exportStruct();
 private:
     void print_header();
@@ -46,7 +46,7 @@ private:
     frac::Structure const& m_structure;
     bool m_planarControlPoints;
     std::string const m_filename;
-    std::vector<std::vector<QPointF>> const& m_coords;
+    std::vector<std::vector<Point2D>> const& m_coords;
     frac::FilePrinter m_filePrinter;
 };
 }

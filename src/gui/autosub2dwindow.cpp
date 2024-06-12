@@ -67,7 +67,7 @@ AutoSub2DWindow::~AutoSub2DWindow() {
                 this->setInfo("[Error] Constraint " + std::to_string(i) + " : edges are different!");
                 return;
             } else {
-                s.addAdjacency(c.Face1, c.Edge1, c.Face2, c.Edge2);
+                s.addAdjacency(c);
             }
         } catch (std::out_of_range const& error) {
             this->setInfo("[Error] Constraint " + std::to_string(i) + " : faces or edges indices are not valid!");
@@ -79,7 +79,8 @@ AutoSub2DWindow::~AutoSub2DWindow() {
 
     try {
         if (m_schemeWindow && m_schemeWindow->isValidForStructure(s)) {
-            frac::StructurePrinter printer(s, this->ui->checkBox_planarControlPoints->isChecked(), "../output/result.py", m_schemeWindow->coordinates());
+            std::vector<std::vector<frac::Point2D>> coords = m_schemeWindow->coordinates();
+            frac::StructurePrinter printer(s, this->ui->checkBox_planarControlPoints->isChecked(), "../output/result.py", coords);
             printer.exportStruct();
         } else {
             frac::StructurePrinter printer(s, this->ui->checkBox_planarControlPoints->isChecked(), "../output/result.py");
@@ -360,7 +361,7 @@ AutoSub2DWindow::~AutoSub2DWindow() {
                 this->setInfo("[Error] Constraint " + std::to_string(i) + " : edges are different!");
                 return;
             } else {
-                newStruct->addAdjacency(c.Face1, c.Edge1, c.Face2, c.Edge2);
+                newStruct->addAdjacency(c);
             }
         } catch (std::out_of_range const& error) {
             this->setInfo("[Error] Constraint " + std::to_string(i) + " : faces or edges indices are not valid!");

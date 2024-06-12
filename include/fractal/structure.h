@@ -22,13 +22,15 @@ struct Adjacency {
     bool equals(Adjacency const& other) const {
         return Face1 == other.Face1 && Edge1 == other.Edge1 && Face2 == other.Face2 && Edge2 == other.Edge2;
     }
+
+    static Adjacency fromStr(std::string const& strConstraint);
 };
 
 class Structure {
 public:
     explicit Structure(std::vector<frac::Face> const& faces, bool bezierCubic);
 
-    void addAdjacency(std::size_t indexFace1, std::size_t indexEdgeFace1, std::size_t indexFace2, std::size_t indexEdgeFace2);
+    void addAdjacency(Adjacency const& adj);
     std::string strAdjacencies() const;
     std::vector<Adjacency> const& adjacencies() const;
     frac::Set<frac::Edge> allEdges() const;

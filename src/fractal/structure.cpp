@@ -1,12 +1,17 @@
 #include "fractal/structure.h"
+#include "utils/utils.h"
 #include <iostream>
 
 frac::Structure::Structure(std::vector<Face> const& faces, bool bezierCubic) : m_faces(faces), m_bezierCubic(bezierCubic) {}
 
-void frac::Structure::addAdjacency(std::size_t indexFace1, std::size_t indexEdgeFace1, std::size_t indexFace2, std::size_t indexEdgeFace2) {
-    if (m_faces[indexFace1][indexEdgeFace1] == m_faces[indexFace2][indexEdgeFace2]) {
-        m_strAdjacency += "    init(Sub('" + std::to_string(indexFace1) + "') + Bord('" + std::to_string(indexEdgeFace1) + "') + Permut('0'), Sub('" + std::to_string(indexFace2) + "') + Bord('" + std::to_string(indexEdgeFace2) + "'))\n";
-        m_adjacencies.emplace_back(indexFace1, indexEdgeFace1, indexFace2, indexEdgeFace2);
+void frac::Structure::addAdjacency(Adjacency const& adj) {
+    if (m_faces[adj.Face1][adj.Edge1] == m_faces[adj.Face2][adj.Edge2]) {
+        std::size_t offset1 = m_faces[adj.Face1].offset();
+        std::size_t offset2 = m_faces[adj.Face2].offset();
+        std::size_t edge1 = static_cast<std::size_t>(frac::utils::mod(static_cast<int>(adj.Edge1) - static_cast<int>(offset1), static_cast<int>(m_faces[adj.Face1].len())));
+        std::size_t edge2 = static_cast<std::size_t>(frac::utils::mod(static_cast<int>(adj.Edge2) - static_cast<int>(offset2), static_cast<int>(m_faces[adj.Face2].len())));
+        m_strAdjacency += "    init(Sub('" + std::to_string(adj.Face1) + "') + Bord('" + std::to_string(edge1) + "') + Permut('0'), Sub('" + std::to_string(adj.Face2) + "') + Bord('" + std::to_string(edge2) + "'))\n";
+        m_adjacencies.push_back(adj);
     }
 }
 
@@ -49,6 +54,24 @@ std::ostream& operator<<(std::ostream& os, frac::Structure const& structure) {
 }
 }
 
+frac::Adjacency frac::Adjacency::fromStr(std::string const& strConstraint) {
+    std::string sepFaces = " / ";
+    std::string sepFaceInfo = ".";
+
+    std::vector<std::string> splitFaces = frac::utils::split(strConstraint, sepFaces);
+    std::string face1Info = splitFaces[0];
+    std::string face2Info = splitFaces[1];
+
+    std::vector<std::string> splitFace1 = frac::utils::split(face1Info, sepFaceInfo);
+    std::vector<std::string> splitFace2 = frac::utils::split(face2Info, sepFaceInfo);
+
+    std::size_t face1 = std::stoul(splitFace1[0]);
+    std::size_t edge1 = std::stoul(splitFace1[1]);
+    std::size_t face2 = std::stoul(splitFace2[0]);
+    std::size_t edge2 = std::stoul(splitFace2[1]);
+    return { face1, edge1, face2, edge2 };
+}
+
 frac::Face const& frac::Structure::operator[](std::size_t index) const {
     return m_faces[index];
 }
@@ -66,7 +89,7 @@ std::vector<frac::Adjacency> const& frac::Structure::adjacencies() const {
 }
 
 std::vector<std::size_t> frac::Structure::controlPointIndices(std::size_t indexEdge, std::size_t indexFace, bool reverse) const {
-    std::vector <std::size_t> res = {};
+    std::vector<std::size_t> res = {};
     std::size_t current = 0;
     for (std::size_t i = 0; i < indexEdge; i++) {
         current += m_faces[indexFace][i].edgeType() == EdgeType::BEZIER ? (m_bezierCubic ? 3 : 2) : 1;

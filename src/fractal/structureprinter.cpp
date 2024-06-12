@@ -1,12 +1,11 @@
 #include "fractal/structureprinter.h"
 
-#include <QPointF>
-
 #include "fractal/face.h"
 #include "fractal/structure.h"
 #include "utils/utils.h"
+#include "utils/point2d.h"
 
-frac::StructurePrinter::StructurePrinter(frac::Structure const& structure, bool planarControlPoints, std::string filename, std::vector<std::vector<QPointF>> const& coords) :
+frac::StructurePrinter::StructurePrinter(frac::Structure const& structure, bool planarControlPoints, std::string filename, std::vector<std::vector<Point2D>> const& coords) :
         m_structure(structure), m_planarControlPoints(planarControlPoints), m_filename(std::move(filename)), m_coords(coords) {}
 
 void frac::StructurePrinter::exportStruct() {
@@ -405,7 +404,6 @@ void frac::StructurePrinter::print_plan_control_points() {
 }
 
 void frac::StructurePrinter::print_plan_coords_control_points() {
-    float scale = 1.0f / 100.0f;
     for (std::size_t index_face = 0; index_face < m_coords.size(); ++index_face) {
         std::size_t nb_pts = m_coords[index_face].size();
         m_filePrinter.append_nl("    init.initMat[Sub_('" + std::to_string(index_face) + "')] = FMat([");
@@ -413,16 +411,16 @@ void frac::StructurePrinter::print_plan_coords_control_points() {
         //x
         m_filePrinter.append("        [");
         for (std::size_t i = 0; i < nb_pts - 1; ++i) {
-            m_filePrinter.append(frac::utils::to_string(static_cast<float>(m_coords[index_face][i].x()) * scale) + ", ");
+            m_filePrinter.append(frac::utils::to_string(static_cast<float>(m_coords[index_face][i].x())) + ", ");
         }
-        m_filePrinter.append_nl(frac::utils::to_string(static_cast<float>(m_coords[index_face][nb_pts - 1].x()) * scale) + "],");
+        m_filePrinter.append_nl(frac::utils::to_string(static_cast<float>(m_coords[index_face][nb_pts - 1].x())) + "],");
 
         //y
         m_filePrinter.append("        [");
         for (std::size_t i = 0; i < nb_pts - 1; ++i) {
-            m_filePrinter.append(frac::utils::to_string(static_cast<float>(m_coords[index_face][i].y()) * scale) + ", ");
+            m_filePrinter.append(frac::utils::to_string(static_cast<float>(m_coords[index_face][i].y())) + ", ");
         }
-        m_filePrinter.append_nl(frac::utils::to_string(static_cast<float>(m_coords[index_face][nb_pts - 1].y()) * scale) + "],");
+        m_filePrinter.append_nl(frac::utils::to_string(static_cast<float>(m_coords[index_face][nb_pts - 1].y())) + "],");
 
         //z
         m_filePrinter.append("        [");
@@ -445,6 +443,9 @@ void frac::StructurePrinter::print_plan_coords_control_points() {
 }
 
 void frac::StructurePrinter::print_footer() {
+    //for automatic subdivision algorithm
+    //m_filePrinter.append_nl("    auto = Auto(init)");
+    //m_filePrinter.append_nl("    auto.autoSubs(300)");
     m_filePrinter.append_nl("    return init");
     m_filePrinter.append_nl("");
     m_filePrinter.append_nl("");

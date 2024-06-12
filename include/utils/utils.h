@@ -4,12 +4,15 @@
 #include <algorithm>
 #include <sstream>
 #include <vector>
-#include <QPointF>
+#include <iomanip>
+#include "point2d.h"
 
 namespace frac::utils {
 
 inline std::string to_string(float value) {
-    std::string res = std::to_string(value);
+    std::stringstream stream;
+    stream << std::fixed << std::setprecision(4) << value;
+    std::string res = stream.str();
     std::replace(res.begin(), res.end(), ',', '.');
     return res;
 }
@@ -100,16 +103,16 @@ inline std::vector<float> get_bezier_cubic_transformation(unsigned int i, unsign
     };
 }
 
-inline QPointF coordOfPointOnLineAt(float t, QPointF p0, QPointF p1) {
-    return { (1 - t) * p0 + t * p1 };
+inline Point2D coordOfPointOnLineAt(float t, Point2D p0, Point2D p1) {
+    return { p0 * (1 - t) + p1 * t };
 }
 
-inline QPointF coordOfPointOnQuadCurveAt(float t, QPointF p0, QPointF p1, QPointF p2) {
-    return { (1.0f - t) * (1.0f - t) * p0 + 2.0f * t * (1.0f - t) * p1 + t * t * p2 };
+inline Point2D coordOfPointOnQuadCurveAt(float t, Point2D p0, Point2D p1, Point2D p2) {
+    return { p0 * (1.0f - t) * (1.0f - t) + p1 * 2.0f * t * (1.0f - t) + p2 * t * t };
 }
 
-inline QPointF coordOfPointOnCubicCurveAt(float t, QPointF p0, QPointF p1, QPointF p2, QPointF p3) {
-    return { (1.0f - t) * (1.0f - t) * (1.0f - t) * p0 + 3.0f * t * (1.0f - t) * (1.0f - t) * p1 + 3.0f * t * t * (1.0f - t) * p2 + t * t * t * p3 };
+inline Point2D coordOfPointOnCubicCurveAt(float t, Point2D p0, Point2D p1, Point2D p2, Point2D p3) {
+    return { p0 * (1.0f - t) * (1.0f - t) * (1.0f - t) + p1 * 3.0f * t * (1.0f - t) * (1.0f - t) + p2 * 3.0f * t * t * (1.0f - t) + p3 * t * t * t };
 }
 
 }

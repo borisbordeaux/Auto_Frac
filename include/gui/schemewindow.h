@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QGraphicsScene>
 #include "schemeeditor.h"
+#include "utils/point2d.h"
 
 namespace frac {
 class Structure;
@@ -23,7 +24,7 @@ public:
     ~SchemeWindow() override;
 
     bool isValidForStructure(frac::Structure const& structure) const;
-    std::vector<std::vector<QPointF>> const& coordinates() const;
+    std::vector<std::vector<frac::Point2D>> coordinates() const;
 
     void setCoords(std::size_t indexFace, std::size_t indexControlPoint, QPointF newPos);
     void setSelected(int indexFace, int indexControlPoint);
@@ -66,6 +67,10 @@ private:
     void drawSubdBlackPointsOnBoundary(std::size_t i, std::vector<std::vector<QPointF>> const& coords);
     void drawSubdBlackPointsOnLacuna(std::size_t i, std::vector<std::vector<QPointF>> const& coords);
     static QPen penOfEdge(frac::Edge const& e);
+
+    static QPointF coordOfPointOnLineAt(float t, QPointF const& P0, QPointF const& P1);
+    static QPointF coordOfPointOnQuadCurveAt(float t, QPointF const& P0, QPointF const& P1, QPointF const& P2);
+    static QPointF coordOfPointOnCubicCurveAt(float t, QPointF const& P0, QPointF const& P1, QPointF const& P2, QPointF const& P3);
 
 private:
     Ui::SchemeWindow* ui;
