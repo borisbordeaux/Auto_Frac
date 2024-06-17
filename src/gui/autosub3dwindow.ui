@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>AutoSub3DWindow</class>
+ <widget class="QWidget" name="AutoSub3DWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>281</width>
-    <height>361</height>
+    <width>416</width>
+    <height>337</height>
    </rect>
   </property>
   <property name="palette">
@@ -453,187 +453,102 @@
    </palette>
   </property>
   <property name="windowTitle">
-   <string>AutoFrac</string>
+   <string>AutoSub3DWindow</string>
   </property>
-  <property name="windowOpacity">
-   <double>1.000000000000000</double>
-  </property>
-  <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
-     <widget class="QPushButton" name="pushButton_9">
-      <property name="text">
-       <string>Auto Sub 2D</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="pushButton">
-      <property name="text">
-       <string>Auto Sub 3D</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="pushButton_10">
-      <property name="text">
-       <string>Polytopal 2D</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="pushButton_8">
-      <property name="text">
-       <string>Fractal Dimension</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="pushButton_7">
-      <property name="text">
-       <string>Area and Perimeter</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="pushButton_6">
-      <property name="text">
-       <string>Density</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="pushButton_5">
-      <property name="text">
-       <string>Persistent Homology</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>90</y>
+     <width>101</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Load Mesh 1</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_2">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>90</y>
+     <width>101</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Load Mesh 2</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_3">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>170</y>
+     <width>80</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Compare</string>
+   </property>
   </widget>
  </widget>
  <resources/>
  <connections>
   <connection>
-   <sender>pushButton_7</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOpenAreaPerimeterWindow()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>271</x>
-     <y>237</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>280</x>
-     <y>301</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_6</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOpenDensityWindow()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>242</x>
-     <y>284</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>280</x>
-     <y>265</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_5</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOpenPersistentHomologyWindow()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>163</x>
-     <y>331</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>109</x>
-     <y>5</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_8</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOpenFractalDimensionWindow()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>236</x>
-     <y>190</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>280</x>
-     <y>5</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_9</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOpenAutoSub2DWindow()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>271</x>
-     <y>49</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>280</x>
-     <y>0</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_10</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOpenPolytopal2DWindow()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>271</x>
-     <y>143</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>3</x>
-     <y>360</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>pushButton</sender>
    <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOpenAutoSub3DWindow()</slot>
+   <receiver>AutoSub3DWindow</receiver>
+   <slot>slotOpenMesh1()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>67</x>
-     <y>85</y>
+     <x>109</x>
+     <y>104</y>
     </hint>
     <hint type="destinationlabel">
-     <x>61</x>
-     <y>58</y>
+     <x>58</x>
+     <y>35</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>AutoSub3DWindow</receiver>
+   <slot>slotOpenMesh2()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>254</x>
+     <y>102</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>295</x>
+     <y>36</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_3</sender>
+   <signal>clicked()</signal>
+   <receiver>AutoSub3DWindow</receiver>
+   <slot>slotCompare()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>204</x>
+     <y>187</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>318</x>
+     <y>220</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <slots>
-  <slot>slotOpenPersistentHomologyWindow()</slot>
-  <slot>slotOpenDensityWindow()</slot>
-  <slot>slotOpenAreaPerimeterWindow()</slot>
-  <slot>slotOpenFractalDimensionWindow()</slot>
-  <slot>slotOpenAutoSub2DWindow()</slot>
-  <slot>slotOpenPolytopal2DWindow()</slot>
-  <slot>slotOpenAutoSub3DWindow()</slot>
+  <slot>slotOpenMesh1()</slot>
+  <slot>slotOpenMesh2()</slot>
+  <slot>slotCompare()</slot>
  </slots>
 </ui>

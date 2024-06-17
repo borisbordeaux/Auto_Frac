@@ -1,12 +1,13 @@
 #include "gui/mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "gui/persistenthomologywindow.h"
-#include "gui/densitywindow.h"
-#include "gui/areaperimeterwindow.h"
-#include "gui/fractaldimensionwindow.h"
 #include "gui/autosub2dwindow.h"
+#include "gui/autosub3dwindow.h"
 #include "gui/polytopal2dwindow.h"
+#include "gui/fractaldimensionwindow.h"
+#include "gui/areaperimeterwindow.h"
+#include "gui/densitywindow.h"
+#include "gui/persistenthomologywindow.h"
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
@@ -21,6 +22,13 @@ MainWindow::~MainWindow() {
         m_autoSub2DWindow = std::make_unique<AutoSub2DWindow>();
     }
     m_autoSub2DWindow->show();
+}
+
+[[maybe_unused]] void MainWindow::slotOpenAutoSub3DWindow() {
+    if (m_autoSub3DWindow == nullptr || m_autoSub3DWindow->isHidden()) {
+        m_autoSub3DWindow = std::make_unique<AutoSub3DWindow>();
+    }
+    m_autoSub3DWindow->show();
 }
 
 [[maybe_unused]] void MainWindow::slotOpenPolytopal2DWindow() {
@@ -62,6 +70,9 @@ void MainWindow::closeEvent(QCloseEvent* event) {
     QWidget::closeEvent(event);
     if (m_autoSub2DWindow != nullptr) {
         m_autoSub2DWindow->close();
+    }
+    if (m_autoSub3DWindow != nullptr) {
+        m_autoSub3DWindow->close();
     }
     if (m_polytopal2DWindow != nullptr) {
         m_polytopal2DWindow->close();
