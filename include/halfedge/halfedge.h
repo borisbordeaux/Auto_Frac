@@ -88,7 +88,7 @@ public:
      * @brief setter
      * @param name the name to be set for this half-edge
      */
-    [[maybe_unused]] void setName(const QString& name);
+    [[maybe_unused]] void setName(QString const& name);
 
     [[nodiscard]] float length() const;
 

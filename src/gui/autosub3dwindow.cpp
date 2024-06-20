@@ -3,6 +3,7 @@
 #include "ui_autosub3dwindow.h"
 #include "halfedge/objreader.h"
 #include "halfedge/graphisomorphism.h"
+#include "halfedge/halfedge.h"
 
 
 AutoSub3DWindow::AutoSub3DWindow(QWidget* parent) :
@@ -37,6 +38,8 @@ AutoSub3DWindow::~AutoSub3DWindow() {
         qDebug() << "meshes are empty";
         return;
     }
+
     bool res = he::GraphComparator::areIsomorph(m_mesh1, m_mesh2);
-    qDebug() << res;
+    bool res2 = he::GraphComparator::areIsomorph(m_mesh1, m_mesh2, true);
+    qDebug() << "topology isomorphism:" << res << "--- edge type isomorphism:" << res2;
 }
