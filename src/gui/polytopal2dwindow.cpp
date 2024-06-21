@@ -55,7 +55,7 @@ void Polytopal2DWindow::setInfoAdvancement(int percent) {
 
 [[maybe_unused]] void Polytopal2DWindow::slotOpenOBJFile() {
     m_view->stopAnimation();
-    QString file = QFileDialog::getOpenFileName(this, "Open an OBJ File...", "../obj", "OBJ Files (*.obj)");
+    QString file = QFileDialog::getOpenFileName(this, "Open an OBJ File...", "../obj/polyhedrons", "OBJ Files (*.obj)");
 
     if (file != "") {
         this->ui->checkBox_displayMesh->setChecked(true);

@@ -16,7 +16,7 @@ AutoSub3DWindow::~AutoSub3DWindow() {
 }
 
 [[maybe_unused]] void AutoSub3DWindow::slotOpenMesh1() {
-    QString file = QFileDialog::getOpenFileName(this, "Open an OBJ File...", "../obj", "OBJ Files (*.obj)");
+    QString file = QFileDialog::getOpenFileName(this, "Open an OBJ File...", "../obj/polyhedrons", "OBJ Files (*.obj)");
 
     if (file != "") {
         m_mesh1.reset();
@@ -25,7 +25,7 @@ AutoSub3DWindow::~AutoSub3DWindow() {
 }
 
 [[maybe_unused]] void AutoSub3DWindow::slotOpenMesh2() {
-    QString file = QFileDialog::getOpenFileName(this, "Open an OBJ File...", "../obj", "OBJ Files (*.obj)");
+    QString file = QFileDialog::getOpenFileName(this, "Open an OBJ File...", "../obj/polyhedrons", "OBJ Files (*.obj)");
 
     if (file != "") {
         m_mesh2.reset();
