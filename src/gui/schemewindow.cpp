@@ -90,11 +90,12 @@ bool SchemeWindow::isValidForStructure(frac::Structure const& structure) const {
 }
 
 std::vector<std::vector<frac::Point2D>> SchemeWindow::coordinates() const {
+    float scale = 0.01f;
     std::vector<std::vector<frac::Point2D>> result;
     for(std::vector<QPointF> const& facesCoords : m_coordinates){
         result.emplace_back();
         for(QPointF const& p : facesCoords){
-            result[result.size()-1].emplace_back(p.x(), p.y());
+            result[result.size()-1].emplace_back(p.x()*scale, p.y()*scale);
         }
     }
     return result;

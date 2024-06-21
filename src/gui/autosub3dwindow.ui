@@ -494,6 +494,19 @@
     <string>Compare</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="pushButton_4">
+   <property name="geometry">
+    <rect>
+     <x>90</x>
+     <y>230</y>
+     <width>101</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Export Mesh 1</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections>
@@ -545,10 +558,27 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton_4</sender>
+   <signal>clicked()</signal>
+   <receiver>AutoSub3DWindow</receiver>
+   <slot>slotExportMesh1()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>138</x>
+     <y>248</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>66</x>
+     <y>215</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>slotOpenMesh1()</slot>
   <slot>slotOpenMesh2()</slot>
   <slot>slotCompare()</slot>
+  <slot>slotExportMesh1()</slot>
  </slots>
 </ui>

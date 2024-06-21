@@ -4,6 +4,8 @@
 #include "halfedge/objreader.h"
 #include "halfedge/graphisomorphism.h"
 #include "halfedge/halfedge.h"
+#include "fractal/structure3d.h"
+#include "fractal/structure3dprinter.h"
 
 
 AutoSub3DWindow::AutoSub3DWindow(QWidget* parent) :
@@ -42,4 +44,21 @@ AutoSub3DWindow::~AutoSub3DWindow() {
     bool res = he::GraphComparator::areIsomorph(m_mesh1, m_mesh2);
     bool res2 = he::GraphComparator::areIsomorph(m_mesh1, m_mesh2, true);
     qDebug() << "topology isomorphism:" << res << "--- edge type isomorphism:" << res2;
+}
+
+[[maybe_unused]] void AutoSub3DWindow::slotExportMesh1() {
+    if (m_mesh1.halfEdges().empty()) {
+        qDebug() << "mesh is empty";
+        return;
+    }
+    //to test, all edges are B_2_0
+    for (he::HalfEdge* he: m_mesh1.halfEdges()) {
+        he->setName("B_2_0");
+    }
+
+    std::vector<frac::Volume> volumes;
+    volumes.emplace_back(m_mesh1);
+    frac::Structure3D structure(volumes, false);
+    frac::Structure3DPrinter printer(structure, "../output/result3D.py");
+    printer.exportStruct();
 }

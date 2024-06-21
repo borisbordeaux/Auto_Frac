@@ -20,6 +20,7 @@ public slots:
     [[maybe_unused]] void slotOpenMesh1();
     [[maybe_unused]] void slotOpenMesh2();
     [[maybe_unused]] void slotCompare();
+    [[maybe_unused]] void slotExportMesh1();
 
 private:
     Ui::AutoSub3DWindow* ui;
