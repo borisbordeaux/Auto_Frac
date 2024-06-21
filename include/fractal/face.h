@@ -6,16 +6,11 @@
 #include <vector>
 #include <unordered_map>
 
+#include "fractal/algorithms/algorithmsubdivision.h"
 #include "fractal/edge.h"
 #include "utils/set.h"
 
 namespace frac {
-
-enum class AlgorithmSubdivision {
-    LinksSurroundDelay,
-    LinksSurroundDelayAndBezier,
-    LinksOnCorners
-};
 
 class Face {
 public:
@@ -35,7 +30,7 @@ public:
     [[nodiscard]] frac::Edge gapEdge() const;
     [[nodiscard]] frac::Edge reqEdge() const;
     [[nodiscard]] unsigned int delay() const;
-    [[nodiscard]] AlgorithmSubdivision algo() const;
+    [[nodiscard]] frac::AlgorithmSubdivision algo() const;
 
     std::optional<frac::Edge> edgeIfRequired(frac::Edge const& edge) const;
 
@@ -45,8 +40,9 @@ public:
     void setDelay(unsigned int delay);
     void setFirstInterior(int index);
     void setAlgo(AlgorithmSubdivision algo);
+
     [[nodiscard]] std::vector<frac::Face> subdivisions() const;
-    [[nodiscard]] Set<frac::Face> allSubdivisions() const;
+    [[nodiscard]] frac::Set<frac::Face> allSubdivisions() const;
 
     frac::Edge const& operator[](std::size_t index) const;
     bool operator==(frac::Face const& other) const;
@@ -75,7 +71,7 @@ private:
     std::string m_name;
     std::size_t m_offset;
     int m_firstInterior;
-    AlgorithmSubdivision m_algo;
+    frac::AlgorithmSubdivision m_algo;
 
     static frac::Set<frac::Face> s_existingFaces;
 
