@@ -1,4 +1,4 @@
-#include "algorithm.h"
+#include "halfedge/algorithm.h"
 
 #include "halfedge/mesh.h"
 #include "halfedge/face.h"
@@ -10,7 +10,7 @@ void he::algo::barycentricSubdivision(he::Mesh& mesh) {
     std::unordered_map<he::Face*, he::Vertex*> vertexOfFace;
     for (he::Face* f: mesh.faces()) {
         he::Vertex* v = new he::Vertex(f->barycenter());
-        //mesh.append(v);
+        mesh.append(v);
         vertexOfFace[f] = v;
     }
 
@@ -20,6 +20,8 @@ void he::algo::barycentricSubdivision(he::Mesh& mesh) {
         he::HalfEdge* heNext = he->next();
         he::HalfEdge* heTwin = he->twin();
         he::HalfEdge* heTwinPrev = he->twin()->prev();
+
+        he::Vertex* heEnd = he->next()->origin();
 
         //new vertex at the middle
         QVector3D middle = (he->origin()->pos() + he->next()->origin()->pos()) / 2.0f;
@@ -46,6 +48,9 @@ void he::algo::barycentricSubdivision(he::Mesh& mesh) {
         newHeNextTwin->setTwin(newHeNext);
         newHeNextTwin->setPrev(heTwinPrev);
         newHeNextTwin->setNext(heTwin);
+
+        heEnd->setHalfEdge(heTwin);
+        v->setHalfEdge(heTwin);
 
         mesh.append(heNext);
         mesh.append(newHeNextTwin);

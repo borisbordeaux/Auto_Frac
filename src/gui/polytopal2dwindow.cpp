@@ -13,7 +13,7 @@
 #include "polytopal/structureprinter.h"
 #include "polytopal/polytopal.h"
 #include "utils/fileprinter.h"
-#include "../halfedge/algorithm.h"
+#include "halfedge/algorithm.h"
 
 Polytopal2DWindow::Polytopal2DWindow(QWidget* parent) :
         QWidget(parent), ui(new Ui::Polytopal2DWindow), m_statusBar(new QStatusBar(this)), m_openedMesh(false),
@@ -617,11 +617,8 @@ void Polytopal2DWindow::updateEnablementPoly() {
 
     he::algo::barycentricSubdivision(m_mesh);
 
-    m_modelMesh.updateDataFaces();
-    m_modelMesh.updateDataEdge();
-    m_modelMesh.updateDataVertices();
-    m_view->updateDataFaces();
-    m_view->updateDataEdge();
-    m_view->updateDataVertices();
+    m_modelMesh.setMesh(&m_mesh);
+
+    m_view->updateData();
     m_view->update();
 }
