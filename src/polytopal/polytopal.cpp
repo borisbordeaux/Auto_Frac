@@ -195,7 +195,7 @@ void poly::canonicalizeMesh(he::Mesh& m) {
 std::vector<poly::Circle> poly::computeIlluminatedCircles(const he::Mesh& m) {
     std::vector<poly::Circle> res;
 
-    int colorIndex = 14;
+    int colorIndex = 15;
 
     for (he::Vertex* v: m.vertices()) {
 #if 0
@@ -228,6 +228,7 @@ std::vector<poly::Circle> poly::computeIlluminatedCircles(const he::Mesh& m) {
 
 std::vector<poly::Circle> poly::computeIlluminatedCirclesDual(he::Mesh const& m) {
     std::vector<poly::Circle> res;
+    int colorIndex = 15;
 
     for (he::Face* f: m.faces()) {
         std::vector<he::HalfEdge*> allHE = f->allHalfEdges();
@@ -244,7 +245,7 @@ std::vector<poly::Circle> poly::computeIlluminatedCirclesDual(he::Mesh const& m)
             poly::Circle c { v1, v2, v3 };
             c.setAxisX({ 1, 0, 0 });
             c.setAxisY({ 0, 1, 0 });
-            c.setColor({ 0.0f, 0.0f, 0.0f });
+            c.setColor({ colors[colorIndex % 16].redF(), colors[colorIndex % 16].greenF(), colors[colorIndex % 16].blueF() });
             res.push_back(c);
         }
     }

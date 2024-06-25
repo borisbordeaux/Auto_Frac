@@ -96,7 +96,7 @@ private:
     RotationType m_rotationType;
 
     //OpenGL stuff for rendering
-    QVector3D m_clearColor = { 0.7f, 0.7f, 0.7f };
+    QVector3D m_clearColor = { 0.0f, 0.0f, 0.0f };
     QOpenGLVertexArrayObject m_vaoFaces;
     QOpenGLVertexArrayObject m_vaoSphere;
     QOpenGLVertexArrayObject m_vaoEdges;

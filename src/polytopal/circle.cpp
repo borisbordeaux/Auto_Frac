@@ -165,7 +165,9 @@ Circle Circle::operator*(float rhs) const {
 }
 
 Circle Circle::inverse(const Circle& inverted, const Circle& inverter) {
-    return inverted - inverter * (2.0f * Circle::scalarProduct(inverted, inverter));
+    Circle res = inverted - inverter * (2.0f * Circle::scalarProduct(inverted, inverter));
+    res.setColor(inverter.m_color);
+    return res;
 }
 
 Circle Circle::inverseStereographicProject() const {
@@ -201,7 +203,9 @@ Circle Circle::inverseStereographicProject() const {
     QVector3D yAxis = QVector3D::crossProduct(n, xAxis);
 
     //return the circle with the new axes
-    return { H, r, xAxis, yAxis };
+    Circle res { H, r, xAxis, yAxis };
+    res.setColor(m_color);
+    return res;
 }
 
 void Circle::updateR3Coord() {
