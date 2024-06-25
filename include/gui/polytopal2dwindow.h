@@ -50,6 +50,8 @@ public slots:
     [[maybe_unused]] void slotAnimationRotation();
     [[maybe_unused]] void slotUpdateLabelPrecision(int value);
 
+    [[maybe_unused]] void slotBarycentricSubdivision();
+
 private:
     void updateEnablementPoly();
     void setInfo(std::string const& textInfo, int timeoutMs = 2000);

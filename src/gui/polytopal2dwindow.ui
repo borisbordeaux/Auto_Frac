@@ -687,6 +687,13 @@
        </property>
       </widget>
      </item>
+     <item row="1" column="9">
+      <widget class="QPushButton" name="pushButton_barycentricSubd">
+       <property name="text">
+        <string>Barycentric Subdivision</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
   </layout>
@@ -700,8 +707,8 @@
    <slot>slotIncreaseInversion()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>254</x>
-     <y>673</y>
+     <x>253</x>
+     <y>675</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -716,8 +723,8 @@
    <slot>slotDecreaseInversion()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>300</x>
-     <y>673</y>
+     <x>299</x>
+     <y>675</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -732,8 +739,8 @@
    <slot>slotProjectCirclesClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1017</x>
-     <y>672</y>
+     <x>995</x>
+     <y>674</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -748,8 +755,8 @@
    <slot>slotDisplayAreaCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>785</x>
-     <y>673</y>
+     <x>771</x>
+     <y>675</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -796,8 +803,8 @@
    <slot>slotCanonizeMesh()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>388</x>
-     <y>673</y>
+     <x>385</x>
+     <y>675</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -812,8 +819,8 @@
    <slot>slotOpenOBJFile()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>388</x>
-     <y>338</y>
+     <x>385</x>
+     <y>339</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -828,8 +835,8 @@
    <slot>slotExportOBJ()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>592</x>
-     <y>338</y>
+     <x>588</x>
+     <y>339</y>
     </hint>
     <hint type="destinationlabel">
      <x>1</x>
@@ -876,8 +883,8 @@
    <slot>slotTypeSelectionChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>785</x>
-     <y>338</y>
+     <x>771</x>
+     <y>339</y>
     </hint>
     <hint type="destinationlabel">
      <x>1551</x>
@@ -892,8 +899,8 @@
    <slot>slotTypeRotationChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1017</x>
-     <y>338</y>
+     <x>995</x>
+     <y>339</y>
     </hint>
     <hint type="destinationlabel">
      <x>1550</x>
@@ -940,8 +947,8 @@
    <slot>slotDisplayDualAreaCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>914</x>
-     <y>673</y>
+     <x>895</x>
+     <y>675</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -965,6 +972,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton_barycentricSubd</sender>
+   <signal>clicked()</signal>
+   <receiver>Polytopal2DWindow</receiver>
+   <slot>slotBarycentricSubdivision()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1052</x>
+     <y>663</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>2</x>
+     <y>873</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>slotOpenOBJFile()</slot>
@@ -984,5 +1007,6 @@
   <slot>slotAnimationRotation()</slot>
   <slot>slotDisplayDualAreaCircles()</slot>
   <slot>slotUpdateLabelPrecision(int)</slot>
+  <slot>slotBarycentricSubdivision()</slot>
  </slots>
 </ui>

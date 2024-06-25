@@ -79,3 +79,13 @@ float he::Face::area() {
 
     return res / 2.0f;
 }
+
+QVector3D he::Face::barycenter() const {
+    QVector3D res(0.0f, 0.0f, 0.0f);
+    std::vector<he::HalfEdge*> halfedges = this->allHalfEdges();
+    for (he::HalfEdge* he: halfedges) {
+        res += he->origin()->pos();
+    }
+    res /= static_cast<float>(halfedges.size());
+    return res;
+}

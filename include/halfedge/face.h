@@ -46,6 +46,8 @@ public:
 
     float area();
 
+    QVector3D barycenter() const;
+
 private:
     //the name of the face
     QString m_name;

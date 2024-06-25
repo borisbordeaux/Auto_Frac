@@ -23,6 +23,8 @@ public:
 	 */
     Vertex(float x, float y, float z, QString name = "");
 
+    Vertex(QVector3D const& pos, QString name = "");
+
     /**
      * @brief getter
      * @return the position of this vertex

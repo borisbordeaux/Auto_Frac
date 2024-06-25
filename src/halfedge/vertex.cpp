@@ -1,13 +1,15 @@
 #include "halfedge/vertex.h"
+
+#include <utility>
 #include "halfedge/halfedge.h"
 #include "halfedge/face.h"
 #include "utils/utils.h"
 
 
 he::Vertex::Vertex(float x, float y, float z, QString name) :
-        m_pos(x, y, z), m_posD(static_cast<qreal>(x), static_cast<qreal>(y), static_cast<qreal>(z)), m_halfEdge(nullptr), m_name(std::move(name)) {
+        m_pos(x, y, z), m_posD(static_cast<qreal>(x), static_cast<qreal>(y), static_cast<qreal>(z)), m_halfEdge(nullptr), m_name(std::move(name)) {}
 
-}
+he::Vertex::Vertex(QVector3D const& pos, QString name) : Vertex(pos.x(), pos.y(), pos.z(), std::move(name)) {}
 
 QVector3D he::Vertex::pos() const {
     return m_pos;
