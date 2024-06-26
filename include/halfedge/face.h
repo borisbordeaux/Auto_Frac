@@ -48,6 +48,8 @@ public:
 
     QVector3D barycenter() const;
 
+    QString toString() const;
+
 private:
     //the name of the face
     QString m_name;

@@ -89,3 +89,9 @@ QVector3D he::Face::barycenter() const {
     res /= static_cast<float>(halfedges.size());
     return res;
 }
+
+QString he::Face::toString() const {
+    QString res;
+    res += m_name + ": has the halfedge " + m_halfEdge->name();
+    return res;
+}

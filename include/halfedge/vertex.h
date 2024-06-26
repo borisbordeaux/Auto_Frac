@@ -74,6 +74,8 @@ public:
     void addHalfEdge(he::HalfEdge* halfEdge);
     QVector<he::HalfEdge*>& otherHalfEdges();
 
+    QString toString() const;
+
 private:
     //coordinates of this vertex
     QVector3D m_pos;

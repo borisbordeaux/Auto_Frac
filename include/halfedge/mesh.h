@@ -25,7 +25,9 @@ public:
     void append(he::Vertex* v);
     void append(he::HalfEdge* he, bool completeNotTwin = false);
     void append(he::Face* f);
-    he::HalfEdge* findByName(QString const& name);
+    he::HalfEdge* findByName(QString const& name, bool useOtherHalfEdgesOfVertices = true);
+
+    void updateHalfEdgeNotTwin();
 
     void reset();
 

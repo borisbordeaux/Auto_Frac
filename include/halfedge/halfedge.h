@@ -92,6 +92,8 @@ public:
 
     [[nodiscard]] float length() const;
 
+    QString toString() const;
+
 private:
     he::Vertex* m_origin;
     he::Face* m_face;

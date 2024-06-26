@@ -79,3 +79,9 @@ void he::Vertex::addHalfEdge(he::HalfEdge* halfEdge) {
 QVector<he::HalfEdge*>& he::Vertex::otherHalfEdges() {
     return m_otherHalfEdges;
 }
+
+QString he::Vertex::toString() const {
+    QString res;
+    res += m_name + ": HalfEdge: " + m_halfEdge->name() + " Position: (" + QString::number(m_pos.x()) + "," + QString::number(m_pos.y()) + "," + QString::number(m_pos.z()) + ")";
+    return res;
+}

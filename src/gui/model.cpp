@@ -24,7 +24,7 @@ void Model::updateDataFaces() {
     //we add data using triangles
     qsizetype nbTriangle = Model::findNbOfTriangle(m_mesh);
 
-    //for each triangleSphere, there are 3 vertices
+    //for each triangle, there are 3 vertices
     qsizetype nbOfAdd = 3 * nbTriangle;
 
     //we resize the data for rapidity
@@ -317,19 +317,9 @@ qsizetype Model::findNbOfTriangle(he::Mesh* mesh) {
 
     //for each face
     for (he::Face* f: mesh->faces()) {
-        //we find the number of vertices of the face
-        qsizetype nbVertices = 1;
-        he::HalfEdge* he = f->halfEdge();
-        he::HalfEdge* heNext = he->next();
-
-        while (he != heNext) {
-            heNext = heNext->next();
-            nbVertices++;
-        }
-
-        //the number of triangleSphere of a face
-        //is the number of vertices - 2
-        nb += nbVertices - 2;
+        //the number of triangle of a face
+        //is the number of edges - 2
+        nb += static_cast<qsizetype>(f->nbEdges() - 2);
     }
 
     return nb;

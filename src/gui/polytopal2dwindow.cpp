@@ -617,8 +617,18 @@ void Polytopal2DWindow::updateEnablementPoly() {
 
     he::algo::barycentricSubdivision(m_mesh);
 
+    this->ui->checkBox_displayMesh->setChecked(true);
+    m_inversionLevel = 0;
+    m_circlesIndex = 0;
+    poly::Face::reset();
+    m_circles.clear();
+    m_circlesDual.clear();
+    m_modelMesh.resetCircles();
+    m_modelMesh.resetCirclesDual();
     m_modelMesh.setMesh(&m_mesh);
-
     m_view->updateData();
     m_view->update();
+    m_openedMesh = true;
+    m_canonicalized = false;
+    this->updateEnablementPoly();
 }

@@ -60,3 +60,9 @@ void he::HalfEdge::setName(QString const& name) {
 float he::HalfEdge::length() const {
     return (m_next->origin()->pos() - m_origin->pos()).length();
 }
+
+QString he::HalfEdge::toString() const {
+    QString res;
+    res += m_name + ": Origin: " + m_origin->name() + " Face: " + m_face->name() + " Twin: " + m_twin->name() + " Prev: " + m_prev->name() + " Next: " + m_next->name();
+    return res;
+}
