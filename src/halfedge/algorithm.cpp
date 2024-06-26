@@ -1,4 +1,3 @@
-#include <iostream>
 #include <map>
 #include "halfedge/algorithm.h"
 
@@ -8,13 +7,8 @@
 #include "halfedge/vertex.h"
 
 void he::algo::barycentricSubdivision(he::Mesh& mesh) {
-
-    std::cout << mesh.toString().toStdString() << std::endl;
-
     std::map<he::HalfEdge*, he::Vertex*> middleVertexOfHalfEdge;
-
     std::vector<he::HalfEdge*> halfEdgesNeedDefineTwin;
-
     std::vector<he::Face*> faces = mesh.faces();
 
     for (he::Face* f: faces) {
@@ -26,7 +20,7 @@ void he::algo::barycentricSubdivision(he::Mesh& mesh) {
         bool firstHe = true;
         for (he::HalfEdge* he: halfedges) {
             he::Vertex* middle;
-            //create a new middle vertex for the halfedge if it does not exist, or take the existant one
+            //create a new middle vertex for the halfedge if it does not exist, or take the existent one
             if (middleVertexOfHalfEdge.find(he) == middleVertexOfHalfEdge.end()) {
                 middle = new he::Vertex((he->origin()->pos() + he->next()->origin()->pos()) / 2.0f, QString::number(mesh.vertices().size() + 1));
                 mesh.append(middle);
@@ -37,7 +31,6 @@ void he::algo::barycentricSubdivision(he::Mesh& mesh) {
             //create new halfedge before the current (CCW)
             he::HalfEdge* newHe = new he::HalfEdge(he->origin(), he->origin()->name() + " " + middle->name());
             mesh.append(newHe);
-            std::cout << "New halfedge created: " << newHe->name().toStdString() << std::endl;
 
             //create new faces
             he::Face* subface1 = new he::Face(QString::number(mesh.faces().size()), newHe);
@@ -53,7 +46,6 @@ void he::algo::barycentricSubdivision(he::Mesh& mesh) {
                 subface2 = new he::Face(QString::number(mesh.faces().size()), he);
                 mesh.append(subface2);
             }
-            firstHe = false;
 
             he::HalfEdge* rd = new he::HalfEdge(middle, middle->name() + " " + v->name());
             he::HalfEdge* ru = new he::HalfEdge(v, v->name() + " " + he->origin()->name());
@@ -63,10 +55,6 @@ void he::algo::barycentricSubdivision(he::Mesh& mesh) {
             mesh.append(ru);
             mesh.append(ld);
             mesh.append(lu);
-            std::cout << "New halfedge created: " << rd->name().toStdString() << std::endl;
-            std::cout << "New halfedge created: " << ru->name().toStdString() << std::endl;
-            std::cout << "New halfedge created: " << ld->name().toStdString() << std::endl;
-            std::cout << "New halfedge created: " << lu->name().toStdString() << std::endl;
 
             //at this point, all elements have been added to the mesh
             //now we need to update the structures
@@ -84,7 +72,7 @@ void he::algo::barycentricSubdivision(he::Mesh& mesh) {
             newHe->setFace(subface1);
             //twin will be done later since twin halfedge might not be created yet
             halfEdgesNeedDefineTwin.push_back(newHe);
-            newHe->setPrev(he->prev());
+            newHe->setPrev(ru);
             newHe->setNext(rd);
             rd->setFace(subface1);
             rd->setTwin(lu);
@@ -104,30 +92,30 @@ void he::algo::barycentricSubdivision(he::Mesh& mesh) {
             halfEdgesNeedDefineTwin.push_back(ld);
             ld->setPrev(he);
             ld->setNext(lu);
+
+            if(firstHe){
+                he->prev()->setNext(newHe);
+            }
+
+            QString name = middle->name() + " " + ld->origin()->name();
+            he->setName(name);
             he->setOrigin(middle);
             he->setFace(subface2);
             //twin will be done later since twin halfedge might not be created yet
             halfEdgesNeedDefineTwin.push_back(he);
             he->setPrev(lu);
             he->setNext(ld);
+
+            firstHe = false;
         }
     }
 
-    //correct name for all halfedges
-    for (he::HalfEdge* he: mesh.halfEdges()) {
-        QString name = he->origin()->name() + " " + he->next()->origin()->name();
-        he->setName(name);
-        std::cout << "Halfedge renamed to: " << he->name().toStdString() << std::endl;
-    }
-
     //correct twin for all halfedges
-    for (he::HalfEdge* he: mesh.halfEdges()) {
+    for (he::HalfEdge* he: halfEdgesNeedDefineTwin) {
         QString name = he->next()->origin()->name() + " " + he->origin()->name();
         he::HalfEdge* twin = mesh.findByName(name, false);
-        std::cout << "Halfedge " << he->name().toStdString() << " has twin: " << name.toStdString() << std::endl;
-        std::cout << "Twin is " << (twin == nullptr ? "null" : "not null") << std::endl;
         he->setTwin(twin);
     }
+
     mesh.updateHalfEdgeNotTwin();
-    std::cout << mesh.toString().toStdString() << std::endl;
 }

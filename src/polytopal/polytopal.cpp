@@ -82,7 +82,7 @@ void planarize(he::Face* f) {
         //projection of all points on the plan
         for (he::Vertex* v: vertices) {
             double lambda = (a * v->posD().x() + b * v->posD().y() + c * v->posD().z() + d) / (a * a + b * b + c * c);
-            v->setPosD(v->posD() - n * lambda * 0.2);
+            v->setPosD(v->posD() - n * lambda * 0.1);
         }
     }
 }
@@ -107,7 +107,7 @@ void tangentify(he::Mesh& m) {
 
             // difference between the closest point and the sphere
             double l = 1.0 - closest.length();
-            he::Point3D c = closest * l * 0.3;
+            he::Point3D c = closest * l * 0.1;
 
             if (!transforms.contains(p1)) {
                 transforms[p1] = p1->posD();
