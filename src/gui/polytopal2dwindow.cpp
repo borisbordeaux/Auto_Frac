@@ -4,6 +4,7 @@
 #include <QStatusBar>
 #include <QFileDialog>
 #include <QProgressBar>
+#include <iostream>
 #include "gui/glview.h"
 #include "halfedge/objreader.h"
 #include "halfedge/objwriter.h"
@@ -614,6 +615,11 @@ void Polytopal2DWindow::updateEnablementPoly() {
 
 [[maybe_unused]] void Polytopal2DWindow::slotBarycentricSubdivision() {
     if (m_mesh.vertices().empty()) return;
+
+    for (he::Vertex* v: m_mesh.vertices()) {
+        std::cout << v->posD().length() << std::endl;
+    }
+    std::cout << "-------" << std::endl;
 
     he::algo::barycentricSubdivision(m_mesh);
 

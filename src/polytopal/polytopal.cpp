@@ -10,13 +10,21 @@
 
 namespace {
 
-he::Point3D closestPoint(he::Point3D const& p1, he::Point3D const& p2) {
-    he::Point3D u = p2 - p1;
+he::Point3D closestPoint(he::Point3D const& B, he::Point3D const& C) {
+    he::Point3D A(0, 0, 0);
+    he::Point3D u = B - C;
     u.normalize();
-    he::Point3D ba = -p1;
-
-    he::Point3D BH = u * he::Point3D::dotProduct(ba, u);
-    return p1 + BH;
+    he::Point3D H = B + u * he::Point3D::dotProduct((A - B), u);
+    he::Point3D BH = H - B;
+    he::Point3D CH = H - C;
+    he::Point3D BC = C - B;
+    if (BH.lengthSquared() < BC.lengthSquared() && CH.lengthSquared() < BC.lengthSquared()) {
+        return B + BH;
+    } else if (CH.lengthSquared() > BC.lengthSquared()) {
+        return B;
+    } else {
+        return C;
+    }
 }
 
 QVector3D closestPoint(QVector3D const& p1, QVector3D const& p2) {
@@ -96,31 +104,26 @@ void planarize(he::Mesh& m) {
 }
 
 void tangentify(he::Mesh& m) {
-    std::vector<he::HalfEdge*> alreadyTreated;
     QHash<he::Vertex*, he::Point3D> transforms;
 
-    for (he::HalfEdge* he: m.halfEdges()) {
-        if (std::find(alreadyTreated.begin(), alreadyTreated.end(), he) == alreadyTreated.end()) {
-            he::Vertex* p1 = he->origin();
-            he::Vertex* p2 = he->next()->origin();
-            he::Point3D closest = closestPoint(p1->posD(), p2->posD());
+    for (he::HalfEdge* he: m.halfEdgesNoTwin()) {
+        he::Vertex* p1 = he->origin();
+        he::Vertex* p2 = he->next()->origin();
+        he::Point3D closest = closestPoint(p1->posD(), p2->posD());
 
-            // difference between the closest point and the sphere
-            double l = 1.0 - closest.length();
-            he::Point3D c = closest * l * 0.1;
+        // difference between the closest point and the sphere
+        double l = 1.0 - closest.length();
+        he::Point3D c = closest * l * 0.2;
 
-            if (!transforms.contains(p1)) {
-                transforms[p1] = p1->posD();
-            }
-            if (!transforms.contains(p2)) {
-                transforms[p2] = p2->posD();
-            }
-
-            transforms[p1] = transforms[p1] + c;
-            transforms[p2] = transforms[p2] + c;
-
-            alreadyTreated.push_back(he->twin());
+        if (!transforms.contains(p1)) {
+            transforms[p1] = p1->posD();
         }
+        if (!transforms.contains(p2)) {
+            transforms[p2] = p2->posD();
+        }
+
+        transforms[p1] = transforms[p1] + c;
+        transforms[p2] = transforms[p2] + c;
     }
 
     for (std::pair<he::Vertex*, he::Point3D> p: transforms.asKeyValueRange()) {
