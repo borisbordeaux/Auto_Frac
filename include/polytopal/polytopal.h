@@ -23,8 +23,8 @@ void canonicalizeMesh(he::Mesh& m);
  */
 void setMeshToOrigin(he::Mesh& m);
 
-std::vector<poly::Circle> computeIlluminatedCircles(he::Mesh const& m);
-std::vector<poly::Circle> computeIlluminatedCirclesDual(he::Mesh const& m);
+std::vector<poly::Circle> computeIlluminatedCircles(he::Mesh const& m, QVector3D const& color);
+std::vector<poly::Circle> computeIlluminatedCirclesDual(he::Mesh const& m, QVector3D const& color);
 std::size_t computeInversions(std::vector<poly::Circle>& circlesToInverse, std::vector<poly::Circle>& circlesInvertive, std::size_t index);
 
 } // poly

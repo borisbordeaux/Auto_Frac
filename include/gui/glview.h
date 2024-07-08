@@ -59,6 +59,8 @@ public:
     void startVideoAnimation();
     void rotationAnimation();
 
+    void setBackGroundColor(float r, float g, float b);
+
 public slots:
     void animationStep();
     void animationCameraStep();
@@ -143,6 +145,9 @@ private:
 
     //flag to update uniforms if needed
     bool m_uniformsDirty = true;
+
+    //flag to update clear color
+    bool m_clearColorDirty = false;
 
     //matrices for rendering
     QMatrix4x4 m_proj;

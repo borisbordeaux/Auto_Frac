@@ -27,7 +27,7 @@ public:
      * @brief setter
      * @param origin the origin to set for this half-edge
      */
-    [[maybe_unused]] void setOrigin(he::Vertex* origin);
+    void setOrigin(he::Vertex* origin);
 
     /**
      * @brief getter
@@ -57,7 +57,7 @@ public:
      * @brief getter
      * @return the previous half-edge of this half-edge
      */
-    [[maybe_unused]] HalfEdge* prev();
+    HalfEdge* prev();
 
     /**
      * @brief setter
@@ -82,17 +82,20 @@ public:
      * @return the name of this half-edge, represented by the vertices
      * it bind, in the order origin -> next.origin
      */
-    [[nodiscard]] QString name() const;
+    QString name() const;
 
     /**
      * @brief setter
      * @param name the name to be set for this half-edge
      */
-    [[maybe_unused]] void setName(QString const& name);
+    void setName(QString const& name);
 
-    [[nodiscard]] float length() const;
+    float length() const;
 
     QString toString() const;
+
+    QString userData() const;
+    void setUserData(QString const& data);
 
 private:
     he::Vertex* m_origin;
@@ -101,6 +104,7 @@ private:
     HalfEdge* m_prev;
     HalfEdge* m_next;
     QString m_name;
+    QString m_userData;
 };
 
 } // poly

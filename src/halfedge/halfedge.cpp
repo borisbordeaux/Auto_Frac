@@ -5,7 +5,8 @@
 he::HalfEdge::HalfEdge(he::Vertex* origin, QString name) :
         m_origin(origin), m_face(nullptr),
         m_twin(nullptr), m_prev(nullptr),
-        m_next(nullptr), m_name(std::move(name)) {
+        m_next(nullptr), m_name(std::move(name)),
+        m_userData() {
 
 }
 
@@ -63,6 +64,14 @@ float he::HalfEdge::length() const {
 
 QString he::HalfEdge::toString() const {
     QString res;
-    res += m_name + ": Origin: " + m_origin->name() + " Face: " + m_face->name() + " Twin: " + m_twin->name() + " Prev: " + m_prev->name() + " Next: " + m_next->name();
+    res += m_name + ": Origin: " + m_origin->name() + " Face: " + m_face->name() + " Twin: " + m_twin->name() + " Prev: " + m_prev->name() + " Next: " + m_next->name() + " User data: " + m_userData;
     return res;
+}
+
+QString he::HalfEdge::userData() const {
+    return m_userData;
+}
+
+void he::HalfEdge::setUserData(QString const& data) {
+    m_userData = data;
 }

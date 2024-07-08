@@ -26,6 +26,8 @@ public:
     void updateCircles();
     void updateCirclesDual();
 
+    void updateUserData();
+
 public slots:
     [[maybe_unused]] void slotOpenOBJFile();
     [[maybe_unused]] void slotExportAllFaces();
@@ -51,6 +53,11 @@ public slots:
     [[maybe_unused]] void slotUpdateLabelPrecision(int value);
 
     [[maybe_unused]] void slotBarycentricSubdivision();
+    [[maybe_unused]] void slotGeneralizedBarycentricSubdivision();
+
+    [[maybe_unused]] void slotChangeTheme();
+
+    [[maybe_unused]] void slotChangeUserData();
 
 private:
     void updateEnablementPoly();

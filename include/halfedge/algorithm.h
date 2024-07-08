@@ -8,6 +8,8 @@ namespace algo {
 
 void barycentricSubdivision(he::Mesh& mesh);
 
+void generalizedBarycentricSubdivision(he::Mesh& mesh);
+
 }
 }
 

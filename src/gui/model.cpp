@@ -357,6 +357,16 @@ he::Face* Model::selectedFace() {
     return res;
 }
 
+he::HalfEdge* Model::selectedEdge() {
+    he::HalfEdge* res = nullptr;
+
+    if (m_selectedEdge - 1 >= 0 && m_selectedEdge - 1 < static_cast<qsizetype>(m_mesh->halfEdgesNoTwin().size())) {
+        res = m_mesh->halfEdgesNoTwin().at(m_selectedEdge - 1);
+    }
+
+    return res;
+}
+
 void Model::addFace(he::Face* f, int ID) {
     //we compute the number of halfedges
     he::HalfEdge* he = f->halfEdge();
@@ -468,6 +478,18 @@ void Model::transformMesh(QMatrix4x4 const& transform) {
     this->updateDataFaces();
     this->updateDataEdge();
     this->updateDataVertices();
+}
+
+void Model::updateColorOfCircles(float r, float g, float b) {
+    for (poly::Circle& c: m_circles) {
+        c.setColor({ r, g, b });
+    }
+    for (poly::Circle& c: m_circlesDual) {
+        c.setColor({ r, g, b });
+    }
+
+    this->updateDataCircles();
+    this->updateDataCirclesDual();
 }
 
 

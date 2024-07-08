@@ -151,26 +151,6 @@ void projectToPlan(QVector3D& point) {
     point.setY(point.y() / (1.0f - point.z()));
     point.setZ(0.0f);
 }
-
-QColor colors[16] = {
-        QColor(Qt::blue),
-        QColor(Qt::darkRed),
-        QColor(Qt::darkGreen),
-        QColor(Qt::cyan),
-        QColor(Qt::magenta),
-        QColor(Qt::yellow),
-        QColor(Qt::darkCyan),
-        QColor(Qt::green),
-        QColor(Qt::darkBlue),
-        QColor(Qt::darkMagenta),
-        QColor(Qt::darkYellow),
-        QColor(Qt::darkGray),
-        QColor(Qt::gray),
-        QColor(Qt::lightGray),
-        QColor(Qt::black),
-        QColor(Qt::white)
-};
-
 } //end anonymous namespace for local functions
 
 
@@ -195,43 +175,19 @@ void poly::canonicalizeMesh(he::Mesh& m) {
     m.updateFloatPosFromDoublePos();
 }
 
-std::vector<poly::Circle> poly::computeIlluminatedCircles(const he::Mesh& m) {
+std::vector<poly::Circle> poly::computeIlluminatedCircles(const he::Mesh& m, QVector3D const& color) {
     std::vector<poly::Circle> res;
-
-    int colorIndex = 15;
-
     for (he::Vertex* v: m.vertices()) {
-#if 0
-        QList<he::HalfEdge*> otherHE = v->otherHalfEdges();
-        if (otherHE.size() > 1) {
-            QVector3D v1 = closestPoint(v->pos(), v->halfEdge()->next()->origin()->pos());
-            QVector3D v2 = closestPoint(otherHE[0]->origin()->pos(), otherHE[0]->next()->origin()->pos());
-            QVector3D v3 = closestPoint(otherHE[1]->origin()->pos(), otherHE[1]->next()->origin()->pos());
-
-            //always project to plan
-            projectToPlan(v1);
-            projectToPlan(v2);
-            projectToPlan(v3);
-
-            poly::Circle c { v1, v2, v3 };
-            c.setAxisX({ 1, 0, 0 });
-            c.setAxisY({ 0, 1, 0 });
-        }
-#else
         float coef = 1.0f / qSqrt(v->pos().lengthSquared() - 1.0f);
         poly::Circle c { coef * v->pos().x(), coef * v->pos().y(), coef * v->pos().z(), coef };
-#endif
-        c.setColor({ colors[colorIndex % 16].redF(), colors[colorIndex % 16].greenF(), colors[colorIndex % 16].blueF() });
+        c.setColor(color);
         res.push_back(c);
-        //colorIndex++;
     }
-
     return res;
 }
 
-std::vector<poly::Circle> poly::computeIlluminatedCirclesDual(he::Mesh const& m) {
+std::vector<poly::Circle> poly::computeIlluminatedCirclesDual(he::Mesh const& m, QVector3D const& color) {
     std::vector<poly::Circle> res;
-    int colorIndex = 15;
 
     for (he::Face* f: m.faces()) {
         std::vector<he::HalfEdge*> allHE = f->allHalfEdges();
@@ -248,7 +204,7 @@ std::vector<poly::Circle> poly::computeIlluminatedCirclesDual(he::Mesh const& m)
             poly::Circle c { v1, v2, v3 };
             c.setAxisX({ 1, 0, 0 });
             c.setAxisY({ 0, 1, 0 });
-            c.setColor({ colors[colorIndex % 16].redF(), colors[colorIndex % 16].greenF(), colors[colorIndex % 16].blueF() });
+            c.setColor(color);
             res.push_back(c);
         }
     }

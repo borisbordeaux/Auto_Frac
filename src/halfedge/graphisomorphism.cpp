@@ -18,7 +18,7 @@ std::string idToStr(std::size_t ID, std::size_t maxNodes) {
 }
 
 /**
- * Compute the Euler path begining by the given halfedge
+ * Compute the Euler path beginning by the given halfedge
  * @param he the first halfedge of the path
  * @param clockwise indicates the cycle order of edges
  * @param maxNodes the maximum number of nodes in the graph
@@ -28,12 +28,12 @@ std::string idToStr(std::size_t ID, std::size_t maxNodes) {
 std::pair<std::string, std::string> computeEulerPathFromHalfEdge(he::HalfEdge* he, bool clockwise, std::size_t maxNodes) {
     //algorithm of the paper "A simple and efficient algorithm for determining isomorphism of planar triply connected graphs, Weinberg"
     std::string resTopo = maxNodes < 10 ? "1" : "01";
-    std::string resType = he->name().toStdString();
+    std::string resType = he->userData().toStdString();
     std::map<he::Vertex*, std::size_t> visitedNodesID;
     std::vector<he::HalfEdge*> visitedHalfEdges;
     he::HalfEdge* currentHalfEdge = he;
 
-    //begining insertions
+    //beginning insertions
     visitedNodesID[he->origin()] = visitedNodesID.size() + 1;
 
     bool end = false;
@@ -52,7 +52,7 @@ std::pair<std::string, std::string> computeEulerPathFromHalfEdge(he::HalfEdge* h
 
         //write the visited node ID in the path
         resTopo += idToStr(visitedNodesID[currentHalfEdge->next()->origin()], maxNodes);
-        resType += "," + currentHalfEdge->name().toStdString();
+        resType += "," + currentHalfEdge->userData().toStdString();
 
         //find next halfedge
         if (newNodeReached) {
@@ -94,11 +94,11 @@ std::vector<std::pair<std::string, std::string>> computeEulerPathMatrix(he::Mesh
 }
 }
 
-bool he::GraphComparator::areIsomorph(he::Mesh const& mesh1, he::Mesh const& mesh2, bool compareNamesOfHalfEdges) {
+bool he::GraphComparator::areIsomorph(he::Mesh const& mesh1, he::Mesh const& mesh2, bool compareUserData) {
     std::vector<std::pair<std::string, std::string>> matrix1 = computeEulerPathMatrix(mesh1);
     std::pair<std::string, std::string> code2 = computeEulerPathFromHalfEdge(mesh2.halfEdges()[0], false, mesh2.vertices().size());
 
-    if (compareNamesOfHalfEdges) {
+    if (compareUserData) {
         return std::find(matrix1.begin(), matrix1.end(), code2) != matrix1.end();
     } else {
         return std::find_if(matrix1.begin(), matrix1.end(), [&code2](auto const& a) { return a.first == code2.first; }) != matrix1.end();

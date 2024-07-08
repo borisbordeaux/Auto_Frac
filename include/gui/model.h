@@ -5,6 +5,8 @@
 #include <QVector3D>
 
 namespace he {
+class HalfEdge;
+
 class Face;
 
 class Mesh;
@@ -19,43 +21,43 @@ public:
     Model() = default;
 
     //constant data to be thrown to the GPU
-    [[nodiscard]] const float* constDataFace() const { return m_dataFace.constData(); }
+    const float* constDataFace() const { return m_dataFace.constData(); }
 
-    [[nodiscard]] const float* constDataSphere() const { return m_dataSphere.constData(); }
+    const float* constDataSphere() const { return m_dataSphere.constData(); }
 
-    [[nodiscard]] const float* constDataEdge() const { return m_dataEdge.constData(); }
+    const float* constDataEdge() const { return m_dataEdge.constData(); }
 
-    [[nodiscard]] const float* constDataCircles() const { return m_dataCircles.constData(); }
+    const float* constDataCircles() const { return m_dataCircles.constData(); }
 
-    [[nodiscard]] const float* constDataCirclesDual() const { return m_dataCirclesDual.constData(); }
+    const float* constDataCirclesDual() const { return m_dataCirclesDual.constData(); }
 
-    [[nodiscard]] const float* constDataVertices() const { return m_dataVertices.constData(); }
+    const float* constDataVertices() const { return m_dataVertices.constData(); }
 
     //the number of floats of vertices (in GPU POV)
-    [[nodiscard]] int countFace() const { return m_countFace; }
+    int countFace() const { return m_countFace; }
 
-    [[nodiscard]] int countSphere() const { return m_countSphere; }
+    int countSphere() const { return m_countSphere; }
 
-    [[nodiscard]] int countEdge() const { return m_countEdge; }
+    int countEdge() const { return m_countEdge; }
 
-    [[nodiscard]] int countCircles() const { return m_countCircle; }
+    int countCircles() const { return m_countCircle; }
 
-    [[nodiscard]] int countCirclesDual() const { return m_countCircleDual; }
+    int countCirclesDual() const { return m_countCircleDual; }
 
-    [[nodiscard]] int countVertices() const { return m_countVertices; }
+    int countVertices() const { return m_countVertices; }
 
     //the number of vertices (in GPU POV)
-    [[nodiscard]] int vertexCountFace() const { return m_countFace / 8; }
+    int vertexCountFace() const { return m_countFace / 8; }
 
-    [[nodiscard]] int vertexCountSphere() const { return m_countSphere / 8; }
+    int vertexCountSphere() const { return m_countSphere / 8; }
 
-    [[nodiscard]] int vertexCountEdge() const { return m_countEdge / 8; }
+    int vertexCountEdge() const { return m_countEdge / 8; }
 
-    [[nodiscard]] int vertexCountCircles() const { return m_countCircle / 8; }
+    int vertexCountCircles() const { return m_countCircle / 8; }
 
-    [[nodiscard]] int vertexCountCirclesDual() const { return m_countCircleDual / 8; }
+    int vertexCountCirclesDual() const { return m_countCircleDual / 8; }
 
-    [[nodiscard]] int vertexCountVertices() const { return m_countVertices / 8; }
+    int vertexCountVertices() const { return m_countVertices / 8; }
 
     /**
      * @brief update all data that has to be displayed.
@@ -135,8 +137,15 @@ public:
      * @brief getter
      * @return a pointer to the selected face, nullptr if no face is selected
      */
-    [[nodiscard]] he::Face* selectedFace();
+    he::Face* selectedFace();
 
+    /**
+     * @brief getter
+     * @return a pointer to the selected edge, nullptr if no face is selected
+     */
+    he::HalfEdge* selectedEdge();
+
+    void updateColorOfCircles(float r, float g, float b);
 
 private:
 

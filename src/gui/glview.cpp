@@ -367,6 +367,11 @@ void GLView::paintGL() {
         m_uniformsDirty = false;
     }
 
+    if(m_clearColorDirty) {
+        glClearColor(m_clearColor.x(), m_clearColor.y(), m_clearColor.z(), 1.0f);
+        m_clearColorDirty = false;
+    }
+
     //click management
     if (m_clicked) {
         if (m_pickingType == PickingType::PickingFace) {
@@ -597,6 +602,7 @@ void GLView::clickEdgeManagement() {
 
     //set the selected face using the red color
     m_model->setSelectedEdge(max);
+    m_mainWindow->updateUserData();
 
     //update the data for drawing the selected object in the right color
     m_model->updateDataEdge();
@@ -678,7 +684,7 @@ void GLView::clickVertexManagement() {
 }
 
 void GLView::animationStep() {
-    m_camera.rotateAzimuth(qDegreesToRadians(1.0f));
+    m_camera.rotateAzimuth(qDegreesToRadians(90.0f / static_cast<float>(this->screen()->refreshRate())));
     m_uniformsDirty = true;
     update();
 }
@@ -823,7 +829,7 @@ void GLView::rotationAnimation() {
     if (m_timerAnimation.isActive()) {
         m_timerAnimation.stop();
     } else {
-        m_timerAnimation.start(0);
+        m_timerAnimation.start(static_cast<int>(1000.0 / this->screen()->refreshRate()));
     }
 }
 
@@ -847,5 +853,12 @@ void GLView::setRotationType(RotationType type) {
 
 void GLView::startVideoAnimation() {
     m_timerDisplaySphere.start();
+}
+
+void GLView::setBackGroundColor(float r, float g, float b) {
+    m_clearColor.setX(r);
+    m_clearColor.setY(g);
+    m_clearColor.setZ(b);
+    m_clearColorDirty = true;
 }
 
