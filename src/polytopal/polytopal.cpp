@@ -1,7 +1,6 @@
 #include "polytopal/polytopal.h"
 
 #include <QHash>
-#include <QColor>
 #include "halfedge/mesh.h"
 #include "halfedge/vertex.h"
 #include "halfedge/halfedge.h"
@@ -132,17 +131,14 @@ void tangentify(he::Mesh& m) {
 }
 
 void recenter(he::Mesh& m) {
-    std::vector<he::HalfEdge*> alreadyTreated;
-    std::vector<he::Point3D> positions;
-    for (he::HalfEdge* he: m.halfEdges()) {
-        if (std::find(alreadyTreated.begin(), alreadyTreated.end(), he) == alreadyTreated.end()) {
-            positions.push_back(closestPoint(he->origin()->posD(), he->next()->origin()->posD()));
-            alreadyTreated.push_back(he->twin());
-        }
+    he::Point3D barycenter { 0, 0, 0 };
+    for (he::HalfEdge* he: m.halfEdgesNoTwin()) {
+        barycenter += closestPoint(he->origin()->posD(), he->next()->origin()->posD());
     }
-    he::Point3D bary = barycenter(positions);
+    barycenter /= static_cast<double>(m.halfEdgesNoTwin().size());
+
     for (he::Vertex* v: m.vertices()) {
-        v->setPosD(v->posD() - bary);
+        v->setPosD(v->posD() - barycenter);
     }
 }
 
@@ -168,10 +164,12 @@ void poly::setMeshToOrigin(he::Mesh& m) {
     }
 }
 
-void poly::canonicalizeMesh(he::Mesh& m) {
-    tangentify(m);
-    recenter(m);
-    planarize(m);
+void poly::canonicalizeMesh(he::Mesh& m, int steps) {
+    for (int i = 0; i < steps; i++) {
+        tangentify(m);
+        recenter(m);
+        planarize(m);
+    }
     m.updateFloatPosFromDoublePos();
 }
 

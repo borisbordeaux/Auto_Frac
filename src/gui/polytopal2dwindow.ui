@@ -461,10 +461,27 @@
      <property name="sizeConstraint">
       <enum>QLayout::SetMinimumSize</enum>
      </property>
-     <item row="0" column="11">
-      <widget class="QCheckBox" name="checkBox_polytopalPlanarControlPoints">
+     <item row="2" column="1" colspan="2">
+      <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>Planar CP</string>
+        <string>Corner edges</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="5">
+      <widget class="QLabel" name="label_precision">
+       <property name="text">
+        <string>1e-6</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="14">
+      <widget class="QCheckBox" name="checkBox_darkTheme">
+       <property name="text">
+        <string>Dark theme</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -481,16 +498,10 @@
        </property>
       </spacer>
      </item>
-     <item row="1" column="2">
-      <widget class="QPushButton" name="pushButton_DecrementIteration">
-       <property name="maximumSize">
-        <size>
-         <width>40</width>
-         <height>16777215</height>
-        </size>
-       </property>
+     <item row="1" column="11">
+      <widget class="QCheckBox" name="checkBox_animations">
        <property name="text">
-        <string>-</string>
+        <string>Animations</string>
        </property>
       </widget>
      </item>
@@ -498,148 +509,6 @@
       <widget class="QPushButton" name="pushButton_canonizeMesh">
        <property name="text">
         <string>Canonicalize</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="9">
-      <widget class="QPushButton" name="pushButton_ExportSelectedFace">
-       <property name="text">
-        <string>Export Selected</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="12">
-      <widget class="QCheckBox" name="checkBox_displayUnitSphere">
-       <property name="text">
-        <string>Sphere</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="8">
-      <widget class="QCheckBox" name="checkBox_projectCircles">
-       <property name="text">
-        <string>Project</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="3">
-      <widget class="QPushButton" name="pushButton_openOBJ">
-       <property name="text">
-        <string>Open OBJ...</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="5">
-      <widget class="QLabel" name="label_precision">
-       <property name="text">
-        <string>1e-6</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QPushButton" name="pushButton_IncrementIteration">
-       <property name="maximumSize">
-        <size>
-         <width>40</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>+</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="12">
-      <widget class="QPushButton" name="pushButton_2">
-       <property name="text">
-        <string>Animate Rotation</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="15" rowspan="2">
-      <spacer name="horizontalSpacer_11">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="0" column="7">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Rotation Type</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="9">
-      <widget class="QPushButton" name="pushButton_barycentricSubd">
-       <property name="text">
-        <string>Barycentric Subdivision</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="13">
-      <widget class="QCheckBox" name="checkBox_displayMesh">
-       <property name="text">
-        <string>Mesh</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="5">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Selection type:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="6">
-      <widget class="QPushButton" name="pushButton_displayCircles">
-       <property name="text">
-        <string>Display Circles</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="14">
-      <widget class="QCheckBox" name="checkBox_darkTheme">
-       <property name="text">
-        <string>Dark theme</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="13">
-      <widget class="QPushButton" name="pushButton_VideoAnimation">
-       <property name="text">
-        <string>Video Animation</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="4">
-      <widget class="QSlider" name="horizontalSlider_precision">
-       <property name="minimum">
-        <number>3</number>
-       </property>
-       <property name="maximum">
-        <number>16</number>
-       </property>
-       <property name="value">
-        <number>6</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
        </property>
       </widget>
      </item>
@@ -662,10 +531,75 @@
        </item>
       </widget>
      </item>
-     <item row="1" column="11">
-      <widget class="QCheckBox" name="checkBox_animations">
+     <item row="1" column="7">
+      <widget class="QPushButton" name="pushButton_displayCirclesDual">
        <property name="text">
-        <string>Animations</string>
+        <string>Display Dual Circles</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="11">
+      <widget class="QCheckBox" name="checkBox_polytopalPlanarControlPoints">
+       <property name="text">
+        <string>Planar CP</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="9">
+      <widget class="QLineEdit" name="lineEdit_userData"/>
+     </item>
+     <item row="1" column="12">
+      <widget class="QPushButton" name="pushButton_2">
+       <property name="text">
+        <string>Animate Rotation</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3">
+      <widget class="QPushButton" name="pushButton_openOBJ">
+       <property name="text">
+        <string>Open OBJ...</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="4">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Edge edges</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="13">
+      <widget class="QCheckBox" name="checkBox_displayMesh">
+       <property name="text">
+        <string>Mesh</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="13">
+      <widget class="QPushButton" name="pushButton_VideoAnimation">
+       <property name="text">
+        <string>Video Animation</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="4">
+      <widget class="QPushButton" name="pushButton_ExportOBJ">
+       <property name="text">
+        <string>Export OBJ...</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="3">
+      <widget class="QSpinBox" name="spinBox_cornerEdges">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="value">
+        <number>2</number>
        </property>
       </widget>
      </item>
@@ -683,17 +617,17 @@
        </item>
       </widget>
      </item>
-     <item row="0" column="4">
-      <widget class="QPushButton" name="pushButton_ExportOBJ">
+     <item row="0" column="5">
+      <widget class="QLabel" name="label">
        <property name="text">
-        <string>Export OBJ...</string>
+        <string>Selection type:</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="7">
-      <widget class="QPushButton" name="pushButton_displayCirclesDual">
+     <item row="2" column="11">
+      <widget class="QPushButton" name="pushButton_changeAllUserData">
        <property name="text">
-        <string>Display Dual Circles</string>
+        <string>Change All</string>
        </property>
       </widget>
      </item>
@@ -704,8 +638,18 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="9">
-      <widget class="QLineEdit" name="lineEdit_userData"/>
+     <item row="1" column="2">
+      <widget class="QPushButton" name="pushButton_DecrementIteration">
+       <property name="maximumSize">
+        <size>
+         <width>40</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>-</string>
+       </property>
+      </widget>
      </item>
      <item row="2" column="8">
       <widget class="QLabel" name="label_3">
@@ -717,10 +661,23 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="10">
-      <widget class="QPushButton" name="pushButton_changeUserData">
+     <item row="2" column="5">
+      <widget class="QSpinBox" name="spinBox_edgeEdges">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="value">
+        <number>2</number>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="12">
+      <widget class="QCheckBox" name="checkBox_displayUnitSphere">
        <property name="text">
-        <string>Change Selected</string>
+        <string>Sphere</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -731,38 +688,107 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="11">
-      <widget class="QPushButton" name="pushButton_changeAllUserData">
+     <item row="1" column="6">
+      <widget class="QPushButton" name="pushButton_displayCircles">
        <property name="text">
-        <string>Change All</string>
+        <string>Display Circles</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="1" colspan="2">
-      <widget class="QLabel" name="label_4">
+     <item row="1" column="1">
+      <widget class="QPushButton" name="pushButton_IncrementIteration">
+       <property name="maximumSize">
+        <size>
+         <width>40</width>
+         <height>16777215</height>
+        </size>
+       </property>
        <property name="text">
-        <string>Corner edges</string>
+        <string>+</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="4">
-      <widget class="QLabel" name="label_5">
+     <item row="0" column="16" rowspan="2">
+      <spacer name="horizontalSpacer_11">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="0" column="9">
+      <widget class="QPushButton" name="pushButton_ExportSelectedFace">
        <property name="text">
-        <string>Edge edges</string>
+        <string>Export Selected</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="3">
-      <widget class="QSpinBox" name="spinBox_cornerEdges">
+     <item row="1" column="9">
+      <widget class="QPushButton" name="pushButton_barycentricSubd">
+       <property name="text">
+        <string>Barycentric Subdivision</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="8">
+      <widget class="QCheckBox" name="checkBox_projectCircles">
+       <property name="text">
+        <string>Project</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="7">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Rotation Type</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="14">
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>Canonicalize steps</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="10">
+      <widget class="QPushButton" name="pushButton_changeUserData">
+       <property name="text">
+        <string>Change Selected</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="4">
+      <widget class="QSlider" name="horizontalSlider_precision">
+       <property name="minimum">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <number>16</number>
+       </property>
+       <property name="value">
+        <number>6</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="15">
+      <widget class="QSpinBox" name="spinBox_canonicalizeStep">
        <property name="minimum">
         <number>1</number>
        </property>
-      </widget>
-     </item>
-     <item row="2" column="5">
-      <widget class="QSpinBox" name="spinBox_edgeEdges">
-       <property name="minimum">
-        <number>1</number>
+       <property name="maximum">
+        <number>100</number>
+       </property>
+       <property name="value">
+        <number>10</number>
        </property>
       </widget>
      </item>

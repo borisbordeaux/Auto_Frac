@@ -75,16 +75,10 @@ void GLView::initBuffers() {
     //enable enough attrib array for all the data of the mesh's vertices
     glEnableVertexAttribArray(0); //coordinates
     glEnableVertexAttribArray(1); //normal
-    glEnableVertexAttribArray(2); //ID for picking
-    glEnableVertexAttribArray(3); //is selected
     //3 coordinates of the vertex
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), nullptr);
     //3 coordinates of the vertex's normal
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
-    //the ID
-    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(6 * sizeof(GLfloat)));
-    //whether it's selected or not, to simplify the code, a negative value means not selected while a positive value means selected
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(7 * sizeof(GLfloat)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
     m_vboSphere.release();
     m_vaoSphere.release();
 
@@ -186,6 +180,21 @@ void GLView::initShaders() {
 }
 
 void GLView::initShadersView() {
+    //init shader for sphere
+    m_programSphere = new QOpenGLShaderProgram();
+    m_programSphere->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/sphere/vs.glsl");
+    m_programSphere->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/sphere/fs.glsl");
+    m_programSphere->bindAttributeLocation("vertex", 0);
+    m_programSphere->bindAttributeLocation("normal", 1);
+    m_programSphere->link();
+
+    //get locations of uniforms
+    m_programSphere->bind();
+    m_projMatrixLocSphere = m_programSphere->uniformLocation("projMatrix");
+    m_mvMatrixLocSphere = m_programSphere->uniformLocation("mvMatrix");
+    m_lightPosLocSphere = m_programSphere->uniformLocation("lightPos");
+    m_cameraPosLocSphere = m_programSphere->uniformLocation("cameraPosition");
+
     //init shader for faces
     m_programFaces = new QOpenGLShaderProgram();
     m_programFaces->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/faces/vs.glsl");
@@ -324,6 +333,13 @@ void GLView::initializeGL() {
 void GLView::paintGL() {
     if (m_uniformsDirty) {
         //set values for uniforms
+        m_programSphere->bind();
+        m_programSphere->setUniformValue(m_projMatrixLocSphere, m_proj);
+        m_programSphere->setUniformValue(m_mvMatrixLocSphere, m_camera.getViewMatrix());
+        m_programSphere->setUniformValue(m_cameraPosLocSphere, m_camera.getEye());
+        m_programSphere->setUniformValue(m_lightPosLocSphere, m_camera.getEye());
+        m_programSphere->release();
+
         m_programFaces->bind();
         m_programFaces->setUniformValue(m_projMatrixLoc, m_proj);
         m_programFaces->setUniformValue(m_mvMatrixLoc, m_camera.getViewMatrix());
@@ -367,7 +383,7 @@ void GLView::paintGL() {
         m_uniformsDirty = false;
     }
 
-    if(m_clearColorDirty) {
+    if (m_clearColorDirty) {
         glClearColor(m_clearColor.x(), m_clearColor.y(), m_clearColor.z(), 1.0f);
         m_clearColorDirty = false;
     }
@@ -393,10 +409,12 @@ void GLView::paintGL() {
     m_programFaces->bind();
     m_vaoFaces.bind();
     glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountFace());
+    m_programFaces->release();
 
+    m_programSphere->bind();
     m_vaoSphere.bind();
     glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountSphere());
-    m_programFaces->release();
+    m_programSphere->release();
 
     //draw circles
     m_programLines->bind();
@@ -518,15 +536,19 @@ void GLView::clickFaceManagement() {
     //clear buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //using the picking shader
-    m_programFacesPicking->bind();
-
-    //draw faces
-    m_vaoFaces.bind();
-    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountFace());
+    //draw sphere only in depth buffer
+    m_programSphere->bind();
+    glColorMask(false, false, false, false);
     m_vaoSphere.bind();
     glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountSphere());
-    m_programFaces->release();
+    m_programSphere->release();
+    glColorMask(true, true, true, true);
+
+    //draw faces using the picking shader
+    m_programFacesPicking->bind();
+    m_vaoFaces.bind();
+    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountFace());
+    m_programFacesPicking->release();
 
     //get the rendered image of the scene
     QImage image = grabFramebuffer();
@@ -563,15 +585,20 @@ void GLView::clickEdgeManagement() {
     //clear buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //draw faces only in depth buffer
-    m_programFaces->bind();
+    //draw only in depth buffer
     glColorMask(false, false, false, false);
+    //draw faces
+    m_programFaces->bind();
     m_vaoFaces.bind();
     glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountFace());
+    m_programFaces->release();
+
+    //draw sphere only in depth buffer
+    m_programSphere->bind();
     m_vaoSphere.bind();
     glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountSphere());
+    m_programSphere->release();
     glColorMask(true, true, true, true);
-    m_programFaces->release();
 
     //draw edges
     m_programLinesPicking->bind();
@@ -629,15 +656,19 @@ void GLView::clickVertexManagement() {
     //clear buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //draw faces only in depth buffer
-    m_programFaces->bind();
+    //draw only in depth buffer
     glColorMask(false, false, false, false);
+    //faces
+    m_programFaces->bind();
     m_vaoFaces.bind();
     glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountFace());
+    m_programFaces->release();
+
+    m_programSphere->bind();
     m_vaoSphere.bind();
     glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountSphere());
+    m_programSphere->release();
     glColorMask(true, true, true, true);
-    m_programFaces->release();
 
     //draw vertices
     m_programVerticesPicking->bind();

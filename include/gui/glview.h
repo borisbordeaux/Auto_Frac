@@ -111,6 +111,7 @@ private:
     QOpenGLBuffer m_vboCircles;
     QOpenGLBuffer m_vboCirclesDual;
     QOpenGLBuffer m_vboVertices;
+    QOpenGLShaderProgram* m_programSphere = nullptr;
     QOpenGLShaderProgram* m_programFaces = nullptr;
     QOpenGLShaderProgram* m_programFacesPicking = nullptr;
     QOpenGLShaderProgram* m_programLines = nullptr;
@@ -119,6 +120,11 @@ private:
     QOpenGLShaderProgram* m_programVerticesPicking = nullptr;
 
     //location of the different variables in the GPU
+    //Sphere viewing
+    int m_projMatrixLocSphere = 0;
+    int m_mvMatrixLocSphere = 0;
+    int m_lightPosLocSphere = 0;
+    int m_cameraPosLocSphere = 0;
     //Faces viewing
     int m_projMatrixLoc = 0;
     int m_mvMatrixLoc = 0;

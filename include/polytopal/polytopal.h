@@ -14,8 +14,9 @@ namespace poly {
  * - The barycenter of the tangent points is at the origin of the unit sphere.<br>
  * - All faces are planar
  * @param m the mesh to canonize
+ * @param steps the number of steps to do
  */
-void canonicalizeMesh(he::Mesh& m);
+void canonicalizeMesh(he::Mesh& m, int steps);
 
 /**
  * Centers the mesh around the origin

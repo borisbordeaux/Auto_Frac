@@ -55,7 +55,7 @@ void Model::updateDataSphere() {
     qsizetype nbOfAdd = 3 * nbTriangle;
 
     //we resize the data for rapidity
-    m_dataSphere.resize(nbOfAdd * 8);
+    m_dataSphere.resize(nbOfAdd * 6);
 
     //add each face
     for (he::Face* f: m_sphereMesh->faces()) {
@@ -222,12 +222,8 @@ void Model::addVertexSphere(const QVector3D& v) {
     *p++ = v.x();
     *p++ = v.y();
     *p++ = v.z();
-    //the ID of the face
-    *p++ = 0.0f;
-    //whether the face is selected or not
-    *p = -1.0f;
     //we update the amount of data
-    m_countSphere += 8;
+    m_countSphere += 6;
 }
 
 void Model::addVertexEdge(QVector3D const& v, QVector3D const& color, float ID, float isSelected) {

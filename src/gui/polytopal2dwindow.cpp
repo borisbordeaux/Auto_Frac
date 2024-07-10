@@ -150,11 +150,12 @@ void Polytopal2DWindow::setInfoAdvancement(int percent) {
 
 void Polytopal2DWindow::canonicalizeStep() {
     std::vector<he::Point3D> oldPos;
+    oldPos.reserve(m_mesh.vertices().size());
     for (he::Vertex const* v: m_mesh.vertices()) {
         oldPos.push_back(v->posD());
     }
 
-    poly::canonicalizeMesh(m_mesh);
+    poly::canonicalizeMesh(m_mesh, this->ui->spinBox_canonicalizeStep->value());
 
     //compute the difference of positions for the point that moved the more
     double maxError = -1.0;
@@ -631,7 +632,7 @@ void Polytopal2DWindow::updateEnablementPoly() {
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotBarycentricSubdivision() {
-    if (m_mesh.vertices().empty()) return;
+    if (m_mesh.vertices().empty()) { return; }
 
     he::algo::barycentricSubdivision(m_mesh);
 
@@ -652,7 +653,7 @@ void Polytopal2DWindow::updateEnablementPoly() {
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotGeneralizedBarycentricSubdivision() {
-    if (m_mesh.vertices().empty()) return;
+    if (m_mesh.vertices().empty()) { return; }
 
     he::algo::generalizedBarycentricSubdivision(m_mesh, this->ui->spinBox_cornerEdges->value(), this->ui->spinBox_edgeEdges->value());
 
@@ -692,17 +693,18 @@ void Polytopal2DWindow::updateEnablementPoly() {
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotChangeUserData() {
-    if (m_modelMesh.selectedEdge() == nullptr) return;
+    if (m_modelMesh.selectedEdge() == nullptr) { return; }
     m_modelMesh.selectedEdge()->setUserData(this->ui->lineEdit_userData->text());
     m_modelMesh.selectedEdge()->twin()->setUserData(this->ui->lineEdit_userData->text());
 }
 
 void Polytopal2DWindow::updateUserData() {
-    if (m_modelMesh.selectedEdge() == nullptr) return;
+    if (m_modelMesh.selectedEdge() == nullptr) { return; }
     this->ui->lineEdit_userData->setText(m_modelMesh.selectedEdge()->userData());
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotChangeAllUserData() {
-    for (he::HalfEdge* he: m_mesh.halfEdges())
+    for (he::HalfEdge* he: m_mesh.halfEdges()) {
         he->setUserData(this->ui->lineEdit_userData->text());
+    }
 }
