@@ -720,7 +720,7 @@
      <item row="2" column="10">
       <widget class="QPushButton" name="pushButton_changeUserData">
        <property name="text">
-        <string>Change</string>
+        <string>Change Selected</string>
        </property>
       </widget>
      </item>
@@ -728,6 +728,41 @@
       <widget class="QPushButton" name="pushButton_generalizedBarycentricSubd">
        <property name="text">
         <string>Generalized Barycentric Subdivision</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="11">
+      <widget class="QPushButton" name="pushButton_changeAllUserData">
+       <property name="text">
+        <string>Change All</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1" colspan="2">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Corner edges</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="4">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Edge edges</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="3">
+      <widget class="QSpinBox" name="spinBox_cornerEdges">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="5">
+      <widget class="QSpinBox" name="spinBox_edgeEdges">
+       <property name="minimum">
+        <number>1</number>
        </property>
       </widget>
      </item>
@@ -744,7 +779,7 @@
    <slot>slotIncreaseInversion()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>204</x>
+     <x>196</x>
      <y>505</y>
     </hint>
     <hint type="destinationlabel">
@@ -760,7 +795,7 @@
    <slot>slotDecreaseInversion()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>250</x>
+     <x>242</x>
      <y>505</y>
     </hint>
     <hint type="destinationlabel">
@@ -776,7 +811,7 @@
    <slot>slotProjectCirclesClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>919</x>
+     <x>903</x>
      <y>504</y>
     </hint>
     <hint type="destinationlabel">
@@ -792,7 +827,7 @@
    <slot>slotDisplayAreaCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>687</x>
+     <x>671</x>
      <y>505</y>
     </hint>
     <hint type="destinationlabel">
@@ -840,7 +875,7 @@
    <slot>slotCanonizeMesh()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>338</x>
+     <x>330</x>
      <y>505</y>
     </hint>
     <hint type="destinationlabel">
@@ -856,7 +891,7 @@
    <slot>slotOpenOBJFile()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>338</x>
+     <x>330</x>
      <y>254</y>
     </hint>
     <hint type="destinationlabel">
@@ -872,7 +907,7 @@
    <slot>slotExportOBJ()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>494</x>
+     <x>478</x>
      <y>254</y>
     </hint>
     <hint type="destinationlabel">
@@ -904,7 +939,7 @@
    <slot>slotExportSelectedFace()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1074</x>
+     <x>1055</x>
      <y>254</y>
     </hint>
     <hint type="destinationlabel">
@@ -920,7 +955,7 @@
    <slot>slotTypeSelectionChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>687</x>
+     <x>671</x>
      <y>254</y>
     </hint>
     <hint type="destinationlabel">
@@ -936,7 +971,7 @@
    <slot>slotTypeRotationChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>919</x>
+     <x>903</x>
      <y>254</y>
     </hint>
     <hint type="destinationlabel">
@@ -984,7 +1019,7 @@
    <slot>slotDisplayDualAreaCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>816</x>
+     <x>800</x>
      <y>505</y>
     </hint>
     <hint type="destinationlabel">
@@ -1000,7 +1035,7 @@
    <slot>slotUpdateLabelPrecision(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>494</x>
+     <x>478</x>
      <y>501</y>
     </hint>
     <hint type="destinationlabel">
@@ -1016,7 +1051,7 @@
    <slot>slotBarycentricSubdivision()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1074</x>
+     <x>1055</x>
      <y>505</y>
     </hint>
     <hint type="destinationlabel">
@@ -1073,6 +1108,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton_changeAllUserData</sender>
+   <signal>clicked()</signal>
+   <receiver>Polytopal2DWindow</receiver>
+   <slot>slotChangeAllUserData()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1216</x>
+     <y>743</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1754</x>
+     <y>724</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>slotOpenOBJFile()</slot>
@@ -1096,5 +1147,6 @@
   <slot>slotChangeTheme()</slot>
   <slot>slotChangeUserData()</slot>
   <slot>slotGeneralizedBarycentricSubdivision()</slot>
+  <slot>slotChangeAllUserData()</slot>
  </slots>
 </ui>

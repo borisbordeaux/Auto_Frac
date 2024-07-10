@@ -58,6 +58,7 @@ public slots:
     [[maybe_unused]] void slotChangeTheme();
 
     [[maybe_unused]] void slotChangeUserData();
+    [[maybe_unused]] void slotChangeAllUserData();
 
 private:
     void updateEnablementPoly();

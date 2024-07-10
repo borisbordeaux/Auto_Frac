@@ -654,7 +654,7 @@ void Polytopal2DWindow::updateEnablementPoly() {
 [[maybe_unused]] void Polytopal2DWindow::slotGeneralizedBarycentricSubdivision() {
     if (m_mesh.vertices().empty()) return;
 
-    he::algo::generalizedBarycentricSubdivision(m_mesh);
+    he::algo::generalizedBarycentricSubdivision(m_mesh, this->ui->spinBox_cornerEdges->value(), this->ui->spinBox_edgeEdges->value());
 
     this->ui->checkBox_displayMesh->setChecked(true);
     m_inversionLevel = 0;
@@ -700,4 +700,9 @@ void Polytopal2DWindow::updateEnablementPoly() {
 void Polytopal2DWindow::updateUserData() {
     if (m_modelMesh.selectedEdge() == nullptr) return;
     this->ui->lineEdit_userData->setText(m_modelMesh.selectedEdge()->userData());
+}
+
+[[maybe_unused]] void Polytopal2DWindow::slotChangeAllUserData() {
+    for (he::HalfEdge* he: m_mesh.halfEdges())
+        he->setUserData(this->ui->lineEdit_userData->text());
 }

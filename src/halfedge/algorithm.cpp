@@ -123,7 +123,7 @@ inline QVector3D coordOfPointOnLineAt(float t, QVector3D p0, QVector3D p1) {
 }
 }
 
-void he::algo::generalizedBarycentricSubdivision(he::Mesh& mesh) {
+void he::algo::generalizedBarycentricSubdivision(he::Mesh& mesh, int nbSubsCornerEdges, int nbSubsEdgeEdges) {
     std::map<he::HalfEdge*, std::vector<he::Vertex*>> middleVerticesOfHalfEdge;
     std::vector<he::HalfEdge*> halfEdgesNeedDefineTwin;
     std::vector<he::Face*> faces = mesh.faces();
@@ -149,10 +149,10 @@ void he::algo::generalizedBarycentricSubdivision(he::Mesh& mesh) {
 
             if (verticesExists) {
                 for (he::Vertex* vertex: middleVerticesOfHalfEdge[he]) {
-                    createdVertices.push_back(vertex); //ordered from begining to end of halfedge
+                    createdVertices.push_back(vertex); //ordered from beginning to end of halfedge
                 }
             } else {
-                //create vertices between each subedge
+                //create vertices between each sub edge
                 for (std::size_t i = 0; i < nbSubs - 1; i++) {
                     he::Vertex* vertex;
                     vertex = new he::Vertex(coordOfPointOnLineAt(static_cast<float>(i + 1) / static_cast<float>(nbSubs), he->origin()->pos(), he->next()->origin()->pos()), QString::number(mesh.vertices().size() + 1));
@@ -200,11 +200,21 @@ void he::algo::generalizedBarycentricSubdivision(he::Mesh& mesh) {
                 he::HalfEdge* left = new he::HalfEdge(beginLeft, beginLeft->name() + " " + v->name());
                 he::HalfEdge* right = new he::HalfEdge(v, v->name() + " " + endRight->name());
 
+                //set data on edges created from edges
+                //it will set also for corner edges
+                //however they will be updated after
+                left->setUserData(QString::number(nbSubsEdgeEdges));
+                right->setUserData(QString::number(nbSubsEdgeEdges));
+
                 mesh.append(left);
                 mesh.append(right);
 
                 heLAndROfFace[createdFaces[i]] = { left, right };
             }
+
+            //set userData to corner edges
+            heLAndROfFace[createdFaces[0]].second->setUserData(QString::number(nbSubsCornerEdges));
+            heLAndROfFace[createdFaces[nbSubs - 1]].first->setUserData(QString::number(nbSubsCornerEdges));
 
             //at this point, all elements have been added to the mesh
             //now we need to update the structures
