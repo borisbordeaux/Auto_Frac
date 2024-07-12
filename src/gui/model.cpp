@@ -363,6 +363,16 @@ he::HalfEdge* Model::selectedEdge() {
     return res;
 }
 
+he::Vertex* Model::selectedVertex() {
+    he::Vertex* res = nullptr;
+
+    if (m_selectedVertex - 1 >= 0 && m_selectedVertex - 1 < static_cast<qsizetype>(m_mesh->vertices().size())) {
+        res = m_mesh->vertices().at(m_selectedVertex - 1);
+    }
+
+    return res;
+}
+
 void Model::addFace(he::Face* f, int ID) {
     //we compute the number of halfedges
     he::HalfEdge* he = f->halfEdge();

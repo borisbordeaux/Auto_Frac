@@ -50,11 +50,13 @@ public:
 
     QString toString() const;
 
+    QString userData() const;
+    void setUserData(QString const& data);
+
 private:
-    //the name of the face
     QString m_name;
-    //the half-edge of the face
     he::HalfEdge* m_halfEdge;
+    QString m_userData;
 };
 
 }

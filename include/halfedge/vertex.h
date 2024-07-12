@@ -76,6 +76,9 @@ public:
 
     QString toString() const;
 
+    QString userData() const;
+    void setUserData(QString const& data);
+
 private:
     //coordinates of this vertex
     QVector3D m_pos;
@@ -87,6 +90,8 @@ private:
     QVector<he::HalfEdge*> m_otherHalfEdges;
     //name of the vertex
     QString m_name;
+    //user data of the vertex
+    QString m_userData;
 };
 
 } // poly

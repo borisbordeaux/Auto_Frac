@@ -5,6 +5,8 @@
 #include <QVector3D>
 
 namespace he {
+class Vertex;
+
 class HalfEdge;
 
 class Face;
@@ -141,9 +143,15 @@ public:
 
     /**
      * @brief getter
-     * @return a pointer to the selected edge, nullptr if no face is selected
+     * @return a pointer to the selected edge, nullptr if no edge is selected
      */
     he::HalfEdge* selectedEdge();
+
+    /**
+     * @brief getter
+     * @return a pointer to the selected vertex, nullptr if no vertex is selected
+     */
+    he::Vertex* selectedVertex();
 
     void updateColorOfCircles(float r, float g, float b);
 

@@ -559,6 +559,7 @@ void GLView::clickFaceManagement() {
 
     //set the selected face using the red color
     m_model->setSelectedFace(color.red() * 65536 + color.green() * 256 + color.blue());
+    m_mainWindow->updateUserData();
 
     //update the data for drawing the selected object in the right color
     m_model->updateDataFaces();
@@ -698,6 +699,7 @@ void GLView::clickVertexManagement() {
 
     //set the selected face using the red color
     m_model->setSelectedVertex(max);
+    m_mainWindow->updateUserData();
 
     //update the data for drawing the selected object in the right color
     m_model->updateDataVertices();
@@ -891,5 +893,9 @@ void GLView::setBackGroundColor(float r, float g, float b) {
     m_clearColor.setY(g);
     m_clearColor.setZ(b);
     m_clearColorDirty = true;
+}
+
+PickingType GLView::pickingType() const {
+    return m_pickingType;
 }
 

@@ -60,6 +60,7 @@ public:
     void rotationAnimation();
 
     void setBackGroundColor(float r, float g, float b);
+    PickingType pickingType() const;
 
 public slots:
     void animationStep();

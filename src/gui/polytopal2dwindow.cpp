@@ -16,6 +16,7 @@
 #include "utils/fileprinter.h"
 #include "halfedge/algorithm.h"
 #include "halfedge/halfedge.h"
+#include "halfedge/face.h"
 
 Polytopal2DWindow::Polytopal2DWindow(QWidget* parent) :
         QWidget(parent), ui(new Ui::Polytopal2DWindow), m_statusBar(new QStatusBar(this)), m_openedMesh(false),
@@ -693,18 +694,68 @@ void Polytopal2DWindow::updateEnablementPoly() {
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotChangeUserData() {
-    if (m_modelMesh.selectedEdge() == nullptr) { return; }
-    m_modelMesh.selectedEdge()->setUserData(this->ui->lineEdit_userData->text());
-    m_modelMesh.selectedEdge()->twin()->setUserData(this->ui->lineEdit_userData->text());
+    switch (m_view->pickingType()) {
+        case PickingType::PickingFace:
+            if (m_modelMesh.selectedFace() != nullptr) {
+                m_modelMesh.selectedFace()->setUserData(this->ui->lineEdit_userData->text());
+            }
+            break;
+        case PickingType::PickingEdge:
+            if (m_modelMesh.selectedEdge() != nullptr) {
+                m_modelMesh.selectedEdge()->setUserData(this->ui->lineEdit_userData->text());
+                m_modelMesh.selectedEdge()->twin()->setUserData(this->ui->lineEdit_userData->text());
+            }
+            break;
+        case PickingType::PickingVertex:
+            if (m_modelMesh.selectedVertex() != nullptr) {
+                m_modelMesh.selectedVertex()->setUserData(this->ui->lineEdit_userData->text());
+            }
+            break;
+    }
 }
 
 void Polytopal2DWindow::updateUserData() {
-    if (m_modelMesh.selectedEdge() == nullptr) { return; }
-    this->ui->lineEdit_userData->setText(m_modelMesh.selectedEdge()->userData());
+    switch (m_view->pickingType()) {
+        case PickingType::PickingFace:
+            if (m_modelMesh.selectedFace() != nullptr) {
+                this->ui->lineEdit_userData->setText(m_modelMesh.selectedFace()->userData());
+                qDebug() << m_modelMesh.selectedFace()->toString();
+                qDebug() << "----------------";
+            }
+            break;
+        case PickingType::PickingEdge:
+            if (m_modelMesh.selectedEdge() != nullptr) {
+                this->ui->lineEdit_userData->setText(m_modelMesh.selectedEdge()->userData());
+                qDebug() << m_modelMesh.selectedEdge()->toString();
+                qDebug() << "---" << Qt::endl << m_modelMesh.selectedEdge()->twin()->toString();
+                qDebug() << "----------------";
+            }
+            break;
+        case PickingType::PickingVertex:
+            if (m_modelMesh.selectedVertex() != nullptr) {
+                this->ui->lineEdit_userData->setText(m_modelMesh.selectedVertex()->userData());
+                qDebug() << m_modelMesh.selectedVertex()->toString();
+                qDebug() << "----------------";
+            }
+            break;
+    }
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotChangeAllUserData() {
-    for (he::HalfEdge* he: m_mesh.halfEdges()) {
-        he->setUserData(this->ui->lineEdit_userData->text());
+    switch (m_view->pickingType()) {
+        case PickingType::PickingFace:
+            for (he::Face* f: m_mesh.faces()) {
+                f->setUserData(this->ui->lineEdit_userData->text());
+            }
+            break;
+        case PickingType::PickingEdge:
+            for (he::HalfEdge* he: m_mesh.halfEdges()) {
+                he->setUserData(this->ui->lineEdit_userData->text());
+            }
+            break;
+        case PickingType::PickingVertex:
+            //not useful yet
+            break;
     }
+
 }

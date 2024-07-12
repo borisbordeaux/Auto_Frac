@@ -5,6 +5,7 @@
 #include "halfedge/face.h"
 #include "halfedge/halfedge.h"
 #include "halfedge/vertex.h"
+#include <QDebug>
 
 void he::algo::barycentricSubdivision(he::Mesh& mesh) {
     std::map<he::HalfEdge*, he::Vertex*> middleVertexOfHalfEdge;
@@ -129,9 +130,13 @@ void he::algo::generalizedBarycentricSubdivision(he::Mesh& mesh, int nbSubsCorne
     std::vector<he::Face*> faces = mesh.faces();
 
     for (he::Face* f: faces) {
-        //create a new vertex at the center of the face
-        he::Vertex* v = new he::Vertex(f->barycenter(), QString::number(mesh.vertices().size() + 1));
-        mesh.append(v);
+        bool baryVertex = f->userData().isEmpty(); //by default 1 vertex, if user data then no vertex
+        he::Vertex* v = nullptr;
+        if (baryVertex) {
+            //create a new vertex at the center of the face
+            v = new he::Vertex(f->barycenter(), QString::number(mesh.vertices().size() + 1));
+            mesh.append(v);
+        }
 
         std::vector<he::HalfEdge*> halfedges = f->allHalfEdges();
         //useful to reuse the current face as a subface
@@ -179,42 +184,46 @@ void he::algo::generalizedBarycentricSubdivision(he::Mesh& mesh, int nbSubsCorne
                     mesh.append(halfEdge);
                 }
 
-                //for each subdivision, create a subface
-                //reuse the current face if first subface and last halfedge
-                if (firstHe && i == nbSubs - 1) {
-                    createdFaces.push_back(f);
-                } else {
-                    he::Face* newFace = new Face(QString::number(mesh.faces().size()), createdHalfEdges[i]);
-                    createdFaces.push_back(newFace);
-                    mesh.append(newFace);
+                if (v) {
+                    //for each subdivision, create a subface
+                    //reuse the current face if first subface and last halfedge
+                    if (firstHe && i == nbSubs - 1) {
+                        createdFaces.push_back(f);
+                    } else {
+                        he::Face* newFace = new Face(QString::number(mesh.faces().size()), createdHalfEdges[i]);
+                        createdFaces.push_back(newFace);
+                        mesh.append(newFace);
+                    }
                 }
             }
 
             //to facilitate update of the mesh, store for each created face the left and right halfedge
             std::map<he::Face*, std::pair<he::HalfEdge* /*left*/, he::HalfEdge* /*right*/>> heLAndROfFace;
 
-            for (std::size_t i = 0; i < createdFaces.size(); i++) {
-                //for each new face, create halfedges left and right
-                he::Vertex* beginLeft = i == createdFaces.size() - 1 ? he->next()->origin() : createdVertices[i];
-                he::Vertex* endRight = i == 0 ? he->origin() : createdVertices[i - 1];
-                he::HalfEdge* left = new he::HalfEdge(beginLeft, beginLeft->name() + " " + v->name());
-                he::HalfEdge* right = new he::HalfEdge(v, v->name() + " " + endRight->name());
+            if (v) {
+                for (std::size_t i = 0; i < createdFaces.size(); i++) {
+                    //for each new face, create halfedges left and right
+                    he::Vertex* beginLeft = i == createdFaces.size() - 1 ? he->next()->origin() : createdVertices[i];
+                    he::Vertex* endRight = i == 0 ? he->origin() : createdVertices[i - 1];
+                    he::HalfEdge* left = new he::HalfEdge(beginLeft, beginLeft->name() + " " + v->name());
+                    he::HalfEdge* right = new he::HalfEdge(v, v->name() + " " + endRight->name());
 
-                //set data on edges created from edges
-                //it will set also for corner edges
-                //however they will be updated after
-                left->setUserData(QString::number(nbSubsEdgeEdges));
-                right->setUserData(QString::number(nbSubsEdgeEdges));
+                    //set data on edges created from edges
+                    //it will set also for corner edges
+                    //however they will be updated after
+                    left->setUserData(QString::number(nbSubsEdgeEdges));
+                    right->setUserData(QString::number(nbSubsEdgeEdges));
 
-                mesh.append(left);
-                mesh.append(right);
+                    mesh.append(left);
+                    mesh.append(right);
 
-                heLAndROfFace[createdFaces[i]] = { left, right };
+                    heLAndROfFace[createdFaces[i]] = { left, right };
+                }
+
+                //set userData to corner edges
+                heLAndROfFace[createdFaces[0]].second->setUserData(QString::number(nbSubsCornerEdges));
+                heLAndROfFace[createdFaces[nbSubs - 1]].first->setUserData(QString::number(nbSubsCornerEdges));
             }
-
-            //set userData to corner edges
-            heLAndROfFace[createdFaces[0]].second->setUserData(QString::number(nbSubsCornerEdges));
-            heLAndROfFace[createdFaces[nbSubs - 1]].first->setUserData(QString::number(nbSubsCornerEdges));
 
             //at this point, all elements have been added to the mesh
             //now we need to update the structures
@@ -225,42 +234,55 @@ void he::algo::generalizedBarycentricSubdivision(he::Mesh& mesh, int nbSubsCorne
                 he::HalfEdge* halfEdge = createdHalfEdges[i + 1];
                 createdVertices[i]->setHalfEdge(halfEdge);
             }
-            he->next()->origin()->setHalfEdge(he->twin());
-            v->setHalfEdge(heLAndROfFace[createdFaces[0]].second);
+            if (v) {
+                he->next()->origin()->setHalfEdge(heLAndROfFace[createdFaces[nbSubs - 1]].first);
+                v->setHalfEdge(heLAndROfFace[createdFaces[0]].second);
+            }
 
             //halfedges (need to set face, twin, prev and next)
-            //at first for created halfedges but not for the current halfedge (not the last created halfedge)
+            //at first for created halfedges but not yet for the current halfedge (not the last created halfedge)
             for (std::size_t i = 0; i < createdHalfEdges.size() - 1; i++) {
-                createdHalfEdges[i]->setFace(createdFaces[i]);
+                if (v) {
+                    createdHalfEdges[i]->setFace(createdFaces[i]);
+                } else {
+                    createdHalfEdges[i]->setFace(f);
+                }
                 //twin will be done later since twin halfedge might not be created yet
                 halfEdgesNeedDefineTwin.push_back(createdHalfEdges[i]);
-                createdHalfEdges[i]->setPrev(heLAndROfFace[createdFaces[i]].second);
-                createdHalfEdges[i]->setNext(heLAndROfFace[createdFaces[i]].first);
-            }
-            //then for L and R halfedges of each face
-            for (std::size_t i = 0; i < createdFaces.size(); i++) {
-                //for L halfedges
-                heLAndROfFace[createdFaces[i]].first->setFace(createdFaces[i]);
-                if (i == nbSubs - 1) {
-                    halfEdgesNeedDefineTwin.push_back(heLAndROfFace[createdFaces[i]].first);
+                if (v) {
+                    createdHalfEdges[i]->setPrev(heLAndROfFace[createdFaces[i]].second);
+                    createdHalfEdges[i]->setNext(heLAndROfFace[createdFaces[i]].first);
                 } else {
-                    heLAndROfFace[createdFaces[i]].first->setTwin(heLAndROfFace[createdFaces[i + 1]].second);
+                    createdHalfEdges[i]->setPrev(i == 0 ? he->prev() : createdHalfEdges[i - 1]);
+                    createdHalfEdges[i]->setNext(createdHalfEdges[i + 1]);
                 }
-                heLAndROfFace[createdFaces[i]].first->setPrev(createdHalfEdges[i]);
-                heLAndROfFace[createdFaces[i]].first->setNext(heLAndROfFace[createdFaces[i]].second);
+            }
+            if (v) {
+                //then for L and R halfedges of each face
+                for (std::size_t i = 0; i < createdFaces.size(); i++) {
+                    //for L halfedges
+                    heLAndROfFace[createdFaces[i]].first->setFace(createdFaces[i]);
+                    if (i == nbSubs - 1) {
+                        halfEdgesNeedDefineTwin.push_back(heLAndROfFace[createdFaces[i]].first);
+                    } else {
+                        heLAndROfFace[createdFaces[i]].first->setTwin(heLAndROfFace[createdFaces[i + 1]].second);
+                    }
+                    heLAndROfFace[createdFaces[i]].first->setPrev(createdHalfEdges[i]);
+                    heLAndROfFace[createdFaces[i]].first->setNext(heLAndROfFace[createdFaces[i]].second);
 
-                //for R halfedges
-                heLAndROfFace[createdFaces[i]].second->setFace(createdFaces[i]);
-                if (i == 0) {
-                    halfEdgesNeedDefineTwin.push_back(heLAndROfFace[createdFaces[i]].second);
-                } else {
-                    heLAndROfFace[createdFaces[i]].second->setTwin(heLAndROfFace[createdFaces[i - 1]].first);
+                    //for R halfedges
+                    heLAndROfFace[createdFaces[i]].second->setFace(createdFaces[i]);
+                    if (i == 0) {
+                        halfEdgesNeedDefineTwin.push_back(heLAndROfFace[createdFaces[i]].second);
+                    } else {
+                        heLAndROfFace[createdFaces[i]].second->setTwin(heLAndROfFace[createdFaces[i - 1]].first);
+                    }
+                    heLAndROfFace[createdFaces[i]].second->setPrev(heLAndROfFace[createdFaces[i]].first);
+                    heLAndROfFace[createdFaces[i]].second->setNext(createdHalfEdges[i]);
                 }
-                heLAndROfFace[createdFaces[i]].second->setPrev(heLAndROfFace[createdFaces[i]].first);
-                heLAndROfFace[createdFaces[i]].second->setNext(createdHalfEdges[i]);
             }
 
-            if (firstHe) {
+            if (firstHe || !v) {
                 he->prev()->setNext(createdHalfEdges[0]);
             }
 
@@ -269,17 +291,26 @@ void he::algo::generalizedBarycentricSubdivision(he::Mesh& mesh, int nbSubsCorne
                 QString name = createdVertices[nbSubs - 2]->name() + " " + he->next()->origin()->name();
                 he->setName(name);
                 he->setOrigin(createdVertices[nbSubs - 2]);
-                he->setFace(createdFaces[nbSubs - 1]);
+                if (v) {
+                    he->setFace(createdFaces[nbSubs - 1]);
+                }
                 //twin will be done later since twin halfedge might not be created yet
                 halfEdgesNeedDefineTwin.push_back(he);
+
+                if (!v) {
+                    he->setPrev(createdHalfEdges[nbSubs - 2]);
+                }
             }
-            he->setPrev(heLAndROfFace[createdFaces[nbSubs - 1]].second);
-            he->setNext(heLAndROfFace[createdFaces[nbSubs - 1]].first);
+            if (v) {
+                he->setPrev(heLAndROfFace[createdFaces[nbSubs - 1]].second);
+                he->setNext(heLAndROfFace[createdFaces[nbSubs - 1]].first);
+            }
 
             firstHe = false;
         }
     }
 
+    qDebug() << "Correct twin of halfedges";
     //correct twin for all halfedges
     for (he::HalfEdge* he: halfEdgesNeedDefineTwin) {
         QString name = he->next()->origin()->name() + " " + he->origin()->name();
