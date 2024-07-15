@@ -156,7 +156,7 @@ void Polytopal2DWindow::canonicalizeStep() {
         oldPos.push_back(v->posD());
     }
 
-    poly::canonicalizeMesh(m_mesh, this->ui->spinBox_canonicalizeStep->value());
+    poly::canonicalizeMesh(m_mesh, this->ui->spinBox_canonicalizeStep->value(), this->ui->doubleSpinBox_canonicalizeForce->value());
 
     //compute the difference of positions for the point that moved the more
     double maxError = -1.0;
@@ -202,9 +202,7 @@ void Polytopal2DWindow::canonicalizeStep() {
         m_modelMesh.resetCircles();
 
         if (m_circles.empty()) {
-            float val = this->ui->checkBox_darkTheme->isChecked() ? 1.0f : 0.0f;
-            QVector3D color { val, val, val };
-            m_circles = poly::computeIlluminatedCircles(m_mesh, color);
+            m_circles = poly::computeIlluminatedCircles(m_mesh, this->ui->checkBox_darkTheme->isChecked() ? m_colorDarkTheme : m_colorWhiteTheme);
 
             for (poly::Circle const& c: m_circles) {
                 if (this->ui->checkBox_projectCircles->isChecked()) {
@@ -228,9 +226,7 @@ void Polytopal2DWindow::canonicalizeStep() {
         m_modelMesh.resetCirclesDual();
 
         if (m_circlesDual.empty()) {
-            float val = this->ui->checkBox_darkTheme->isChecked() ? 1.0f : 0.0f;
-            QVector3D color { val, val, val };
-            m_circlesDual = poly::computeIlluminatedCirclesDual(m_mesh, color);
+            m_circlesDual = poly::computeIlluminatedCirclesDual(m_mesh, this->ui->checkBox_darkTheme->isChecked() ? m_colorDarkThemeDual : m_colorWhiteThemeDual);
 
             for (poly::Circle const& c: m_circlesDual) {
                 if (this->ui->checkBox_projectCircles->isChecked()) {
@@ -678,16 +674,15 @@ void Polytopal2DWindow::updateEnablementPoly() {
     float val = this->ui->checkBox_darkTheme->isChecked() ? 0.0f : 1.0f;
     m_view->setBackGroundColor(val, val, val);
 
-    val = this->ui->checkBox_darkTheme->isChecked() ? 1.0f : 0.0f;
-
     for (poly::Circle& c: m_circles) {
-        c.setColor({ val, val, val });
+        c.setColor(this->ui->checkBox_darkTheme->isChecked() ? m_colorDarkTheme : m_colorWhiteTheme);
     }
     for (poly::Circle& c: m_circlesDual) {
-        c.setColor({ val, val, val });
+        c.setColor(this->ui->checkBox_darkTheme->isChecked() ? m_colorDarkThemeDual : m_colorWhiteThemeDual);
     }
 
-    m_modelMesh.updateColorOfCircles(val, val, val);
+    m_modelMesh.updateColorOfCircles(this->ui->checkBox_darkTheme->isChecked() ? m_colorDarkTheme : m_colorWhiteTheme);
+    m_modelMesh.updateColorOfCirclesDual(this->ui->checkBox_darkTheme->isChecked() ? m_colorDarkThemeDual : m_colorWhiteThemeDual);
     m_view->updateDataCircles();
     m_view->updateDataCirclesDual();
     m_view->update();
@@ -727,7 +722,9 @@ void Polytopal2DWindow::updateUserData() {
             if (m_modelMesh.selectedEdge() != nullptr) {
                 this->ui->lineEdit_userData->setText(m_modelMesh.selectedEdge()->userData());
                 qDebug() << m_modelMesh.selectedEdge()->toString();
-                qDebug() << "---" << Qt::endl << m_modelMesh.selectedEdge()->twin()->toString();
+                if (m_modelMesh.selectedEdge()->twin() != nullptr) {
+                    qDebug() << "---" << Qt::endl << m_modelMesh.selectedEdge()->twin()->toString();
+                }
                 qDebug() << "----------------";
             }
             break;

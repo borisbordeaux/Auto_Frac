@@ -125,7 +125,7 @@ void Model::updateDataCircles() {
 }
 
 void Model::updateDataCirclesDual() {
-//the amount of data of the circles
+    //the amount of data of the circles
     m_countCircleDual = 0;
     m_dataCirclesDual.clear();
 
@@ -139,19 +139,19 @@ void Model::updateDataCirclesDual() {
     m_dataCirclesDual.resize(nbOfAdd * 8);
 
     QVector3D first;
-
     for (poly::Circle const& c: m_circlesDual) {
-        qsizetype n = c.numberOfSegments(m_dashLength);
-        for (qsizetype i = 0; i < n; i++) {
-            float alpha = qDegreesToRadians(360.0f / static_cast<float>(n) * static_cast<float>(i));
+        for (int i = 0; i < 360; i += 4) {
+            float alpha = qDegreesToRadians(static_cast<float>(i));
             float x = c.center().x() + c.radius() * std::cos(alpha) * c.axisX().x() + c.radius() * std::sin(alpha) * c.axisY().x();
             float y = c.center().y() + c.radius() * std::cos(alpha) * c.axisX().y() + c.radius() * std::sin(alpha) * c.axisY().y();
             float z = c.center().z() + c.radius() * std::cos(alpha) * c.axisX().z() + c.radius() * std::sin(alpha) * c.axisY().z();
             if (i == 0) {
                 first = { x, y, z };
+            } else {
+                this->addVertexCircleDual({ x, y, z }, c.color(), -2.0f, -1.0f);
             }
             this->addVertexCircleDual({ x, y, z }, c.color(), -2.0f, -1.0f);
-            if (i == n - 1 && n % 2 == 1) {
+            if (i == 356) {
                 this->addVertexCircleDual(first, c.color(), -2.0f, -1.0f);
             }
         }
@@ -221,7 +221,7 @@ void Model::addVertexSphere(const QVector3D& v) {
     //the normal of the vertex
     *p++ = v.x();
     *p++ = v.y();
-    *p++ = v.z();
+    *p = v.z();
     //we update the amount of data
     m_countSphere += 6;
 }
@@ -431,11 +431,7 @@ qsizetype Model::findNbOfSegmentsCircles() const {
 }
 
 qsizetype Model::findNbOfSegmentsCirclesDual() const {
-    qsizetype res = 0;
-    for (poly::Circle const& c: m_circlesDual) {
-        res += qRound(static_cast<float>(c.numberOfSegments(m_dashLength)) / 2.0f);
-    }
-    return res;
+    return 90 * m_circlesDual.size();
 }
 
 he::Mesh* Model::sphereMesh() const {
@@ -486,18 +482,19 @@ void Model::transformMesh(QMatrix4x4 const& transform) {
     this->updateDataVertices();
 }
 
-void Model::updateColorOfCircles(float r, float g, float b) {
+void Model::updateColorOfCircles(QVector3D const& color) {
     for (poly::Circle& c: m_circles) {
-        c.setColor({ r, g, b });
+        c.setColor(color);
     }
-    for (poly::Circle& c: m_circlesDual) {
-        c.setColor({ r, g, b });
-    }
-
     this->updateDataCircles();
-    this->updateDataCirclesDual();
 }
 
+void Model::updateColorOfCirclesDual(QVector3D const& color) {
+    for (poly::Circle& c: m_circlesDual) {
+        c.setColor(color);
+    }
+    this->updateDataCirclesDual();
+}
 
 
 

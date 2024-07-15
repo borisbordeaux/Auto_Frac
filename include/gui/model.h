@@ -153,7 +153,8 @@ public:
      */
     he::Vertex* selectedVertex();
 
-    void updateColorOfCircles(float r, float g, float b);
+    void updateColorOfCircles(QVector3D const& color);
+    void updateColorOfCirclesDual(QVector3D const& color);
 
 private:
 

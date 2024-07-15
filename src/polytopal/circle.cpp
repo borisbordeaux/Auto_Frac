@@ -139,11 +139,6 @@ QVector3D const& Circle::color() const {
     return m_color;
 }
 
-qsizetype Circle::numberOfSegments(float n) const {
-    //n is the number of segment on the unit circle
-    return qFloor(n * m_radius);
-}
-
 void Circle::initInversiveCoordinates() {
     float K = 1.0f / m_radius;
     m_e1 = K * m_center.x();
@@ -166,7 +161,7 @@ Circle Circle::operator*(float rhs) const {
 
 Circle Circle::inverse(const Circle& inverted, const Circle& inverter) {
     Circle res = inverted - inverter * (2.0f * Circle::scalarProduct(inverted, inverter));
-    res.setColor(inverter.m_color);
+    res.setColor(inverted.m_color);
     return res;
 }
 

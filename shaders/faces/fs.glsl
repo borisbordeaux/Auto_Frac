@@ -19,9 +19,9 @@ void main() {
         vec3 V = normalize(cameraPosition - fragVertModel);
         float RV = max(dot(R, V), 0.0);
         float specular = pow(RV, 100.0);
-        vec3 specularColor = specular * vec3(0.3, 0.3, 0.6);
-        vec3 color = vec3(0.4, 0.4, 1.0);
-        vec3 ambientColor = 0.6 * color;
+        vec3 specularColor = specular * vec3(0.99, 0.1, 0.1);
+        vec3 color = vec3(0.36, 0.64, 0.89);
+        vec3 ambientColor = 0.4 * color;
         vec3 diffuseColor = diffuse * color;
         fragColor = vec4(clamp(specularColor + ambientColor + diffuseColor, 0.0, 1.0), 1.0);
     } else {

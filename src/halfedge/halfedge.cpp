@@ -63,8 +63,13 @@ float he::HalfEdge::length() const {
 }
 
 QString he::HalfEdge::toString() const {
-    QString res;
-    res += m_name + ": Origin: " + m_origin->name() + " Face: " + m_face->name() + " Twin: " + m_twin->name() + " Prev: " + m_prev->name() + " Next: " + m_next->name() + " User data: " + m_userData;
+    QString res = m_name;
+    res += ": Origin: " + ((m_origin) ? m_origin->name() : "nullptr");
+    res += " Face: " + ((m_face) ? m_face->name() : "nullptr");
+    res += " Twin: " + ((m_twin) ? m_twin->name() : "nullptr");
+    res += " Prev: " + ((m_prev) ? m_prev->name() : "nullptr");
+    res += " Next: " + ((m_next) ? m_next->name() : "nullptr");
+    res += " User data: " + m_userData;
     return res;
 }
 

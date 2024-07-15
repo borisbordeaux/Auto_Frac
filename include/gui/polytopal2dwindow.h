@@ -95,6 +95,11 @@ private:
 
     bool m_canonicalized = false;
     int m_step = 0;
+
+    QVector3D m_colorWhiteTheme { 0.0f, 0.0f, 0.0f };
+    QVector3D m_colorDarkTheme { 1.0f, 1.0f, 1.0f };
+    QVector3D m_colorWhiteThemeDual { 255. / 255., 0. / 255., 255. / 255. };
+    QVector3D m_colorDarkThemeDual { 1.0f, 0.0f, 0.0f };
 };
 
 

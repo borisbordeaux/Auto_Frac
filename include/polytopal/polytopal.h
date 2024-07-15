@@ -16,7 +16,7 @@ namespace poly {
  * @param m the mesh to canonize
  * @param steps the number of steps to do
  */
-void canonicalizeMesh(he::Mesh& m, int steps);
+void canonicalizeMesh(he::Mesh& m, int steps, double d);
 
 /**
  * Centers the mesh around the origin

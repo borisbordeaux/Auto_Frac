@@ -102,7 +102,7 @@ void planarize(he::Mesh& m) {
     }
 }
 
-void tangentify(he::Mesh& m) {
+void tangentify(he::Mesh& m, double d) {
     QHash<he::Vertex*, he::Point3D> transforms;
 
     for (he::HalfEdge* he: m.halfEdgesNoTwin()) {
@@ -112,7 +112,7 @@ void tangentify(he::Mesh& m) {
 
         // difference between the closest point and the sphere
         double l = 1.0 - closest.length();
-        he::Point3D c = closest * l * 0.2;
+        he::Point3D c = closest * l * d;
 
         if (!transforms.contains(p1)) {
             transforms[p1] = p1->posD();
@@ -164,9 +164,9 @@ void poly::setMeshToOrigin(he::Mesh& m) {
     }
 }
 
-void poly::canonicalizeMesh(he::Mesh& m, int steps) {
+void poly::canonicalizeMesh(he::Mesh& m, int steps, double d) {
     for (int i = 0; i < steps; i++) {
-        tangentify(m);
+        tangentify(m, d);
         recenter(m);
         planarize(m);
     }
