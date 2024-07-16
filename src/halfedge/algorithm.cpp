@@ -5,7 +5,6 @@
 #include "halfedge/face.h"
 #include "halfedge/halfedge.h"
 #include "halfedge/vertex.h"
-#include <QDebug>
 
 void he::algo::barycentricSubdivision(he::Mesh& mesh) {
     std::map<he::HalfEdge*, he::Vertex*> middleVertexOfHalfEdge;
@@ -310,7 +309,6 @@ void he::algo::generalizedBarycentricSubdivision(he::Mesh& mesh, int nbSubsCorne
         }
     }
 
-    qDebug() << "Correct twin of halfedges";
     //correct twin for all halfedges
     for (he::HalfEdge* he: halfEdgesNeedDefineTwin) {
         QString name = he->next()->origin()->name() + " " + he->origin()->name();
