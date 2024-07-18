@@ -57,8 +57,37 @@ void Polytopal2DWindow::setInfoAdvancement(int percent) {
     m_progressBar->setValue(percent);
 }
 
+void Polytopal2DWindow::openOBJFile(QString const& file) {
+    m_view->stopAnimation();
+    m_timerCanonicalize.stop();
+    m_progressBar->reset();
+    m_step = 0;
+
+    if (file != "") {
+        this->ui->checkBox_displayMesh->setChecked(true);
+        m_inversionLevel = 0;
+        m_circlesIndex = 0;
+        poly::Face::reset();
+        m_mesh.reset();
+        m_circles.clear();
+        m_circlesDual.clear();
+        he::reader::readOBJ(file, m_mesh);
+        m_modelMesh.resetCircles();
+        m_modelMesh.resetCirclesDual();
+        m_modelMesh.setMesh(&m_mesh);
+        m_view->updateData();
+        m_view->update();
+        m_openedMesh = true;
+        m_canonicalized = false;
+        this->updateEnablementPoly();
+    }
+}
+
 [[maybe_unused]] void Polytopal2DWindow::slotOpenOBJFile() {
     m_view->stopAnimation();
+    m_timerCanonicalize.stop();
+    m_progressBar->reset();
+    m_step = 0;
     QString file = QFileDialog::getOpenFileName(this, "Open an OBJ File...", "../obj/polyhedrons", "OBJ Files (*.obj)");
 
     if (file != "") {
@@ -144,7 +173,7 @@ void Polytopal2DWindow::setInfoAdvancement(int percent) {
 [[maybe_unused]] void Polytopal2DWindow::slotCanonizeMesh() {
     if (!m_mesh.vertices().empty() && m_step == 0) {
         m_mesh.updateDoublePosFromFloatPos();
-        poly::setMeshToOrigin(m_mesh);
+        //poly::setMeshToOrigin(m_mesh);
         m_timerCanonicalize.start(0);
     }
 }
@@ -184,6 +213,16 @@ void Polytopal2DWindow::canonicalizeStep() {
         this->setInfoAdvancement(static_cast<int>(percent));
         this->setInfo("Step " + std::to_string(m_step) + " --- Error of " + QString::number(maxError, 'g', 3).toStdString());
         m_step++;
+    }
+
+    if(!m_circles.empty()) {
+        slotDisplayAreaCircles();
+        slotDisplayAreaCircles();
+    }
+
+    if(!m_circlesDual.empty()) {
+        slotDisplayDualAreaCircles();
+        slotDisplayDualAreaCircles();
     }
 
     m_modelMesh.updateDataFaces();

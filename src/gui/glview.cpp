@@ -2,6 +2,7 @@
 #include "gui/model.h"
 #include "gui/polytopal2dwindow.h"
 #include <QMouseEvent>
+#include <QMimeData>
 #include <QtOpenGL/QOpenGLShaderProgram>
 
 GLView::GLView(Model* model, Polytopal2DWindow* parent) :
@@ -14,6 +15,7 @@ GLView::GLView(Model* model, Polytopal2DWindow* parent) :
     connect(&m_timerAnimation, &QTimer::timeout, this, &GLView::animationStep);
     connect(&m_timerAnimCamera, &QTimer::timeout, this, &GLView::animationCameraStep);
     this->connectTimers();
+    this->setAcceptDrops(true);
 }
 
 GLView::~GLView() {
@@ -899,3 +901,14 @@ PickingType GLView::pickingType() const {
     return m_pickingType;
 }
 
+void GLView::dragEnterEvent(QDragEnterEvent* event) {
+    const QMimeData* mimeData = event->mimeData();
+    //drop only one OBJ file
+    if (mimeData->hasUrls() && mimeData->urls().size() == 1 && mimeData->urls()[0].toLocalFile().split('.').last() == "obj") {
+        event->accept();
+    }
+}
+
+void GLView::dropEvent(QDropEvent* event) {
+    m_mainWindow->openOBJFile(event->mimeData()->urls()[0].toLocalFile());
+}

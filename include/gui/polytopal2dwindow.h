@@ -28,6 +28,8 @@ public:
 
     void updateUserData();
 
+    void openOBJFile(QString const& file);
+
 public slots:
     [[maybe_unused]] void slotOpenOBJFile();
     [[maybe_unused]] void slotExportAllFaces();
