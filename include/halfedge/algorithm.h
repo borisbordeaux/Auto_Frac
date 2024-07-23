@@ -10,6 +10,8 @@ void barycentricSubdivision(he::Mesh& mesh);
 
 void generalizedBarycentricSubdivision(he::Mesh& mesh, int nbSubsCornerEdges = 2, int nbSubsEdgeEdges = 2);
 
+void loopSubdivision(he::Mesh& mesh);
+
 }
 }
 

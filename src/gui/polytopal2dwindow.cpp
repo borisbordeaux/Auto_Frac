@@ -215,12 +215,12 @@ void Polytopal2DWindow::canonicalizeStep() {
         m_step++;
     }
 
-    if(!m_circles.empty()) {
+    if (!m_circles.empty()) {
         slotDisplayAreaCircles();
         slotDisplayAreaCircles();
     }
 
-    if(!m_circlesDual.empty()) {
+    if (!m_circlesDual.empty()) {
         slotDisplayDualAreaCircles();
         slotDisplayDualAreaCircles();
     }
@@ -692,6 +692,27 @@ void Polytopal2DWindow::updateEnablementPoly() {
     if (m_mesh.vertices().empty()) { return; }
 
     he::algo::generalizedBarycentricSubdivision(m_mesh, this->ui->spinBox_cornerEdges->value(), this->ui->spinBox_edgeEdges->value());
+
+    this->ui->checkBox_displayMesh->setChecked(true);
+    m_inversionLevel = 0;
+    m_circlesIndex = 0;
+    poly::Face::reset();
+    m_circles.clear();
+    m_circlesDual.clear();
+    m_modelMesh.resetCircles();
+    m_modelMesh.resetCirclesDual();
+    m_modelMesh.setMesh(&m_mesh);
+    m_view->updateData();
+    m_view->update();
+    m_openedMesh = true;
+    m_canonicalized = false;
+    this->updateEnablementPoly();
+}
+
+[[maybe_unused]] void Polytopal2DWindow::slotLoopSubdivision() {
+    if (m_mesh.vertices().empty()) { return; }
+
+    he::algo::loopSubdivision(m_mesh);
 
     this->ui->checkBox_displayMesh->setChecked(true);
     m_inversionLevel = 0;

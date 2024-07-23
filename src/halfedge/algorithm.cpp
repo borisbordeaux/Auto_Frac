@@ -318,3 +318,34 @@ void he::algo::generalizedBarycentricSubdivision(he::Mesh& mesh, int nbSubsCorne
 
     mesh.updateHalfEdgeNotTwin();
 }
+
+void he::algo::loopSubdivision(he::Mesh& mesh) {
+    //he whose origin is a middle vertex of a halfedge
+    std::map<he::Face*, he::HalfEdge*> firstHeOfFace;
+
+    //cut all halfedges
+    for (he::HalfEdge* he: mesh.halfEdgesNoTwin()) {
+        he::Vertex* v = mesh.cutHalfEdge(he);
+        firstHeOfFace[he->face()] = v->halfEdge();
+        firstHeOfFace[he->twin()->face()] = v->halfEdge()->twin()->next();
+    }
+
+    mesh.updateHalfEdgeNotTwin();
+
+    //then cut all faces
+    std::vector<he::Face*> faces = mesh.faces();
+    for (he::Face* f: faces) {
+        he::HalfEdge* current = firstHeOfFace[f];
+        he::HalfEdge* end = nullptr;
+        do {
+            he::Vertex* v1 = current->origin();
+            he::Vertex* v2 = current->next()->next()->origin();
+            current = mesh.cutFace(f, v1, v2);
+            if (end == nullptr) {
+                end = current;
+            }
+            current = current->next();
+        } while (current != end);
+    }
+    mesh.updateHalfEdgeNotTwin();
+}

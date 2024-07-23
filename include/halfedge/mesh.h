@@ -38,6 +38,9 @@ public:
     void updateFloatPosFromDoublePos();
     void updateDoublePosFromFloatPos();
 
+    he::Vertex* cutHalfEdge(he::HalfEdge* he);
+    he::HalfEdge* cutFace(he::Face* face, he::Vertex* v1, he::Vertex* v2);
+
 private:
     std::vector<he::Vertex*> m_vertices;
     std::vector<he::HalfEdge*> m_halfEdges;

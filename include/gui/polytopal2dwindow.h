@@ -56,6 +56,7 @@ public slots:
 
     [[maybe_unused]] void slotBarycentricSubdivision();
     [[maybe_unused]] void slotGeneralizedBarycentricSubdivision();
+    [[maybe_unused]] void slotLoopSubdivision();
 
     [[maybe_unused]] void slotChangeTheme();
 
