@@ -28,11 +28,11 @@ GLView::~GLView() {
         doneCurrent();
     }
 
-    if (m_programLinesPicking != nullptr) {
+    if (m_programEdgesPicking != nullptr) {
         makeCurrent();
         m_vboEdges.destroy();
-        delete m_programLinesPicking;
-        m_programLinesPicking = nullptr;
+        delete m_programEdgesPicking;
+        m_programEdgesPicking = nullptr;
         doneCurrent();
     }
 
@@ -112,19 +112,13 @@ void GLView::initBuffers() {
     //allocate necessary memory
     m_vboCircles.allocate(m_model->constDataCircles(), m_model->countCircles() * static_cast<int>(sizeof(GLfloat)));
 
-    //enable enough attrib array for all the data of the edge's vertex
+    //enable enough attrib array for all the data of the circle's vertex
     glEnableVertexAttribArray(0); //coordinates
     glEnableVertexAttribArray(1); //color
-    glEnableVertexAttribArray(2); //ID for picking
-    glEnableVertexAttribArray(3); //is selected
     //coordinates of the vertex
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), nullptr);
     //color of the edge
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
-    //the ID
-    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(6 * sizeof(GLfloat)));
-    //whether it's selected or not, to simplify the code, a negative value means not selected while a positive value means selected
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(7 * sizeof(GLfloat)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
     m_vboCircles.release();
     m_vaoCircles.release();
 
@@ -137,16 +131,10 @@ void GLView::initBuffers() {
     //enable enough attrib array for all the data of the edge's vertex
     glEnableVertexAttribArray(0); //coordinates
     glEnableVertexAttribArray(1); //color
-    glEnableVertexAttribArray(2); //ID for picking
-    glEnableVertexAttribArray(3); //is selected
     //coordinates of the vertex
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), nullptr);
     //color of the edge
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
-    //the ID
-    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(6 * sizeof(GLfloat)));
-    //whether it's selected or not, to simplify the code, a negative value means not selected while a positive value means selected
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(7 * sizeof(GLfloat)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
     m_vboCirclesDual.release();
     m_vaoCirclesDual.release();
 
@@ -197,6 +185,19 @@ void GLView::initShadersView() {
     m_lightPosLocSphere = m_programSphere->uniformLocation("lightPos");
     m_cameraPosLocSphere = m_programSphere->uniformLocation("cameraPosition");
 
+    //init shader for circles
+    m_programCircles = new QOpenGLShaderProgram();
+    m_programCircles->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/circles/vs.glsl");
+    m_programCircles->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/circles/fs.glsl");
+    m_programCircles->bindAttributeLocation("vertex", 0);
+    m_programCircles->bindAttributeLocation("color", 1);
+    m_programCircles->link();
+
+    //get locations of uniforms
+    m_programCircles->bind();
+    m_projMatrixLocCircle = m_programCircles->uniformLocation("projMatrix");
+    m_mvMatrixLocCircle = m_programCircles->uniformLocation("mvMatrix");
+
     //init shader for faces
     m_programFaces = new QOpenGLShaderProgram();
     m_programFaces->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/faces/vs.glsl");
@@ -215,19 +216,19 @@ void GLView::initShadersView() {
     m_cameraPosLoc = m_programFaces->uniformLocation("cameraPosition");
 
     //init shader for lines
-    m_programLines = new QOpenGLShaderProgram();
-    m_programLines->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/lines/vs.glsl");
-    m_programLines->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/lines/fs.glsl");
-    m_programLines->bindAttributeLocation("vertex", 0);
-    m_programLines->bindAttributeLocation("color", 1);
-    m_programLines->bindAttributeLocation("ID", 2);
-    m_programLines->bindAttributeLocation("isSelected", 3);
-    m_programLines->link();
+    m_programEdges = new QOpenGLShaderProgram();
+    m_programEdges->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/edges/vs.glsl");
+    m_programEdges->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/edges/fs.glsl");
+    m_programEdges->bindAttributeLocation("vertex", 0);
+    m_programEdges->bindAttributeLocation("color", 1);
+    m_programEdges->bindAttributeLocation("ID", 2);
+    m_programEdges->bindAttributeLocation("isSelected", 3);
+    m_programEdges->link();
 
     //get location of uniforms
-    m_programLines->bind();
-    m_projMatrixLocEdge = m_programLines->uniformLocation("projMatrix");
-    m_mvMatrixLocEdge = m_programLines->uniformLocation("mvMatrix");
+    m_programEdges->bind();
+    m_projMatrixLocEdge = m_programEdges->uniformLocation("projMatrix");
+    m_mvMatrixLocEdge = m_programEdges->uniformLocation("mvMatrix");
 
     //init shader for vertices
     m_programVertices = new QOpenGLShaderProgram();
@@ -262,21 +263,21 @@ void GLView::initShadersPicking() {
     m_mvMatrixPickingLoc = m_programFacesPicking->uniformLocation("mvMatrix");
 
     //init shader for lines picking
-    m_programLinesPicking = new QOpenGLShaderProgram();
-    m_programLinesPicking->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/lines/picking/vs.glsl");
-    m_programLinesPicking->addShaderFromSourceFile(QOpenGLShader::Geometry, "../shaders/lines/picking/gs.glsl");
-    m_programLinesPicking->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/lines/picking/fs.glsl");
-    m_programLinesPicking->bindAttributeLocation("vertex", 0);
-    m_programLinesPicking->bindAttributeLocation("color", 1);
-    m_programLinesPicking->bindAttributeLocation("ID", 2);
-    m_programLinesPicking->bindAttributeLocation("isSelected", 3);
-    m_programLinesPicking->link();
+    m_programEdgesPicking = new QOpenGLShaderProgram();
+    m_programEdgesPicking->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/edges/picking/vs.glsl");
+    m_programEdgesPicking->addShaderFromSourceFile(QOpenGLShader::Geometry, "../shaders/edges/picking/gs.glsl");
+    m_programEdgesPicking->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/edges/picking/fs.glsl");
+    m_programEdgesPicking->bindAttributeLocation("vertex", 0);
+    m_programEdgesPicking->bindAttributeLocation("color", 1);
+    m_programEdgesPicking->bindAttributeLocation("ID", 2);
+    m_programEdgesPicking->bindAttributeLocation("isSelected", 3);
+    m_programEdgesPicking->link();
 
     //get location of uniforms
-    m_programLinesPicking->bind();
-    m_projMatrixPickingLocEdge = m_programLinesPicking->uniformLocation("projMatrix");
-    m_mvMatrixPickingLocEdge = m_programLinesPicking->uniformLocation("mvMatrix");
-    m_invViewportPickingLocEdge = m_programLinesPicking->uniformLocation("invViewport");
+    m_programEdgesPicking->bind();
+    m_projMatrixPickingLocEdge = m_programEdgesPicking->uniformLocation("projMatrix");
+    m_mvMatrixPickingLocEdge = m_programEdgesPicking->uniformLocation("mvMatrix");
+    m_invViewportPickingLocEdge = m_programEdgesPicking->uniformLocation("invViewport");
 
     //init shader for vertices
     m_programVerticesPicking = new QOpenGLShaderProgram();
@@ -354,20 +355,27 @@ void GLView::paintGL() {
         m_programFacesPicking->setUniformValue(m_mvMatrixPickingLoc, m_camera.getViewMatrix());
         m_programFacesPicking->release();
 
-        m_camera.zoom(0.001);
+        //to be sure to draw in front of sphere and faces
+        m_camera.zoom(0.001f);
 
-        m_programLines->bind();
-        m_programLines->setUniformValue(m_projMatrixLocEdge, m_proj);
-        m_programLines->setUniformValue(m_mvMatrixLocEdge, m_camera.getViewMatrix());
-        m_programLines->release();
+        m_programCircles->bind();
+        m_programCircles->setUniformValue(m_projMatrixLocCircle, m_proj);
+        m_programCircles->setUniformValue(m_mvMatrixLocCircle, m_camera.getViewMatrix());
+        m_programCircles->release();
 
-        m_programLinesPicking->bind();
-        m_programLinesPicking->setUniformValue(m_projMatrixPickingLocEdge, m_proj);
-        m_programLinesPicking->setUniformValue(m_mvMatrixPickingLocEdge, m_camera.getViewMatrix());
-        m_programLinesPicking->setUniformValue(m_invViewportPickingLocEdge, 1.0f / m_viewportWidth, 1.0f / m_viewportHeight);
-        m_programLinesPicking->release();
+        m_programEdges->bind();
+        m_programEdges->setUniformValue(m_projMatrixLocEdge, m_proj);
+        m_programEdges->setUniformValue(m_mvMatrixLocEdge, m_camera.getViewMatrix());
+        m_programEdges->release();
 
-        m_camera.zoom(0.001);
+        m_programEdgesPicking->bind();
+        m_programEdgesPicking->setUniformValue(m_projMatrixPickingLocEdge, m_proj);
+        m_programEdgesPicking->setUniformValue(m_mvMatrixPickingLocEdge, m_camera.getViewMatrix());
+        m_programEdgesPicking->setUniformValue(m_invViewportPickingLocEdge, 1.0f / m_viewportWidth, 1.0f / m_viewportHeight);
+        m_programEdgesPicking->release();
+
+        //to be sure to draw in front of edges and circles
+        m_camera.zoom(0.001f);
 
         m_programVertices->bind();
         m_programVertices->setUniformValue(m_projMatrixLocVertices, m_proj);
@@ -379,8 +387,9 @@ void GLView::paintGL() {
         m_programVerticesPicking->setUniformValue(m_mvMatrixPickingLocVertices, m_camera.getViewMatrix());
         m_programVerticesPicking->release();
 
-        m_camera.dezoom(0.001);
-        m_camera.dezoom(0.001);
+        //dezoom to reset camera position
+        m_camera.dezoom(0.001f);
+        m_camera.dezoom(0.001f);
 
         m_uniformsDirty = false;
     }
@@ -419,18 +428,20 @@ void GLView::paintGL() {
     m_programSphere->release();
 
     //draw circles
-    m_programLines->bind();
+    m_programCircles->bind();
     m_vaoCircles.bind();
     glDrawArrays(GL_LINES, 0, m_model->vertexCountCircles());
 
     //draw circles dual
     m_vaoCirclesDual.bind();
     glDrawArrays(GL_LINES, 0, m_model->vertexCountCirclesDual());
+    m_programCircles->release();
 
     //draw edges
+    m_programEdges->bind();
     m_vaoEdges.bind();
     glDrawArrays(GL_LINES, 0, m_model->vertexCountEdge());
-    m_programLines->release();
+    m_programEdges->release();
 
     //draw vertices
     m_programVertices->bind();
@@ -604,10 +615,10 @@ void GLView::clickEdgeManagement() {
     glColorMask(true, true, true, true);
 
     //draw edges
-    m_programLinesPicking->bind();
+    m_programEdgesPicking->bind();
     m_vaoEdges.bind();
     glDrawArrays(GL_LINES, 0, m_model->vertexCountEdge());
-    m_programLinesPicking->release();
+    m_programEdgesPicking->release();
 
     //render the scene
     QImage image = grabFramebuffer();

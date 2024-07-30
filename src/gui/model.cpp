@@ -102,7 +102,7 @@ void Model::updateDataCircles() {
     qsizetype nbOfAdd = 2 * nbOfEdges;
 
     //we resize the data for rapidity
-    m_dataCircles.resize(nbOfAdd * 8);
+    m_dataCircles.resize(nbOfAdd * 6);
 
     QVector3D first;
     for (poly::Circle const& c: m_circles) {
@@ -114,11 +114,11 @@ void Model::updateDataCircles() {
             if (i == 0) {
                 first = { x, y, z };
             } else {
-                this->addVertexCircle({ x, y, z }, c.color(), -2.0f, -1.0f);
+                this->addVertexCircle({ x, y, z }, c.color());
             }
-            this->addVertexCircle({ x, y, z }, c.color(), -2.0f, -1.0f);
+            this->addVertexCircle({ x, y, z }, c.color());
             if (i == 356) {
-                this->addVertexCircle(first, c.color(), -2.0f, -1.0f);
+                this->addVertexCircle(first, c.color());
             }
         }
     }
@@ -148,11 +148,11 @@ void Model::updateDataCirclesDual() {
             if (i == 0) {
                 first = { x, y, z };
             } else {
-                this->addVertexCircleDual({ x, y, z }, c.color(), -2.0f, -1.0f);
+                this->addVertexCircleDual({ x, y, z }, c.color());
             }
-            this->addVertexCircleDual({ x, y, z }, c.color(), -2.0f, -1.0f);
+            this->addVertexCircleDual({ x, y, z }, c.color());
             if (i == 356) {
-                this->addVertexCircleDual(first, c.color(), -2.0f, -1.0f);
+                this->addVertexCircleDual(first, c.color());
             }
         }
     }
@@ -244,7 +244,7 @@ void Model::addVertexEdge(QVector3D const& v, QVector3D const& color, float ID, 
     m_countEdge += 8;
 }
 
-void Model::addVertexCircle(QVector3D const& v, QVector3D const& color, float ID, float isSelected) {
+void Model::addVertexCircle(QVector3D const& v, QVector3D const& color) {
     //add to the end of the data already added
     float* p = m_dataCircles.data() + m_countCircle;
     //the coordinates of the vertex
@@ -253,16 +253,12 @@ void Model::addVertexCircle(QVector3D const& v, QVector3D const& color, float ID
     *p++ = v.z();
     *p++ = color.x();
     *p++ = color.y();
-    *p++ = color.z();
-    //the ID of the circle
-    *p++ = ID;
-    //whether the face is selected or not
-    *p = isSelected;
+    *p = color.z();
     //we update the amount of data
-    m_countCircle += 8;
+    m_countCircle += 6;
 }
 
-void Model::addVertexCircleDual(QVector3D const& v, QVector3D const& color, float ID, float isSelected) {
+void Model::addVertexCircleDual(QVector3D const& v, QVector3D const& color) {
     //add to the end of the data already added
     float* p = m_dataCirclesDual.data() + m_countCircleDual;
     //the coordinates of the vertex
@@ -271,13 +267,9 @@ void Model::addVertexCircleDual(QVector3D const& v, QVector3D const& color, floa
     *p++ = v.z();
     *p++ = color.x();
     *p++ = color.y();
-    *p++ = color.z();
-    //the ID of the circle
-    *p++ = ID;
-    //whether the face is selected or not
-    *p = isSelected;
+    *p = color.z();
     //we update the amount of data
-    m_countCircleDual += 8;
+    m_countCircleDual += 6;
 }
 
 void Model::addVertex(QVector3D const& v, QVector3D const& color, float ID, float isSelected) {

@@ -55,9 +55,9 @@ public:
 
     int vertexCountEdge() const { return m_countEdge / 8; }
 
-    int vertexCountCircles() const { return m_countCircle / 8; }
+    int vertexCountCircles() const { return m_countCircle / 6; }
 
-    int vertexCountCirclesDual() const { return m_countCircleDual / 8; }
+    int vertexCountCirclesDual() const { return m_countCircleDual / 6; }
 
     int vertexCountVertices() const { return m_countVertices / 8; }
 
@@ -185,9 +185,9 @@ private:
      */
     void addVertexEdge(QVector3D const& v, QVector3D const& color, float ID, float isSelected);
 
-    void addVertexCircle(QVector3D const& v, QVector3D const& color, float ID, float isSelected);
+    void addVertexCircle(QVector3D const& v, QVector3D const& color);
 
-    void addVertexCircleDual(QVector3D const& v, QVector3D const& color, float ID, float isSelected);
+    void addVertexCircleDual(QVector3D const& v, QVector3D const& color);
 
     void addVertex(QVector3D const& v, QVector3D const& color, float ID, float isSelected);
 
@@ -241,8 +241,6 @@ private:
     int m_selectedFace = 0;
     int m_selectedVertex = 0;
     int m_selectedEdge = 0;
-
-    const float m_dashLength = 90.0f;
 };
 
 #endif // MODEL_H

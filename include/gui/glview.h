@@ -116,10 +116,11 @@ private:
     QOpenGLBuffer m_vboCirclesDual;
     QOpenGLBuffer m_vboVertices;
     QOpenGLShaderProgram* m_programSphere = nullptr;
+    QOpenGLShaderProgram* m_programCircles = nullptr;
     QOpenGLShaderProgram* m_programFaces = nullptr;
     QOpenGLShaderProgram* m_programFacesPicking = nullptr;
-    QOpenGLShaderProgram* m_programLines = nullptr;
-    QOpenGLShaderProgram* m_programLinesPicking = nullptr;
+    QOpenGLShaderProgram* m_programEdges = nullptr;
+    QOpenGLShaderProgram* m_programEdgesPicking = nullptr;
     QOpenGLShaderProgram* m_programVertices = nullptr;
     QOpenGLShaderProgram* m_programVerticesPicking = nullptr;
 
@@ -129,6 +130,11 @@ private:
     int m_mvMatrixLocSphere = 0;
     int m_lightPosLocSphere = 0;
     int m_cameraPosLocSphere = 0;
+
+    //Circles viewing
+    int m_projMatrixLocCircle = 0;
+    int m_mvMatrixLocCircle = 0;
+
     //Faces viewing
     int m_projMatrixLoc = 0;
     int m_mvMatrixLoc = 0;
@@ -138,10 +144,10 @@ private:
     int m_projMatrixPickingLoc = 0;
     int m_mvMatrixPickingLoc = 0;
 
-    //Lines viewing
+    //Edges viewing
     int m_projMatrixLocEdge = 0;
     int m_mvMatrixLocEdge = 0;
-    //Lines picking
+    //Edges picking
     int m_projMatrixPickingLocEdge = 0;
     int m_mvMatrixPickingLocEdge = 0;
     int m_invViewportPickingLocEdge = 0;
