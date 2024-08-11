@@ -218,12 +218,8 @@ void Model::addVertexSphere(const QVector3D& v) {
     *p++ = v.x();
     *p++ = v.y();
     *p++ = v.z();
-    //the normal of the vertex
-    *p++ = v.x();
-    *p++ = v.y();
-    *p = v.z();
     //we update the amount of data
-    m_countSphere += 6;
+    m_countSphere += 3;
 }
 
 void Model::addVertexEdge(QVector3D const& v, QVector3D const& color, float ID, float isSelected) {

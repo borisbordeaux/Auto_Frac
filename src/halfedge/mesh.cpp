@@ -1,7 +1,6 @@
-#include <set>
-#include <iostream>
 #include "halfedge/mesh.h"
 
+#include <set>
 #include "halfedge/face.h"
 #include "halfedge/halfedge.h"
 #include "halfedge/vertex.h"

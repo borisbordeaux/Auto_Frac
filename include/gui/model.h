@@ -51,7 +51,7 @@ public:
     //the number of vertices (in GPU POV)
     int vertexCountFace() const { return m_countFace / 8; }
 
-    int vertexCountSphere() const { return m_countSphere / 6; }
+    int vertexCountSphere() const { return m_countSphere / 3; }
 
     int vertexCountEdge() const { return m_countEdge / 8; }
 

@@ -76,11 +76,8 @@ void GLView::initBuffers() {
 
     //enable enough attrib array for all the data of the mesh's vertices
     glEnableVertexAttribArray(0); //coordinates
-    glEnableVertexAttribArray(1); //normal
     //3 coordinates of the vertex
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), nullptr);
-    //3 coordinates of the vertex's normal
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
     m_vboSphere.release();
     m_vaoSphere.release();
 
@@ -175,7 +172,6 @@ void GLView::initShadersView() {
     m_programSphere->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/sphere/vs.glsl");
     m_programSphere->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/sphere/fs.glsl");
     m_programSphere->bindAttributeLocation("vertex", 0);
-    m_programSphere->bindAttributeLocation("normal", 1);
     m_programSphere->link();
 
     //get locations of uniforms
