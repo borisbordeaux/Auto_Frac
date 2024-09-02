@@ -816,3 +816,21 @@ void Polytopal2DWindow::updateUserData() {
     }
 
 }
+
+void Polytopal2DWindow::slotScaleBy() {
+    QMatrix4x4 matrix;
+    matrix.scale(static_cast<float>(this->ui->doubleSpinBox_scaleForce->value()));
+    m_modelMesh.transformMesh(matrix);
+
+    this->updateCircles();
+    this->updateCirclesDual();
+
+    m_view->updateData();
+    m_view->update();
+
+    /*m_modelMesh.scaleCircles(static_cast<float>(this->ui->doubleSpinBox_scaleForce->value()));
+    m_modelMesh.updateDataCircles();
+
+    m_view->updateDataCircles();
+    m_view->update();*/
+}

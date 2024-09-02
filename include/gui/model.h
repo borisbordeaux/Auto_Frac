@@ -91,6 +91,8 @@ public:
      */
     void transformMesh(QMatrix4x4 const& transform);
 
+    void scaleCircles(float by);
+
     /**
      * @brief setter for the sphere mesh, update the sphere data
      * @param mesh

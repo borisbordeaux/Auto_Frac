@@ -484,5 +484,11 @@ void Model::updateColorOfCirclesDual(QVector3D const& color) {
     this->updateDataCirclesDual();
 }
 
+void Model::scaleCircles(float by) {
+    for (poly::Circle& c: m_circles) {
+        c.setRadius(c.radius() * by);
+    }
+}
+
 
 

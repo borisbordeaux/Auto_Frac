@@ -63,6 +63,8 @@ public slots:
     [[maybe_unused]] void slotChangeUserData();
     [[maybe_unused]] void slotChangeAllUserData();
 
+    [[maybe_unused]] void slotScaleBy();
+
 private:
     void updateEnablementPoly();
     void setInfo(std::string const& textInfo, int timeoutMs = 2000);
