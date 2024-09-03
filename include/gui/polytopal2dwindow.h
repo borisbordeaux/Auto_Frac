@@ -65,10 +65,14 @@ public slots:
 
     [[maybe_unused]] void slotScaleBy();
 
+    [[maybe_unused]] void slotOBJFromCircles();
+
 private:
     void updateEnablementPoly();
     void setInfo(std::string const& textInfo, int timeoutMs = 2000);
     void setInfoAdvancement(int percent);
+
+    std::vector<std::string> OBJFacesFromCircles();
 
 private:
     Ui::Polytopal2DWindow* ui;

@@ -817,7 +817,7 @@ void Polytopal2DWindow::updateUserData() {
 
 }
 
-void Polytopal2DWindow::slotScaleBy() {
+[[maybe_unused]] void Polytopal2DWindow::slotScaleBy() {
     QMatrix4x4 matrix;
     matrix.scale(static_cast<float>(this->ui->doubleSpinBox_scaleForce->value()));
     m_modelMesh.transformMesh(matrix);
@@ -833,4 +833,49 @@ void Polytopal2DWindow::slotScaleBy() {
 
     m_view->updateDataCircles();
     m_view->update();*/
+}
+
+[[maybe_unused]] void Polytopal2DWindow::slotOBJFromCircles() {
+    if (m_circles.empty()) { return; }
+    QFile file("../obj/exported.obj");
+
+    //open the file
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        //write the file using a stream
+        QTextStream stream(&file);
+
+        //for each circle, write the coordinates of their associated vertex
+        for (poly::Circle const& c: m_circles) {
+            QVector3D pos = c.vertexOfCircle();
+            stream << "v " << QString::number(pos.x()) << " " << QString::number(pos.y()) << " " << QString::number(pos.z()) << Qt::endl;
+        }
+
+        std::vector<std::string> faces = this->OBJFacesFromCircles();
+
+        for (std::string const& f: faces) {
+            stream << "l " << f.c_str() << Qt::endl;
+        }
+
+        file.close();
+    }
+}
+
+std::vector<std::string> Polytopal2DWindow::OBJFacesFromCircles() {
+    std::vector<std::pair<std::size_t, std::size_t>> listAdj;
+
+    for (std::size_t i = 0; i < m_circles.size() - 1; i++) {
+        for (std::size_t j = i; j < m_circles.size(); j++) {
+            if (poly::Circle::areTangentCircles(m_circles[i], m_circles[j])) {
+                listAdj.emplace_back(i, j);
+            }
+        }
+    }
+
+    std::vector<std::string> res;
+
+    for (std::pair<std::size_t, std::size_t> const& p: listAdj) {
+        res.emplace_back(std::to_string(p.first + 1) + " " + std::to_string(p.second + 1));
+    }
+
+    return res;
 }

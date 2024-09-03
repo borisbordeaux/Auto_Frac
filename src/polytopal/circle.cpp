@@ -47,6 +47,11 @@ bool Circle::areOrthogonalCircles(Circle const& c1, Circle const& c2) {
     return qAbs(scalarProduct(c1, c2)) < 0.01f;
 }
 
+bool Circle::areTangentCircles(const Circle& c1, const Circle& c2) {
+    //with inversive coordinates
+    return qAbs(scalarProduct(c1, c2)) - 1.0f < 0.01f;
+}
+
 Circle const* Circle::inversionCircle() const {
     return m_inversionCircle;
 }
@@ -209,6 +214,10 @@ void Circle::updateR3Coord() {
     m_radius = qAbs(1.0f / K);
     m_axisX = { 1, 0, 0 };
     m_axisY = { 0, 1, 0 };
+}
+
+QVector3D Circle::vertexOfCircle() const {
+    return { m_e1 / m_e5, m_e2 / m_e5, m_e4 / m_e5 };
 }
 
 } // poly

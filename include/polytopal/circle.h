@@ -26,6 +26,7 @@ public:
 
     static float scalarProduct(Circle const& c1, Circle const& c2);
     bool static areOrthogonalCircles(Circle const& c1, Circle const& c2);
+    bool static areTangentCircles(Circle const& c1, Circle const& c2);
 
     void setOldCircleBeforeInversion(Circle const& oldCircle);
     Circle oldCircleBeforeInversion() const;
@@ -42,6 +43,8 @@ public:
     Circle inverseStereographicProject() const;
     void updateR3Coord();
     void initInversiveCoordinates();
+
+    QVector3D vertexOfCircle() const;
 
 private:
     Circle operator*(float rhs) const;
