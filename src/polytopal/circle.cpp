@@ -49,7 +49,7 @@ bool Circle::areOrthogonalCircles(Circle const& c1, Circle const& c2) {
 
 bool Circle::areTangentCircles(const Circle& c1, const Circle& c2) {
     //with inversive coordinates
-    return qAbs(scalarProduct(c1, c2)) - 1.0f < 0.01f;
+    return qAbs(scalarProduct(c1, c2)) - 1.0f < 0.02f;
 }
 
 Circle const* Circle::inversionCircle() const {
@@ -65,7 +65,11 @@ void Circle::setCenter(QVector3D const& center) {
 }
 
 void Circle::setRadius(float radius) {
-    m_radius = radius;
+    if (radius > 0.0f) {
+        m_radius = radius;
+    }else{
+        m_radius = 0.0f;
+    }
 }
 
 void Circle::setAxisX(QVector3D const& axisX) {

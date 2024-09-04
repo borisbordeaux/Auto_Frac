@@ -12,9 +12,9 @@ out vec3 vecColor;
 
 void main() {
     gl_Position = projMatrix * mvMatrix * vertex;
-    if (isSelected > 0.0) {
-        vecColor = vec3(0.0, 1.0, 0.0);
-    } else {
-        vecColor = color;
-    }
+    int id = int(ID + 0.2);
+    int mask = 255;
+    vecColor.z = float(id & mask) / 255.0;
+    vecColor.y = float((id >> 8) & mask) / 255.0;
+    vecColor.x = float((id >> 16) & mask) / 255.0;
 }

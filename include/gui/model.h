@@ -55,7 +55,7 @@ public:
 
     int vertexCountEdge() const { return m_countEdge / 8; }
 
-    int vertexCountCircles() const { return m_countCircle / 6; }
+    int vertexCountCircles() const { return m_countCircle / 8; }
 
     int vertexCountCirclesDual() const { return m_countCircleDual / 6; }
 
@@ -138,6 +138,12 @@ public:
     void setSelectedEdge(int edgeIndex);
 
     /**
+     * @brief Sets the selected circle index
+     * @param circleIndex the index of the circle that is selected
+     */
+    void setSelectedCircle(int circleIndex);
+
+    /**
      * @brief getter
      * @return a pointer to the selected face, nullptr if no face is selected
      */
@@ -155,8 +161,16 @@ public:
      */
     he::Vertex* selectedVertex();
 
+    /**
+     * @brief getter
+     * @return a pointer to the selected circle, nullptr if no circle is selected
+     */
+    poly::Circle* selectedCircle();
+
     void updateColorOfCircles(QVector3D const& color);
     void updateColorOfCirclesDual(QVector3D const& color);
+
+    QVector<poly::Circle> const& circles() const;
 
 private:
 
@@ -187,7 +201,7 @@ private:
      */
     void addVertexEdge(QVector3D const& v, QVector3D const& color, float ID, float isSelected);
 
-    void addVertexCircle(QVector3D const& v, QVector3D const& color);
+    void addVertexCircle(QVector3D const& v, QVector3D const& color, float ID, float isSelected);
 
     void addVertexCircleDual(QVector3D const& v, QVector3D const& color);
 
@@ -243,6 +257,7 @@ private:
     int m_selectedFace = 0;
     int m_selectedVertex = 0;
     int m_selectedEdge = 0;
+    int m_selectedCircle = 0;
 };
 
 #endif // MODEL_H

@@ -25,6 +25,7 @@ Polytopal2DWindow::Polytopal2DWindow(QWidget* parent) :
 
     this->updateEnablementPoly();
     m_view = new GLView(&m_modelMesh, this);
+    m_view->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
     this->ui->verticalLayout->addWidget(m_view);
 
@@ -636,6 +637,9 @@ void Polytopal2DWindow::updateEnablementPoly() {
         case 2:
             m_view->setPickingType(PickingType::PickingVertex);
             break;
+        case 3:
+            m_view->setPickingType(PickingType::PickingCircle);
+            break;
         default:
             break;
     }
@@ -766,6 +770,8 @@ void Polytopal2DWindow::updateEnablementPoly() {
                 m_modelMesh.selectedVertex()->setUserData(this->ui->lineEdit_userData->text());
             }
             break;
+        default:
+            break;
     }
 }
 
@@ -795,6 +801,12 @@ void Polytopal2DWindow::updateUserData() {
                 qDebug() << "----------------";
             }
             break;
+        case PickingType::PickingCircle:
+            if (m_modelMesh.selectedCircle() != nullptr) {
+                qDebug() << "Radius: " << m_modelMesh.selectedCircle()->radius();
+                qDebug() << "----------------";
+            }
+            break;
     }
 }
 
@@ -810,15 +822,14 @@ void Polytopal2DWindow::updateUserData() {
                 he->setUserData(this->ui->lineEdit_userData->text());
             }
             break;
-        case PickingType::PickingVertex:
-            //not useful yet
+        default:
             break;
     }
 
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotScaleBy() {
-    QMatrix4x4 matrix;
+    /*QMatrix4x4 matrix;
     matrix.scale(static_cast<float>(this->ui->doubleSpinBox_scaleForce->value()));
     m_modelMesh.transformMesh(matrix);
 
@@ -826,13 +837,14 @@ void Polytopal2DWindow::updateUserData() {
     this->updateCirclesDual();
 
     m_view->updateData();
-    m_view->update();
+    m_view->update();*/
 
-    /*m_modelMesh.scaleCircles(static_cast<float>(this->ui->doubleSpinBox_scaleForce->value()));
+
+    m_modelMesh.scaleCircles(static_cast<float>(this->ui->doubleSpinBox_scaleForce->value()));
     m_modelMesh.updateDataCircles();
 
     m_view->updateDataCircles();
-    m_view->update();*/
+    m_view->update();
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotOBJFromCircles() {
@@ -844,8 +856,10 @@ void Polytopal2DWindow::updateUserData() {
         //write the file using a stream
         QTextStream stream(&file);
 
+        QVector<poly::Circle> circles = m_modelMesh.circles();
+
         //for each circle, write the coordinates of their associated vertex
-        for (poly::Circle const& c: m_circles) {
+        for (poly::Circle const& c: circles) {
             QVector3D pos = c.vertexOfCircle();
             stream << "v " << QString::number(pos.x()) << " " << QString::number(pos.y()) << " " << QString::number(pos.z()) << Qt::endl;
         }
@@ -863,9 +877,11 @@ void Polytopal2DWindow::updateUserData() {
 std::vector<std::string> Polytopal2DWindow::OBJFacesFromCircles() {
     std::vector<std::pair<std::size_t, std::size_t>> listAdj;
 
-    for (std::size_t i = 0; i < m_circles.size() - 1; i++) {
-        for (std::size_t j = i; j < m_circles.size(); j++) {
-            if (poly::Circle::areTangentCircles(m_circles[i], m_circles[j])) {
+    QVector<poly::Circle> circles = m_modelMesh.circles();
+
+    for (qsizetype i = 0; i < circles.size() - 1; i++) {
+        for (qsizetype j = i + 1; j < circles.size(); j++) {
+            if (poly::Circle::areTangentCircles(circles[i], circles[j])) {
                 listAdj.emplace_back(i, j);
             }
         }

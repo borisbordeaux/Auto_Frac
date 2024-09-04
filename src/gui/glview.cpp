@@ -112,10 +112,16 @@ void GLView::initBuffers() {
     //enable enough attrib array for all the data of the circle's vertex
     glEnableVertexAttribArray(0); //coordinates
     glEnableVertexAttribArray(1); //color
+    glEnableVertexAttribArray(2); //ID for picking
+    glEnableVertexAttribArray(3); //is selected
     //coordinates of the vertex
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), nullptr);
     //color of the edge
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
+    //the ID
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(6 * sizeof(GLfloat)));
+    //whether it's selected or not, to simplify the code, a negative value means not selected while a positive value means selected
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(7 * sizeof(GLfloat)));
     m_vboCircles.release();
     m_vaoCircles.release();
 
@@ -187,12 +193,27 @@ void GLView::initShadersView() {
     m_programCircles->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/circles/fs.glsl");
     m_programCircles->bindAttributeLocation("vertex", 0);
     m_programCircles->bindAttributeLocation("color", 1);
+    m_programCircles->bindAttributeLocation("ID", 2);
+    m_programCircles->bindAttributeLocation("isSelected", 3);
     m_programCircles->link();
 
     //get locations of uniforms
     m_programCircles->bind();
     m_projMatrixLocCircle = m_programCircles->uniformLocation("projMatrix");
     m_mvMatrixLocCircle = m_programCircles->uniformLocation("mvMatrix");
+
+    //init shader for circles dual
+    m_programCirclesDual = new QOpenGLShaderProgram();
+    m_programCirclesDual->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/circlesdual/vs.glsl");
+    m_programCirclesDual->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/circlesdual/fs.glsl");
+    m_programCirclesDual->bindAttributeLocation("vertex", 0);
+    m_programCirclesDual->bindAttributeLocation("color", 1);
+    m_programCirclesDual->link();
+
+    //get locations of uniforms
+    m_programCirclesDual->bind();
+    m_projMatrixLocCircleDual = m_programCirclesDual->uniformLocation("projMatrix");
+    m_mvMatrixLocCircleDual = m_programCirclesDual->uniformLocation("mvMatrix");
 
     //init shader for faces
     m_programFaces = new QOpenGLShaderProgram();
@@ -289,6 +310,23 @@ void GLView::initShadersPicking() {
     m_programVerticesPicking->bind();
     m_projMatrixPickingLocVertices = m_programVerticesPicking->uniformLocation("projMatrix");
     m_mvMatrixPickingLocVertices = m_programVerticesPicking->uniformLocation("mvMatrix");
+
+    //init shader for circles picking
+    m_programCirclesPicking = new QOpenGLShaderProgram();
+    m_programCirclesPicking->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/circles/picking/vs.glsl");
+    m_programCirclesPicking->addShaderFromSourceFile(QOpenGLShader::Geometry, "../shaders/circles/picking/gs.glsl");
+    m_programCirclesPicking->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/circles/picking/fs.glsl");
+    m_programCirclesPicking->bindAttributeLocation("vertex", 0);
+    m_programCirclesPicking->bindAttributeLocation("color", 1);
+    m_programCirclesPicking->bindAttributeLocation("ID", 2);
+    m_programCirclesPicking->bindAttributeLocation("isSelected", 3);
+    m_programCirclesPicking->link();
+
+    //get location of uniforms
+    m_programCirclesPicking->bind();
+    m_projMatrixPickingLocCircle = m_programCirclesPicking->uniformLocation("projMatrix");
+    m_mvMatrixPickingLocCircle = m_programCirclesPicking->uniformLocation("mvMatrix");
+    m_invViewportPickingLocCircle = m_programCirclesPicking->uniformLocation("invViewport");
 }
 
 void GLView::initializeGL() {
@@ -359,6 +397,17 @@ void GLView::paintGL() {
         m_programCircles->setUniformValue(m_mvMatrixLocCircle, m_camera.getViewMatrix());
         m_programCircles->release();
 
+        m_programCirclesPicking->bind();
+        m_programCirclesPicking->setUniformValue(m_projMatrixPickingLocCircle, m_proj);
+        m_programCirclesPicking->setUniformValue(m_mvMatrixPickingLocCircle, m_camera.getViewMatrix());
+        m_programCirclesPicking->setUniformValue(m_invViewportPickingLocCircle, 1.0f / m_viewportWidth, 1.0f / m_viewportHeight);
+        m_programCirclesPicking->release();
+
+        m_programCirclesDual->bind();
+        m_programCirclesDual->setUniformValue(m_projMatrixLocCircleDual, m_proj);
+        m_programCirclesDual->setUniformValue(m_mvMatrixLocCircleDual, m_camera.getViewMatrix());
+        m_programCirclesDual->release();
+
         m_programEdges->bind();
         m_programEdges->setUniformValue(m_projMatrixLocEdge, m_proj);
         m_programEdges->setUniformValue(m_mvMatrixLocEdge, m_camera.getViewMatrix());
@@ -397,14 +446,19 @@ void GLView::paintGL() {
 
     //click management
     if (m_clicked) {
-        if (m_pickingType == PickingType::PickingFace) {
-            clickFaceManagement();
-        }
-        if (m_pickingType == PickingType::PickingEdge) {
-            clickEdgeManagement();
-        }
-        if (m_pickingType == PickingType::PickingVertex) {
-            clickVertexManagement();
+        switch (m_pickingType) {
+            case PickingType::PickingFace:
+                clickFaceManagement();
+                break;
+            case PickingType::PickingEdge:
+                clickEdgeManagement();
+                break;
+            case PickingType::PickingVertex:
+                clickVertexManagement();
+                break;
+            case PickingType::PickingCircle:
+                clickCircleManagement();
+                break;
         }
         m_clicked = false;
     }
@@ -427,11 +481,13 @@ void GLView::paintGL() {
     m_programCircles->bind();
     m_vaoCircles.bind();
     glDrawArrays(GL_LINES, 0, m_model->vertexCountCircles());
+    m_programCircles->release();
 
     //draw circles dual
+    m_programCirclesDual->bind();
     m_vaoCirclesDual.bind();
     glDrawArrays(GL_LINES, 0, m_model->vertexCountCirclesDual());
-    m_programCircles->release();
+    m_programCirclesDual->release();
 
     //draw edges
     m_programEdges->bind();
@@ -725,6 +781,77 @@ void GLView::clickVertexManagement() {
     glEnable(GL_MULTISAMPLE);
 }
 
+void GLView::clickCircleManagement() {
+    //black background
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+    //no multisample
+    glDisable(GL_MULTISAMPLE);
+
+    //clear buffers
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    //draw only in depth buffer
+    glColorMask(false, false, false, false);
+    //draw faces
+    m_programFaces->bind();
+    m_vaoFaces.bind();
+    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountFace());
+    m_programFaces->release();
+
+    //draw sphere only in depth buffer
+    m_programSphere->bind();
+    m_vaoSphere.bind();
+    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountSphere());
+    m_programSphere->release();
+    glColorMask(true, true, true, true);
+
+    //draw circles
+    m_programCirclesPicking->bind();
+    m_vaoCircles.bind();
+    glDrawArrays(GL_LINES, 0, m_model->vertexCountCircles());
+    m_programCirclesPicking->release();
+
+    //render the scene
+    QImage image = grabFramebuffer();
+
+    //read the pixel under the mouse
+    int max = 0;
+    int area = 5;
+
+    for (int i = -area; i < area; i++) {
+        for (int j = -area; j < area; j++) {
+            QColor color = image.pixelColor(m_clickPos.x() + i, m_clickPos.y() + j);
+            if (color.isValid()) {
+                int val = color.red() * 65536 + color.green() * 256 + color.blue();
+                if (val > max) {
+                    max = val;
+                }
+                image.setPixelColor(m_clickPos.x() + i, m_clickPos.y() + j, Qt::blue);
+            }
+        }
+    }
+    image.save("picking.png");
+
+    //set the selected circle using the color
+    m_model->setSelectedCircle(max);
+    m_mainWindow->updateUserData();
+
+    //update the data for drawing the selected object in the right color
+    m_model->updateDataCircles();
+
+    //write data to the GPU
+    m_vboCircles.bind();
+    m_vboCircles.write(0, m_model->constDataCircles(), m_model->countCircles() * static_cast<int>(sizeof(GLfloat)));
+    m_vboCircles.release();
+
+    //reset clear color
+    glClearColor(m_clearColor.x(), m_clearColor.y(), m_clearColor.z(), 1.0f);
+
+    //enable multisample
+    glEnable(GL_MULTISAMPLE);
+}
+
 void GLView::animationStep() {
     m_camera.rotateAzimuth(qDegreesToRadians(90.0f / static_cast<float>(this->screen()->refreshRate())));
     m_uniformsDirty = true;
@@ -880,12 +1007,15 @@ void GLView::setPickingType(PickingType type) {
     m_model->setSelectedFace(0);
     m_model->setSelectedEdge(0);
     m_model->setSelectedVertex(0);
+    m_model->setSelectedCircle(0);
     m_model->updateDataFaces();
     m_model->updateDataEdge();
     m_model->updateDataVertices();
+    m_model->updateDataCircles();
     this->updateDataFaces();
     this->updateDataEdge();
     this->updateDataVertices();
+    this->updateDataCircles();
     this->update();
 }
 

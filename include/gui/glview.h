@@ -12,7 +12,8 @@
 enum class PickingType {
     PickingFace,
     PickingEdge,
-    PickingVertex
+    PickingVertex,
+    PickingCircle
 };
 
 enum class RotationType {
@@ -92,6 +93,7 @@ private:
     void clickFaceManagement();
     void clickEdgeManagement();
     void clickVertexManagement();
+    void clickCircleManagement();
 
     //camera of the scene
     Camera m_camera;
@@ -116,13 +118,15 @@ private:
     QOpenGLBuffer m_vboCirclesDual;
     QOpenGLBuffer m_vboVertices;
     QOpenGLShaderProgram* m_programSphere = nullptr;
-    QOpenGLShaderProgram* m_programCircles = nullptr;
     QOpenGLShaderProgram* m_programFaces = nullptr;
     QOpenGLShaderProgram* m_programFacesPicking = nullptr;
     QOpenGLShaderProgram* m_programEdges = nullptr;
     QOpenGLShaderProgram* m_programEdgesPicking = nullptr;
     QOpenGLShaderProgram* m_programVertices = nullptr;
     QOpenGLShaderProgram* m_programVerticesPicking = nullptr;
+    QOpenGLShaderProgram* m_programCircles = nullptr;
+    QOpenGLShaderProgram* m_programCirclesPicking = nullptr;
+    QOpenGLShaderProgram* m_programCirclesDual = nullptr;
 
     //location of the different variables in the GPU
     //Sphere viewing
@@ -130,10 +134,6 @@ private:
     int m_mvMatrixLocSphere = 0;
     int m_lightPosLocSphere = 0;
     int m_cameraPosLocSphere = 0;
-
-    //Circles viewing
-    int m_projMatrixLocCircle = 0;
-    int m_mvMatrixLocCircle = 0;
 
     //Faces viewing
     int m_projMatrixLoc = 0;
@@ -158,6 +158,18 @@ private:
     //Vertices picking
     int m_projMatrixPickingLocVertices = 0;
     int m_mvMatrixPickingLocVertices = 0;
+
+    //Circles viewing
+    int m_projMatrixLocCircle = 0;
+    int m_mvMatrixLocCircle = 0;
+    //Circles picking
+    int m_projMatrixPickingLocCircle = 0;
+    int m_mvMatrixPickingLocCircle = 0;
+    int m_invViewportPickingLocCircle = 0;
+
+    //Circles dual viewing
+    int m_projMatrixLocCircleDual = 0;
+    int m_mvMatrixLocCircleDual = 0;
 
     //flag to update uniforms if needed
     bool m_uniformsDirty = true;

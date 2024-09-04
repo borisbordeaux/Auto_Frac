@@ -102,10 +102,14 @@ void Model::updateDataCircles() {
     qsizetype nbOfAdd = 2 * nbOfEdges;
 
     //we resize the data for rapidity
-    m_dataCircles.resize(nbOfAdd * 6);
+    m_dataCircles.resize(nbOfAdd * 8);
+
+    int ID = 1;
 
     QVector3D first;
     for (poly::Circle const& c: m_circles) {
+        float isSelected = (ID == m_selectedCircle && m_selectedCircle != 0) ? 1.0f : -1.0f;
+
         for (int i = 0; i < 360; i += 4) {
             float alpha = qDegreesToRadians(static_cast<float>(i));
             float x = c.center().x() + c.radius() * std::cos(alpha) * c.axisX().x() + c.radius() * std::sin(alpha) * c.axisY().x();
@@ -114,13 +118,14 @@ void Model::updateDataCircles() {
             if (i == 0) {
                 first = { x, y, z };
             } else {
-                this->addVertexCircle({ x, y, z }, c.color());
+                this->addVertexCircle({ x, y, z }, c.color(), static_cast<float>(ID), isSelected);
             }
-            this->addVertexCircle({ x, y, z }, c.color());
+            this->addVertexCircle({ x, y, z }, c.color(), static_cast<float>(ID), isSelected);
             if (i == 356) {
-                this->addVertexCircle(first, c.color());
+                this->addVertexCircle(first, c.color(), static_cast<float>(ID), isSelected);
             }
         }
+        ID++;
     }
 }
 
@@ -232,15 +237,15 @@ void Model::addVertexEdge(QVector3D const& v, QVector3D const& color, float ID, 
     *p++ = color.x();
     *p++ = color.y();
     *p++ = color.z();
-    //the ID of the face
+    //the ID of the edge
     *p++ = ID;
-    //whether the face is selected or not
+    //whether the edge is selected or not
     *p = isSelected;
     //we update the amount of data
     m_countEdge += 8;
 }
 
-void Model::addVertexCircle(QVector3D const& v, QVector3D const& color) {
+void Model::addVertexCircle(QVector3D const& v, QVector3D const& color, float ID, float isSelected) {
     //add to the end of the data already added
     float* p = m_dataCircles.data() + m_countCircle;
     //the coordinates of the vertex
@@ -249,9 +254,13 @@ void Model::addVertexCircle(QVector3D const& v, QVector3D const& color) {
     *p++ = v.z();
     *p++ = color.x();
     *p++ = color.y();
-    *p = color.z();
+    *p++ = color.z();
+    //the ID of the face
+    *p++ = ID;
+    //whether the face is selected or not
+    *p = isSelected;
     //we update the amount of data
-    m_countCircle += 6;
+    m_countCircle += 8;
 }
 
 void Model::addVertexCircleDual(QVector3D const& v, QVector3D const& color) {
@@ -315,6 +324,7 @@ void Model::setMesh(he::Mesh* mesh) {
     this->setSelectedFace(0);
     this->setSelectedEdge(0);
     this->setSelectedVertex(0);
+    this->setSelectedCircle(0);
     //update buffers
     this->updateData();
 }
@@ -329,6 +339,10 @@ void Model::setSelectedEdge(int edgeIndex) {
 
 void Model::setSelectedVertex(int vertexIndex) {
     m_selectedVertex = vertexIndex;
+}
+
+void Model::setSelectedCircle(int circleIndex) {
+    m_selectedCircle = circleIndex;
 }
 
 he::Face* Model::selectedFace() {
@@ -356,6 +370,16 @@ he::Vertex* Model::selectedVertex() {
 
     if (m_selectedVertex - 1 >= 0 && m_selectedVertex - 1 < static_cast<qsizetype>(m_mesh->vertices().size())) {
         res = m_mesh->vertices().at(m_selectedVertex - 1);
+    }
+
+    return res;
+}
+
+poly::Circle* Model::selectedCircle() {
+    poly::Circle* res = nullptr;
+
+    if (m_selectedCircle - 1 >= 0 && m_selectedCircle - 1 < m_circles.size()) {
+        res = &m_circles[m_selectedCircle - 1];
     }
 
     return res;
@@ -485,9 +509,19 @@ void Model::updateColorOfCirclesDual(QVector3D const& color) {
 }
 
 void Model::scaleCircles(float by) {
-    for (poly::Circle& c: m_circles) {
-        c.setRadius(c.radius() * by);
+    if (this->selectedCircle() != nullptr) {
+        this->selectedCircle()->setRadius(this->selectedCircle()->radius() - by);
+        this->selectedCircle()->initInversiveCoordinates();
+    } else {
+        for (poly::Circle& c: m_circles) {
+            c.setRadius(c.radius() + by);
+            c.initInversiveCoordinates();
+        }
     }
+}
+
+QVector<poly::Circle> const& Model::circles() const {
+    return m_circles;
 }
 
 
