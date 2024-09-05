@@ -59,7 +59,6 @@ void Polytopal2DWindow::setInfoAdvancement(int percent) {
 }
 
 void Polytopal2DWindow::openOBJFile(QString const& file) {
-    m_view->stopAnimation();
     m_timerCanonicalize.stop();
     m_progressBar->reset();
     m_step = 0;
@@ -85,7 +84,6 @@ void Polytopal2DWindow::openOBJFile(QString const& file) {
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotOpenOBJFile() {
-    m_view->stopAnimation();
     m_timerCanonicalize.stop();
     m_progressBar->reset();
     m_step = 0;
@@ -378,6 +376,7 @@ void Polytopal2DWindow::canonicalizeStep() {
         m_view->updateDataCircles();
         m_view->updateDataCirclesDual();
         m_view->update();
+        this->updateEnablementPoly();
     }
 }
 
@@ -442,6 +441,7 @@ void Polytopal2DWindow::animProjectStep() {
                 m_modelMesh.addCircleDual(c.inverseStereographicProject());
             }
         }
+        this->updateEnablementPoly();
     }
 
     m_modelMesh.updateDataCircles();
@@ -529,13 +529,6 @@ void Polytopal2DWindow::animInversionStep() {
     m_view->update();
 }
 
-void Polytopal2DWindow::projectCirclesToPlan() {
-    this->ui->checkBox_projectCircles->setChecked(!this->ui->checkBox_projectCircles->isChecked());
-    m_circlesAnimProject = m_circles;
-    m_circlesDualAnimProject = m_circlesDual;
-    m_timerAnimProject.start();
-}
-
 void Polytopal2DWindow::updateCircles() {
     //if there were circles
     if (!m_circles.empty()) {
@@ -582,7 +575,7 @@ void Polytopal2DWindow::updateCirclesDual() {
 }
 
 void Polytopal2DWindow::increaseInversion() {
-    if (m_circles.empty()) { return; }
+    if (m_circles.empty() || m_circlesDual.empty()) { return; }
 
     std::size_t index = m_circlesIndex;
     m_circlesIndex = m_circles.size();
@@ -624,6 +617,7 @@ void Polytopal2DWindow::updateEnablementPoly() {
     this->ui->pushButton_canonizeMesh->setEnabled(m_openedMesh);
     this->ui->pushButton_displayCircles->setEnabled(m_openedMesh);
     this->ui->pushButton_displayCirclesDual->setEnabled(m_openedMesh);
+    this->ui->pushButton_OBJFromCircles->setEnabled(!m_modelMesh.circles().empty() && this->ui->checkBox_projectCircles->isChecked());
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotTypeSelectionChanged(int index) {
@@ -656,14 +650,6 @@ void Polytopal2DWindow::updateEnablementPoly() {
         default:
             break;
     }
-}
-
-[[maybe_unused]] void Polytopal2DWindow::slotStartVideoAnimation() {
-    m_view->startVideoAnimation();
-}
-
-[[maybe_unused]] void Polytopal2DWindow::slotAnimationRotation() {
-    m_view->rotationAnimation();
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotUpdateLabelPrecision(int value) {
@@ -825,21 +811,9 @@ void Polytopal2DWindow::updateUserData() {
         default:
             break;
     }
-
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotScaleBy() {
-    /*QMatrix4x4 matrix;
-    matrix.scale(static_cast<float>(this->ui->doubleSpinBox_scaleForce->value()));
-    m_modelMesh.transformMesh(matrix);
-
-    this->updateCircles();
-    this->updateCirclesDual();
-
-    m_view->updateData();
-    m_view->update();*/
-
-
     m_modelMesh.scaleCircles(static_cast<float>(this->ui->doubleSpinBox_scaleForce->value()));
     m_modelMesh.updateDataCircles();
 
@@ -848,37 +822,18 @@ void Polytopal2DWindow::updateUserData() {
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotOBJFromCircles() {
-    if (m_circles.empty()) { return; }
-    QFile file("../obj/exported.obj");
-
-    //open the file
-    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        //write the file using a stream
-        QTextStream stream(&file);
-
-        QVector<poly::Circle> circles = m_modelMesh.circles();
-
-        //for each circle, write the coordinates of their associated vertex
-        for (poly::Circle const& c: circles) {
-            QVector3D pos = c.vertexOfCircle();
-            stream << "v " << QString::number(pos.x()) << " " << QString::number(pos.y()) << " " << QString::number(pos.z()) << Qt::endl;
-        }
-
-        std::vector<std::string> faces = this->OBJFacesFromCircles();
-
-        for (std::string const& f: faces) {
-            stream << "l " << f.c_str() << Qt::endl;
-        }
-
-        file.close();
-    }
-}
-
-std::vector<std::string> Polytopal2DWindow::OBJFacesFromCircles() {
-    std::vector<std::pair<std::size_t, std::size_t>> listAdj;
-
     QVector<poly::Circle> circles = m_modelMesh.circles();
+    if (circles.empty()) { return; }
 
+    he::Mesh m;
+
+    // for each circle, add the center as vertex to the mesh
+    for (poly::Circle const& c: circles) {
+        he::Vertex* v = new he::Vertex(c.center().x(), c.center().y(), c.center().z(), QString::number(m.vertices().size()));
+        m.append(v);
+    }
+
+    std::vector<std::pair<std::size_t, std::size_t>> listAdj;
     for (qsizetype i = 0; i < circles.size() - 1; i++) {
         for (qsizetype j = i + 1; j < circles.size(); j++) {
             if (poly::Circle::areTangentCircles(circles[i], circles[j])) {
@@ -887,11 +842,91 @@ std::vector<std::string> Polytopal2DWindow::OBJFacesFromCircles() {
         }
     }
 
-    std::vector<std::string> res;
+    for (auto p: listAdj) {
 
-    for (std::pair<std::size_t, std::size_t> const& p: listAdj) {
-        res.emplace_back(std::to_string(p.first + 1) + " " + std::to_string(p.second + 1));
+        //std::cout << "l " << p.first << " " << p.second << std::endl;
+
+        he::HalfEdge* he1 = new he::HalfEdge(m.vertices()[p.first], QString::number(p.first) + " " + QString::number(p.second));
+        m.append(he1);
+        m.vertices()[p.first]->setHalfEdge(he1);
+
+        he::HalfEdge* he2 = new he::HalfEdge(m.vertices()[p.second], QString::number(p.second) + " " + QString::number(p.first));
+        m.append(he2);
+        m.vertices()[p.second]->setHalfEdge(he2);
+
+        he1->setTwin(he2);
+        he2->setTwin(he1);
     }
 
-    return res;
+    // we need to set only next on all halfedges and one halfedge per face
+    // if we only need to export the mesh in OBJ
+
+    //at first, store clockwise ordered halfedges for each vertex
+    std::vector<std::vector<he::HalfEdge*>> orderedHalfEdgesOfVertex;
+    for (he::Vertex* v: m.vertices()) {
+        std::vector<he::HalfEdge*> halfedges;
+        halfedges.emplace_back(v->halfEdge());
+        for (he::HalfEdge* he: v->otherHalfEdges()) {
+            halfedges.emplace_back(he);
+        }
+        std::sort(halfedges.begin(), halfedges.end(),
+                  [&m](he::HalfEdge* he1, he::HalfEdge* he2) {
+                      he::Vertex* to1 = m.vertices()[he1->name().split(" ")[1].toUInt()];
+                      he::Vertex* to2 = m.vertices()[he2->name().split(" ")[1].toUInt()];
+                      he::Vertex* from1 = he1->origin();
+                      he::Vertex* from2 = he2->origin();
+                      float angle1 = std::atan2(to1->pos().y() - from1->pos().y(), to1->pos().x() - from1->pos().x());
+                      float angle2 = std::atan2(to2->pos().y() - from2->pos().y(), to2->pos().x() - from2->pos().x());
+                      return angle1 > angle2;
+                  });
+        orderedHalfEdgesOfVertex.emplace_back(halfedges);
+    }
+
+//    std::cout << "---- Ordered halfedges ----" << std::endl;
+//    for (std::size_t i = 0; i < orderedHalfEdgesOfVertex.size(); i++) {
+//        std::cout << "For vertex " << m.vertices()[i]->name().toStdString() << ": ";
+//        for (he::HalfEdge* he: orderedHalfEdgesOfVertex[i]) {
+//            std::cout << he->name().toStdString() << ", ";
+//        }
+//        std::cout << std::endl;
+//    }
+
+    // set next he on halfedges
+    for (auto& i: orderedHalfEdgesOfVertex) {
+        for (std::size_t j = 0; j < i.size(); j++) {
+            he::HalfEdge* he = i[j];
+            he::HalfEdge* heNext = i[(j + 1) % i.size()];
+            heNext->twin()->setNext(he);
+        }
+    }
+
+    // find faces
+    std::vector<he::HalfEdge*> usedHalfEdges;
+    while (usedHalfEdges.size() != m.halfEdges().size()) {
+        he::HalfEdge* he = nullptr;
+        for (he::HalfEdge* h: m.halfEdges()) {
+            if (std::find(usedHalfEdges.begin(), usedHalfEdges.end(), h) == usedHalfEdges.end()) {
+                he = h;
+                break;
+            }
+        }
+        he::HalfEdge* currentHE = he;
+
+        he::Face* f = new he::Face(QString::number(m.faces().size()), he);
+        m.append(f);
+
+        do {
+            currentHE = currentHE->next();
+            usedHalfEdges.emplace_back(currentHE);
+        } while (currentHE != he);
+    }
+
+    //std::cout << m.toString().toStdString();
+
+    for (std::size_t i = 0; i < m.vertices().size(); i++) {
+        m.vertices()[i]->setPos(circles[static_cast<qsizetype>(i)].vertexOfCircle());
+    }
+
+    he::writer::writeOBJ("../obj/exported.obj", m);
+    this->setInfo("Mesh exported to obj/exported.obj");
 }

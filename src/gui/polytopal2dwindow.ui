@@ -483,13 +483,6 @@
         <property name="sizeConstraint">
          <enum>QLayout::SetMinimumSize</enum>
         </property>
-        <item row="2" column="0">
-         <widget class="QPushButton" name="pushButton_OBJFromCircles">
-          <property name="text">
-           <string>OBJ from circles</string>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="0">
          <widget class="QPushButton" name="pushButton_ExportOBJ">
           <property name="text">
@@ -497,10 +490,27 @@
           </property>
          </widget>
         </item>
+        <item row="2" column="0">
+         <widget class="QPushButton" name="pushButton_OBJFromCircles">
+          <property name="text">
+           <string>OBJ from circles</string>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="0">
          <widget class="QPushButton" name="pushButton_openOBJ">
           <property name="text">
            <string>Open OBJ...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QPushButton" name="pushButton_OBJOfCircles">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>OBJ of Circles</string>
           </property>
          </widget>
         </item>
@@ -550,6 +560,9 @@
           </property>
           <property name="maximum">
            <number>16</number>
+          </property>
+          <property name="pageStep">
+           <number>1</number>
           </property>
           <property name="value">
            <number>6</number>
@@ -698,13 +711,6 @@
         <property name="sizeConstraint">
          <enum>QLayout::SetMinimumSize</enum>
         </property>
-        <item row="0" column="1">
-         <widget class="QCheckBox" name="checkBox_animations">
-          <property name="text">
-           <string>Animations</string>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="0">
          <widget class="QCheckBox" name="checkBox_darkTheme">
           <property name="text">
@@ -725,27 +731,10 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="2">
-         <widget class="QLabel" name="label">
+        <item row="1" column="2">
+         <widget class="QLabel" name="label_2">
           <property name="text">
-           <string>Selection</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0" colspan="2">
-         <widget class="QPushButton" name="pushButton_2">
-          <property name="text">
-           <string>Animate Rotation</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QCheckBox" name="checkBox_displayMesh">
-          <property name="text">
-           <string>Mesh</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
+           <string>Rotation</string>
           </property>
          </widget>
         </item>
@@ -773,13 +762,6 @@
           </item>
          </widget>
         </item>
-        <item row="1" column="2">
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>Rotation</string>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="3">
          <widget class="QComboBox" name="comboBox_RotationType">
           <item>
@@ -794,13 +776,27 @@
           </item>
          </widget>
         </item>
-        <item row="4" column="2" colspan="2">
-         <widget class="QPushButton" name="pushButton_VideoAnimation">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
+        <item row="0" column="1">
+         <widget class="QCheckBox" name="checkBox_animations">
           <property name="text">
-           <string>Video Animation</string>
+           <string>Animations</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Selection</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QCheckBox" name="checkBox_displayMesh">
+          <property name="text">
+           <string>Mesh</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -1153,38 +1149,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_VideoAnimation</sender>
-   <signal>clicked()</signal>
-   <receiver>Polytopal2DWindow</receiver>
-   <slot>slotStartVideoAnimation()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1408</x>
-     <y>505</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1553</x>
-     <y>472</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_2</sender>
-   <signal>clicked()</signal>
-   <receiver>Polytopal2DWindow</receiver>
-   <slot>slotAnimationRotation()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1301</x>
-     <y>505</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>4</x>
-     <y>517</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>pushButton_displayCirclesDual</sender>
    <signal>clicked()</signal>
    <receiver>Polytopal2DWindow</receiver>
@@ -1359,8 +1323,6 @@
   <slot>slotExportOBJ()</slot>
   <slot>slotTypeSelectionChanged(int)</slot>
   <slot>slotTypeRotationChanged(int)</slot>
-  <slot>slotStartVideoAnimation()</slot>
-  <slot>slotAnimationRotation()</slot>
   <slot>slotDisplayDualAreaCircles()</slot>
   <slot>slotUpdateLabelPrecision(int)</slot>
   <slot>slotBarycentricSubdivision()</slot>

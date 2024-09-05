@@ -49,7 +49,7 @@ bool Circle::areOrthogonalCircles(Circle const& c1, Circle const& c2) {
 
 bool Circle::areTangentCircles(const Circle& c1, const Circle& c2) {
     //with inversive coordinates
-    return qAbs(scalarProduct(c1, c2)) - 1.0f < 0.02f;
+    return qAbs(scalarProduct(c1, c2)) - 1.0f < 0.01f;
 }
 
 Circle const* Circle::inversionCircle() const {

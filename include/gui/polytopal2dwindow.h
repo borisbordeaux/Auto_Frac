@@ -7,7 +7,9 @@
 #include "model.h"
 
 class QStatusBar;
+
 class QProgressBar;
+
 class GLView;
 
 QT_BEGIN_NAMESPACE
@@ -21,13 +23,9 @@ public:
     explicit Polytopal2DWindow(QWidget* parent = nullptr);
     ~Polytopal2DWindow() override;
 
-    int inversionLevel() const { return m_inversionLevel; }
-    void projectCirclesToPlan();
     void updateCircles();
     void updateCirclesDual();
-
     void updateUserData();
-
     void openOBJFile(QString const& file);
 
 public slots:
@@ -50,8 +48,6 @@ public slots:
 
     [[maybe_unused]] void slotTypeSelectionChanged(int index);
     [[maybe_unused]] void slotTypeRotationChanged(int index);
-    [[maybe_unused]] void slotStartVideoAnimation();
-    [[maybe_unused]] void slotAnimationRotation();
     [[maybe_unused]] void slotUpdateLabelPrecision(int value);
 
     [[maybe_unused]] void slotBarycentricSubdivision();
@@ -72,12 +68,10 @@ private:
     void setInfo(std::string const& textInfo, int timeoutMs = 2000);
     void setInfoAdvancement(int percent);
 
-    std::vector<std::string> OBJFacesFromCircles();
-
 private:
     Ui::Polytopal2DWindow* ui;
 
-    QStatusBar *m_statusBar;
+    QStatusBar* m_statusBar;
 
     he::Mesh m_mesh;
     he::Mesh m_sphereMesh;

@@ -12,9 +12,7 @@ GLView::GLView(Model* model, Polytopal2DWindow* parent) :
         m_model(model),
         m_cameraBeforeAnim(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.01f, 49.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)),
         m_mainWindow(parent) {
-    connect(&m_timerAnimation, &QTimer::timeout, this, &GLView::animationStep);
     connect(&m_timerAnimCamera, &QTimer::timeout, this, &GLView::animationCameraStep);
-    this->connectTimers();
     this->setAcceptDrops(true);
 }
 
@@ -852,21 +850,6 @@ void GLView::clickCircleManagement() {
     glEnable(GL_MULTISAMPLE);
 }
 
-void GLView::animationStep() {
-    m_camera.rotateAzimuth(qDegreesToRadians(90.0f / static_cast<float>(this->screen()->refreshRate())));
-    m_uniformsDirty = true;
-    update();
-}
-
-void GLView::hideEvent(QHideEvent* event) {
-    this->stopAnimation();
-    QWidget::hideEvent(event);
-}
-
-void GLView::stopAnimation() {
-    m_timerAnimation.stop();
-}
-
 void GLView::animationCameraStep() {
     m_camera.setCenter((1.0f - m_tAnimCamera) * m_cameraBeforeAnim.center() + m_tAnimCamera * QVector3D { 0, 0, 0 });
     m_camera.setRadius((1.0f - m_tAnimCamera) * m_cameraBeforeAnim.radius() + m_tAnimCamera * 8.0f);
@@ -881,72 +864,6 @@ void GLView::animationCameraStep() {
     }
     m_uniformsDirty = true;
     update();
-}
-
-void GLView::connectTimers() {
-    connect(&m_timerDisplaySphere, &QTimer::timeout, this, [&]() {
-        m_mainWindow->slotDisplayUnitSphereChanged();
-        m_timerCanonic.start(1000);
-        m_timerDisplaySphere.stop();
-    });
-    connect(&m_timerCanonic, &QTimer::timeout, this, [&]() {
-        m_mainWindow->slotCanonizeMesh();
-        m_timerDisplayCircle.start(6000);
-        m_timerCanonic.stop();
-    });
-    connect(&m_timerDisplayCircle, &QTimer::timeout, this, [&]() {
-        m_mainWindow->slotDisplayAreaCircles();
-        m_timerDisplayCircleDual.start(2000);
-        m_timerDisplayCircle.stop();
-    });
-    connect(&m_timerDisplayCircleDual, &QTimer::timeout, this, [&]() {
-        m_mainWindow->slotDisplayDualAreaCircles();
-        m_model->updateDataCirclesDual();
-        m_timerResetCamera.start(9000);
-        m_timerDisplayCircleDual.stop();
-    });
-    connect(&m_timerResetCamera, &QTimer::timeout, this, [&]() {
-        m_timerAnimation.stop();
-        m_cameraBeforeAnim = m_camera;
-        m_timerAnimCamera.start();
-        m_timerProjection.start(1000);
-        m_timerResetCamera.stop();
-    });
-    connect(&m_timerProjection, &QTimer::timeout, this, [&]() {
-        m_mainWindow->projectCirclesToPlan();
-        m_timerHideMeshes.start(1000);
-        m_timerProjection.stop();
-    });
-    connect(&m_timerHideMeshes, &QTimer::timeout, this, [&]() {
-        m_model->setMesh(nullptr);
-        m_model->setSphereMesh(nullptr);
-        this->updateData();
-        m_timerInversion.start(1000);
-        m_timerHideMeshes.stop();
-    });
-    connect(&m_timerInversion, &QTimer::timeout, this, [&]() {
-        m_mainWindow->slotIncreaseInversion();
-        if (m_mainWindow->inversionLevel() == 10) {
-            m_timerInversion.stop();
-            m_timerHideCircleDual.start();
-        } else {
-            m_timerInversion.start(1000);
-        }
-    });
-    connect(&m_timerHideCircleDual, &QTimer::timeout, this, [&]() {
-        m_mainWindow->slotDisplayDualAreaCircles();
-        m_model->updateDataCirclesDual();
-        m_timerHideCircleDual.stop();
-        m_timerZoom.start();
-    });
-    connect(&m_timerZoom, &QTimer::timeout, this, [&]() {
-        this->m_camera.zoom(0.01f);
-        if (m_camera.radius() < 5.0f) {
-            m_timerZoom.stop();
-        }
-        m_uniformsDirty = true;
-        update();
-    });
 }
 
 void GLView::updateData() {
@@ -994,14 +911,6 @@ void GLView::updateDataVertices() {
     m_vboVertices.release();
 }
 
-void GLView::rotationAnimation() {
-    if (m_timerAnimation.isActive()) {
-        m_timerAnimation.stop();
-    } else {
-        m_timerAnimation.start(static_cast<int>(1000.0 / this->screen()->refreshRate()));
-    }
-}
-
 void GLView::setPickingType(PickingType type) {
     m_pickingType = type;
     m_model->setSelectedFace(0);
@@ -1021,10 +930,6 @@ void GLView::setPickingType(PickingType type) {
 
 void GLView::setRotationType(RotationType type) {
     m_rotationType = type;
-}
-
-void GLView::startVideoAnimation() {
-    m_timerDisplaySphere.start();
 }
 
 void GLView::setBackGroundColor(float r, float g, float b) {

@@ -92,7 +92,7 @@ QVector3D he::Face::barycenter() const {
 
 QString he::Face::toString() const {
     QString res;
-    res += m_name + ": has the halfedge " + m_halfEdge->name() + " User data: " + m_userData;
+    res += m_name + ": has the halfedge " + (m_halfEdge ? m_halfEdge->name() : "nullptr") + " User data: " + m_userData;
     return res;
 }
 

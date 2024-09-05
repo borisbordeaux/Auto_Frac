@@ -82,7 +82,12 @@ QVector<he::HalfEdge*>& he::Vertex::otherHalfEdges() {
 
 QString he::Vertex::toString() const {
     QString res;
-    res += m_name + ": HalfEdge: " + m_halfEdge->name() + " Position: (" + QString::number(m_pos.x()) + "," + QString::number(m_pos.y()) + "," + QString::number(m_pos.z()) + ")" + " User data: " + m_userData;
+    res += m_name + ": HalfEdge: " + (m_halfEdge ? m_halfEdge->name() : "nullprt");
+    res += " Position: (" + QString::number(m_pos.x()) + "," + QString::number(m_pos.y()) + "," + QString::number(m_pos.z()) + ")" + " User data: " + m_userData;
+    res += "other halfedges: ";
+    for (he::HalfEdge* e: m_otherHalfEdges) {
+        res += e->name() + ", ";
+    }
     return res;
 }
 

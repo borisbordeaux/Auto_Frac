@@ -53,18 +53,13 @@ public:
     void updateDataCirclesDual();
     void updateDataVertices();
 
-    void stopAnimation();
-
     void setPickingType(PickingType type);
     void setRotationType(RotationType type);
-    void startVideoAnimation();
-    void rotationAnimation();
 
     void setBackGroundColor(float r, float g, float b);
     PickingType pickingType() const;
 
 public slots:
-    void animationStep();
     void animationCameraStep();
 
 protected:
@@ -78,8 +73,6 @@ protected:
     void mouseMoveEvent(QMouseEvent* event) override;
     void wheelEvent(QWheelEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
-
-    void hideEvent(QHideEvent* event) override;
 
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dropEvent(QDropEvent* event) override;
@@ -192,26 +185,12 @@ private:
     float m_viewportHeight = 0.0f;
 
     //for animation
-    QTimer m_timerAnimation;
     QTimer m_timerAnimCamera;
     Camera m_cameraBeforeAnim;
     float m_tAnimCamera = 0.0f;
 
 private:
     Polytopal2DWindow* m_mainWindow;
-    //for video animation
-    QTimer m_timerDisplaySphere;
-    QTimer m_timerCanonic;
-    QTimer m_timerDisplayCircle;
-    QTimer m_timerDisplayCircleDual;
-    QTimer m_timerResetCamera;
-    QTimer m_timerProjection;
-    QTimer m_timerHideMeshes;
-    QTimer m_timerInversion;
-    QTimer m_timerHideCircleDual;
-    QTimer m_timerZoom;
-
-    void connectTimers();
 };
 
 #endif // GLVIEW_H
