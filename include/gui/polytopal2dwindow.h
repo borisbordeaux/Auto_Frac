@@ -62,6 +62,7 @@ public slots:
     [[maybe_unused]] void slotScaleBy();
 
     [[maybe_unused]] void slotOBJFromCircles();
+    [[maybe_unused]] void slotOBJOfCircles();
 
 private:
     void updateEnablementPoly();

@@ -507,7 +507,7 @@
         <item row="3" column="0">
          <widget class="QPushButton" name="pushButton_OBJOfCircles">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="text">
            <string>OBJ of Circles</string>
@@ -947,8 +947,8 @@
    <slot>slotIncreaseInversion()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>168</x>
-     <y>505</y>
+     <x>1528</x>
+     <y>128</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -963,8 +963,8 @@
    <slot>slotDecreaseInversion()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>214</x>
-     <y>505</y>
+     <x>1624</x>
+     <y>128</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -979,8 +979,8 @@
    <slot>slotProjectCirclesClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>837</x>
-     <y>504</y>
+     <x>1698</x>
+     <y>127</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -995,8 +995,8 @@
    <slot>slotDisplayAreaCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>613</x>
-     <y>505</y>
+     <x>1698</x>
+     <y>66</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1011,8 +1011,8 @@
    <slot>slotDisplayUnitSphereChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1301</x>
-     <y>253</y>
+     <x>1079</x>
+     <y>96</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1027,8 +1027,8 @@
    <slot>slotDisplayMeshClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1408</x>
-     <y>253</y>
+     <x>1174</x>
+     <y>96</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1043,8 +1043,8 @@
    <slot>slotCanonizeMesh()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>302</x>
-     <y>505</y>
+     <x>359</x>
+     <y>66</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1059,8 +1059,8 @@
    <slot>slotOpenOBJFile()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>302</x>
-     <y>254</y>
+     <x>154</x>
+     <y>66</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -1075,8 +1075,8 @@
    <slot>slotExportOBJ()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>421</x>
-     <y>254</y>
+     <x>154</x>
+     <y>97</y>
     </hint>
     <hint type="destinationlabel">
      <x>1</x>
@@ -1091,8 +1091,8 @@
    <slot>slotExportAllFaces()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1093</x>
-     <y>254</y>
+     <x>1458</x>
+     <y>97</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1107,8 +1107,8 @@
    <slot>slotExportSelectedFace()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>983</x>
-     <y>254</y>
+     <x>1458</x>
+     <y>66</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -1123,8 +1123,8 @@
    <slot>slotTypeSelectionChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>613</x>
-     <y>254</y>
+     <x>1332</x>
+     <y>66</y>
     </hint>
     <hint type="destinationlabel">
      <x>1551</x>
@@ -1139,8 +1139,8 @@
    <slot>slotTypeRotationChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>837</x>
-     <y>254</y>
+     <x>1332</x>
+     <y>97</y>
     </hint>
     <hint type="destinationlabel">
      <x>1550</x>
@@ -1155,8 +1155,8 @@
    <slot>slotDisplayDualAreaCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>737</x>
-     <y>505</y>
+     <x>1698</x>
+     <y>97</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -1171,8 +1171,8 @@
    <slot>slotUpdateLabelPrecision(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>430</x>
-     <y>500</y>
+     <x>288</x>
+     <y>88</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -1187,8 +1187,8 @@
    <slot>slotBarycentricSubdivision()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>983</x>
-     <y>505</y>
+     <x>529</x>
+     <y>66</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -1203,8 +1203,8 @@
    <slot>slotChangeTheme()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1518</x>
-     <y>253</y>
+     <x>1079</x>
+     <y>65</y>
     </hint>
     <hint type="destinationlabel">
      <x>1751</x>
@@ -1219,8 +1219,8 @@
    <slot>slotChangeUserData()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1093</x>
-     <y>757</y>
+     <x>853</x>
+     <y>97</y>
     </hint>
     <hint type="destinationlabel">
      <x>1752</x>
@@ -1235,8 +1235,8 @@
    <slot>slotGeneralizedBarycentricSubdivision()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>698</x>
-     <y>751</y>
+     <x>745</x>
+     <y>66</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -1251,8 +1251,8 @@
    <slot>slotChangeAllUserData()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1188</x>
-     <y>757</y>
+     <x>957</x>
+     <y>97</y>
     </hint>
     <hint type="destinationlabel">
      <x>1754</x>
@@ -1267,8 +1267,8 @@
    <slot>slotLoopSubdivision()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1076</x>
-     <y>493</y>
+     <x>529</x>
+     <y>97</y>
     </hint>
     <hint type="destinationlabel">
      <x>1752</x>
@@ -1283,8 +1283,8 @@
    <slot>slotScaleBy()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1300</x>
-     <y>750</y>
+     <x>1578</x>
+     <y>159</y>
     </hint>
     <hint type="destinationlabel">
      <x>1753</x>
@@ -1299,12 +1299,28 @@
    <slot>slotOBJFromCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1586</x>
-     <y>238</y>
+     <x>154</x>
+     <y>128</y>
     </hint>
     <hint type="destinationlabel">
      <x>1753</x>
      <y>282</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_OBJOfCircles</sender>
+   <signal>clicked()</signal>
+   <receiver>Polytopal2DWindow</receiver>
+   <slot>slotOBJOfCircles()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>84</x>
+     <y>146</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>3</x>
+     <y>189</y>
     </hint>
    </hints>
   </connection>
@@ -1333,5 +1349,6 @@
   <slot>slotLoopSubdivision()</slot>
   <slot>slotScaleBy()</slot>
   <slot>slotOBJFromCircles()</slot>
+  <slot>slotOBJOfCircles()</slot>
  </slots>
 </ui>

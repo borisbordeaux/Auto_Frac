@@ -930,3 +930,43 @@ void Polytopal2DWindow::updateUserData() {
     he::writer::writeOBJ("../obj/exported.obj", m);
     this->setInfo("Mesh exported to obj/exported.obj");
 }
+
+[[maybe_unused]] void Polytopal2DWindow::slotOBJOfCircles() {
+    QVector<poly::Circle> circles = m_modelMesh.circles();
+    if (circles.empty()) { return; }
+
+    he::Mesh m;
+
+    for (poly::Circle const& c: circles) {
+        he::HalfEdge* firstHE = nullptr;
+        he::HalfEdge* oldHE = nullptr;
+        for (int i = 0; i < 360; i += 4) {
+            float alpha = qDegreesToRadians(static_cast<float>(i));
+            float x = c.center().x() + c.radius() * std::cos(alpha) * c.axisX().x() + c.radius() * std::sin(alpha) * c.axisY().x();
+            float y = c.center().y() + c.radius() * std::cos(alpha) * c.axisX().y() + c.radius() * std::sin(alpha) * c.axisY().y();
+            float z = c.center().z() + c.radius() * std::cos(alpha) * c.axisX().z() + c.radius() * std::sin(alpha) * c.axisY().z();
+            he::Vertex* v = new he::Vertex(x, y, z, QString::number(m.vertices().size()));
+            m.append(v);
+            he::HalfEdge* he = new he::HalfEdge(v);
+            m.append(he);
+
+            if (i == 0) {
+                firstHE = he;
+            }
+            if (i == 356) {
+                he->setNext(firstHE);
+            }
+
+            if (oldHE != nullptr) {
+                oldHE->setNext(he);
+            }
+
+            oldHE = he;
+        }
+        he::Face* f = new he::Face(QString::number(m.faces().size()), firstHE);
+        m.append(f);
+    }
+
+    he::writer::writeOBJ("../obj/exported.obj", m);
+    this->setInfo("Mesh exported to obj/exported.obj");
+}
