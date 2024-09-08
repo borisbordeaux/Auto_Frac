@@ -35,6 +35,8 @@ public:
 
     const float* constDataVertices() const { return m_dataVertices.constData(); }
 
+    const float* constDataDebugLine() const { return m_dataDebugLine.constData(); }
+
     //the number of floats of vertices (in GPU POV)
     int countFace() const { return m_countFace; }
 
@@ -48,6 +50,8 @@ public:
 
     int countVertices() const { return m_countVertices; }
 
+    int countDebugLine() const { return m_countDebugLine; }
+
     //the number of vertices (in GPU POV)
     int vertexCountFace() const { return m_countFace / 8; }
 
@@ -60,6 +64,8 @@ public:
     int vertexCountCirclesDual() const { return m_countCircleDual / 6; }
 
     int vertexCountVertices() const { return m_countVertices / 8; }
+
+    int vertexCountDebugLine() const { return m_countDebugLine / 3; }
 
     /**
      * @brief update all data that has to be displayed.
@@ -172,6 +178,9 @@ public:
 
     QVector<poly::Circle> const& circles() const;
 
+    void addDebugLine(QVector3D const& v1, QVector3D const& v2);
+    void clearDebugLine();
+
 private:
 
     /**
@@ -237,6 +246,7 @@ private:
     QVector<float> m_dataCircles;
     QVector<float> m_dataCirclesDual;
     QVector<float> m_dataVertices;
+    QVector<float> m_dataDebugLine;
 
     //the amount of data
     int m_countFace = 0;
@@ -245,6 +255,7 @@ private:
     int m_countCircle = 0;
     int m_countCircleDual = 0;
     int m_countVertices = 0;
+    int m_countDebugLine = 0;
 
     //the mesh the model is based on
     he::Mesh* m_mesh = nullptr;

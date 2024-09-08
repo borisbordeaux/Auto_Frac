@@ -52,6 +52,7 @@ public:
     void updateDataCircles();
     void updateDataCirclesDual();
     void updateDataVertices();
+    void updateDataDebugLine();
 
     void setPickingType(PickingType type);
     void setRotationType(RotationType type);
@@ -104,12 +105,14 @@ private:
     QOpenGLVertexArrayObject m_vaoCircles;
     QOpenGLVertexArrayObject m_vaoCirclesDual;
     QOpenGLVertexArrayObject m_vaoVertices;
+    QOpenGLVertexArrayObject m_vaoDebugLine;
     QOpenGLBuffer m_vboFaces;
     QOpenGLBuffer m_vboSphere;
     QOpenGLBuffer m_vboEdges;
     QOpenGLBuffer m_vboCircles;
     QOpenGLBuffer m_vboCirclesDual;
     QOpenGLBuffer m_vboVertices;
+    QOpenGLBuffer m_vboDebugLine;
     QOpenGLShaderProgram* m_programSphere = nullptr;
     QOpenGLShaderProgram* m_programFaces = nullptr;
     QOpenGLShaderProgram* m_programFacesPicking = nullptr;
@@ -120,6 +123,7 @@ private:
     QOpenGLShaderProgram* m_programCircles = nullptr;
     QOpenGLShaderProgram* m_programCirclesPicking = nullptr;
     QOpenGLShaderProgram* m_programCirclesDual = nullptr;
+    QOpenGLShaderProgram* m_programDebugLine = nullptr;
 
     //location of the different variables in the GPU
     //Sphere viewing
@@ -163,6 +167,10 @@ private:
     //Circles dual viewing
     int m_projMatrixLocCircleDual = 0;
     int m_mvMatrixLocCircleDual = 0;
+
+    //debug line viewing
+    int m_projMatrixLocDebugLine = 0;
+    int m_mvMatrixLocDebugLine = 0;
 
     //flag to update uniforms if needed
     bool m_uniformsDirty = true;

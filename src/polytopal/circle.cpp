@@ -47,9 +47,14 @@ bool Circle::areOrthogonalCircles(Circle const& c1, Circle const& c2) {
     return qAbs(scalarProduct(c1, c2)) < 0.01f;
 }
 
-bool Circle::areTangentCircles(const Circle& c1, const Circle& c2) {
-    //with inversive coordinates
-    return qAbs(scalarProduct(c1, c2)) - 1.0f < 0.01f;
+bool Circle::areExternallyTangentCircles(Circle const& c1, Circle const& c2) {
+    //with inversive coordinates, scalar product gives -1 if externally tangent
+    return qAbs(scalarProduct(c1, c2) + 1.0f) < 0.01f;
+}
+
+bool Circle::areInternallyTangentCircles(const Circle& c1, const Circle& c2) {
+    //with inversive coordinates, scalar product gives 1 if internally tangent
+    return qAbs(scalarProduct(c1, c2) - 1.0f) < 0.01f;
 }
 
 Circle const* Circle::inversionCircle() const {
@@ -67,7 +72,7 @@ void Circle::setCenter(QVector3D const& center) {
 void Circle::setRadius(float radius) {
     if (radius > 0.0f) {
         m_radius = radius;
-    }else{
+    } else {
         m_radius = 0.0f;
     }
 }
@@ -222,6 +227,12 @@ void Circle::updateR3Coord() {
 
 QVector3D Circle::vertexOfCircle() const {
     return { m_e1 / m_e5, m_e2 / m_e5, m_e4 / m_e5 };
+}
+
+QVector3D Circle::tangencyPoint(Circle const& c1, Circle const& c2) {
+    float x = (c1.m_e1 + c2.m_e1) / ((c1.m_e5 + c2.m_e5) - (c1.m_e4 + c2.m_e4));
+    float y = (c1.m_e2 + c2.m_e2) / ((c1.m_e5 + c2.m_e5) - (c1.m_e4 + c2.m_e4));
+    return { x, y, 0 };
 }
 
 } // poly

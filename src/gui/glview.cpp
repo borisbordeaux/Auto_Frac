@@ -161,6 +161,19 @@ void GLView::initBuffers() {
     m_vboVertices.release();
     m_vaoVertices.release();
 
+    //------for debug lines------//
+    m_vaoDebugLine.bind();
+    m_vboDebugLine.bind();
+    //allocate necessary memory
+    m_vboDebugLine.allocate(m_model->constDataDebugLine(), m_model->countDebugLine() * static_cast<int>(sizeof(GLfloat)));
+
+    //enable enough attrib array for all the data of the mesh's vertices
+    glEnableVertexAttribArray(0); //coordinates
+    //3 coordinates of the vertex
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
+    m_vboDebugLine.release();
+    m_vaoDebugLine.release();
+
     //update the view
     this->update();
 }
@@ -259,6 +272,18 @@ void GLView::initShadersView() {
     m_programVertices->bind();
     m_projMatrixLocVertices = m_programVertices->uniformLocation("projMatrix");
     m_mvMatrixLocVertices = m_programVertices->uniformLocation("mvMatrix");
+
+    //init shader for debug line
+    m_programDebugLine = new QOpenGLShaderProgram();
+    m_programDebugLine->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/debugline/vs.glsl");
+    m_programDebugLine->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/debugline/fs.glsl");
+    m_programDebugLine->bindAttributeLocation("vertex", 0);
+    m_programDebugLine->link();
+
+    //get location of uniforms
+    m_programDebugLine->bind();
+    m_projMatrixLocDebugLine = m_programDebugLine->uniformLocation("projMatrix");
+    m_mvMatrixLocDebugLine = m_programDebugLine->uniformLocation("mvMatrix");
 }
 
 void GLView::initShadersPicking() {
@@ -348,6 +373,7 @@ void GLView::initializeGL() {
     m_vaoCircles.create();
     m_vaoCirclesDual.create();
     m_vaoVertices.create();
+    m_vaoDebugLine.create();
 
     m_vboFaces.create();
     m_vboSphere.create();
@@ -355,6 +381,7 @@ void GLView::initializeGL() {
     m_vboCircles.create();
     m_vboCirclesDual.create();
     m_vboVertices.create();
+    m_vboDebugLine.create();
 
     //background
     glClearColor(m_clearColor.x(), m_clearColor.y(), m_clearColor.z(), 1.0f);
@@ -416,6 +443,11 @@ void GLView::paintGL() {
         m_programEdgesPicking->setUniformValue(m_mvMatrixPickingLocEdge, m_camera.getViewMatrix());
         m_programEdgesPicking->setUniformValue(m_invViewportPickingLocEdge, 1.0f / m_viewportWidth, 1.0f / m_viewportHeight);
         m_programEdgesPicking->release();
+
+        m_programDebugLine->bind();
+        m_programDebugLine->setUniformValue(m_projMatrixLocDebugLine, m_proj);
+        m_programDebugLine->setUniformValue(m_mvMatrixLocDebugLine, m_camera.getViewMatrix());
+        m_programDebugLine->release();
 
         //to be sure to draw in front of edges and circles
         m_camera.zoom(0.001f);
@@ -498,6 +530,12 @@ void GLView::paintGL() {
     m_vaoVertices.bind();
     glDrawArrays(GL_POINTS, 0, m_model->vertexCountVertices());
     m_programVertices->release();
+
+    //draw debug lines
+    m_programDebugLine->bind();
+    m_vaoDebugLine.bind();
+    glDrawArrays(GL_LINES, 0, m_model->vertexCountDebugLine());
+    m_programDebugLine->release();
 }
 
 void GLView::resizeGL(int w, int h) {
@@ -873,6 +911,7 @@ void GLView::updateData() {
     this->updateDataCircles();
     this->updateDataCirclesDual();
     this->updateDataVertices();
+    this->updateDataDebugLine();
 }
 
 void GLView::updateDataFaces() {
@@ -909,6 +948,12 @@ void GLView::updateDataVertices() {
     m_vboVertices.bind();
     m_vboVertices.allocate(m_model->constDataVertices(), m_model->countVertices() * static_cast<int>(sizeof(GLfloat)));
     m_vboVertices.release();
+}
+
+void GLView::updateDataDebugLine() {
+    m_vboDebugLine.bind();
+    m_vboDebugLine.allocate(m_model->constDataDebugLine(), m_model->countDebugLine() * static_cast<int>(sizeof(GLfloat)));
+    m_vboDebugLine.release();
 }
 
 void GLView::setPickingType(PickingType type) {

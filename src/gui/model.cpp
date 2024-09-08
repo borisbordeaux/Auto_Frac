@@ -524,5 +524,22 @@ QVector<poly::Circle> const& Model::circles() const {
     return m_circles;
 }
 
+void Model::addDebugLine(QVector3D const& v1, QVector3D const& v2) {
+    //the coordinates of the vertex
+    m_dataDebugLine.append(v1.x());
+    m_dataDebugLine.append(v1.y());
+    m_dataDebugLine.append(v1.z());
+    m_dataDebugLine.append(v2.x());
+    m_dataDebugLine.append(v2.y());
+    m_dataDebugLine.append(v2.z());
+    //we update the amount of data
+    m_countDebugLine += 6;
+}
+
+void Model::clearDebugLine() {
+    m_countDebugLine = 0;
+    m_dataDebugLine.clear();
+}
+
 
 

@@ -17,6 +17,7 @@
 #include "halfedge/algorithm.h"
 #include "halfedge/halfedge.h"
 #include "halfedge/face.h"
+#include "utils/utils.h"
 
 Polytopal2DWindow::Polytopal2DWindow(QWidget* parent) :
         QWidget(parent), ui(new Ui::Polytopal2DWindow), m_statusBar(new QStatusBar(this)), m_openedMesh(false),
@@ -75,6 +76,7 @@ void Polytopal2DWindow::openOBJFile(QString const& file) {
         m_modelMesh.resetCircles();
         m_modelMesh.resetCirclesDual();
         m_modelMesh.setMesh(&m_mesh);
+        m_modelMesh.clearDebugLine();
         m_view->updateData();
         m_view->update();
         m_openedMesh = true;
@@ -100,24 +102,13 @@ void Polytopal2DWindow::openOBJFile(QString const& file) {
         he::reader::readOBJ(file, m_mesh);
         m_modelMesh.resetCircles();
         m_modelMesh.resetCirclesDual();
+        m_modelMesh.clearDebugLine();
         m_modelMesh.setMesh(&m_mesh);
         m_view->updateData();
         m_view->update();
         m_openedMesh = true;
         m_canonicalized = false;
         this->updateEnablementPoly();
-
-//        std::vector<he::Vertex*> vertices = m_mesh.vertices();
-//        for (std::size_t i = 0; i < vertices.size(); i++) {
-//            for (std::size_t j = i + 1; j < vertices.size(); j++) {
-//                he::Vertex* v1 = vertices[i];
-//                he::Vertex* v2 = vertices[j];
-//
-//                double angle = qAcos(he::Point3D::dotProduct(v1->posD(), v2->posD()) / (v1->posD().length() * v2->posD().length()));
-//                std::cout << "Angle between " << v1->name().toStdString() << " and " << v2->name().toStdString() << ": " << angle << std::endl;
-//            }
-//        }
-//        std::cout << "---------" << std::endl;
     }
 }
 
@@ -256,6 +247,7 @@ void Polytopal2DWindow::canonicalizeStep() {
         m_modelMesh.updateDataCircles();
         m_view->updateDataCircles();
         m_view->update();
+        this->updateEnablementPoly();
     }
 }
 
@@ -836,16 +828,13 @@ void Polytopal2DWindow::updateUserData() {
     std::vector<std::pair<std::size_t, std::size_t>> listAdj;
     for (qsizetype i = 0; i < circles.size() - 1; i++) {
         for (qsizetype j = i + 1; j < circles.size(); j++) {
-            if (poly::Circle::areTangentCircles(circles[i], circles[j])) {
+            if (poly::Circle::areExternallyTangentCircles(circles[i], circles[j])) {
                 listAdj.emplace_back(i, j);
             }
         }
     }
 
     for (auto p: listAdj) {
-
-        //std::cout << "l " << p.first << " " << p.second << std::endl;
-
         he::HalfEdge* he1 = new he::HalfEdge(m.vertices()[p.first], QString::number(p.first) + " " + QString::number(p.second));
         m.append(he1);
         m.vertices()[p.first]->setHalfEdge(he1);
@@ -862,42 +851,71 @@ void Polytopal2DWindow::updateUserData() {
     // if we only need to export the mesh in OBJ
 
     //at first, store clockwise ordered halfedges for each vertex
+    //with a special case for a circle that contains all others
     std::vector<std::vector<he::HalfEdge*>> orderedHalfEdgesOfVertex;
-    for (he::Vertex* v: m.vertices()) {
+    for (std::size_t i = 0; i < m.vertices().size(); i++) {
+        he::Vertex* v = m.vertices()[i];
         std::vector<he::HalfEdge*> halfedges;
         halfedges.emplace_back(v->halfEdge());
         for (he::HalfEdge* he: v->otherHalfEdges()) {
             halfedges.emplace_back(he);
         }
-        std::sort(halfedges.begin(), halfedges.end(),
-                  [&m](he::HalfEdge* he1, he::HalfEdge* he2) {
-                      he::Vertex* to1 = m.vertices()[he1->name().split(" ")[1].toUInt()];
-                      he::Vertex* to2 = m.vertices()[he2->name().split(" ")[1].toUInt()];
-                      he::Vertex* from1 = he1->origin();
-                      he::Vertex* from2 = he2->origin();
-                      float angle1 = std::atan2(to1->pos().y() - from1->pos().y(), to1->pos().x() - from1->pos().x());
-                      float angle2 = std::atan2(to2->pos().y() - from2->pos().y(), to2->pos().x() - from2->pos().x());
-                      return angle1 > angle2;
-                  });
+        std::sort(halfedges.begin(), halfedges.end(), [&](he::HalfEdge* he1, he::HalfEdge* he2) {
+            poly::Circle const& currentCircle = circles[static_cast<qsizetype>(i)];
+            poly::Circle const& circle1 = circles[he1->name().split(" ")[1].toUInt()];
+            poly::Circle const& circle2 = circles[he2->name().split(" ")[1].toUInt()];
+            QVector3D to1 = poly::Circle::tangencyPoint(currentCircle, circle1);
+            QVector3D to2 = poly::Circle::tangencyPoint(currentCircle, circle2);
+            QVector3D from1 = he1->origin()->pos();
+            QVector3D from2 = he2->origin()->pos();
+            float angle1 = std::atan2(to1.y() - from1.y(), to1.x() - from1.x());
+            float angle2 = std::atan2(to2.y() - from2.y(), to2.x() - from2.x());
+            return angle1 > angle2;
+        });
         orderedHalfEdgesOfVertex.emplace_back(halfedges);
     }
 
-//    std::cout << "---- Ordered halfedges ----" << std::endl;
-//    for (std::size_t i = 0; i < orderedHalfEdgesOfVertex.size(); i++) {
-//        std::cout << "For vertex " << m.vertices()[i]->name().toStdString() << ": ";
-//        for (he::HalfEdge* he: orderedHalfEdgesOfVertex[i]) {
-//            std::cout << he->name().toStdString() << ", ";
-//        }
-//        std::cout << std::endl;
-//    }
+    for (poly::Circle& c: circles) {
+        c.initInversiveCoordinates();
+    }
+
+    std::vector<std::size_t> indicesInternallyTangent;
+    for (qsizetype i = 0; i < circles.size() - 1; i++) {
+        for (qsizetype j = i + 1; j < circles.size(); j++) {
+            if (poly::Circle::areInternallyTangentCircles(circles[i], circles[j])) {
+                indicesInternallyTangent.push_back(i);
+                indicesInternallyTangent.push_back(j);
+            }
+        }
+    }
+
+    int indexCircle = indicesInternallyTangent.empty() ? -1 : static_cast<int>(frac::utils::findDuplicate(indicesInternallyTangent));
+    std::cout << "index external circle " << indexCircle << std::endl;
+
+    if (indexCircle != -1) {
+        std::reverse(orderedHalfEdgesOfVertex[indexCircle].begin(), orderedHalfEdgesOfVertex[indexCircle].end());
+    }
 
     // set next he on halfedges
-    for (auto& i: orderedHalfEdgesOfVertex) {
-        for (std::size_t j = 0; j < i.size(); j++) {
-            he::HalfEdge* he = i[j];
-            he::HalfEdge* heNext = i[(j + 1) % i.size()];
-            heNext->twin()->setNext(he);
+    bool errors = false;
+    m_modelMesh.clearDebugLine();
+    for (auto const& halfedges: orderedHalfEdgesOfVertex) {
+        if (halfedges.size() == 1) {
+            errors = true;
+            continue;
         }
+        for (std::size_t j = 0; j < halfedges.size(); j++) {
+            he::HalfEdge* he = halfedges[j];
+            he::HalfEdge* heNext = halfedges[(j + 1) % halfedges.size()];
+            heNext->twin()->setNext(he);
+            m_modelMesh.addDebugLine(heNext->twin()->origin()->pos(), he->origin()->pos());
+        }
+    }
+    m_view->updateDataDebugLine();
+    m_view->update();
+    if (errors) {
+        this->setInfo("Errors on the mesh, adjacency list is not complete...");
+        return;
     }
 
     // find faces
@@ -920,8 +938,6 @@ void Polytopal2DWindow::updateUserData() {
             usedHalfEdges.emplace_back(currentHE);
         } while (currentHE != he);
     }
-
-    //std::cout << m.toString().toStdString();
 
     for (std::size_t i = 0; i < m.vertices().size(); i++) {
         m.vertices()[i]->setPos(circles[static_cast<qsizetype>(i)].vertexOfCircle());

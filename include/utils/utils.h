@@ -115,6 +115,22 @@ inline Point2D coordOfPointOnCubicCurveAt(float t, Point2D p0, Point2D p1, Point
     return { p0 * (1.0f - t) * (1.0f - t) * (1.0f - t) + p1 * 3.0f * t * (1.0f - t) * (1.0f - t) + p2 * 3.0f * t * t * (1.0f - t) + p3 * t * t * t };
 }
 
+template<typename T>
+inline T findDuplicate(std::vector<T> const& vec) {
+    // number of occurrences of each element
+    std::unordered_map<T, int> occurrences;
+
+    for (T val: vec) {
+        occurrences[val]++;
+        if (occurrences[val] > 1) {
+            return val;
+        }
+    }
+
+    //if no duplicate
+    return {};
+}
+
 }
 
 #endif //AUTOFRAC_UTILS_H

@@ -26,7 +26,8 @@ public:
 
     static float scalarProduct(Circle const& c1, Circle const& c2);
     bool static areOrthogonalCircles(Circle const& c1, Circle const& c2);
-    bool static areTangentCircles(Circle const& c1, Circle const& c2);
+    bool static areExternallyTangentCircles(Circle const& c1, Circle const& c2);
+    bool static areInternallyTangentCircles(Circle const& c1, Circle const& c2);
 
     void setOldCircleBeforeInversion(Circle const& oldCircle);
     Circle oldCircleBeforeInversion() const;
@@ -45,6 +46,13 @@ public:
     void initInversiveCoordinates();
 
     QVector3D vertexOfCircle() const;
+
+    static QVector3D tangencyPoint(Circle const& c1, Circle const& c2);
+
+    float e1() const { return m_e1; }
+    float e2() const { return m_e2; }
+    float e4() const { return m_e4; }
+    float e5() const { return m_e5; }
 
 private:
     Circle operator*(float rhs) const;
@@ -66,7 +74,7 @@ private:
     float m_newRadius = 0.0f;
 
     //color of circle
-    QVector3D m_color = {0,0,0};
+    QVector3D m_color = { 0, 0, 0 };
 
     //inversive coordinates
     float m_e1 = 0.0f;
