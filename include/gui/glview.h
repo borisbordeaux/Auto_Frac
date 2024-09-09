@@ -16,11 +16,6 @@ enum class PickingType {
     PickingCircle
 };
 
-enum class RotationType {
-    CameraRotation,
-    PolyhedronRotation
-};
-
 class QOpenGLShaderProgram;
 
 class Model;
@@ -55,7 +50,6 @@ public:
     void updateDataDebugLine();
 
     void setPickingType(PickingType type);
-    void setRotationType(RotationType type);
 
     void setBackGroundColor(float r, float g, float b);
     PickingType pickingType() const;
@@ -78,6 +72,9 @@ protected:
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dropEvent(QDropEvent* event) override;
 
+    void keyPressEvent(QKeyEvent* event) override;
+    void keyReleaseEvent(QKeyEvent* event) override;
+
 private:
     void initShaders();
     void initShadersView();
@@ -89,13 +86,20 @@ private:
     void clickVertexManagement();
     void clickCircleManagement();
 
+    //manage mesh editing
+    void handleMoveXVertex(float dx);
+    void handleMoveYVertex(float dy);
+    void handleMoveZVertex(float dz);
+
+    void handleMoveXFace(float dx);
+    void handleMoveYFace(float dy);
+    void handleMoveZFace(float dz);
+
     //camera of the scene
     Camera m_camera;
 
     //the last position of the mouse
-    //used for rotation
     QPointF m_lastPos;
-    RotationType m_rotationType;
 
     //OpenGL stuff for rendering
     QVector3D m_clearColor = { 0.0f, 0.0f, 0.0f };
@@ -196,6 +200,11 @@ private:
     QTimer m_timerAnimCamera;
     Camera m_cameraBeforeAnim;
     float m_tAnimCamera = 0.0f;
+
+    bool m_isKeyXPressed = false;
+    bool m_isKeyYPressed = false;
+    bool m_isKeyZPressed = false;
+    bool m_isKeyRPressed = false;
 
 private:
     Polytopal2DWindow* m_mainWindow;

@@ -55,6 +55,16 @@ std::vector<he::HalfEdge*> he::Face::allHalfEdges() const {
     return res;
 }
 
+std::vector<he::Vertex*> he::Face::allVertices() const {
+    std::vector<he::Vertex*> res;
+
+    for (he::HalfEdge* he: this->allHalfEdges()) {
+        res.push_back(he->origin());
+    }
+
+    return res;
+}
+
 float he::Face::area() {
     // compute the new basis
     QVector3D axeX = (m_halfEdge->next()->origin()->pos() - m_halfEdge->origin()->pos()).normalized();

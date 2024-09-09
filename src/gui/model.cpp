@@ -510,7 +510,7 @@ void Model::updateColorOfCirclesDual(QVector3D const& color) {
 
 void Model::scaleCircles(float by) {
     if (this->selectedCircle() != nullptr) {
-        this->selectedCircle()->setRadius(this->selectedCircle()->radius() - by);
+        this->selectedCircle()->setRadius(this->selectedCircle()->radius() + by);
         this->selectedCircle()->initInversiveCoordinates();
     } else {
         for (poly::Circle& c: m_circles) {

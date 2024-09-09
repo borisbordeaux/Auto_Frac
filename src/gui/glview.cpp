@@ -4,11 +4,13 @@
 #include <QMouseEvent>
 #include <QMimeData>
 #include <QtOpenGL/QOpenGLShaderProgram>
+#include <iostream>
+#include "halfedge/vertex.h"
+#include "halfedge/face.h"
 
 GLView::GLView(Model* model, Polytopal2DWindow* parent) :
         QOpenGLWidget(parent),
         m_camera(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.01f, 49.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)),
-        m_rotationType(RotationType::CameraRotation),
         m_model(model),
         m_cameraBeforeAnim(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.01f, 49.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)),
         m_mainWindow(parent) {
@@ -563,8 +565,45 @@ void GLView::mouseMoveEvent(QMouseEvent* event) {
     qreal dx = event->position().x() - m_lastPos.x();
     qreal dy = event->position().y() - m_lastPos.y();
 
+    if (m_isKeyXPressed) {
+        if (m_model->selectedVertex() != nullptr) {
+            this->handleMoveXVertex(static_cast<float>(dx));
+            m_lastPos = event->pos();
+            return;
+        }
+        if (m_model->selectedFace() != nullptr) {
+            this->handleMoveXFace(static_cast<float>(dx));
+            m_lastPos = event->pos();
+            return;
+        }
+    }
+    if (m_isKeyYPressed) {
+        if (m_model->selectedVertex() != nullptr) {
+            this->handleMoveYVertex(static_cast<float>(-dy));
+            m_lastPos = event->pos();
+            return;
+        }
+        if (m_model->selectedFace() != nullptr) {
+            this->handleMoveYFace(static_cast<float>(-dy));
+            m_lastPos = event->pos();
+            return;
+        }
+    }
+    if (m_isKeyZPressed) {
+        if (m_model->selectedVertex() != nullptr) {
+            this->handleMoveZVertex(static_cast<float>(dx - dy) / 2.0f);
+            m_lastPos = event->pos();
+            return;
+        }
+        if (m_model->selectedFace() != nullptr) {
+            this->handleMoveZFace(static_cast<float>(dx - dy) / 2.0f);
+            m_lastPos = event->pos();
+            return;
+        }
+    }
+
     if (event->buttons() & Qt::LeftButton) {
-        if (m_rotationType == RotationType::CameraRotation) {
+        if (!m_isKeyRPressed) {
             m_camera.rotateAzimuth(static_cast<float>(dx / this->size().toSizeF().width() * 4.0));
             m_camera.rotatePolar(static_cast<float>(dy / this->size().toSizeF().height() * 2.0));
             m_uniformsDirty = true;
@@ -581,7 +620,7 @@ void GLView::mouseMoveEvent(QMouseEvent* event) {
     }
 
     if (event->buttons() & Qt::RightButton) {
-        if (m_rotationType == RotationType::CameraRotation) {
+        if (!m_isKeyRPressed) {
             m_camera.moveHorizontal(static_cast<float>(-dx) / 100.0f);
             m_camera.moveVertical(static_cast<float>(dy) / 100.0f);
             m_uniformsDirty = true;
@@ -973,10 +1012,6 @@ void GLView::setPickingType(PickingType type) {
     this->update();
 }
 
-void GLView::setRotationType(RotationType type) {
-    m_rotationType = type;
-}
-
 void GLView::setBackGroundColor(float r, float g, float b) {
     m_clearColor.setX(r);
     m_clearColor.setY(g);
@@ -998,4 +1033,122 @@ void GLView::dragEnterEvent(QDragEnterEvent* event) {
 
 void GLView::dropEvent(QDropEvent* event) {
     m_mainWindow->openOBJFile(event->mimeData()->urls()[0].toLocalFile());
+}
+
+void GLView::keyPressEvent(QKeyEvent* event) {
+    if (event->key() == Qt::Key_X) {
+        m_isKeyXPressed = true;
+    }
+    if (event->key() == Qt::Key_Y) {
+        m_isKeyYPressed = true;
+    }
+    if (event->key() == Qt::Key_Z) {
+        m_isKeyZPressed = true;
+    }
+    if (event->key() == Qt::Key_R) {
+        m_isKeyRPressed = true;
+    }
+}
+
+void GLView::keyReleaseEvent(QKeyEvent* event) {
+    if (event->key() == Qt::Key_X) {
+        m_isKeyXPressed = false;
+    }
+    if (event->key() == Qt::Key_Y) {
+        m_isKeyYPressed = false;
+    }
+    if (event->key() == Qt::Key_Z) {
+        m_isKeyZPressed = false;
+    }
+    if (event->key() == Qt::Key_R) {
+        m_isKeyRPressed = false;
+    }
+    if (event->key() == Qt::Key_V) {
+        m_mainWindow->setInfo("Vertex selection");
+        this->setPickingType(PickingType::PickingVertex);
+    }
+    if (event->key() == Qt::Key_E) {
+        m_mainWindow->setInfo("Edge selection");
+        this->setPickingType(PickingType::PickingEdge);
+    }
+    if (event->key() == Qt::Key_F) {
+        m_mainWindow->setInfo("Face selection");
+        this->setPickingType(PickingType::PickingFace);
+    }
+    if (event->key() == Qt::Key_C) {
+        m_mainWindow->setInfo("Circle selection");
+        this->setPickingType(PickingType::PickingCircle);
+    }
+}
+
+void GLView::handleMoveXVertex(float dx) {
+    QVector3D newPos = m_model->selectedVertex()->pos();
+    newPos.setX(newPos.x() + static_cast<float>(dx / 100.0));
+    m_model->selectedVertex()->setPos(newPos);
+    m_mainWindow->updateCircles();
+    m_mainWindow->updateCirclesDual();
+    m_model->updateData();
+    this->updateData();
+    update();
+}
+
+void GLView::handleMoveYVertex(float dy) {
+    QVector3D newPos = m_model->selectedVertex()->pos();
+    newPos.setY(newPos.y() + static_cast<float>(dy / 100.0));
+    m_model->selectedVertex()->setPos(newPos);
+    m_mainWindow->updateCircles();
+    m_mainWindow->updateCirclesDual();
+    m_model->updateData();
+    this->updateData();
+    update();
+}
+
+void GLView::handleMoveZVertex(float dz) {
+    QVector3D newPos = m_model->selectedVertex()->pos();
+    newPos.setZ(newPos.z() + static_cast<float>(dz / 100.0));
+    m_model->selectedVertex()->setPos(newPos);
+    m_mainWindow->updateCircles();
+    m_mainWindow->updateCirclesDual();
+    m_model->updateData();
+    this->updateData();
+    update();
+}
+
+void GLView::handleMoveXFace(float dx) {
+    for (he::Vertex* v: m_model->selectedFace()->allVertices()) {
+        QVector3D newPos = v->pos();
+        newPos.setX(newPos.x() + static_cast<float>(dx / 100.0));
+        v->setPos(newPos);
+    }
+    m_mainWindow->updateCircles();
+    m_mainWindow->updateCirclesDual();
+    m_model->updateData();
+    this->updateData();
+    update();
+}
+
+void GLView::handleMoveYFace(float dy) {
+    for (he::Vertex* v: m_model->selectedFace()->allVertices()) {
+        QVector3D newPos = v->pos();
+        newPos.setY(newPos.y() + static_cast<float>(dy / 100.0));
+        v->setPos(newPos);
+    }
+    m_mainWindow->updateCircles();
+    m_mainWindow->updateCirclesDual();
+    m_model->updateData();
+    this->updateData();
+    update();
+}
+
+void GLView::handleMoveZFace(float dz) {
+    for (he::Vertex* v: m_model->selectedFace()->allVertices()) {
+        QVector3D newPos = v->pos();
+        newPos.setZ(newPos.z() + static_cast<float>(dz / 100.0));
+        v->setPos(newPos);
+    }
+    m_mainWindow->updateCircles();
+    m_mainWindow->updateCirclesDual();
+    m_model->updateData();
+    this->updateData();
+    update();
 }

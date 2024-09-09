@@ -8,6 +8,8 @@ namespace he {
 
 class HalfEdge;
 
+class Vertex;
+
 class Face {
 public:
     /**
@@ -43,6 +45,7 @@ public:
     std::size_t nbEdges() const;
 
     std::vector<he::HalfEdge*> allHalfEdges() const;
+    std::vector<he::Vertex*> allVertices() const;
 
     float area();
 

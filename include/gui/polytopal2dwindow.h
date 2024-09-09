@@ -27,6 +27,7 @@ public:
     void updateCirclesDual();
     void updateUserData();
     void openOBJFile(QString const& file);
+    void setInfo(std::string const& textInfo, int timeoutMs = 2000);
 
 public slots:
     [[maybe_unused]] void slotOpenOBJFile();
@@ -46,8 +47,6 @@ public slots:
     void increaseInversion();
     [[maybe_unused]] void slotExportOBJ();
 
-    [[maybe_unused]] void slotTypeSelectionChanged(int index);
-    [[maybe_unused]] void slotTypeRotationChanged(int index);
     [[maybe_unused]] void slotUpdateLabelPrecision(int value);
 
     [[maybe_unused]] void slotBarycentricSubdivision();
@@ -59,14 +58,14 @@ public slots:
     [[maybe_unused]] void slotChangeUserData();
     [[maybe_unused]] void slotChangeAllUserData();
 
-    [[maybe_unused]] void slotScaleBy();
+    [[maybe_unused]] void slotScaleUpCircles();
+    [[maybe_unused]] void slotScaleDownCircles();
 
     [[maybe_unused]] void slotOBJFromCircles();
     [[maybe_unused]] void slotOBJOfCircles();
 
 private:
     void updateEnablementPoly();
-    void setInfo(std::string const& textInfo, int timeoutMs = 2000);
     void setInfoAdvancement(int percent);
 
 private:

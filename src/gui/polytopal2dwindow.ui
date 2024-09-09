@@ -617,14 +617,14 @@
         <property name="sizeConstraint">
          <enum>QLayout::SetMinimumSize</enum>
         </property>
-        <item row="1" column="2">
+        <item row="1" column="2" alignment="Qt::AlignRight">
          <widget class="QLabel" name="label_4">
           <property name="text">
            <string>Corner edges</string>
           </property>
          </widget>
         </item>
-        <item row="4" column="2">
+        <item row="4" column="2" alignment="Qt::AlignRight">
          <widget class="QLabel" name="label_5">
           <property name="text">
            <string>Edge edges</string>
@@ -711,8 +711,11 @@
         <property name="sizeConstraint">
          <enum>QLayout::SetMinimumSize</enum>
         </property>
-        <item row="0" column="0">
+        <item row="1" column="1">
          <widget class="QCheckBox" name="checkBox_darkTheme">
+          <property name="layoutDirection">
+           <enum>Qt::RightToLeft</enum>
+          </property>
           <property name="text">
            <string>Dark theme</string>
           </property>
@@ -722,78 +725,35 @@
          </widget>
         </item>
         <item row="1" column="0">
-         <widget class="QCheckBox" name="checkBox_displayUnitSphere">
+         <widget class="QCheckBox" name="checkBox_displayMesh">
+          <property name="layoutDirection">
+           <enum>Qt::RightToLeft</enum>
+          </property>
           <property name="text">
-           <string>Sphere</string>
+           <string>Mesh</string>
           </property>
           <property name="checked">
            <bool>true</bool>
           </property>
          </widget>
         </item>
-        <item row="1" column="2">
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>Rotation</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="3">
-         <widget class="QComboBox" name="comboBox_SelectionType">
-          <item>
-           <property name="text">
-            <string>Face</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Edge</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Vertex</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Circle</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="1" column="3">
-         <widget class="QComboBox" name="comboBox_RotationType">
-          <item>
-           <property name="text">
-            <string>Camera</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Polyhedron</string>
-           </property>
-          </item>
-         </widget>
-        </item>
         <item row="0" column="1">
          <widget class="QCheckBox" name="checkBox_animations">
+          <property name="layoutDirection">
+           <enum>Qt::RightToLeft</enum>
+          </property>
           <property name="text">
            <string>Animations</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="2">
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Selection</string>
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="checkBox_displayUnitSphere">
+          <property name="layoutDirection">
+           <enum>Qt::RightToLeft</enum>
           </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QCheckBox" name="checkBox_displayMesh">
           <property name="text">
-           <string>Mesh</string>
+           <string>Sphere</string>
           </property>
           <property name="checked">
            <bool>true</bool>
@@ -826,8 +786,11 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
+        <item row="2" column="0" alignment="Qt::AlignRight">
          <widget class="QCheckBox" name="checkBox_polytopalPlanarControlPoints">
+          <property name="layoutDirection">
+           <enum>Qt::RightToLeft</enum>
+          </property>
           <property name="text">
            <string>Planar CP</string>
           </property>
@@ -845,13 +808,6 @@
         <property name="sizeConstraint">
          <enum>QLayout::SetMinimumSize</enum>
         </property>
-        <item row="3" column="0">
-         <widget class="QPushButton" name="pushButton_scale">
-          <property name="text">
-           <string>Change radius</string>
-          </property>
-         </widget>
-        </item>
         <item row="2" column="0">
          <widget class="QPushButton" name="pushButton_IncrementIteration">
           <property name="maximumSize">
@@ -862,25 +818,6 @@
           </property>
           <property name="text">
            <string>+</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="2">
-         <widget class="QDoubleSpinBox" name="doubleSpinBox_scaleForce">
-          <property name="decimals">
-           <number>4</number>
-          </property>
-          <property name="minimum">
-           <double>-1.000000000000000</double>
-          </property>
-          <property name="maximum">
-           <double>1.000000000000000</double>
-          </property>
-          <property name="singleStep">
-           <double>0.010000000000000</double>
-          </property>
-          <property name="value">
-           <double>-0.010000000000000</double>
           </property>
          </widget>
         </item>
@@ -906,6 +843,9 @@
         </item>
         <item row="2" column="2">
          <widget class="QCheckBox" name="checkBox_projectCircles">
+          <property name="layoutDirection">
+           <enum>Qt::RightToLeft</enum>
+          </property>
           <property name="text">
            <string>Project</string>
           </property>
@@ -915,6 +855,55 @@
          <widget class="QPushButton" name="pushButton_displayCirclesDual">
           <property name="text">
            <string>Dual Illuminated Circles</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item alignment="Qt::AlignTop">
+      <widget class="QGroupBox" name="groupBox_7">
+       <property name="title">
+        <string>Circles</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <widget class="QPushButton" name="pushButton_scaleUp">
+          <property name="text">
+           <string>+ radius</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QPushButton" name="pushButton_scaleDown">
+          <property name="text">
+           <string>- radius</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QDoubleSpinBox" name="doubleSpinBox_scaleForce">
+          <property name="decimals">
+           <number>4</number>
+          </property>
+          <property name="minimum">
+           <double>0.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>1.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>0.010000000000000</double>
+          </property>
+          <property name="value">
+           <double>0.010000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0" alignment="Qt::AlignRight">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Scale force</string>
           </property>
          </widget>
         </item>
@@ -947,7 +936,7 @@
    <slot>slotIncreaseInversion()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1528</x>
+     <x>1427</x>
      <y>128</y>
     </hint>
     <hint type="destinationlabel">
@@ -963,7 +952,7 @@
    <slot>slotDecreaseInversion()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1624</x>
+     <x>1513</x>
      <y>128</y>
     </hint>
     <hint type="destinationlabel">
@@ -979,7 +968,7 @@
    <slot>slotProjectCirclesClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1698</x>
+     <x>1627</x>
      <y>127</y>
     </hint>
     <hint type="destinationlabel">
@@ -995,7 +984,7 @@
    <slot>slotDisplayAreaCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1698</x>
+     <x>1597</x>
      <y>66</y>
     </hint>
     <hint type="destinationlabel">
@@ -1011,8 +1000,8 @@
    <slot>slotDisplayUnitSphereChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1079</x>
-     <y>96</y>
+     <x>1133</x>
+     <y>64</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1027,8 +1016,8 @@
    <slot>slotDisplayMeshClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1174</x>
-     <y>96</y>
+     <x>1133</x>
+     <y>93</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1091,7 +1080,7 @@
    <slot>slotExportAllFaces()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1458</x>
+     <x>1357</x>
      <y>97</y>
     </hint>
     <hint type="destinationlabel">
@@ -1107,44 +1096,12 @@
    <slot>slotExportSelectedFace()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1458</x>
+     <x>1357</x>
      <y>66</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
      <y>827</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>comboBox_SelectionType</sender>
-   <signal>currentIndexChanged(int)</signal>
-   <receiver>Polytopal2DWindow</receiver>
-   <slot>slotTypeSelectionChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1332</x>
-     <y>66</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1551</x>
-     <y>434</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>comboBox_RotationType</sender>
-   <signal>currentIndexChanged(int)</signal>
-   <receiver>Polytopal2DWindow</receiver>
-   <slot>slotTypeRotationChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1332</x>
-     <y>97</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1550</x>
-     <y>536</y>
     </hint>
    </hints>
   </connection>
@@ -1155,7 +1112,7 @@
    <slot>slotDisplayDualAreaCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1698</x>
+     <x>1597</x>
      <y>97</y>
     </hint>
     <hint type="destinationlabel">
@@ -1203,8 +1160,8 @@
    <slot>slotChangeTheme()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1079</x>
-     <y>65</y>
+     <x>1213</x>
+     <y>93</y>
     </hint>
     <hint type="destinationlabel">
      <x>1751</x>
@@ -1277,22 +1234,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_scale</sender>
-   <signal>clicked()</signal>
-   <receiver>Polytopal2DWindow</receiver>
-   <slot>slotScaleBy()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1578</x>
-     <y>159</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1753</x>
-     <y>801</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>pushButton_OBJFromCircles</sender>
    <signal>clicked()</signal>
    <receiver>Polytopal2DWindow</receiver>
@@ -1315,12 +1256,44 @@
    <slot>slotOBJOfCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>84</x>
+     <x>146</x>
      <y>146</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
      <y>189</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_scaleUp</sender>
+   <signal>clicked()</signal>
+   <receiver>Polytopal2DWindow</receiver>
+   <slot>slotScaleUpCircles()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1452</x>
+     <y>159</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1753</x>
+     <y>335</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_scaleDown</sender>
+   <signal>clicked()</signal>
+   <receiver>Polytopal2DWindow</receiver>
+   <slot>slotScaleDownCircles()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1493</x>
+     <y>156</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1752</x>
+     <y>384</y>
     </hint>
    </hints>
   </connection>
@@ -1337,8 +1310,6 @@
   <slot>slotDecreaseInversion()</slot>
   <slot>slotProjectCirclesClicked()</slot>
   <slot>slotExportOBJ()</slot>
-  <slot>slotTypeSelectionChanged(int)</slot>
-  <slot>slotTypeRotationChanged(int)</slot>
   <slot>slotDisplayDualAreaCircles()</slot>
   <slot>slotUpdateLabelPrecision(int)</slot>
   <slot>slotBarycentricSubdivision()</slot>
@@ -1347,8 +1318,9 @@
   <slot>slotGeneralizedBarycentricSubdivision()</slot>
   <slot>slotChangeAllUserData()</slot>
   <slot>slotLoopSubdivision()</slot>
-  <slot>slotScaleBy()</slot>
+  <slot>slotScaleUpCircles()</slot>
   <slot>slotOBJFromCircles()</slot>
   <slot>slotOBJOfCircles()</slot>
+  <slot>slotScaleDownCircles()</slot>
  </slots>
 </ui>

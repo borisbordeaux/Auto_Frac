@@ -27,6 +27,7 @@ Polytopal2DWindow::Polytopal2DWindow(QWidget* parent) :
     this->updateEnablementPoly();
     m_view = new GLView(&m_modelMesh, this);
     m_view->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+    m_view->setFocusPolicy(Qt::ClickFocus);
 
     this->ui->verticalLayout->addWidget(m_view);
 
@@ -612,38 +613,6 @@ void Polytopal2DWindow::updateEnablementPoly() {
     this->ui->pushButton_OBJFromCircles->setEnabled(!m_modelMesh.circles().empty() && this->ui->checkBox_projectCircles->isChecked());
 }
 
-[[maybe_unused]] void Polytopal2DWindow::slotTypeSelectionChanged(int index) {
-    switch (index) {
-        case 0:
-            m_view->setPickingType(PickingType::PickingFace);
-            break;
-        case 1:
-            m_view->setPickingType(PickingType::PickingEdge);
-            break;
-        case 2:
-            m_view->setPickingType(PickingType::PickingVertex);
-            break;
-        case 3:
-            m_view->setPickingType(PickingType::PickingCircle);
-            break;
-        default:
-            break;
-    }
-}
-
-[[maybe_unused]] void Polytopal2DWindow::slotTypeRotationChanged(int index) {
-    switch (index) {
-        case 0:
-            m_view->setRotationType(RotationType::CameraRotation);
-            break;
-        case 1:
-            m_view->setRotationType(RotationType::PolyhedronRotation);
-            break;
-        default:
-            break;
-    }
-}
-
 [[maybe_unused]] void Polytopal2DWindow::slotUpdateLabelPrecision(int value) {
     double valD = std::pow(10.0, -value);
     this->ui->label_precision->setText(QString::number(valD, 'e', 0));
@@ -805,8 +774,16 @@ void Polytopal2DWindow::updateUserData() {
     }
 }
 
-[[maybe_unused]] void Polytopal2DWindow::slotScaleBy() {
+[[maybe_unused]] void Polytopal2DWindow::slotScaleUpCircles() {
     m_modelMesh.scaleCircles(static_cast<float>(this->ui->doubleSpinBox_scaleForce->value()));
+    m_modelMesh.updateDataCircles();
+
+    m_view->updateDataCircles();
+    m_view->update();
+}
+
+[[maybe_unused]] void Polytopal2DWindow::slotScaleDownCircles() {
+    m_modelMesh.scaleCircles(-static_cast<float>(this->ui->doubleSpinBox_scaleForce->value()));
     m_modelMesh.updateDataCircles();
 
     m_view->updateDataCircles();
