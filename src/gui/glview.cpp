@@ -6,6 +6,7 @@
 #include <QtOpenGL/QOpenGLShaderProgram>
 #include <iostream>
 #include "halfedge/vertex.h"
+#include "halfedge/halfedge.h"
 #include "halfedge/face.h"
 
 GLView::GLView(Model* model, Polytopal2DWindow* parent) :
@@ -571,6 +572,11 @@ void GLView::mouseMoveEvent(QMouseEvent* event) {
             m_lastPos = event->pos();
             return;
         }
+        if (m_model->selectedEdge() != nullptr) {
+            this->handleMoveXEdge(static_cast<float>(dx));
+            m_lastPos = event->pos();
+            return;
+        }
         if (m_model->selectedFace() != nullptr) {
             this->handleMoveXFace(static_cast<float>(dx));
             m_lastPos = event->pos();
@@ -583,6 +589,11 @@ void GLView::mouseMoveEvent(QMouseEvent* event) {
             m_lastPos = event->pos();
             return;
         }
+        if (m_model->selectedEdge() != nullptr) {
+            this->handleMoveYEdge(static_cast<float>(-dy));
+            m_lastPos = event->pos();
+            return;
+        }
         if (m_model->selectedFace() != nullptr) {
             this->handleMoveYFace(static_cast<float>(-dy));
             m_lastPos = event->pos();
@@ -592,6 +603,11 @@ void GLView::mouseMoveEvent(QMouseEvent* event) {
     if (m_isKeyZPressed) {
         if (m_model->selectedVertex() != nullptr) {
             this->handleMoveZVertex(static_cast<float>(dx - dy) / 2.0f);
+            m_lastPos = event->pos();
+            return;
+        }
+        if (m_model->selectedEdge() != nullptr) {
+            this->handleMoveZEdge(static_cast<float>(dx - dy) / 2.0f);
             m_lastPos = event->pos();
             return;
         }
@@ -996,6 +1012,7 @@ void GLView::updateDataDebugLine() {
 }
 
 void GLView::setPickingType(PickingType type) {
+    if (type == m_pickingType) { return; }
     m_pickingType = type;
     m_model->setSelectedFace(0);
     m_model->setSelectedEdge(0);
@@ -1083,7 +1100,7 @@ void GLView::keyReleaseEvent(QKeyEvent* event) {
 
 void GLView::handleMoveXVertex(float dx) {
     QVector3D newPos = m_model->selectedVertex()->pos();
-    newPos.setX(newPos.x() + static_cast<float>(dx / 100.0));
+    newPos.setX(newPos.x() + dx / 100.0f);
     m_model->selectedVertex()->setPos(newPos);
     m_mainWindow->updateCircles();
     m_mainWindow->updateCirclesDual();
@@ -1094,7 +1111,7 @@ void GLView::handleMoveXVertex(float dx) {
 
 void GLView::handleMoveYVertex(float dy) {
     QVector3D newPos = m_model->selectedVertex()->pos();
-    newPos.setY(newPos.y() + static_cast<float>(dy / 100.0));
+    newPos.setY(newPos.y() + dy / 100.0f);
     m_model->selectedVertex()->setPos(newPos);
     m_mainWindow->updateCircles();
     m_mainWindow->updateCirclesDual();
@@ -1105,8 +1122,56 @@ void GLView::handleMoveYVertex(float dy) {
 
 void GLView::handleMoveZVertex(float dz) {
     QVector3D newPos = m_model->selectedVertex()->pos();
-    newPos.setZ(newPos.z() + static_cast<float>(dz / 100.0));
+    newPos.setZ(newPos.z() + dz / 100.0f);
     m_model->selectedVertex()->setPos(newPos);
+    m_mainWindow->updateCircles();
+    m_mainWindow->updateCirclesDual();
+    m_model->updateData();
+    this->updateData();
+    update();
+}
+
+void GLView::handleMoveXEdge(float dx) {
+    he::Vertex* v1 = m_model->selectedEdge()->origin();
+    he::Vertex* v2 = m_model->selectedEdge()->next()->origin();
+    QVector3D newPos1 = v1->pos();
+    QVector3D newPos2 = v2->pos();
+    newPos1.setX(newPos1.x() + dx / 100.0f);
+    newPos2.setX(newPos2.x() + dx / 100.0f);
+    v1->setPos(newPos1);
+    v2->setPos(newPos2);
+    m_mainWindow->updateCircles();
+    m_mainWindow->updateCirclesDual();
+    m_model->updateData();
+    this->updateData();
+    update();
+}
+
+void GLView::handleMoveYEdge(float dy) {
+    he::Vertex* v1 = m_model->selectedEdge()->origin();
+    he::Vertex* v2 = m_model->selectedEdge()->next()->origin();
+    QVector3D newPos1 = v1->pos();
+    QVector3D newPos2 = v2->pos();
+    newPos1.setY(newPos1.y() + dy / 100.0f);
+    newPos2.setY(newPos2.y() + dy / 100.0f);
+    v1->setPos(newPos1);
+    v2->setPos(newPos2);
+    m_mainWindow->updateCircles();
+    m_mainWindow->updateCirclesDual();
+    m_model->updateData();
+    this->updateData();
+    update();
+}
+
+void GLView::handleMoveZEdge(float dz) {
+    he::Vertex* v1 = m_model->selectedEdge()->origin();
+    he::Vertex* v2 = m_model->selectedEdge()->next()->origin();
+    QVector3D newPos1 = v1->pos();
+    QVector3D newPos2 = v2->pos();
+    newPos1.setZ(newPos1.z() + dz / 100.0f);
+    newPos2.setZ(newPos2.z() + dz / 100.0f);
+    v1->setPos(newPos1);
+    v2->setPos(newPos2);
     m_mainWindow->updateCircles();
     m_mainWindow->updateCirclesDual();
     m_model->updateData();
@@ -1117,7 +1182,7 @@ void GLView::handleMoveZVertex(float dz) {
 void GLView::handleMoveXFace(float dx) {
     for (he::Vertex* v: m_model->selectedFace()->allVertices()) {
         QVector3D newPos = v->pos();
-        newPos.setX(newPos.x() + static_cast<float>(dx / 100.0));
+        newPos.setX(newPos.x() + dx / 100.0f);
         v->setPos(newPos);
     }
     m_mainWindow->updateCircles();
@@ -1130,7 +1195,7 @@ void GLView::handleMoveXFace(float dx) {
 void GLView::handleMoveYFace(float dy) {
     for (he::Vertex* v: m_model->selectedFace()->allVertices()) {
         QVector3D newPos = v->pos();
-        newPos.setY(newPos.y() + static_cast<float>(dy / 100.0));
+        newPos.setY(newPos.y() + dy / 100.0f);
         v->setPos(newPos);
     }
     m_mainWindow->updateCircles();
@@ -1143,7 +1208,7 @@ void GLView::handleMoveYFace(float dy) {
 void GLView::handleMoveZFace(float dz) {
     for (he::Vertex* v: m_model->selectedFace()->allVertices()) {
         QVector3D newPos = v->pos();
-        newPos.setZ(newPos.z() + static_cast<float>(dz / 100.0));
+        newPos.setZ(newPos.z() + dz / 100.0f);
         v->setPos(newPos);
     }
     m_mainWindow->updateCircles();

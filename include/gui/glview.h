@@ -91,6 +91,10 @@ private:
     void handleMoveYVertex(float dy);
     void handleMoveZVertex(float dz);
 
+    void handleMoveXEdge(float dx);
+    void handleMoveYEdge(float dy);
+    void handleMoveZEdge(float dz);
+
     void handleMoveXFace(float dx);
     void handleMoveYFace(float dy);
     void handleMoveZFace(float dz);
