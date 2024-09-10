@@ -6,11 +6,12 @@
 #include "halfedge/vertex.h"
 #include "polytopal/circle.h"
 #include <QMatrix4x4>
+#include <iostream>
 
 void Model::updateData() {
     this->updateDataFaces();
     this->updateDataSphere();
-    this->updateDataEdge();
+    this->updateDataEdges();
     this->updateDataCircles();
     this->updateDataCirclesDual();
     this->updateDataVertices();
@@ -63,7 +64,7 @@ void Model::updateDataSphere() {
     }
 }
 
-void Model::updateDataEdge() {
+void Model::updateDataEdges() {
     m_countEdge = 0;
     m_dataEdge.clear();
 
@@ -185,7 +186,7 @@ void Model::updateDataVertices() {
         //for each vertex
         for (he::Vertex* v: m_mesh->vertices()) {
             //will display a point
-            float isSelected = (ID == m_selectedVertex && m_selectedVertex != 0) ? 1.0f : -1.0f;
+            float isSelected = ((ID == m_selectedVertex && m_selectedVertex != 0) || (ID == m_selectedVertex2 && m_selectedVertex2 != 0)) ? 1.0f : -1.0f;
             this->addVertex(v->pos(), { 0.0f, 0.0f, 0.0f }, static_cast<float>(ID), isSelected);
             ID++;
         }
@@ -341,6 +342,10 @@ void Model::setSelectedVertex(int vertexIndex) {
     m_selectedVertex = vertexIndex;
 }
 
+void Model::setSelectedVertex2(int vertexIndex) {
+    m_selectedVertex2 = vertexIndex;
+}
+
 void Model::setSelectedCircle(int circleIndex) {
     m_selectedCircle = circleIndex;
 }
@@ -370,6 +375,16 @@ he::Vertex* Model::selectedVertex() {
 
     if (m_selectedVertex - 1 >= 0 && m_selectedVertex - 1 < static_cast<qsizetype>(m_mesh->vertices().size())) {
         res = m_mesh->vertices().at(m_selectedVertex - 1);
+    }
+
+    return res;
+}
+
+he::Vertex* Model::selectedVertex2() {
+    he::Vertex* res = nullptr;
+
+    if (m_selectedVertex2 - 1 >= 0 && m_selectedVertex2 - 1 < static_cast<qsizetype>(m_mesh->vertices().size())) {
+        res = m_mesh->vertices().at(m_selectedVertex2 - 1);
     }
 
     return res;
@@ -490,7 +505,7 @@ void Model::transformMesh(QMatrix4x4 const& transform) {
     }
     m_mesh->updateDoublePosFromFloatPos();
     this->updateDataFaces();
-    this->updateDataEdge();
+    this->updateDataEdges();
     this->updateDataVertices();
 }
 
@@ -539,6 +554,10 @@ void Model::addDebugLine(QVector3D const& v1, QVector3D const& v2) {
 void Model::clearDebugLine() {
     m_countDebugLine = 0;
     m_dataDebugLine.clear();
+}
+
+he::Mesh* Model::mesh() {
+    return m_mesh;
 }
 
 

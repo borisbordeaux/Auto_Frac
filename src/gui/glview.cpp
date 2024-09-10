@@ -675,7 +675,7 @@ void GLView::mouseReleaseEvent(QMouseEvent* event) {
 
         //if there was a click
         if (v.length() < 5.0f) {
-            //then will do the face picking
+            //then will do the picking
             m_clicked = true;
             update();
         }
@@ -789,7 +789,7 @@ void GLView::clickEdgeManagement() {
     m_mainWindow->updateUserData();
 
     //update the data for drawing the selected object in the right color
-    m_model->updateDataEdge();
+    m_model->updateDataEdges();
 
     //write data to the GPU
     m_vboEdges.bind();
@@ -853,8 +853,13 @@ void GLView::clickVertexManagement() {
         }
     }
 
-    //set the selected face using the red color
-    m_model->setSelectedVertex(max);
+    //set the selected vertex or vertices
+    if (m_model->selectedVertex() != nullptr && m_isShiftPressed) {
+        m_model->setSelectedVertex2(max);
+    } else {
+        m_model->setSelectedVertex2(0);
+        m_model->setSelectedVertex(max);
+    }
     m_mainWindow->updateUserData();
 
     //update the data for drawing the selected object in the right color
@@ -962,7 +967,7 @@ void GLView::animationCameraStep() {
 void GLView::updateData() {
     this->updateDataFaces();
     this->updateDataSphere();
-    this->updateDataEdge();
+    this->updateDataEdges();
     this->updateDataCircles();
     this->updateDataCirclesDual();
     this->updateDataVertices();
@@ -981,7 +986,7 @@ void GLView::updateDataSphere() {
     m_vboSphere.release();
 }
 
-void GLView::updateDataEdge() {
+void GLView::updateDataEdges() {
     m_vboEdges.bind();
     m_vboEdges.allocate(m_model->constDataEdge(), m_model->countEdge() * static_cast<int>(sizeof(GLfloat)));
     m_vboEdges.release();
@@ -1017,13 +1022,14 @@ void GLView::setPickingType(PickingType type) {
     m_model->setSelectedFace(0);
     m_model->setSelectedEdge(0);
     m_model->setSelectedVertex(0);
+    m_model->setSelectedVertex2(0);
     m_model->setSelectedCircle(0);
     m_model->updateDataFaces();
-    m_model->updateDataEdge();
+    m_model->updateDataEdges();
     m_model->updateDataVertices();
     m_model->updateDataCircles();
     this->updateDataFaces();
-    this->updateDataEdge();
+    this->updateDataEdges();
     this->updateDataVertices();
     this->updateDataCircles();
     this->update();
@@ -1065,6 +1071,9 @@ void GLView::keyPressEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_R) {
         m_isKeyRPressed = true;
     }
+    if (event->key() == Qt::Key_Shift) {
+        m_isShiftPressed = true;
+    }
 }
 
 void GLView::keyReleaseEvent(QKeyEvent* event) {
@@ -1092,9 +1101,24 @@ void GLView::keyReleaseEvent(QKeyEvent* event) {
         m_mainWindow->setInfo("Face selection");
         this->setPickingType(PickingType::PickingFace);
     }
-    if (event->key() == Qt::Key_C) {
+    if (event->key() == Qt::Key_C && !event->modifiers().testFlag(Qt::ShiftModifier)) {
         m_mainWindow->setInfo("Circle selection");
         this->setPickingType(PickingType::PickingCircle);
+    }
+    if (event->key() == Qt::Key_Shift) {
+        m_isShiftPressed = false;
+    }
+    if (event->key() == Qt::Key_C && event->modifiers().testFlag(Qt::ShiftModifier)) {
+        if (m_model->selectedEdge() != nullptr) {
+            this->cutSelectedHalfEdge();
+            this->updateDataFaces();
+            this->updateDataEdges();
+            this->updateDataVertices();
+            this->update();
+        }
+        if (m_model->selectedVertex2() != nullptr) {
+            this->cutFaceOnSelectedVertices();
+        }
     }
 }
 
@@ -1216,4 +1240,47 @@ void GLView::handleMoveZFace(float dz) {
     m_model->updateData();
     this->updateData();
     update();
+}
+
+void GLView::cutFaceOnSelectedVertices() {
+    he::Vertex* v1 = m_model->selectedVertex();
+    he::Vertex* v2 = m_model->selectedVertex2();
+    if (v1 == nullptr || v2 == nullptr) { return; }
+
+    //test if vertices are on a same face
+    std::vector<he::Face*> faces1 = v1->getAllFacesAroundVertex();
+    he::Face* face = nullptr;
+    for (he::Face* f: faces1) {
+        std::vector<he::Vertex*> vertices = f->allVertices();
+        if (std::find(vertices.begin(), vertices.end(), v2) != vertices.end()) {
+            face = f;
+            break;
+        }
+    }
+
+    if (face == nullptr) { return; }
+    m_model->mesh()->cutFace(face, v1, v2);
+    m_model->mesh()->updateHalfEdgeNotTwin();
+    m_model->updateDataFaces();
+    m_model->updateDataEdges();
+    m_model->updateDataVertices();
+    this->updateDataFaces();
+    this->updateDataEdges();
+    this->updateDataVertices();
+    this->update();
+}
+
+void GLView::cutSelectedHalfEdge() {
+    he::HalfEdge* he = m_model->selectedEdge();
+    if (he == nullptr) { return; }
+
+    m_model->mesh()->cutHalfEdge(he);
+    m_model->mesh()->updateHalfEdgeNotTwin();
+    m_model->updateDataFaces();
+    m_model->updateDataEdges();
+    m_model->updateDataVertices();
+    this->updateDataFaces();
+    this->updateDataEdges();
+    this->updateDataVertices();
+    this->update();
 }

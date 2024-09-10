@@ -59,6 +59,10 @@ std::vector<he::Face*> he::Vertex::getAllFacesAroundVertex(he::Face* f) const {
         nxt = nxt->twin()->next();
     } while (nxt != h);
 
+    if (f == nullptr) {
+        return facesAroundVertex;
+    }
+
     //order faces around vertex to have the given face in last
     std::vector<he::Face*> orderedFacesAroundVertex = facesAroundVertex;
 

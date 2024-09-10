@@ -217,10 +217,10 @@ void Polytopal2DWindow::canonicalizeStep() {
     }
 
     m_modelMesh.updateDataFaces();
-    m_modelMesh.updateDataEdge();
+    m_modelMesh.updateDataEdges();
     m_modelMesh.updateDataVertices();
     m_view->updateDataFaces();
-    m_view->updateDataEdge();
+    m_view->updateDataEdges();
     m_view->updateDataVertices();
     m_view->update();
 }
@@ -283,7 +283,7 @@ void Polytopal2DWindow::canonicalizeStep() {
         m_modelMesh.setMesh(nullptr);
     }
     m_view->updateDataFaces();
-    m_view->updateDataEdge();
+    m_view->updateDataEdges();
     m_view->updateDataVertices();
     m_view->update();
 }

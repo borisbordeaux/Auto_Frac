@@ -74,18 +74,16 @@ public:
     void updateData();
 
     /**
-     * @brief update specific data based on the mesh,
-     * necessary when the mesh changed
+     * @brief update specific data based on the mesh
      */
     void updateDataFaces();
     void updateDataSphere();
-    void updateDataEdge();
+    void updateDataEdges();
     void updateDataCircles();
     void updateDataCirclesDual();
     void updateDataVertices();
 
     /**
-     * @brief setter
      * @param mesh the mesh to set to this model.
      * Calls updateData()
      */
@@ -106,7 +104,6 @@ public:
     void setSphereMesh(he::Mesh* mesh);
 
     /**
-     * @brief getter
      * @return a pointer to the sphere mesh
      */
     he::Mesh* sphereMesh() const;
@@ -136,6 +133,7 @@ public:
      * @param vertexIndex the index of the vertex that is selected
      */
     void setSelectedVertex(int vertexIndex);
+    void setSelectedVertex2(int vertexIndex);
 
     /**
      * @brief Sets the selected edge index
@@ -150,25 +148,22 @@ public:
     void setSelectedCircle(int circleIndex);
 
     /**
-     * @brief getter
      * @return a pointer to the selected face, nullptr if no face is selected
      */
     he::Face* selectedFace();
 
     /**
-     * @brief getter
      * @return a pointer to the selected edge, nullptr if no edge is selected
      */
     he::HalfEdge* selectedEdge();
 
     /**
-     * @brief getter
      * @return a pointer to the selected vertex, nullptr if no vertex is selected
      */
     he::Vertex* selectedVertex();
+    he::Vertex* selectedVertex2();
 
     /**
-     * @brief getter
      * @return a pointer to the selected circle, nullptr if no circle is selected
      */
     poly::Circle* selectedCircle();
@@ -180,6 +175,8 @@ public:
 
     void addDebugLine(QVector3D const& v1, QVector3D const& v2);
     void clearDebugLine();
+
+    he::Mesh* mesh();
 
 private:
 
@@ -230,7 +227,6 @@ private:
     void triangleSphere(const QVector3D& pos1, const QVector3D& pos2, const QVector3D& pos3);
 
     /**
-     * @brief getter
      * @return the number of triangles of the polyhedron
      */
     static qsizetype findNbOfTriangle(he::Mesh* mesh);
@@ -267,6 +263,7 @@ private:
     //the index of the selected face
     int m_selectedFace = 0;
     int m_selectedVertex = 0;
+    int m_selectedVertex2 = 0;
     int m_selectedEdge = 0;
     int m_selectedCircle = 0;
 };

@@ -43,7 +43,7 @@ public:
     void updateData();
     void updateDataFaces();
     void updateDataSphere();
-    void updateDataEdge();
+    void updateDataEdges();
     void updateDataCircles();
     void updateDataCirclesDual();
     void updateDataVertices();
@@ -99,6 +99,10 @@ private:
     void handleMoveYFace(float dy);
     void handleMoveZFace(float dz);
 
+    void cutFaceOnSelectedVertices();
+    void cutSelectedHalfEdge();
+
+private:
     //camera of the scene
     Camera m_camera;
 
@@ -209,6 +213,7 @@ private:
     bool m_isKeyYPressed = false;
     bool m_isKeyZPressed = false;
     bool m_isKeyRPressed = false;
+    bool m_isShiftPressed = false;
 
 private:
     Polytopal2DWindow* m_mainWindow;

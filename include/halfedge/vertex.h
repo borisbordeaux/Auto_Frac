@@ -69,7 +69,11 @@ public:
 
     [[nodiscard]] std::size_t degree() const;
 
-    [[nodiscard]] std::vector<he::Face*> getAllFacesAroundVertex(he::Face* f) const;
+    /**
+     * @param f if given, the face to be in last
+     * @return all faces around the vertex (ordered to have the given face in last if applicable)
+     */
+    [[nodiscard]] std::vector<he::Face*> getAllFacesAroundVertex(he::Face* f = nullptr) const;
 
     void addHalfEdge(he::HalfEdge* halfEdge);
     QVector<he::HalfEdge*>& otherHalfEdges();

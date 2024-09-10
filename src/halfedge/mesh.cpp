@@ -65,39 +65,18 @@ he::HalfEdge* he::Mesh::findByName(QString const& name, bool useOtherHalfEdgesOf
 }
 
 void he::Mesh::reset() {
-    //free each face
     for (he::Face* f: m_faces) {
-        if (f != nullptr) {
-            delete f;
-            f = nullptr;
-        }
+        delete f;
     }
-
-    //clear the vector
-    m_faces.clear();
-
-    //free each vertex
     for (he::Vertex* v: m_vertices) {
-        if (v != nullptr) {
-            delete v;
-            v = nullptr;
-        }
+        delete v;
     }
-
-    //clear the vector
-    m_vertices.clear();
-
-    //free each half-edge
     for (he::HalfEdge* he: m_halfEdges) {
-        if (he != nullptr) {
-            delete he;
-            he = nullptr;
-        }
+        delete he;
     }
-
-    //clear the vector
+    m_faces.clear();
+    m_vertices.clear();
     m_halfEdges.clear();
-
     m_halfEdgesNotTwin.clear();
 }
 
@@ -198,7 +177,6 @@ he::Vertex* he::Mesh::cutHalfEdge(he::HalfEdge* he) {
     prevHe->setNext(he);
     nextTwin->setNext(nextNextTwin);
     prevPrevHe->setNext(prevHe);
-
 
     return newVertex;
 }
