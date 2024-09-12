@@ -29,6 +29,7 @@ public:
     he::HalfEdge* findByName(QString const& name, bool useOtherHalfEdgesOfVertices = true);
 
     void updateHalfEdgeNotTwin();
+    void updateOtherHalfEdges();
 
     void reset();
 
@@ -41,6 +42,11 @@ public:
 
     he::Vertex* cutHalfEdge(he::HalfEdge* he);
     he::HalfEdge* cutFace(he::Face* face, he::Vertex* v1, he::Vertex* v2);
+    void remove(he::Face* f);
+    void remove(he::HalfEdge* he);
+    void remove(he::Vertex* v);
+
+    void merge(he::Vertex* v1, he::Vertex* v2);
 
 private:
     std::vector<he::Vertex*> m_vertices;

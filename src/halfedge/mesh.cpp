@@ -141,6 +141,16 @@ void he::Mesh::updateHalfEdgeNotTwin() {
     }
 }
 
+void he::Mesh::updateOtherHalfEdges() {
+    for (he::Vertex* v: m_vertices) {
+        v->setHalfEdge(nullptr);
+        v->clearOtherHalfEdges();
+    }
+    for (he::HalfEdge* he: m_halfEdges) {
+        he->origin()->setHalfEdge(he);
+    }
+}
+
 he::Vertex* he::Mesh::cutHalfEdge(he::HalfEdge* he) {
     //current data we need
     he::HalfEdge* twin = he->twin();
@@ -236,4 +246,66 @@ he::HalfEdge* he::Mesh::cutFace(he::Face* face, he::Vertex* v1, he::Vertex* v2) 
     heFromV2Prev->setNext(he2);
 
     return he1;
+}
+
+void he::Mesh::remove(he::Face* f) {
+    auto it = std::find(m_faces.begin(), m_faces.end(), f);
+    if (it == m_faces.end()) { return; }
+    for (he::HalfEdge* he: f->allHalfEdges()) {
+        he->setFace(nullptr);
+    }
+    m_faces.erase(it);
+    delete f;
+}
+
+void he::Mesh::remove(he::HalfEdge* he) {
+    auto itHe = std::find(m_halfEdges.begin(), m_halfEdges.end(), he);
+    if (itHe == m_halfEdges.end()) { return; }
+    this->m_halfEdges.erase(itHe);
+    auto itTwin = std::find(m_halfEdges.begin(), m_halfEdges.end(), he->twin());
+    if (itTwin == m_halfEdges.end()) { return; }
+    this->m_halfEdges.erase(itTwin);
+
+    he::HalfEdge* twin = he->twin();
+    he::HalfEdge* twinPrev = twin->prev();
+    he::HalfEdge* twinNext = twin->next();
+    he::HalfEdge* hePrev = he->prev();
+    he::HalfEdge* heNext = he->next();
+
+    he::Face* f1 = he->face();
+    he::Face* f2 = twin->face();
+
+    //remove faces
+    this->remove(f1);
+    this->remove(f2);
+
+    //update prev and next
+    twinPrev->setNext(heNext);
+    hePrev->setNext(twinNext);
+    heNext->setPrev(twinPrev);
+    twinNext->setPrev(hePrev);
+
+    delete he;
+    delete twin;
+
+    this->updateHalfEdgeNotTwin();
+    this->updateOtherHalfEdges();
+}
+
+void he::Mesh::remove(he::Vertex* v) {
+    auto it = std::find(m_vertices.begin(), m_vertices.end(), v);
+    if (it == m_vertices.end()) { return; }
+    m_vertices.erase(it);
+    QVector<he::HalfEdge*> halfedges = v->otherHalfEdges();
+    halfedges.push_back(v->halfEdge());
+
+    for (he::HalfEdge* he: halfedges) {
+        this->remove(he);
+    }
+
+    delete v;
+}
+
+void he::Mesh::merge(he::Vertex* /*v1*/, he::Vertex* /*v2*/) {
+    //TODO: merge
 }

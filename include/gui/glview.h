@@ -102,6 +102,12 @@ private:
     void cutFaceOnSelectedVertices();
     void cutSelectedHalfEdge();
 
+    void removeSelectedFace();
+    void removeSelectedHalfEdge();
+    void removeSelectedVertex();
+
+    void mergeSelectedVertices();
+
 private:
     //camera of the scene
     Camera m_camera;
@@ -110,7 +116,7 @@ private:
     QPointF m_lastPos;
 
     //OpenGL stuff for rendering
-    QVector3D m_clearColor = { 0.0f, 0.0f, 0.0f };
+    QVector3D m_clearColor = { 0.3f, 0.3f, 0.3f };
     QOpenGLVertexArrayObject m_vaoFaces;
     QOpenGLVertexArrayObject m_vaoSphere;
     QOpenGLVertexArrayObject m_vaoEdges;

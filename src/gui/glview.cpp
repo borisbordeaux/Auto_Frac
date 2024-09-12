@@ -1111,13 +1111,25 @@ void GLView::keyReleaseEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_C && event->modifiers().testFlag(Qt::ShiftModifier)) {
         if (m_model->selectedEdge() != nullptr) {
             this->cutSelectedHalfEdge();
-            this->updateDataFaces();
-            this->updateDataEdges();
-            this->updateDataVertices();
-            this->update();
         }
         if (m_model->selectedVertex2() != nullptr) {
             this->cutFaceOnSelectedVertices();
+        }
+    }
+    if (event->key() == Qt::Key_Delete) {
+        if (m_model->selectedFace() != nullptr) {
+            this->removeSelectedFace();
+        }
+        if (m_model->selectedEdge() != nullptr) {
+            this->removeSelectedHalfEdge();
+        }
+        if (m_model->selectedVertex() != nullptr && m_model->selectedVertex2() == nullptr) {
+            this->removeSelectedVertex();
+        }
+    }
+    if (event->key() == Qt::Key_M) {
+        if (m_model->selectedVertex() != nullptr && m_model->selectedVertex2() != nullptr) {
+            this->mergeSelectedVertices();
         }
     }
 }
@@ -1261,6 +1273,7 @@ void GLView::cutFaceOnSelectedVertices() {
     if (face == nullptr) { return; }
     m_model->mesh()->cutFace(face, v1, v2);
     m_model->mesh()->updateHalfEdgeNotTwin();
+    m_model->mesh()->updateOtherHalfEdges();
     m_model->updateDataFaces();
     m_model->updateDataEdges();
     m_model->updateDataVertices();
@@ -1276,6 +1289,54 @@ void GLView::cutSelectedHalfEdge() {
 
     m_model->mesh()->cutHalfEdge(he);
     m_model->mesh()->updateHalfEdgeNotTwin();
+    m_model->mesh()->updateOtherHalfEdges();
+    m_model->setSelectedEdge(0);
+    m_model->updateDataFaces();
+    m_model->updateDataEdges();
+    m_model->updateDataVertices();
+    this->updateDataFaces();
+    this->updateDataEdges();
+    this->updateDataVertices();
+    this->update();
+}
+
+void GLView::removeSelectedFace() {
+    m_model->mesh()->remove(m_model->selectedFace());
+    m_model->setSelectedFace(0);
+    m_model->updateDataFaces();
+    this->updateDataFaces();
+    this->update();
+}
+
+void GLView::removeSelectedHalfEdge() {
+    m_model->mesh()->remove(m_model->selectedEdge());
+    m_model->setSelectedEdge(0);
+    m_model->updateDataFaces();
+    m_model->updateDataEdges();
+    m_model->updateDataVertices();
+    this->updateDataFaces();
+    this->updateDataEdges();
+    this->updateDataVertices();
+    this->update();
+}
+
+void GLView::removeSelectedVertex() {
+    m_model->mesh()->remove(m_model->selectedVertex());
+    m_model->setSelectedVertex(0);
+    m_model->setSelectedVertex2(0);
+    m_model->updateDataFaces();
+    m_model->updateDataEdges();
+    m_model->updateDataVertices();
+    this->updateDataFaces();
+    this->updateDataEdges();
+    this->updateDataVertices();
+    this->update();
+}
+
+void GLView::mergeSelectedVertices() {
+    m_model->mesh()->merge(m_model->selectedVertex(), m_model->selectedVertex2());
+    m_model->setSelectedVertex(0);
+    m_model->setSelectedVertex2(0);
     m_model->updateDataFaces();
     m_model->updateDataEdges();
     m_model->updateDataVertices();

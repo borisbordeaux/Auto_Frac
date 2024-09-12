@@ -682,7 +682,7 @@ void Polytopal2DWindow::updateEnablementPoly() {
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotChangeTheme() {
-    float val = this->ui->checkBox_darkTheme->isChecked() ? 0.0f : 1.0f;
+    float val = this->ui->checkBox_darkTheme->isChecked() ? 0.3f : 1.0f;
     m_view->setBackGroundColor(val, val, val);
 
     for (poly::Circle& c: m_circles) {

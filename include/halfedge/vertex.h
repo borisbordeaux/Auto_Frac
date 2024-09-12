@@ -60,6 +60,7 @@ public:
      * @param halfEdge a half-edge that have this point as origin
      */
     void setHalfEdge(he::HalfEdge* halfEdge);
+    void clearOtherHalfEdges();
 
     /**
      * @brief getter

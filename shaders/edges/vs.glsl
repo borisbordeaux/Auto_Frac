@@ -13,7 +13,7 @@ out vec3 vecColor;
 void main() {
     gl_Position = projMatrix * mvMatrix * vertex;
     if (isSelected > 0.0) {
-        vecColor = vec3(1.0, 1.0, 1.0);
+        vecColor = vec3(0.0, 0.6, 0.0);
     } else {
         vecColor = color;
     }

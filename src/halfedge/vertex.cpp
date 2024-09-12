@@ -55,7 +55,10 @@ std::vector<he::Face*> he::Vertex::getAllFacesAroundVertex(he::Face* f) const {
     he::HalfEdge* h = this->m_halfEdge;
     he::HalfEdge* nxt = h;
     do {
-        facesAroundVertex.push_back(nxt->face());
+        he::Face* face = nxt->face();
+        if (face != nullptr) {
+            facesAroundVertex.push_back(face);
+        }
         nxt = nxt->twin()->next();
     } while (nxt != h);
 
@@ -101,4 +104,8 @@ QString he::Vertex::userData() const {
 
 void he::Vertex::setUserData(QString const& data) {
     m_userData = data;
+}
+
+void he::Vertex::clearOtherHalfEdges() {
+    m_otherHalfEdges.clear();
 }
