@@ -1128,8 +1128,8 @@ void GLView::keyReleaseEvent(QKeyEvent* event) {
         }
     }
     if (event->key() == Qt::Key_M) {
-        if (m_model->selectedVertex() != nullptr && m_model->selectedVertex2() != nullptr) {
-            this->mergeSelectedVertices();
+        if (m_model->selectedEdge() != nullptr) {
+            this->collapseSelectedHalfEdge();
         }
     }
 }
@@ -1333,8 +1333,8 @@ void GLView::removeSelectedVertex() {
     this->update();
 }
 
-void GLView::mergeSelectedVertices() {
-    m_model->mesh()->merge(m_model->selectedVertex(), m_model->selectedVertex2());
+void GLView::collapseSelectedHalfEdge() {
+    m_model->mesh()->collapse(m_model->selectedEdge());
     m_model->setSelectedVertex(0);
     m_model->setSelectedVertex2(0);
     m_model->updateDataFaces();

@@ -82,28 +82,28 @@ void he::Mesh::reset() {
 
 QString he::Mesh::toString() const {
     QString res = "Faces :\n";
-    for (he::Face const* f: this->m_faces) {
+    for (he::Face const* f: m_faces) {
         res += f->name() + ", ";
     }
     res += "\nHalfEdges :\n";
-    for (he::HalfEdge const* h: this->m_halfEdges) {
+    for (he::HalfEdge const* h: m_halfEdges) {
         res += h->name() + ", ";
     }
     res += "\nVertices :\n";
-    for (he::Vertex const* v: this->m_vertices) {
+    for (he::Vertex const* v: m_vertices) {
         res += v->name() + ", ";
     }
 
     res += "\n---------------------------------------------\nFaces :\n";
-    for (he::Face const* f: this->m_faces) {
+    for (he::Face const* f: m_faces) {
         res += f->toString() + "\n";
     }
     res += "\n---------------------------------------------\nHalfEdges :\n";
-    for (he::HalfEdge const* h: this->m_halfEdges) {
+    for (he::HalfEdge const* h: m_halfEdges) {
         res += h->toString() + "\n";
     }
     res += "\n---------------------------------------------\nVertices :\n";
-    for (he::Vertex const* v: this->m_vertices) {
+    for (he::Vertex const* v: m_vertices) {
         res += v->toString() + "\n";
     }
     return res;
@@ -193,9 +193,7 @@ he::Vertex* he::Mesh::cutHalfEdge(he::HalfEdge* he) {
 
 he::HalfEdge* he::Mesh::cutFace(he::Face* face, he::Vertex* v1, he::Vertex* v2) {
     // ensure v1 and v2 are different vertices of the face and are not consecutive
-    if (v1 == v2) {
-        return nullptr;
-    }
+    if (v1 == v2) { return nullptr; }
     std::vector<he::HalfEdge*> halfedges = face->allHalfEdges();
     he::HalfEdge* heFromV1 = nullptr;
     he::HalfEdge* heFromV2 = nullptr;
@@ -207,15 +205,9 @@ he::HalfEdge* he::Mesh::cutFace(he::Face* face, he::Vertex* v1, he::Vertex* v2) 
             heFromV2 = he;
         }
     }
-    if (heFromV1 == nullptr || heFromV2 == nullptr) {
-        return nullptr;
-    }
-    if (heFromV1->next()->origin() == v2) {
-        return nullptr;
-    }
-    if (heFromV2->next()->origin() == v1) {
-        return nullptr;
-    }
+    if (heFromV1 == nullptr || heFromV2 == nullptr) { return nullptr; }
+    if (heFromV1->next()->origin() == v2) { return nullptr; }
+    if (heFromV2->next()->origin() == v1) { return nullptr; }
 
     he::HalfEdge* he1 = new he::HalfEdge(v1, v1->name() + " " + v2->name());
     he::HalfEdge* he2 = new he::HalfEdge(v2, v2->name() + " " + v1->name());
@@ -261,10 +253,10 @@ void he::Mesh::remove(he::Face* f) {
 void he::Mesh::remove(he::HalfEdge* he) {
     auto itHe = std::find(m_halfEdges.begin(), m_halfEdges.end(), he);
     if (itHe == m_halfEdges.end()) { return; }
-    this->m_halfEdges.erase(itHe);
+    m_halfEdges.erase(itHe);
     auto itTwin = std::find(m_halfEdges.begin(), m_halfEdges.end(), he->twin());
     if (itTwin == m_halfEdges.end()) { return; }
-    this->m_halfEdges.erase(itTwin);
+    m_halfEdges.erase(itTwin);
 
     he::HalfEdge* twin = he->twin();
     he::HalfEdge* twinPrev = twin->prev();
@@ -306,6 +298,84 @@ void he::Mesh::remove(he::Vertex* v) {
     delete v;
 }
 
-void he::Mesh::merge(he::Vertex* /*v1*/, he::Vertex* /*v2*/) {
-    //TODO: merge
+void he::Mesh::collapse(he::HalfEdge* /*he*/) {
+    //TODO: collapse halfedge
+    /*auto itHe = std::find(m_halfEdges.begin(), m_halfEdges.end(), he);
+    if (itHe == m_halfEdges.end()) { return; }
+    m_halfEdges.erase(itHe);
+    auto itTwin = std::find(m_halfEdges.begin(), m_halfEdges.end(), he->twin());
+    if (itTwin == m_halfEdges.end()) { return; }
+    m_halfEdges.erase(itTwin);
+
+    he::HalfEdge* twin = he->twin();
+    he::HalfEdge* twinPrev = twin->prev();
+    he::HalfEdge* twinNext = twin->next();
+    he::HalfEdge* hePrev = he->prev();
+    he::HalfEdge* heNext = he->next();
+
+    he::Vertex* v1 = he->origin();
+    he::Vertex* v2 = twin->origin();
+    QVector3D pos = (v1->pos() + v2->pos()) / 2.0f;
+    v1->setPos(pos);
+
+    he::Face* f1 = he->face();
+    he::Face* f2 = twin->face();
+
+    std::size_t edges1 = f1 != nullptr ? f1->nbEdges() : 0;
+    std::size_t edges2 = f2 != nullptr ? f2->nbEdges() : 0;
+
+    if (f1 != nullptr && edges1 == 3) {
+        //we will remove an edge, hence the face will disappear
+        this->remove(f1);
+        f1 = nullptr;
+    }
+    if (f2 != nullptr && edges2 == 3) {
+        //we will remove an edge, hence the face will disappear
+        this->remove(f2);
+    }
+
+    twinPrev->setNext(twinNext);
+    twinNext->setPrev(twinPrev);
+    hePrev->setNext(heNext);
+    heNext->setPrev(hePrev);
+
+    //we keep v1
+    v2->halfEdge()->setOrigin(v1);
+    for (he::HalfEdge* halfEdgeOfV2: v2->otherHalfEdges()) {
+        halfEdgeOfV2->setOrigin(v1);
+    }
+
+    m_vertices.erase(std::find(m_vertices.begin(), m_vertices.end(), v2));
+
+    if (f1 != nullptr) {
+        if (edges1 == 3) {
+            twinPrev->setTwin(twinNext);
+            m_halfEdges.erase(std::find(m_halfEdges.begin(), m_halfEdges.end(), heNext));
+            m_halfEdges.erase(std::find(m_halfEdges.begin(), m_halfEdges.end(), hePrev));
+            delete heNext;
+            delete hePrev;
+        } else {
+            f1->setHalfEdge(hePrev);
+        }
+    }
+    if (f2 != nullptr) {
+        if (edges2 == 3) {
+            hePrev->setTwin(heNext);
+            m_halfEdges.erase(std::find(m_halfEdges.begin(), m_halfEdges.end(), twinNext));
+            m_halfEdges.erase(std::find(m_halfEdges.begin(), m_halfEdges.end(), twinPrev));
+            delete twinNext;
+            delete twinPrev;
+        } else {
+            f2->setHalfEdge(twinPrev);
+        }
+    }
+
+    delete v2;
+    delete he;
+    delete twin;
+
+    this->updateHalfEdgeNotTwin();
+    this->updateOtherHalfEdges();
+
+    std::cout << this->toString().toStdString() << std::endl;*/
 }
