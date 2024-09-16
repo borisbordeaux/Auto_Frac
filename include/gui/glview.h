@@ -106,8 +106,6 @@ private:
     void removeSelectedHalfEdge();
     void removeSelectedVertex();
 
-    void collapseSelectedHalfEdge();
-
 private:
     //camera of the scene
     Camera m_camera;

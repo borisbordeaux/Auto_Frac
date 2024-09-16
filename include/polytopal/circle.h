@@ -26,8 +26,8 @@ public:
 
     static float scalarProduct(Circle const& c1, Circle const& c2);
     bool static areOrthogonalCircles(Circle const& c1, Circle const& c2);
-    bool static areExternallyTangentCircles(Circle const& c1, Circle const& c2);
-    bool static areInternallyTangentCircles(Circle const& c1, Circle const& c2);
+    bool static areExternallyTangentCircles(Circle const& c1, Circle const& c2, float threshold = 0.01f);
+    bool static areInternallyTangentCircles(Circle const& c1, Circle const& c2, float threshold = 0.01f);
 
     void setOldCircleBeforeInversion(Circle const& oldCircle);
     Circle oldCircleBeforeInversion() const;

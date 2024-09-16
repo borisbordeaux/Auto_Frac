@@ -47,14 +47,14 @@ bool Circle::areOrthogonalCircles(Circle const& c1, Circle const& c2) {
     return qAbs(scalarProduct(c1, c2)) < 0.01f;
 }
 
-bool Circle::areExternallyTangentCircles(Circle const& c1, Circle const& c2) {
+bool Circle::areExternallyTangentCircles(Circle const& c1, Circle const& c2, float threshold) {
     //with inversive coordinates, scalar product gives -1 if externally tangent
-    return qAbs(scalarProduct(c1, c2) + 1.0f) < 0.01f;
+    return qAbs(scalarProduct(c1, c2) + 1.0f) < threshold;
 }
 
-bool Circle::areInternallyTangentCircles(const Circle& c1, const Circle& c2) {
+bool Circle::areInternallyTangentCircles(const Circle& c1, const Circle& c2, float threshold) {
     //with inversive coordinates, scalar product gives 1 if internally tangent
-    return qAbs(scalarProduct(c1, c2) - 1.0f) < 0.01f;
+    return qAbs(scalarProduct(c1, c2) - 1.0f) < threshold;
 }
 
 Circle const* Circle::inversionCircle() const {

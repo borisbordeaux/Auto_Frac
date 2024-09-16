@@ -1127,11 +1127,6 @@ void GLView::keyReleaseEvent(QKeyEvent* event) {
             this->removeSelectedVertex();
         }
     }
-    if (event->key() == Qt::Key_M) {
-        if (m_model->selectedEdge() != nullptr) {
-            this->collapseSelectedHalfEdge();
-        }
-    }
 }
 
 void GLView::handleMoveXVertex(float dx) {
@@ -1322,19 +1317,6 @@ void GLView::removeSelectedHalfEdge() {
 
 void GLView::removeSelectedVertex() {
     m_model->mesh()->remove(m_model->selectedVertex());
-    m_model->setSelectedVertex(0);
-    m_model->setSelectedVertex2(0);
-    m_model->updateDataFaces();
-    m_model->updateDataEdges();
-    m_model->updateDataVertices();
-    this->updateDataFaces();
-    this->updateDataEdges();
-    this->updateDataVertices();
-    this->update();
-}
-
-void GLView::collapseSelectedHalfEdge() {
-    m_model->mesh()->collapse(m_model->selectedEdge());
     m_model->setSelectedVertex(0);
     m_model->setSelectedVertex2(0);
     m_model->updateDataFaces();

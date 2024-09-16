@@ -805,7 +805,7 @@ void Polytopal2DWindow::updateUserData() {
     std::vector<std::pair<std::size_t, std::size_t>> listAdj;
     for (qsizetype i = 0; i < circles.size() - 1; i++) {
         for (qsizetype j = i + 1; j < circles.size(); j++) {
-            if (poly::Circle::areExternallyTangentCircles(circles[i], circles[j])) {
+            if (poly::Circle::areExternallyTangentCircles(circles[i], circles[j], static_cast<float>(this->ui->doubleSpinBox_thresholdAdjacency->value()))) {
                 listAdj.emplace_back(i, j);
             }
         }
@@ -827,6 +827,7 @@ void Polytopal2DWindow::updateUserData() {
     // we need to set only next on all halfedges and one halfedge per face
     // if we only need to export the mesh in OBJ
 
+    m_modelMesh.clearDebugLine();
     //at first, store clockwise ordered halfedges for each vertex
     //with a special case for a circle that contains all others
     std::vector<std::vector<he::HalfEdge*>> orderedHalfEdgesOfVertex;
@@ -847,10 +848,14 @@ void Polytopal2DWindow::updateUserData() {
             QVector3D from2 = he2->origin()->pos();
             float angle1 = std::atan2(to1.y() - from1.y(), to1.x() - from1.x());
             float angle2 = std::atan2(to2.y() - from2.y(), to2.x() - from2.x());
+            m_modelMesh.addDebugLine(from1, to1);
+            m_modelMesh.addDebugLine(from2, to2);
             return angle1 > angle2;
         });
         orderedHalfEdgesOfVertex.emplace_back(halfedges);
     }
+    m_view->updateDataDebugLine();
+    m_view->update();
 
     for (poly::Circle& c: circles) {
         c.initInversiveCoordinates();
@@ -875,7 +880,6 @@ void Polytopal2DWindow::updateUserData() {
 
     // set next he on halfedges
     bool errors = false;
-    m_modelMesh.clearDebugLine();
     for (auto const& halfedges: orderedHalfEdgesOfVertex) {
         if (halfedges.size() == 1) {
             errors = true;
@@ -885,11 +889,8 @@ void Polytopal2DWindow::updateUserData() {
             he::HalfEdge* he = halfedges[j];
             he::HalfEdge* heNext = halfedges[(j + 1) % halfedges.size()];
             heNext->twin()->setNext(he);
-            m_modelMesh.addDebugLine(heNext->twin()->origin()->pos(), he->origin()->pos());
         }
     }
-    m_view->updateDataDebugLine();
-    m_view->update();
     if (errors) {
         this->setInfo("Errors on the mesh, adjacency list is not complete...");
         return;

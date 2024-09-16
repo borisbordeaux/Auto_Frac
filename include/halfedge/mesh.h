@@ -46,8 +46,6 @@ public:
     void remove(he::HalfEdge* he);
     void remove(he::Vertex* v);
 
-    void collapse(he::HalfEdge* he);
-
 private:
     std::vector<he::Vertex*> m_vertices;
     std::vector<he::HalfEdge*> m_halfEdges;

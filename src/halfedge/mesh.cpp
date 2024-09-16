@@ -1,6 +1,7 @@
 #include "halfedge/mesh.h"
 
 #include <set>
+#include <iostream>
 #include "halfedge/face.h"
 #include "halfedge/halfedge.h"
 #include "halfedge/vertex.h"
@@ -296,86 +297,4 @@ void he::Mesh::remove(he::Vertex* v) {
     }
 
     delete v;
-}
-
-void he::Mesh::collapse(he::HalfEdge* /*he*/) {
-    //TODO: collapse halfedge
-    /*auto itHe = std::find(m_halfEdges.begin(), m_halfEdges.end(), he);
-    if (itHe == m_halfEdges.end()) { return; }
-    m_halfEdges.erase(itHe);
-    auto itTwin = std::find(m_halfEdges.begin(), m_halfEdges.end(), he->twin());
-    if (itTwin == m_halfEdges.end()) { return; }
-    m_halfEdges.erase(itTwin);
-
-    he::HalfEdge* twin = he->twin();
-    he::HalfEdge* twinPrev = twin->prev();
-    he::HalfEdge* twinNext = twin->next();
-    he::HalfEdge* hePrev = he->prev();
-    he::HalfEdge* heNext = he->next();
-
-    he::Vertex* v1 = he->origin();
-    he::Vertex* v2 = twin->origin();
-    QVector3D pos = (v1->pos() + v2->pos()) / 2.0f;
-    v1->setPos(pos);
-
-    he::Face* f1 = he->face();
-    he::Face* f2 = twin->face();
-
-    std::size_t edges1 = f1 != nullptr ? f1->nbEdges() : 0;
-    std::size_t edges2 = f2 != nullptr ? f2->nbEdges() : 0;
-
-    if (f1 != nullptr && edges1 == 3) {
-        //we will remove an edge, hence the face will disappear
-        this->remove(f1);
-        f1 = nullptr;
-    }
-    if (f2 != nullptr && edges2 == 3) {
-        //we will remove an edge, hence the face will disappear
-        this->remove(f2);
-    }
-
-    twinPrev->setNext(twinNext);
-    twinNext->setPrev(twinPrev);
-    hePrev->setNext(heNext);
-    heNext->setPrev(hePrev);
-
-    //we keep v1
-    v2->halfEdge()->setOrigin(v1);
-    for (he::HalfEdge* halfEdgeOfV2: v2->otherHalfEdges()) {
-        halfEdgeOfV2->setOrigin(v1);
-    }
-
-    m_vertices.erase(std::find(m_vertices.begin(), m_vertices.end(), v2));
-
-    if (f1 != nullptr) {
-        if (edges1 == 3) {
-            twinPrev->setTwin(twinNext);
-            m_halfEdges.erase(std::find(m_halfEdges.begin(), m_halfEdges.end(), heNext));
-            m_halfEdges.erase(std::find(m_halfEdges.begin(), m_halfEdges.end(), hePrev));
-            delete heNext;
-            delete hePrev;
-        } else {
-            f1->setHalfEdge(hePrev);
-        }
-    }
-    if (f2 != nullptr) {
-        if (edges2 == 3) {
-            hePrev->setTwin(heNext);
-            m_halfEdges.erase(std::find(m_halfEdges.begin(), m_halfEdges.end(), twinNext));
-            m_halfEdges.erase(std::find(m_halfEdges.begin(), m_halfEdges.end(), twinPrev));
-            delete twinNext;
-            delete twinPrev;
-        } else {
-            f2->setHalfEdge(twinPrev);
-        }
-    }
-
-    delete v2;
-    delete he;
-    delete twin;
-
-    this->updateHalfEdgeNotTwin();
-    this->updateOtherHalfEdges();
-
-    std::cout << this->toString().toStdString() << std::endl;*/
 }
