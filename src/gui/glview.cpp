@@ -170,11 +170,69 @@ void GLView::initBuffers() {
     //allocate necessary memory
     m_vboDebugLine.allocate(m_model->constDataDebugLine(), m_model->countDebugLine() * static_cast<int>(sizeof(GLfloat)));
 
-    //enable enough attrib array for all the data of the mesh's vertices
+    //enable enough attrib array for all the data of the debug lines vertices
     glEnableVertexAttribArray(0); //coordinates
     //3 coordinates of the vertex
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
     m_vboDebugLine.release();
+    m_vaoDebugLine.release();
+
+    //------for cubemap------//
+    float skyboxVertices[] = {
+            // positions
+            -1.0f, 1.0f, -1.0f,
+            -1.0f, -1.0f, -1.0f,
+            1.0f, -1.0f, -1.0f,
+            1.0f, -1.0f, -1.0f,
+            1.0f, 1.0f, -1.0f,
+            -1.0f, 1.0f, -1.0f,
+
+            -1.0f, -1.0f, 1.0f,
+            -1.0f, -1.0f, -1.0f,
+            -1.0f, 1.0f, -1.0f,
+            -1.0f, 1.0f, -1.0f,
+            -1.0f, 1.0f, 1.0f,
+            -1.0f, -1.0f, 1.0f,
+
+            1.0f, -1.0f, -1.0f,
+            1.0f, -1.0f, 1.0f,
+            1.0f, 1.0f, 1.0f,
+            1.0f, 1.0f, 1.0f,
+            1.0f, 1.0f, -1.0f,
+            1.0f, -1.0f, -1.0f,
+
+            -1.0f, -1.0f, 1.0f,
+            -1.0f, 1.0f, 1.0f,
+            1.0f, 1.0f, 1.0f,
+            1.0f, 1.0f, 1.0f,
+            1.0f, -1.0f, 1.0f,
+            -1.0f, -1.0f, 1.0f,
+
+            -1.0f, 1.0f, -1.0f,
+            1.0f, 1.0f, -1.0f,
+            1.0f, 1.0f, 1.0f,
+            1.0f, 1.0f, 1.0f,
+            -1.0f, 1.0f, 1.0f,
+            -1.0f, 1.0f, -1.0f,
+
+            -1.0f, -1.0f, -1.0f,
+            -1.0f, -1.0f, 1.0f,
+            1.0f, -1.0f, -1.0f,
+            1.0f, -1.0f, -1.0f,
+            -1.0f, -1.0f, 1.0f,
+            1.0f, -1.0f, 1.0f
+    };
+
+    m_vaoCubeMap.bind();
+    m_vboCubeMap.bind();
+    //allocate necessary memory
+    m_vboCubeMap.allocate(&skyboxVertices, sizeof(skyboxVertices));
+
+    //enable enough attrib array for all the data of the debug lines vertices
+    glEnableVertexAttribArray(0); //coordinates
+    //3 coordinates of the vertex
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
+    m_vboCubeMap.release();
     m_vaoDebugLine.release();
 
     //update the view
@@ -287,6 +345,18 @@ void GLView::initShadersView() {
     m_programDebugLine->bind();
     m_projMatrixLocDebugLine = m_programDebugLine->uniformLocation("projMatrix");
     m_mvMatrixLocDebugLine = m_programDebugLine->uniformLocation("mvMatrix");
+
+    //init shader for cubemap
+    m_programCubeMap = new QOpenGLShaderProgram();
+    m_programCubeMap->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/cubemap/vs.glsl");
+    m_programCubeMap->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/cubemap/fs.glsl");
+    m_programCubeMap->bindAttributeLocation("aPos", 0);
+    m_programCubeMap->link();
+
+    //get location of uniforms
+    m_programCubeMap->bind();
+    m_projMatrixLocCubeMap = m_programCubeMap->uniformLocation("projection");
+    m_viewMatrixLocCubeMap = m_programCubeMap->uniformLocation("view");
 }
 
 void GLView::initShadersPicking() {
@@ -377,6 +447,7 @@ void GLView::initializeGL() {
     m_vaoCirclesDual.create();
     m_vaoVertices.create();
     m_vaoDebugLine.create();
+    m_vaoCubeMap.create();
 
     m_vboFaces.create();
     m_vboSphere.create();
@@ -385,6 +456,7 @@ void GLView::initializeGL() {
     m_vboCirclesDual.create();
     m_vboVertices.create();
     m_vboDebugLine.create();
+    m_vboCubeMap.create();
 
     //background
     glClearColor(m_clearColor.x(), m_clearColor.y(), m_clearColor.z(), 1.0f);
@@ -393,6 +465,8 @@ void GLView::initializeGL() {
 
     //memory allocation
     this->initBuffers();
+
+    this->initCubeMap();
 }
 
 void GLView::paintGL() {
@@ -469,6 +543,14 @@ void GLView::paintGL() {
         m_camera.dezoom(0.001f);
         m_camera.dezoom(0.001f);
 
+        m_programCubeMap->bind();
+        m_programCubeMap->setUniformValue(m_projMatrixLocCubeMap, m_proj);
+        QMatrix4x4 view = m_camera.getViewMatrix();
+        view.setColumn(3, {0,0,0,1});
+        view.setRow(3, {0,0,0,1});
+        m_programCubeMap->setUniformValue(m_viewMatrixLocCubeMap, view);
+        m_programCubeMap->release();
+
         m_uniformsDirty = false;
     }
 
@@ -498,6 +580,16 @@ void GLView::paintGL() {
 
     //clear buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    //draw skybox
+    glDepthMask(GL_FALSE);
+    m_programCubeMap->bind();
+    m_vaoCubeMap.bind();
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_textureID);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    m_programCubeMap->release();
+    glDepthMask(GL_TRUE);
 
     //draw faces
     m_programFaces->bind();
@@ -1326,4 +1418,31 @@ void GLView::removeSelectedVertex() {
     this->updateDataEdges();
     this->updateDataVertices();
     this->update();
+}
+
+void GLView::initCubeMap() {
+    glGenTextures(1, &m_textureID);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_textureID);
+
+    std::vector<std::string> faces = { "right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg" };
+    for (unsigned int i = 0; i < faces.size(); i++) {
+        QString path = "../textures/skybox/";
+        path += faces[i];
+        QImage img(path);
+        //img.mirror();
+        img.convertTo(QImage::Format_RGBA8888);
+        const unsigned char* bufferImage = img.constBits();
+
+        if (bufferImage) {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                         0, GL_RGBA8, img.width(), img.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, bufferImage);
+        } else {
+            std::cout << "Cubemap tex failed to load at path: " << faces[i] << std::endl;
+        }
+    }
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 }
