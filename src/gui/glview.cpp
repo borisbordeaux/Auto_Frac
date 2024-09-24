@@ -1426,7 +1426,7 @@ void GLView::initCubeMap() {
 
     std::vector<std::string> faces = { "right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg" };
     for (unsigned int i = 0; i < faces.size(); i++) {
-        QString path = "../textures/skybox/";
+        QString path = "../textures/skybox2/";
         path += faces[i];
         QImage img(path);
         //img.mirror();
