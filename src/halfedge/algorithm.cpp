@@ -129,7 +129,7 @@ void he::algo::generalizedBarycentricSubdivision(he::Mesh& mesh, int nbSubsCorne
     std::vector<he::Face*> faces = mesh.faces();
 
     for (he::Face* f: faces) {
-        bool baryVertex = f->userData().isEmpty(); //by default 1 vertex, if user data then no vertex
+        bool baryVertex = f->userData().isEmpty(); //by default 1 vertex, if user data not empty then no vertex
         he::Vertex* v = nullptr;
         if (baryVertex) {
             //create a new vertex at the center of the face
@@ -143,7 +143,7 @@ void he::algo::generalizedBarycentricSubdivision(he::Mesh& mesh, int nbSubsCorne
 
         for (he::HalfEdge* he: halfedges) {
             //for each halfedge, get its number of subdivision, 2 by default
-            std::size_t nbSubs = he->userData().isEmpty() ? 2 : he->userData().toULong();
+            std::size_t nbSubs = he->userData().isEmpty() ? 2 : (he->userData().toULong() == 0 ? 1 : he->userData().toULong());
 
             std::vector<he::Face*> createdFaces;
             std::vector<he::HalfEdge*> createdHalfEdges;

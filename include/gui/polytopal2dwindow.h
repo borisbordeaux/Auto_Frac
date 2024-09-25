@@ -64,6 +64,8 @@ public slots:
     [[maybe_unused]] void slotOBJFromCircles();
     [[maybe_unused]] void slotOBJOfCircles();
 
+    [[maybe_unused]] void slotUpdateSkyBox(int index);
+
 private:
     void updateEnablementPoly();
     void setInfoAdvancement(int percent);

@@ -964,3 +964,18 @@ void Polytopal2DWindow::updateUserData() {
     he::writer::writeOBJ("../obj/exported.obj", m);
     this->setInfo("Mesh exported to obj/exported.obj");
 }
+
+[[maybe_unused]] void Polytopal2DWindow::slotUpdateSkyBox(int index) {
+    switch (index) {
+        case 1:
+            m_view->setSkyBox(SkyBoxType::SkyBox1);
+            break;
+        case 2:
+            m_view->setSkyBox(SkyBoxType::SkyBox2);
+            break;
+        default:
+            m_view->setSkyBox(SkyBoxType::None);
+            break;
+    }
+    m_view->update();
+}

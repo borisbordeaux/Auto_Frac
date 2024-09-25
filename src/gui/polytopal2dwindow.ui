@@ -731,13 +731,13 @@
         <property name="sizeConstraint">
          <enum>QLayout::SetMinimumSize</enum>
         </property>
-        <item row="0" column="0">
-         <widget class="QCheckBox" name="checkBox_displayUnitSphere">
+        <item row="1" column="0">
+         <widget class="QCheckBox" name="checkBox_displayMesh">
           <property name="layoutDirection">
            <enum>Qt::RightToLeft</enum>
           </property>
           <property name="text">
-           <string>Sphere</string>
+           <string>Mesh</string>
           </property>
           <property name="checked">
            <bool>true</bool>
@@ -757,13 +757,13 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
-         <widget class="QCheckBox" name="checkBox_displayMesh">
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="checkBox_displayUnitSphere">
           <property name="layoutDirection">
            <enum>Qt::RightToLeft</enum>
           </property>
           <property name="text">
-           <string>Mesh</string>
+           <string>Sphere</string>
           </property>
           <property name="checked">
            <bool>true</bool>
@@ -778,6 +778,25 @@
           <property name="text">
            <string>Animations</string>
           </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QComboBox" name="comboBox_skybox">
+          <item>
+           <property name="text">
+            <string>No Skybox</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Skybox 1</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Skybox 2</string>
+           </property>
+          </item>
          </widget>
         </item>
        </layout>
@@ -956,7 +975,7 @@
    <slot>slotIncreaseInversion()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1427</x>
+     <x>1408</x>
      <y>128</y>
     </hint>
     <hint type="destinationlabel">
@@ -972,7 +991,7 @@
    <slot>slotDecreaseInversion()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1513</x>
+     <x>1454</x>
      <y>128</y>
     </hint>
     <hint type="destinationlabel">
@@ -988,7 +1007,7 @@
    <slot>slotProjectCirclesClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1627</x>
+     <x>1526</x>
      <y>127</y>
     </hint>
     <hint type="destinationlabel">
@@ -1004,7 +1023,7 @@
    <slot>slotDisplayAreaCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1597</x>
+     <x>1526</x>
      <y>66</y>
     </hint>
     <hint type="destinationlabel">
@@ -1068,7 +1087,7 @@
    <slot>slotOpenOBJFile()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>154</x>
+     <x>130</x>
      <y>66</y>
     </hint>
     <hint type="destinationlabel">
@@ -1084,8 +1103,8 @@
    <slot>slotExportOBJ()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>154</x>
-     <y>97</y>
+     <x>216</x>
+     <y>66</y>
     </hint>
     <hint type="destinationlabel">
      <x>1</x>
@@ -1100,7 +1119,7 @@
    <slot>slotExportAllFaces()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1357</x>
+     <x>1338</x>
      <y>97</y>
     </hint>
     <hint type="destinationlabel">
@@ -1116,7 +1135,7 @@
    <slot>slotExportSelectedFace()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1357</x>
+     <x>1338</x>
      <y>66</y>
     </hint>
     <hint type="destinationlabel">
@@ -1132,7 +1151,7 @@
    <slot>slotDisplayDualAreaCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1597</x>
+     <x>1526</x>
      <y>97</y>
     </hint>
     <hint type="destinationlabel">
@@ -1148,7 +1167,7 @@
    <slot>slotUpdateLabelPrecision(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>288</x>
+     <x>439</x>
      <y>88</y>
     </hint>
     <hint type="destinationlabel">
@@ -1164,7 +1183,7 @@
    <slot>slotBarycentricSubdivision()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>529</x>
+     <x>680</x>
      <y>66</y>
     </hint>
     <hint type="destinationlabel">
@@ -1180,8 +1199,8 @@
    <slot>slotChangeTheme()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1213</x>
-     <y>93</y>
+     <x>1212</x>
+     <y>122</y>
     </hint>
     <hint type="destinationlabel">
      <x>1751</x>
@@ -1196,7 +1215,7 @@
    <slot>slotChangeUserData()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>853</x>
+     <x>1004</x>
      <y>97</y>
     </hint>
     <hint type="destinationlabel">
@@ -1228,7 +1247,7 @@
    <slot>slotChangeAllUserData()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>957</x>
+     <x>1090</x>
      <y>97</y>
     </hint>
     <hint type="destinationlabel">
@@ -1244,7 +1263,7 @@
    <slot>slotLoopSubdivision()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>529</x>
+     <x>680</x>
      <y>97</y>
     </hint>
     <hint type="destinationlabel">
@@ -1260,8 +1279,8 @@
    <slot>slotOBJFromCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>154</x>
-     <y>128</y>
+     <x>130</x>
+     <y>97</y>
     </hint>
     <hint type="destinationlabel">
      <x>1753</x>
@@ -1276,8 +1295,8 @@
    <slot>slotOBJOfCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>146</x>
-     <y>146</y>
+     <x>305</x>
+     <y>66</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -1292,8 +1311,8 @@
    <slot>slotScaleUpCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1452</x>
-     <y>159</y>
+     <x>1636</x>
+     <y>66</y>
     </hint>
     <hint type="destinationlabel">
      <x>1753</x>
@@ -1308,12 +1327,28 @@
    <slot>slotScaleDownCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1493</x>
-     <y>156</y>
+     <x>1722</x>
+     <y>66</y>
     </hint>
     <hint type="destinationlabel">
      <x>1752</x>
      <y>384</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_skybox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>Polytopal2DWindow</receiver>
+   <slot>slotUpdateSkyBox(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1180</x>
+     <y>176</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1750</x>
+     <y>184</y>
     </hint>
    </hints>
   </connection>
@@ -1342,5 +1377,6 @@
   <slot>slotOBJFromCircles()</slot>
   <slot>slotOBJOfCircles()</slot>
   <slot>slotScaleDownCircles()</slot>
+  <slot>slotUpdateSkyBox(int)</slot>
  </slots>
 </ui>
