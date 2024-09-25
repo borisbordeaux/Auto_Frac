@@ -8,6 +8,7 @@
 #include "halfedge/vertex.h"
 #include "halfedge/halfedge.h"
 #include "halfedge/face.h"
+#include "gui/skybox.h"
 
 GLView::GLView(Model* model, Polytopal2DWindow* parent) :
         QOpenGLWidget(parent),
@@ -176,67 +177,6 @@ void GLView::initBuffers() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
     m_vboDebugLine.release();
     m_vaoDebugLine.release();
-
-    //------for sky box------//
-    float skyboxVertices[] = {
-            // positions
-            -1.0f, 1.0f, -1.0f,
-            -1.0f, -1.0f, -1.0f,
-            1.0f, -1.0f, -1.0f,
-            1.0f, -1.0f, -1.0f,
-            1.0f, 1.0f, -1.0f,
-            -1.0f, 1.0f, -1.0f,
-
-            -1.0f, -1.0f, 1.0f,
-            -1.0f, -1.0f, -1.0f,
-            -1.0f, 1.0f, -1.0f,
-            -1.0f, 1.0f, -1.0f,
-            -1.0f, 1.0f, 1.0f,
-            -1.0f, -1.0f, 1.0f,
-
-            1.0f, -1.0f, -1.0f,
-            1.0f, -1.0f, 1.0f,
-            1.0f, 1.0f, 1.0f,
-            1.0f, 1.0f, 1.0f,
-            1.0f, 1.0f, -1.0f,
-            1.0f, -1.0f, -1.0f,
-
-            -1.0f, -1.0f, 1.0f,
-            -1.0f, 1.0f, 1.0f,
-            1.0f, 1.0f, 1.0f,
-            1.0f, 1.0f, 1.0f,
-            1.0f, -1.0f, 1.0f,
-            -1.0f, -1.0f, 1.0f,
-
-            -1.0f, 1.0f, -1.0f,
-            1.0f, 1.0f, -1.0f,
-            1.0f, 1.0f, 1.0f,
-            1.0f, 1.0f, 1.0f,
-            -1.0f, 1.0f, 1.0f,
-            -1.0f, 1.0f, -1.0f,
-
-            -1.0f, -1.0f, -1.0f,
-            -1.0f, -1.0f, 1.0f,
-            1.0f, -1.0f, -1.0f,
-            1.0f, -1.0f, -1.0f,
-            -1.0f, -1.0f, 1.0f,
-            1.0f, -1.0f, 1.0f
-    };
-
-    m_vaoSkyBox.bind();
-    m_vboSkyBox.bind();
-    //allocate necessary memory
-    m_vboSkyBox.allocate(&skyboxVertices, sizeof(skyboxVertices));
-
-    //enable enough attrib array for all the data of the sky box vertices
-    glEnableVertexAttribArray(0); //coordinates
-    //3 coordinates of the vertex
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
-    m_vboSkyBox.release();
-    m_vaoSkyBox.release();
-
-    //update the view
-    this->update();
 }
 
 void GLView::initShaders() {
@@ -345,18 +285,6 @@ void GLView::initShadersView() {
     m_programDebugLine->bind();
     m_projMatrixLocDebugLine = m_programDebugLine->uniformLocation("projMatrix");
     m_mvMatrixLocDebugLine = m_programDebugLine->uniformLocation("mvMatrix");
-
-    //init shader for sky box
-    m_programSkyBox = new QOpenGLShaderProgram();
-    m_programSkyBox->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/skybox/vs.glsl");
-    m_programSkyBox->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/skybox/fs.glsl");
-    m_programSkyBox->bindAttributeLocation("aPos", 0);
-    m_programSkyBox->link();
-
-    //get location of uniforms
-    m_programSkyBox->bind();
-    m_projMatrixLocSkyBox = m_programSkyBox->uniformLocation("projection");
-    m_viewMatrixLocSkyBox = m_programSkyBox->uniformLocation("view");
 }
 
 void GLView::initShadersPicking() {
@@ -447,7 +375,6 @@ void GLView::initializeGL() {
     m_vaoCirclesDual.create();
     m_vaoVertices.create();
     m_vaoDebugLine.create();
-    m_vaoSkyBox.create();
 
     m_vboFaces.create();
     m_vboSphere.create();
@@ -456,7 +383,6 @@ void GLView::initializeGL() {
     m_vboCirclesDual.create();
     m_vboVertices.create();
     m_vboDebugLine.create();
-    m_vboSkyBox.create();
 
     //background
     glClearColor(m_clearColor.x(), m_clearColor.y(), m_clearColor.z(), 1.0f);
@@ -465,6 +391,11 @@ void GLView::initializeGL() {
 
     //memory allocation
     this->initBuffers();
+
+    m_skyBox.init();
+
+    //update the view
+    this->update();
 }
 
 void GLView::paintGL() {
@@ -541,13 +472,11 @@ void GLView::paintGL() {
         m_camera.dezoom(0.001f);
         m_camera.dezoom(0.001f);
 
-        m_programSkyBox->bind();
-        m_programSkyBox->setUniformValue(m_projMatrixLocSkyBox, m_proj);
         QMatrix4x4 view = m_camera.getViewMatrix();
         //remove translation part, set only rotation part of the camera
         view.setColumn(3, { 0, 0, 0, 1 });
-        m_programSkyBox->setUniformValue(m_viewMatrixLocSkyBox, view);
-        m_programSkyBox->release();
+        m_skyBox.setUniform(Location::Projection, m_proj);
+        m_skyBox.setUniform(Location::View, view);
 
         m_uniformsDirty = false;
     }
@@ -580,16 +509,7 @@ void GLView::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //draw sky box
-    if (m_skyBoxType != SkyBoxType::None) {
-        glDepthMask(GL_FALSE);
-        m_programSkyBox->bind();
-        m_vaoSkyBox.bind();
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, m_textureID);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        m_programSkyBox->release();
-        glDepthMask(GL_TRUE);
-    }
+    m_skyBox.render();
 
     //draw faces
     m_programFaces->bind();
@@ -1421,30 +1341,5 @@ void GLView::removeSelectedVertex() {
 }
 
 void GLView::setSkyBox(SkyBoxType type) {
-    m_skyBoxType = type;
-
-    glDeleteTextures(1, &m_textureID);
-    if (m_skyBoxType == SkyBoxType::None) { return; }
-    glGenTextures(1, &m_textureID);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, m_textureID);
-
-    std::vector<std::string> faces = { "right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg" };
-    for (unsigned int i = 0; i < faces.size(); i++) {
-        std::string path = "../textures/skybox";
-        path += (m_skyBoxType == SkyBoxType::SkyBox1 ? "1/" : "2/") + faces[i];
-        QImage img(path.c_str());
-        img.convertTo(QImage::Format_RGBA8888);
-        const unsigned char* bufferImage = img.constBits();
-
-        if (bufferImage) {
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA8, img.width(), img.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, bufferImage);
-        } else {
-            std::cout << "Cubemap texture failed to load at path: " << path << std::endl;
-        }
-    }
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    m_skyBox.setSkyBox(type);
 }

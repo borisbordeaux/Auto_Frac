@@ -8,18 +8,13 @@
 #include <QtOpenGLWidgets/QOpenGLWidget>
 #include <QTimer>
 #include "gui/camera.h"
+#include "skybox.h"
 
 enum class PickingType {
     PickingFace,
     PickingEdge,
     PickingVertex,
     PickingCircle
-};
-
-enum class SkyBoxType {
-    None,
-    SkyBox1,
-    SkyBox2
 };
 
 class QOpenGLShaderProgram;
@@ -130,7 +125,6 @@ private:
     QOpenGLVertexArrayObject m_vaoCirclesDual;
     QOpenGLVertexArrayObject m_vaoVertices;
     QOpenGLVertexArrayObject m_vaoDebugLine;
-    QOpenGLVertexArrayObject m_vaoSkyBox;
     QOpenGLBuffer m_vboFaces;
     QOpenGLBuffer m_vboSphere;
     QOpenGLBuffer m_vboEdges;
@@ -138,7 +132,6 @@ private:
     QOpenGLBuffer m_vboCirclesDual;
     QOpenGLBuffer m_vboVertices;
     QOpenGLBuffer m_vboDebugLine;
-    QOpenGLBuffer m_vboSkyBox;
     QOpenGLShaderProgram* m_programSphere = nullptr;
     QOpenGLShaderProgram* m_programFaces = nullptr;
     QOpenGLShaderProgram* m_programFacesPicking = nullptr;
@@ -150,9 +143,6 @@ private:
     QOpenGLShaderProgram* m_programCirclesPicking = nullptr;
     QOpenGLShaderProgram* m_programCirclesDual = nullptr;
     QOpenGLShaderProgram* m_programDebugLine = nullptr;
-    QOpenGLShaderProgram* m_programSkyBox = nullptr;
-    //skybox texture
-    unsigned int m_textureID = 0;
 
     //location of the different variables in the GPU
     //Sphere viewing
@@ -202,14 +192,12 @@ private:
     int m_mvMatrixLocDebugLine = 0;
 
     //skybox
-    int m_projMatrixLocSkyBox = 0;
-    int m_viewMatrixLocSkyBox = 0;
 
     //flag to update uniforms if needed
     bool m_uniformsDirty = true;
 
     //flag to update clear color
-    bool m_clearColorDirty = false;
+    bool m_clearColorDirty = true;
 
     //matrices for rendering
     QMatrix4x4 m_proj;
@@ -236,7 +224,7 @@ private:
     bool m_isKeyRPressed = false;
     bool m_isShiftPressed = false;
 
-    SkyBoxType m_skyBoxType = SkyBoxType::None;
+    SkyBox m_skyBox;
 
 private:
     Polytopal2DWindow* m_mainWindow;
