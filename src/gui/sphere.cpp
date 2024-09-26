@@ -60,11 +60,13 @@ void Sphere::update() {
     m_vbo.release();
 }
 
-void Sphere::render() {
+void Sphere::render(bool picking) {
+    if (picking) { glColorMask(false, false, false, false); }
     m_program.bind();
     m_vao.bind();
     glDrawArrays(GL_TRIANGLES, 0, m_count / m_floatsPerVertex);
     m_program.release();
+    if (picking) { glColorMask(true, true, true, true); }
 }
 
 void Sphere::setProjection(QMatrix4x4 matrix) {

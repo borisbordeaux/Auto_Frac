@@ -210,7 +210,6 @@ private:
     bool m_isShiftPressed = false;
 
 public:
-    void clearScene();
     void removeItem(BatchGraphicsItem* item);
     void addItem(BatchGraphicsItem* item);
     bool containsItem(BatchGraphicsItem* item);

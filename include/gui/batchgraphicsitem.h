@@ -14,7 +14,7 @@ public:
 
     virtual void update() {}
 
-    virtual void render() {}
+    virtual void render(bool /*picking*/ = false) {}
 
     virtual void setProjection(QMatrix4x4 /*projection*/) {}
 

@@ -79,7 +79,8 @@ void SkyBox::init() {
     setSkyBox(SkyBoxType::SkyBox2);
 }
 
-void SkyBox::render() {
+void SkyBox::render(bool picking) {
+    if (picking) { return; }
     glDepthMask(GL_FALSE);
     m_program.bind();
     m_vao.bind();

@@ -17,7 +17,7 @@ class Sphere : public BatchGraphicsItem {
 public:
     void init() override;
     void update() override;
-    void render() override;
+    void render(bool picking) override;
 
     void setProjection(QMatrix4x4 projection) override;
     void setCamera(Camera camera) override;

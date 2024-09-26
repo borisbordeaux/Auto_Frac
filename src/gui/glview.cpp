@@ -672,10 +672,9 @@ void GLView::clickFaceManagement() {
     //clear buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //draw sphere only in depth buffer
-    glColorMask(false, false, false, false);
-    //m_sphere.render();
-    glColorMask(true, true, true, true);
+    for (BatchGraphicsItem* item: m_items) {
+        item->render(true);
+    }
 
     //draw faces using the picking shader
     m_programFacesPicking->bind();
@@ -726,10 +725,11 @@ void GLView::clickEdgeManagement() {
     m_vaoFaces.bind();
     glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountFace());
     m_programFaces->release();
-
-    //draw sphere only in depth buffer
-    //m_sphere.render();
     glColorMask(true, true, true, true);
+
+    for (BatchGraphicsItem* item: m_items) {
+        item->render(true);
+    }
 
     //draw edges
     m_programEdgesPicking->bind();
@@ -794,9 +794,11 @@ void GLView::clickVertexManagement() {
     m_vaoFaces.bind();
     glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountFace());
     m_programFaces->release();
-
-    //m_sphere.render();
     glColorMask(true, true, true, true);
+
+    for (BatchGraphicsItem* item: m_items) {
+        item->render(true);
+    }
 
     //draw vertices
     m_programVerticesPicking->bind();
@@ -1289,10 +1291,6 @@ void GLView::removeSelectedVertex() {
     this->update();
 }
 
-void GLView::clearScene() {
-    m_items.clear();
-}
-
 void GLView::addItem(BatchGraphicsItem* item) {
     m_items.push_back(item);
     std::sort(m_items.begin(), m_items.end(), [](BatchGraphicsItem* item1, BatchGraphicsItem* item2) -> bool {
@@ -1308,6 +1306,6 @@ void GLView::removeItem(BatchGraphicsItem* item) {
 }
 
 bool GLView::containsItem(BatchGraphicsItem* item) {
-    if(m_items.empty()) return false;
+    if (m_items.empty()) return false;
     return std::find(m_items.begin(), m_items.end(), item) != m_items.end();
 }
