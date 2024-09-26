@@ -5,6 +5,8 @@
 #include <QTimer>
 #include "halfedge/mesh.h"
 #include "model.h"
+#include "sphere.h"
+#include "skybox.h"
 
 class QStatusBar;
 
@@ -75,10 +77,13 @@ private:
 
     QStatusBar* m_statusBar;
 
+    Sphere m_sphere;
+    SkyBox m_skybox;
+
     he::Mesh m_mesh;
     he::Mesh m_sphereMesh;
     Model m_modelMesh;
-    GLView* m_view;
+    GLView* m_view = nullptr;
     bool m_openedMesh;
 
     QTimer m_timerCanonicalize;

@@ -1,41 +1,35 @@
 #ifndef AUTOFRAC_SKYBOX_H
 #define AUTOFRAC_SKYBOX_H
 
-#include <QOpenGLFunctions>
+#include "gui/batchgraphicsitem.h"
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
+#include <QOpenGLShaderProgram>
 
 enum class SkyBoxType {
-    None,
     SkyBox1,
     SkyBox2
 };
 
-enum class Location {
-    Projection,
-    View
-};
-
-class QOpenGLShaderProgram;
-
-class SkyBox : protected QOpenGLFunctions {
+class SkyBox : public BatchGraphicsItem {
 public:
-    void init();
+    void init() override;
+    void render() override;
+
+    void setProjection(QMatrix4x4 projection) override;
+    void setCamera(Camera camera) override;
+
     void setSkyBox(SkyBoxType type);
 
-    void setUniform(Location loc, QMatrix4x4 const& matrix);
-    void render();
-
 private:
-    SkyBoxType m_skyBoxType = SkyBoxType::None;
-
-    QOpenGLShaderProgram* m_programSkyBox = nullptr;
-    QOpenGLBuffer m_vboSkyBox;
-    QOpenGLVertexArrayObject m_vaoSkyBox;
     unsigned int m_textureID = 0;
 
     int m_projMatrixLocSkyBox = 0;
     int m_viewMatrixLocSkyBox = 0;
+
+    QOpenGLVertexArrayObject m_vao;
+    QOpenGLBuffer m_vbo;
+    QOpenGLShaderProgram m_program;
 };
 
 

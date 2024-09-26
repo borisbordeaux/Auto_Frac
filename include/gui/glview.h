@@ -8,7 +8,7 @@
 #include <QtOpenGLWidgets/QOpenGLWidget>
 #include <QTimer>
 #include "gui/camera.h"
-#include "skybox.h"
+#include "batchgraphicsitem.h"
 
 enum class PickingType {
     PickingFace,
@@ -43,7 +43,6 @@ public:
 
     void updateData();
     void updateDataFaces();
-    void updateDataSphere();
     void updateDataEdges();
     void updateDataCircles();
     void updateDataCirclesDual();
@@ -54,8 +53,6 @@ public:
 
     void setBackGroundColor(float r, float g, float b);
     PickingType pickingType() const;
-
-    void setSkyBox(SkyBoxType type);
 
 public slots:
     void animationCameraStep();
@@ -119,20 +116,17 @@ private:
     //OpenGL stuff for rendering
     QVector3D m_clearColor = { 0.3f, 0.3f, 0.3f };
     QOpenGLVertexArrayObject m_vaoFaces;
-    QOpenGLVertexArrayObject m_vaoSphere;
     QOpenGLVertexArrayObject m_vaoEdges;
     QOpenGLVertexArrayObject m_vaoCircles;
     QOpenGLVertexArrayObject m_vaoCirclesDual;
     QOpenGLVertexArrayObject m_vaoVertices;
     QOpenGLVertexArrayObject m_vaoDebugLine;
     QOpenGLBuffer m_vboFaces;
-    QOpenGLBuffer m_vboSphere;
     QOpenGLBuffer m_vboEdges;
     QOpenGLBuffer m_vboCircles;
     QOpenGLBuffer m_vboCirclesDual;
     QOpenGLBuffer m_vboVertices;
     QOpenGLBuffer m_vboDebugLine;
-    QOpenGLShaderProgram* m_programSphere = nullptr;
     QOpenGLShaderProgram* m_programFaces = nullptr;
     QOpenGLShaderProgram* m_programFacesPicking = nullptr;
     QOpenGLShaderProgram* m_programEdges = nullptr;
@@ -143,13 +137,6 @@ private:
     QOpenGLShaderProgram* m_programCirclesPicking = nullptr;
     QOpenGLShaderProgram* m_programCirclesDual = nullptr;
     QOpenGLShaderProgram* m_programDebugLine = nullptr;
-
-    //location of the different variables in the GPU
-    //Sphere viewing
-    int m_projMatrixLocSphere = 0;
-    int m_mvMatrixLocSphere = 0;
-    int m_lightPosLocSphere = 0;
-    int m_cameraPosLocSphere = 0;
 
     //Faces viewing
     int m_projMatrixLoc = 0;
@@ -191,8 +178,6 @@ private:
     int m_projMatrixLocDebugLine = 0;
     int m_mvMatrixLocDebugLine = 0;
 
-    //skybox
-
     //flag to update uniforms if needed
     bool m_uniformsDirty = true;
 
@@ -224,7 +209,14 @@ private:
     bool m_isKeyRPressed = false;
     bool m_isShiftPressed = false;
 
-    SkyBox m_skyBox;
+public:
+    void clearScene();
+    void removeItem(BatchGraphicsItem* item);
+    void addItem(BatchGraphicsItem* item);
+    bool containsItem(BatchGraphicsItem* item);
+
+private:
+    std::vector<BatchGraphicsItem*> m_items;
 
 private:
     Polytopal2DWindow* m_mainWindow;

@@ -8,7 +8,6 @@
 #include "halfedge/vertex.h"
 #include "halfedge/halfedge.h"
 #include "halfedge/face.h"
-#include "gui/skybox.h"
 
 GLView::GLView(Model* model, Polytopal2DWindow* parent) :
         QOpenGLWidget(parent),
@@ -69,19 +68,6 @@ void GLView::initBuffers() {
     glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(7 * sizeof(GLfloat)));
     m_vboFaces.release();
     m_vaoFaces.release();
-
-    //------for the sphere------//
-    m_vaoSphere.bind();
-    m_vboSphere.bind();
-    //allocate necessary memory
-    m_vboSphere.allocate(m_model->constDataSphere(), m_model->countSphere() * static_cast<int>(sizeof(GLfloat)));
-
-    //enable enough attrib array for all the data of the mesh's vertices
-    glEnableVertexAttribArray(0); //coordinates
-    //3 coordinates of the vertex
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
-    m_vboSphere.release();
-    m_vaoSphere.release();
 
     //------for the edges------//
     m_vaoEdges.bind();
@@ -185,20 +171,6 @@ void GLView::initShaders() {
 }
 
 void GLView::initShadersView() {
-    //init shader for sphere
-    m_programSphere = new QOpenGLShaderProgram();
-    m_programSphere->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/sphere/vs.glsl");
-    m_programSphere->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/sphere/fs.glsl");
-    m_programSphere->bindAttributeLocation("vertex", 0);
-    m_programSphere->link();
-
-    //get locations of uniforms
-    m_programSphere->bind();
-    m_projMatrixLocSphere = m_programSphere->uniformLocation("projMatrix");
-    m_mvMatrixLocSphere = m_programSphere->uniformLocation("mvMatrix");
-    m_lightPosLocSphere = m_programSphere->uniformLocation("lightPos");
-    m_cameraPosLocSphere = m_programSphere->uniformLocation("cameraPosition");
-
     //init shader for circles
     m_programCircles = new QOpenGLShaderProgram();
     m_programCircles->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/circles/vs.glsl");
@@ -369,7 +341,6 @@ void GLView::initializeGL() {
 
     //for compatibility
     m_vaoFaces.create();
-    m_vaoSphere.create();
     m_vaoEdges.create();
     m_vaoCircles.create();
     m_vaoCirclesDual.create();
@@ -377,7 +348,6 @@ void GLView::initializeGL() {
     m_vaoDebugLine.create();
 
     m_vboFaces.create();
-    m_vboSphere.create();
     m_vboEdges.create();
     m_vboCircles.create();
     m_vboCirclesDual.create();
@@ -392,7 +362,13 @@ void GLView::initializeGL() {
     //memory allocation
     this->initBuffers();
 
-    m_skyBox.init();
+    for (BatchGraphicsItem* item: m_items) {
+        item->init();
+    }
+
+    for (BatchGraphicsItem* item: m_items) {
+        item->update();
+    }
 
     //update the view
     this->update();
@@ -400,13 +376,15 @@ void GLView::initializeGL() {
 
 void GLView::paintGL() {
     if (m_uniformsDirty) {
-        //set values for uniforms
-        m_programSphere->bind();
-        m_programSphere->setUniformValue(m_projMatrixLocSphere, m_proj);
-        m_programSphere->setUniformValue(m_mvMatrixLocSphere, m_camera.getViewMatrix());
-        m_programSphere->setUniformValue(m_cameraPosLocSphere, m_camera.getEye());
-        m_programSphere->setUniformValue(m_lightPosLocSphere, m_camera.getEye());
-        m_programSphere->release();
+        for (BatchGraphicsItem* item: m_items) {
+            item->setProjection(m_proj);
+        }
+        for (BatchGraphicsItem* item: m_items) {
+            item->setCamera(m_camera);
+        }
+        for (BatchGraphicsItem* item: m_items) {
+            item->setLight(m_camera.getEye());
+        }
 
         m_programFaces->bind();
         m_programFaces->setUniformValue(m_projMatrixLoc, m_proj);
@@ -472,12 +450,6 @@ void GLView::paintGL() {
         m_camera.dezoom(0.001f);
         m_camera.dezoom(0.001f);
 
-        QMatrix4x4 view = m_camera.getViewMatrix();
-        //remove translation part, set only rotation part of the camera
-        view.setColumn(3, { 0, 0, 0, 1 });
-        m_skyBox.setUniform(Location::Projection, m_proj);
-        m_skyBox.setUniform(Location::View, view);
-
         m_uniformsDirty = false;
     }
 
@@ -508,19 +480,15 @@ void GLView::paintGL() {
     //clear buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //draw sky box
-    m_skyBox.render();
+    for (BatchGraphicsItem* item: m_items) {
+        item->render();
+    }
 
     //draw faces
     m_programFaces->bind();
     m_vaoFaces.bind();
     glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountFace());
     m_programFaces->release();
-
-    m_programSphere->bind();
-    m_vaoSphere.bind();
-    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountSphere());
-    m_programSphere->release();
 
     //draw circles
     m_programCircles->bind();
@@ -705,11 +673,8 @@ void GLView::clickFaceManagement() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //draw sphere only in depth buffer
-    m_programSphere->bind();
     glColorMask(false, false, false, false);
-    m_vaoSphere.bind();
-    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountSphere());
-    m_programSphere->release();
+    //m_sphere.render();
     glColorMask(true, true, true, true);
 
     //draw faces using the picking shader
@@ -763,10 +728,7 @@ void GLView::clickEdgeManagement() {
     m_programFaces->release();
 
     //draw sphere only in depth buffer
-    m_programSphere->bind();
-    m_vaoSphere.bind();
-    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountSphere());
-    m_programSphere->release();
+    //m_sphere.render();
     glColorMask(true, true, true, true);
 
     //draw edges
@@ -833,10 +795,7 @@ void GLView::clickVertexManagement() {
     glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountFace());
     m_programFaces->release();
 
-    m_programSphere->bind();
-    m_vaoSphere.bind();
-    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountSphere());
-    m_programSphere->release();
+    //m_sphere.render();
     glColorMask(true, true, true, true);
 
     //draw vertices
@@ -890,7 +849,7 @@ void GLView::clickVertexManagement() {
 }
 
 void GLView::clickCircleManagement() {
-    //black background
+    /*//black background
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     //no multisample
@@ -908,10 +867,7 @@ void GLView::clickCircleManagement() {
     m_programFaces->release();
 
     //draw sphere only in depth buffer
-    m_programSphere->bind();
-    m_vaoSphere.bind();
-    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountSphere());
-    m_programSphere->release();
+    m_sphere.render();
     glColorMask(true, true, true, true);
 
     //draw circles
@@ -957,7 +913,7 @@ void GLView::clickCircleManagement() {
     glClearColor(m_clearColor.x(), m_clearColor.y(), m_clearColor.z(), 1.0f);
 
     //enable multisample
-    glEnable(GL_MULTISAMPLE);
+    glEnable(GL_MULTISAMPLE);*/
 }
 
 void GLView::animationCameraStep() {
@@ -978,7 +934,6 @@ void GLView::animationCameraStep() {
 
 void GLView::updateData() {
     this->updateDataFaces();
-    this->updateDataSphere();
     this->updateDataEdges();
     this->updateDataCircles();
     this->updateDataCirclesDual();
@@ -990,12 +945,6 @@ void GLView::updateDataFaces() {
     m_vboFaces.bind();
     m_vboFaces.allocate(m_model->constDataFace(), m_model->countFace() * static_cast<int>(sizeof(GLfloat)));
     m_vboFaces.release();
-}
-
-void GLView::updateDataSphere() {
-    m_vboSphere.bind();
-    m_vboSphere.allocate(m_model->constDataSphere(), m_model->countSphere() * static_cast<int>(sizeof(GLfloat)));
-    m_vboSphere.release();
 }
 
 void GLView::updateDataEdges() {
@@ -1340,6 +1289,22 @@ void GLView::removeSelectedVertex() {
     this->update();
 }
 
-void GLView::setSkyBox(SkyBoxType type) {
-    m_skyBox.setSkyBox(type);
+void GLView::clearScene() {
+    m_items.clear();
+}
+
+void GLView::addItem(BatchGraphicsItem* item) {
+    m_items.push_back(item);
+}
+
+void GLView::removeItem(BatchGraphicsItem* item) {
+    auto it = std::find(m_items.begin(), m_items.end(), item);
+    if (it != m_items.end()) {
+        m_items.erase(it);
+    }
+}
+
+bool GLView::containsItem(BatchGraphicsItem* item) {
+    if(m_items.empty()) return false;
+    return std::find(m_items.begin(), m_items.end(), item) != m_items.end();
 }

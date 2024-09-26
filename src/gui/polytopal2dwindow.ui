@@ -782,6 +782,9 @@
         </item>
         <item row="4" column="0">
          <widget class="QComboBox" name="comboBox_skybox">
+          <property name="currentIndex">
+           <number>2</number>
+          </property>
           <item>
            <property name="text">
             <string>No Skybox</string>

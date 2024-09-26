@@ -6,11 +6,9 @@
 #include "halfedge/vertex.h"
 #include "polytopal/circle.h"
 #include <QMatrix4x4>
-#include <iostream>
 
 void Model::updateData() {
     this->updateDataFaces();
-    this->updateDataSphere();
     this->updateDataEdges();
     this->updateDataCircles();
     this->updateDataCirclesDual();
@@ -41,26 +39,6 @@ void Model::updateDataFaces() {
         //going to the next face
         //we increment the ID
         ID++;
-    }
-}
-
-void Model::updateDataSphere() {
-    m_countSphere = 0;
-    m_dataSphere.clear();
-
-    if (m_sphereMesh == nullptr) { return; }
-    //we add data using triangles
-    qsizetype nbTriangle = Model::findNbOfTriangle(m_sphereMesh);
-
-    //for each triangleSphere, there are 3 vertices
-    qsizetype nbOfAdd = 3 * nbTriangle;
-
-    //we resize the data for rapidity
-    m_dataSphere.resize(nbOfAdd * 6);
-
-    //add each face
-    for (he::Face* f: m_sphereMesh->faces()) {
-        this->addFaceSphere(f);
     }
 }
 
@@ -169,7 +147,8 @@ void Model::updateDataVertices() {
     m_dataVertices.clear();
 
     //the number of vertices plus the projection point of the sphere mesh
-    qsizetype nbOfVertices = (m_mesh != nullptr ? static_cast<qsizetype>(m_mesh->vertices().size()) : 0) + (m_sphereMesh == nullptr ? 0 : 1);
+    //qsizetype nbOfVertices = (m_mesh != nullptr ? static_cast<qsizetype>(m_mesh->vertices().size()) : 0) + (m_sphereMesh == nullptr ? 0 : 1);
+    qsizetype nbOfVertices = (m_mesh != nullptr ? static_cast<qsizetype>(m_mesh->vertices().size()) : 0);
 
     //if no vertices, no need to compute the rest
     if (nbOfVertices == 0) { return; }
@@ -192,10 +171,10 @@ void Model::updateDataVertices() {
         }
     }
 
-    if (m_sphereMesh != nullptr) {
-        //display projection point
-        this->addVertex({ 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, 0.0f, -1.0f);
-    }
+//    if (m_sphereMesh != nullptr) {
+//        //display projection point
+//        this->addVertex({ 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, 0.0f, -1.0f);
+//    }
 }
 
 void Model::addVertexFace(const QVector3D& v, const QVector3D& n, float ID, float isSelected) {
@@ -215,17 +194,6 @@ void Model::addVertexFace(const QVector3D& v, const QVector3D& n, float ID, floa
     *p = isSelected;
     //we update the amount of data
     m_countFace += 8;
-}
-
-void Model::addVertexSphere(const QVector3D& v) {
-    //add to the end of the data already added
-    float* p = m_dataSphere.data() + m_countSphere;
-    //the coordinates of the vertex
-    *p++ = v.x();
-    *p++ = v.y();
-    *p++ = v.z();
-    //we update the amount of data
-    m_countSphere += 3;
 }
 
 void Model::addVertexEdge(QVector3D const& v, QVector3D const& color, float ID, float isSelected) {
@@ -430,13 +398,6 @@ void Model::addFace(he::Face* f, int ID) {
     }
 }
 
-void Model::setSphereMesh(he::Mesh* mesh) {
-    m_sphereMesh = mesh;
-    this->updateDataSphere();
-    //for projection point
-    this->updateDataVertices();
-}
-
 void Model::addCircle(poly::Circle const& circle) {
     m_circles.push_back(circle);
 }
@@ -459,43 +420,6 @@ qsizetype Model::findNbOfSegmentsCircles() const {
 
 qsizetype Model::findNbOfSegmentsCirclesDual() const {
     return 90 * m_circlesDual.size();
-}
-
-he::Mesh* Model::sphereMesh() const {
-    return m_sphereMesh;
-}
-
-void Model::triangleSphere(const QVector3D& pos1, const QVector3D& pos2, const QVector3D& pos3) {
-    //add the vertices to the data
-    this->addVertexSphere(pos1);
-    this->addVertexSphere(pos2);
-    this->addVertexSphere(pos3);
-}
-
-void Model::addFaceSphere(he::Face* f) {
-    //we compute the number of halfedges
-    he::HalfEdge* he = f->halfEdge();
-    he::HalfEdge* temp = f->halfEdge()->next();
-    int nbHe = 1;
-
-    while (temp != he) {
-        temp = temp->next();
-        nbHe++;
-    }
-
-    //we set the origin of the triangles
-    QVector3D pos1 = he->origin()->pos();
-
-    //then we can triangulate the face
-    //using the origin and the other vertices
-    for (int i = 0; i < nbHe - 2; i++) {
-        QVector3D pos2 = he->next()->origin()->pos();
-        QVector3D pos3 = he->next()->next()->origin()->pos();
-
-        this->triangleSphere(pos1, pos2, pos3);
-
-        he = he->next();
-    }
 }
 
 void Model::transformMesh(QMatrix4x4 const& transform) {
@@ -559,6 +483,3 @@ void Model::clearDebugLine() {
 he::Mesh* Model::mesh() {
     return m_mesh;
 }
-
-
-

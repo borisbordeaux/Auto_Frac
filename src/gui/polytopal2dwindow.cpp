@@ -20,8 +20,8 @@
 #include "utils/utils.h"
 
 Polytopal2DWindow::Polytopal2DWindow(QWidget* parent) :
-        QWidget(parent), ui(new Ui::Polytopal2DWindow), m_statusBar(new QStatusBar(this)), m_openedMesh(false),
-        m_inversionLevel(0), m_circlesIndex(0) {
+        QWidget(parent), ui(new Ui::Polytopal2DWindow), m_statusBar(new QStatusBar(this)), m_sphere(), m_skybox(),
+        m_openedMesh(false), m_inversionLevel(0), m_circlesIndex(0) {
     ui->setupUi(this);
 
     this->updateEnablementPoly();
@@ -39,9 +39,11 @@ Polytopal2DWindow::Polytopal2DWindow(QWidget* parent) :
     connect(&m_timerAnimInversion, &QTimer::timeout, this, &Polytopal2DWindow::animInversionStep);
 
     he::reader::readOBJ("../obj/unit_sphere.obj", m_sphereMesh);
-    m_modelMesh.setSphereMesh(&m_sphereMesh);
-    m_view->updateDataSphere();
-    m_view->updateDataVertices(); //for projection point
+    m_sphere.setSphereMesh(&m_sphereMesh);
+    //don't forget projection point
+
+    m_view->addItem(&m_skybox); //to init the item
+    m_view->addItem(&m_sphere);
 
     m_progressBar = new QProgressBar();
     m_progressBar->setRange(0, 100);
@@ -151,13 +153,12 @@ void Polytopal2DWindow::openOBJFile(QString const& file) {
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotDisplayUnitSphereChanged() {
-    if (m_modelMesh.sphereMesh() == nullptr) {
-        m_modelMesh.setSphereMesh(&m_sphereMesh);
+    if (m_sphere.sphereMesh() == nullptr) {
+        m_sphere.setSphereMesh(&m_sphereMesh);
     } else {
-        m_modelMesh.setSphereMesh(nullptr);
+        m_sphere.setSphereMesh(nullptr);
     }
-    m_view->updateDataSphere();
-    m_view->updateDataVertices(); //for projection point
+    //m_view->updateDataVertices(); //for projection point
     m_view->update();
 }
 
@@ -966,15 +967,18 @@ void Polytopal2DWindow::updateUserData() {
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotUpdateSkyBox(int index) {
+    if (m_view == nullptr) { return; }
     switch (index) {
         case 1:
-            m_view->setSkyBox(SkyBoxType::SkyBox1);
+            if (!m_view->containsItem(&m_skybox)) { m_view->addItem(&m_skybox); }
+            m_skybox.setSkyBox(SkyBoxType::SkyBox1);
             break;
         case 2:
-            m_view->setSkyBox(SkyBoxType::SkyBox2);
+            if (!m_view->containsItem(&m_skybox)) { m_view->addItem(&m_skybox); }
+            m_skybox.setSkyBox(SkyBoxType::SkyBox2);
             break;
         default:
-            m_view->setSkyBox(SkyBoxType::None);
+            if (m_view->containsItem(&m_skybox)) { m_view->removeItem(&m_skybox); }
             break;
     }
     m_view->update();
