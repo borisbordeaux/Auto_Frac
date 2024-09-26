@@ -12,8 +12,6 @@ void Sphere::init() {
 
     m_vao.bind();
     m_vbo.bind();
-    //allocate necessary memory
-    //m_vboSphere.allocate(this->constDataSphere(), this->countSphere() * static_cast<int>(sizeof(GLfloat)));
 
     //enable enough attrib array for all the data of the mesh's vertices
     glEnableVertexAttribArray(0); //coordinates
@@ -60,13 +58,13 @@ void Sphere::update() {
     m_vbo.release();
 }
 
-void Sphere::render(bool picking) {
-    if (picking) { glColorMask(false, false, false, false); }
+void Sphere::render(PickingType type) {
+    if (type != PickingType::PickingNone) { glColorMask(false, false, false, false); }
     m_program.bind();
     m_vao.bind();
     glDrawArrays(GL_TRIANGLES, 0, m_count / m_floatsPerVertex);
     m_program.release();
-    if (picking) { glColorMask(true, true, true, true); }
+    if (type != PickingType::PickingNone) { glColorMask(true, true, true, true); }
 }
 
 void Sphere::setProjection(QMatrix4x4 matrix) {

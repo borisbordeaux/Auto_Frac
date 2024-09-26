@@ -8,14 +8,8 @@
 #include <QtOpenGLWidgets/QOpenGLWidget>
 #include <QTimer>
 #include "gui/camera.h"
-#include "batchgraphicsitem.h"
-
-enum class PickingType {
-    PickingFace,
-    PickingEdge,
-    PickingVertex,
-    PickingCircle
-};
+#include "gui/batchgraphicsitem.h"
+#include "gui/pickingtype.h"
 
 class QOpenGLShaderProgram;
 
@@ -42,12 +36,10 @@ public:
     void initBuffers();
 
     void updateData();
-    void updateDataFaces();
     void updateDataEdges();
     void updateDataCircles();
     void updateDataCirclesDual();
     void updateDataVertices();
-    void updateDataDebugLine();
 
     void setPickingType(PickingType type);
 
@@ -115,20 +107,14 @@ private:
 
     //OpenGL stuff for rendering
     QVector3D m_clearColor = { 0.3f, 0.3f, 0.3f };
-    QOpenGLVertexArrayObject m_vaoFaces;
     QOpenGLVertexArrayObject m_vaoEdges;
     QOpenGLVertexArrayObject m_vaoCircles;
     QOpenGLVertexArrayObject m_vaoCirclesDual;
     QOpenGLVertexArrayObject m_vaoVertices;
-    QOpenGLVertexArrayObject m_vaoDebugLine;
-    QOpenGLBuffer m_vboFaces;
     QOpenGLBuffer m_vboEdges;
     QOpenGLBuffer m_vboCircles;
     QOpenGLBuffer m_vboCirclesDual;
     QOpenGLBuffer m_vboVertices;
-    QOpenGLBuffer m_vboDebugLine;
-    QOpenGLShaderProgram* m_programFaces = nullptr;
-    QOpenGLShaderProgram* m_programFacesPicking = nullptr;
     QOpenGLShaderProgram* m_programEdges = nullptr;
     QOpenGLShaderProgram* m_programEdgesPicking = nullptr;
     QOpenGLShaderProgram* m_programVertices = nullptr;
@@ -136,16 +122,6 @@ private:
     QOpenGLShaderProgram* m_programCircles = nullptr;
     QOpenGLShaderProgram* m_programCirclesPicking = nullptr;
     QOpenGLShaderProgram* m_programCirclesDual = nullptr;
-    QOpenGLShaderProgram* m_programDebugLine = nullptr;
-
-    //Faces viewing
-    int m_projMatrixLoc = 0;
-    int m_mvMatrixLoc = 0;
-    int m_lightPosLoc = 0;
-    int m_cameraPosLoc = 0;
-    //Faces picking
-    int m_projMatrixPickingLoc = 0;
-    int m_mvMatrixPickingLoc = 0;
 
     //Edges viewing
     int m_projMatrixLocEdge = 0;
@@ -173,10 +149,6 @@ private:
     //Circles dual viewing
     int m_projMatrixLocCircleDual = 0;
     int m_mvMatrixLocCircleDual = 0;
-
-    //debug line viewing
-    int m_projMatrixLocDebugLine = 0;
-    int m_mvMatrixLocDebugLine = 0;
 
     //flag to update uniforms if needed
     bool m_uniformsDirty = true;

@@ -25,8 +25,6 @@ public:
     Model() = default;
 
     //constant data to be thrown to the GPU
-    const float* constDataFace() const { return m_dataFace.constData(); }
-
     const float* constDataEdge() const { return m_dataEdge.constData(); }
 
     const float* constDataCircles() const { return m_dataCircles.constData(); }
@@ -35,11 +33,7 @@ public:
 
     const float* constDataVertices() const { return m_dataVertices.constData(); }
 
-    const float* constDataDebugLine() const { return m_dataDebugLine.constData(); }
-
     //the number of floats of vertices (in GPU POV)
-    int countFace() const { return m_countFace; }
-
     int countEdge() const { return m_countEdge; }
 
     int countCircles() const { return m_countCircle; }
@@ -48,11 +42,7 @@ public:
 
     int countVertices() const { return m_countVertices; }
 
-    int countDebugLine() const { return m_countDebugLine; }
-
     //the number of vertices (in GPU POV)
-    int vertexCountFace() const { return m_countFace / 8; }
-
     int vertexCountEdge() const { return m_countEdge / 8; }
 
     int vertexCountCircles() const { return m_countCircle / 8; }
@@ -61,18 +51,12 @@ public:
 
     int vertexCountVertices() const { return m_countVertices / 8; }
 
-    int vertexCountDebugLine() const { return m_countDebugLine / 3; }
-
     /**
      * @brief update all data that has to be displayed.
      * Calls all specific update data functions.
      */
     void updateData();
 
-    /**
-     * @brief update specific data based on the mesh
-     */
-    void updateDataFaces();
     void updateDataEdges();
     void updateDataCircles();
     void updateDataCirclesDual();
@@ -90,16 +74,13 @@ public:
     void resetCircles();
     void resetCirclesDual();
 
-    void setSelectedFace(int faceIndex);
-
     void setSelectedVertex(int vertexIndex);
+
     void setSelectedVertex2(int vertexIndex);
 
     void setSelectedEdge(int edgeIndex);
 
     void setSelectedCircle(int circleIndex);
-
-    he::Face* selectedFace();
 
     he::HalfEdge* selectedEdge();
 
@@ -113,17 +94,9 @@ public:
 
     QVector<poly::Circle> const& circles() const;
 
-    void addDebugLine(QVector3D const& v1, QVector3D const& v2);
-    void clearDebugLine();
-
     he::Mesh* mesh();
 
 private:
-
-    void addFace(he::Face* f, int ID);
-
-    void addVertexFace(QVector3D const& v, QVector3D const& n, float ID, float isSelected);
-
     void addVertexEdge(QVector3D const& v, QVector3D const& color, float ID, float isSelected);
 
     void addVertexCircle(QVector3D const& v, QVector3D const& color, float ID, float isSelected);
@@ -132,29 +105,21 @@ private:
 
     void addVertex(QVector3D const& v, QVector3D const& color, float ID, float isSelected);
 
-    void triangle(QVector3D const& pos1, QVector3D const& pos2, QVector3D const& pos3, float ID, float isSelected);
-
-    static qsizetype findNbOfTriangle(he::Mesh* mesh);
-
     qsizetype findNbOfSegmentsCircles() const;
     qsizetype findNbOfSegmentsCirclesDual() const;
 
 private:
     //the data of this model
-    QVector<float> m_dataFace;
     QVector<float> m_dataEdge;
     QVector<float> m_dataCircles;
     QVector<float> m_dataCirclesDual;
     QVector<float> m_dataVertices;
-    QVector<float> m_dataDebugLine;
 
     //the amount of data
-    int m_countFace = 0;
     int m_countEdge = 0;
     int m_countCircle = 0;
     int m_countCircleDual = 0;
     int m_countVertices = 0;
-    int m_countDebugLine = 0;
 
     //the mesh the model is based on
     he::Mesh* m_mesh = nullptr;
@@ -163,7 +128,6 @@ private:
     QVector<poly::Circle> m_circlesDual;
 
     //the index of the selected face
-    int m_selectedFace = 0;
     int m_selectedVertex = 0;
     int m_selectedVertex2 = 0;
     int m_selectedEdge = 0;

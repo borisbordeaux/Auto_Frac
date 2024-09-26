@@ -3,6 +3,7 @@
 
 #include <QOpenGLFunctions>
 #include "gui/camera.h"
+#include "gui/pickingtype.h"
 
 class BatchGraphicsItem : protected QOpenGLFunctions {
 public:
@@ -14,7 +15,9 @@ public:
 
     virtual void update() {}
 
-    virtual void render(bool /*picking*/ = false) {}
+    virtual void updateData() {}
+
+    virtual void render(PickingType /*type*/ = PickingType::PickingNone) {}
 
     virtual void setProjection(QMatrix4x4 /*projection*/) {}
 

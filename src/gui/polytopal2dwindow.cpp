@@ -44,6 +44,8 @@ Polytopal2DWindow::Polytopal2DWindow(QWidget* parent) :
 
     m_view->addItem(&m_skybox); //to init the item
     m_view->addItem(&m_sphere);
+    m_view->addItem(&m_debugLine);
+    m_view->addItem(&m_batchFace);
 
     m_progressBar = new QProgressBar();
     m_progressBar->setRange(0, 100);
@@ -79,7 +81,8 @@ void Polytopal2DWindow::openOBJFile(QString const& file) {
         m_modelMesh.resetCircles();
         m_modelMesh.resetCirclesDual();
         m_modelMesh.setMesh(&m_mesh);
-        m_modelMesh.clearDebugLine();
+        m_batchFace.setMesh(&m_mesh);
+        m_debugLine.clearDebugLine();
         m_view->updateData();
         m_view->update();
         m_openedMesh = true;
@@ -105,8 +108,9 @@ void Polytopal2DWindow::openOBJFile(QString const& file) {
         he::reader::readOBJ(file, m_mesh);
         m_modelMesh.resetCircles();
         m_modelMesh.resetCirclesDual();
-        m_modelMesh.clearDebugLine();
+        m_debugLine.clearDebugLine();
         m_modelMesh.setMesh(&m_mesh);
+        m_batchFace.setMesh(&m_mesh);
         m_view->updateData();
         m_view->update();
         m_openedMesh = true;
@@ -132,12 +136,12 @@ void Polytopal2DWindow::openOBJFile(QString const& file) {
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotExportSelectedFace() {
-    if (m_modelMesh.selectedFace() == nullptr) {
+    if (m_batchFace.selectedFace() == nullptr) {
         this->setInfo("[Error] You must select one face");
         return;
     }
 
-    poly::Structure structure { m_mesh, m_modelMesh.selectedFace() };
+    poly::Structure structure { m_mesh, m_batchFace.selectedFace() };
 
     std::ostringstream info;
 
@@ -153,10 +157,10 @@ void Polytopal2DWindow::openOBJFile(QString const& file) {
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotDisplayUnitSphereChanged() {
-    if (m_sphere.sphereMesh() == nullptr) {
-        m_sphere.setSphereMesh(&m_sphereMesh);
+    if (m_view->containsItem(&m_sphere)) {
+        m_view->removeItem(&m_sphere);
     } else {
-        m_sphere.setSphereMesh(nullptr);
+        m_view->addItem(&m_sphere);
     }
     //m_view->updateDataVertices(); //for projection point
     m_view->update();
@@ -217,10 +221,10 @@ void Polytopal2DWindow::canonicalizeStep() {
         slotDisplayDualAreaCircles();
     }
 
-    m_modelMesh.updateDataFaces();
+    m_batchFace.setMesh(&m_mesh);
     m_modelMesh.updateDataEdges();
     m_modelMesh.updateDataVertices();
-    m_view->updateDataFaces();
+    this->updateDataFaces();
     m_view->updateDataEdges();
     m_view->updateDataVertices();
     m_view->update();
@@ -280,10 +284,13 @@ void Polytopal2DWindow::canonicalizeStep() {
 [[maybe_unused]] void Polytopal2DWindow::slotDisplayMeshClicked() {
     if (this->ui->checkBox_displayMesh->isChecked()) {
         m_modelMesh.setMesh(&m_mesh);
+        if (!m_view->containsItem(&m_batchFace)) {
+            m_view->addItem(&m_batchFace);
+        }
     } else {
         m_modelMesh.setMesh(nullptr);
+        m_view->removeItem(&m_batchFace);
     }
-    m_view->updateDataFaces();
     m_view->updateDataEdges();
     m_view->updateDataVertices();
     m_view->update();
@@ -633,6 +640,7 @@ void Polytopal2DWindow::updateEnablementPoly() {
     m_modelMesh.resetCircles();
     m_modelMesh.resetCirclesDual();
     m_modelMesh.setMesh(&m_mesh);
+    m_batchFace.updateData();
     m_view->updateData();
     m_view->update();
     m_openedMesh = true;
@@ -654,6 +662,7 @@ void Polytopal2DWindow::updateEnablementPoly() {
     m_modelMesh.resetCircles();
     m_modelMesh.resetCirclesDual();
     m_modelMesh.setMesh(&m_mesh);
+    m_batchFace.updateData();
     m_view->updateData();
     m_view->update();
     m_openedMesh = true;
@@ -675,6 +684,7 @@ void Polytopal2DWindow::updateEnablementPoly() {
     m_modelMesh.resetCircles();
     m_modelMesh.resetCirclesDual();
     m_modelMesh.setMesh(&m_mesh);
+    m_batchFace.updateData();
     m_view->updateData();
     m_view->update();
     m_openedMesh = true;
@@ -703,8 +713,8 @@ void Polytopal2DWindow::updateEnablementPoly() {
 [[maybe_unused]] void Polytopal2DWindow::slotChangeUserData() {
     switch (m_view->pickingType()) {
         case PickingType::PickingFace:
-            if (m_modelMesh.selectedFace() != nullptr) {
-                m_modelMesh.selectedFace()->setUserData(this->ui->lineEdit_userData->text());
+            if (m_batchFace.selectedFace() != nullptr) {
+                m_batchFace.selectedFace()->setUserData(this->ui->lineEdit_userData->text());
             }
             break;
         case PickingType::PickingEdge:
@@ -726,9 +736,9 @@ void Polytopal2DWindow::updateEnablementPoly() {
 void Polytopal2DWindow::updateUserData() {
     switch (m_view->pickingType()) {
         case PickingType::PickingFace:
-            if (m_modelMesh.selectedFace() != nullptr) {
-                this->ui->lineEdit_userData->setText(m_modelMesh.selectedFace()->userData());
-                qDebug() << m_modelMesh.selectedFace()->toString();
+            if (m_batchFace.selectedFace() != nullptr) {
+                this->ui->lineEdit_userData->setText(m_batchFace.selectedFace()->userData());
+                qDebug() << m_batchFace.selectedFace()->toString();
                 qDebug() << "----------------";
             }
             break;
@@ -754,6 +764,8 @@ void Polytopal2DWindow::updateUserData() {
                 qDebug() << "Radius: " << m_modelMesh.selectedCircle()->radius();
                 qDebug() << "----------------";
             }
+            break;
+        default:
             break;
     }
 }
@@ -828,7 +840,7 @@ void Polytopal2DWindow::updateUserData() {
     // we need to set only next on all halfedges and one halfedge per face
     // if we only need to export the mesh in OBJ
 
-    m_modelMesh.clearDebugLine();
+    m_debugLine.clearDebugLine();
     //at first, store clockwise ordered halfedges for each vertex
     //with a special case for a circle that contains all others
     std::vector<std::vector<he::HalfEdge*>> orderedHalfEdgesOfVertex;
@@ -849,13 +861,13 @@ void Polytopal2DWindow::updateUserData() {
             QVector3D from2 = he2->origin()->pos();
             float angle1 = std::atan2(to1.y() - from1.y(), to1.x() - from1.x());
             float angle2 = std::atan2(to2.y() - from2.y(), to2.x() - from2.x());
-            m_modelMesh.addDebugLine(from1, to1);
-            m_modelMesh.addDebugLine(from2, to2);
+            m_debugLine.addDebugLine(from1, to1);
+            m_debugLine.addDebugLine(from2, to2);
             return angle1 > angle2;
         });
         orderedHalfEdgesOfVertex.emplace_back(halfedges);
     }
-    m_view->updateDataDebugLine();
+    m_debugLine.update();
     m_view->update();
 
     for (poly::Circle& c: circles) {
@@ -982,4 +994,20 @@ void Polytopal2DWindow::updateUserData() {
             break;
     }
     m_view->update();
+}
+
+void Polytopal2DWindow::updateDataFaces() {
+    m_batchFace.updateData();
+}
+
+he::Face* Polytopal2DWindow::selectedFace() {
+    return m_batchFace.selectedFace();
+}
+
+void Polytopal2DWindow::setSelectedFace(int faceIndex) {
+    m_batchFace.setSelectedFace(faceIndex);
+}
+
+void Polytopal2DWindow::updateFaces() {
+    m_batchFace.update();
 }

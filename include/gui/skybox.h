@@ -14,7 +14,7 @@ enum class SkyBoxType {
 class SkyBox : public BatchGraphicsItem {
 public:
     void init() override;
-    void render(bool picking) override;
+    void render(PickingType type) override;
 
     void setProjection(QMatrix4x4 projection) override;
     void setCamera(Camera camera) override;
@@ -26,8 +26,8 @@ public:
 private:
     unsigned int m_textureID = 0;
 
-    int m_projMatrixLocSkyBox = 0;
-    int m_viewMatrixLocSkyBox = 0;
+    int m_projMatrixLoc = 0;
+    int m_viewMatrixLoc = 0;
 
     QOpenGLVertexArrayObject m_vao;
     QOpenGLBuffer m_vbo;

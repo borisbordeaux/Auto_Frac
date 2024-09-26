@@ -20,15 +20,6 @@ GLView::GLView(Model* model, Polytopal2DWindow* parent) :
 }
 
 GLView::~GLView() {
-    //destroy the programs
-    if (m_programFaces != nullptr) {
-        makeCurrent();
-        m_vboFaces.destroy();
-        delete m_programFaces;
-        m_programFaces = nullptr;
-        doneCurrent();
-    }
-
     if (m_programEdgesPicking != nullptr) {
         makeCurrent();
         m_vboEdges.destroy();
@@ -47,28 +38,6 @@ GLView::~GLView() {
 }
 
 void GLView::initBuffers() {
-    //------for the faces------//
-    m_vaoFaces.bind();
-    m_vboFaces.bind();
-    //allocate necessary memory
-    m_vboFaces.allocate(m_model->constDataFace(), m_model->countFace() * static_cast<int>(sizeof(GLfloat)));
-
-    //enable enough attrib array for all the data of the mesh's vertices
-    glEnableVertexAttribArray(0); //coordinates
-    glEnableVertexAttribArray(1); //normal
-    glEnableVertexAttribArray(2); //ID for picking
-    glEnableVertexAttribArray(3); //is selected
-    //3 coordinates of the vertex
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), nullptr);
-    //3 coordinates of the vertex's normal
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
-    //the ID
-    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(6 * sizeof(GLfloat)));
-    //whether it's selected or not, to simplify the code, a negative value means not selected while a positive value means selected
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(7 * sizeof(GLfloat)));
-    m_vboFaces.release();
-    m_vaoFaces.release();
-
     //------for the edges------//
     m_vaoEdges.bind();
     m_vboEdges.bind();
@@ -150,19 +119,6 @@ void GLView::initBuffers() {
     glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(7 * sizeof(GLfloat)));
     m_vboVertices.release();
     m_vaoVertices.release();
-
-    //------for debug lines------//
-    m_vaoDebugLine.bind();
-    m_vboDebugLine.bind();
-    //allocate necessary memory
-    m_vboDebugLine.allocate(m_model->constDataDebugLine(), m_model->countDebugLine() * static_cast<int>(sizeof(GLfloat)));
-
-    //enable enough attrib array for all the data of the debug lines vertices
-    glEnableVertexAttribArray(0); //coordinates
-    //3 coordinates of the vertex
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
-    m_vboDebugLine.release();
-    m_vaoDebugLine.release();
 }
 
 void GLView::initShaders() {
@@ -199,23 +155,6 @@ void GLView::initShadersView() {
     m_projMatrixLocCircleDual = m_programCirclesDual->uniformLocation("projMatrix");
     m_mvMatrixLocCircleDual = m_programCirclesDual->uniformLocation("mvMatrix");
 
-    //init shader for faces
-    m_programFaces = new QOpenGLShaderProgram();
-    m_programFaces->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/faces/vs.glsl");
-    m_programFaces->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/faces/fs.glsl");
-    m_programFaces->bindAttributeLocation("vertex", 0);
-    m_programFaces->bindAttributeLocation("normal", 1);
-    m_programFaces->bindAttributeLocation("ID", 2);
-    m_programFaces->bindAttributeLocation("isSelected", 3);
-    m_programFaces->link();
-
-    //get locations of uniforms
-    m_programFaces->bind();
-    m_projMatrixLoc = m_programFaces->uniformLocation("projMatrix");
-    m_mvMatrixLoc = m_programFaces->uniformLocation("mvMatrix");
-    m_lightPosLoc = m_programFaces->uniformLocation("lightPos");
-    m_cameraPosLoc = m_programFaces->uniformLocation("cameraPosition");
-
     //init shader for lines
     m_programEdges = new QOpenGLShaderProgram();
     m_programEdges->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/edges/vs.glsl");
@@ -245,36 +184,9 @@ void GLView::initShadersView() {
     m_programVertices->bind();
     m_projMatrixLocVertices = m_programVertices->uniformLocation("projMatrix");
     m_mvMatrixLocVertices = m_programVertices->uniformLocation("mvMatrix");
-
-    //init shader for debug line
-    m_programDebugLine = new QOpenGLShaderProgram();
-    m_programDebugLine->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/debugline/vs.glsl");
-    m_programDebugLine->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/debugline/fs.glsl");
-    m_programDebugLine->bindAttributeLocation("vertex", 0);
-    m_programDebugLine->link();
-
-    //get location of uniforms
-    m_programDebugLine->bind();
-    m_projMatrixLocDebugLine = m_programDebugLine->uniformLocation("projMatrix");
-    m_mvMatrixLocDebugLine = m_programDebugLine->uniformLocation("mvMatrix");
 }
 
 void GLView::initShadersPicking() {
-    //init shader for faces
-    m_programFacesPicking = new QOpenGLShaderProgram();
-    m_programFacesPicking->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/faces/picking/vs.glsl");
-    m_programFacesPicking->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/faces/picking/fs.glsl");
-    m_programFacesPicking->bindAttributeLocation("vertex", 0);
-    m_programFacesPicking->bindAttributeLocation("normal", 1);
-    m_programFacesPicking->bindAttributeLocation("ID", 2);
-    m_programFacesPicking->bindAttributeLocation("isSelected", 3);
-    m_programFacesPicking->link();
-
-    //get locations of uniforms
-    m_programFacesPicking->bind();
-    m_projMatrixPickingLoc = m_programFacesPicking->uniformLocation("projMatrix");
-    m_mvMatrixPickingLoc = m_programFacesPicking->uniformLocation("mvMatrix");
-
     //init shader for lines picking
     m_programEdgesPicking = new QOpenGLShaderProgram();
     m_programEdgesPicking->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/edges/picking/vs.glsl");
@@ -340,19 +252,15 @@ void GLView::initializeGL() {
     qDebug() << "GLSL version : " << val;
 
     //for compatibility
-    m_vaoFaces.create();
     m_vaoEdges.create();
     m_vaoCircles.create();
     m_vaoCirclesDual.create();
     m_vaoVertices.create();
-    m_vaoDebugLine.create();
 
-    m_vboFaces.create();
     m_vboEdges.create();
     m_vboCircles.create();
     m_vboCirclesDual.create();
     m_vboVertices.create();
-    m_vboDebugLine.create();
 
     //background
     glClearColor(m_clearColor.x(), m_clearColor.y(), m_clearColor.z(), 1.0f);
@@ -378,25 +286,9 @@ void GLView::paintGL() {
     if (m_uniformsDirty) {
         for (BatchGraphicsItem* item: m_items) {
             item->setProjection(m_proj);
-        }
-        for (BatchGraphicsItem* item: m_items) {
             item->setCamera(m_camera);
-        }
-        for (BatchGraphicsItem* item: m_items) {
             item->setLight(m_camera.getEye());
         }
-
-        m_programFaces->bind();
-        m_programFaces->setUniformValue(m_projMatrixLoc, m_proj);
-        m_programFaces->setUniformValue(m_mvMatrixLoc, m_camera.getViewMatrix());
-        m_programFaces->setUniformValue(m_cameraPosLoc, m_camera.getEye());
-        m_programFaces->setUniformValue(m_lightPosLoc, m_camera.getEye());
-        m_programFaces->release();
-
-        m_programFacesPicking->bind();
-        m_programFacesPicking->setUniformValue(m_projMatrixPickingLoc, m_proj);
-        m_programFacesPicking->setUniformValue(m_mvMatrixPickingLoc, m_camera.getViewMatrix());
-        m_programFacesPicking->release();
 
         //to be sure to draw in front of sphere and faces
         m_camera.zoom(0.001f);
@@ -427,11 +319,6 @@ void GLView::paintGL() {
         m_programEdgesPicking->setUniformValue(m_mvMatrixPickingLocEdge, m_camera.getViewMatrix());
         m_programEdgesPicking->setUniformValue(m_invViewportPickingLocEdge, 1.0f / m_viewportWidth, 1.0f / m_viewportHeight);
         m_programEdgesPicking->release();
-
-        m_programDebugLine->bind();
-        m_programDebugLine->setUniformValue(m_projMatrixLocDebugLine, m_proj);
-        m_programDebugLine->setUniformValue(m_mvMatrixLocDebugLine, m_camera.getViewMatrix());
-        m_programDebugLine->release();
 
         //to be sure to draw in front of edges and circles
         m_camera.zoom(0.001f);
@@ -473,6 +360,8 @@ void GLView::paintGL() {
             case PickingType::PickingCircle:
                 clickCircleManagement();
                 break;
+            default:
+                break;
         }
         m_clicked = false;
     }
@@ -483,12 +372,6 @@ void GLView::paintGL() {
     for (BatchGraphicsItem* item: m_items) {
         item->render();
     }
-
-    //draw faces
-    m_programFaces->bind();
-    m_vaoFaces.bind();
-    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountFace());
-    m_programFaces->release();
 
     //draw circles
     m_programCircles->bind();
@@ -513,12 +396,6 @@ void GLView::paintGL() {
     m_vaoVertices.bind();
     glDrawArrays(GL_POINTS, 0, m_model->vertexCountVertices());
     m_programVertices->release();
-
-    //draw debug lines
-    m_programDebugLine->bind();
-    m_vaoDebugLine.bind();
-    glDrawArrays(GL_LINES, 0, m_model->vertexCountDebugLine());
-    m_programDebugLine->release();
 }
 
 void GLView::resizeGL(int w, int h) {
@@ -557,7 +434,7 @@ void GLView::mouseMoveEvent(QMouseEvent* event) {
             m_lastPos = event->pos();
             return;
         }
-        if (m_model->selectedFace() != nullptr) {
+        if (m_mainWindow->selectedFace() != nullptr) {
             this->handleMoveXFace(static_cast<float>(dx));
             m_lastPos = event->pos();
             return;
@@ -574,7 +451,7 @@ void GLView::mouseMoveEvent(QMouseEvent* event) {
             m_lastPos = event->pos();
             return;
         }
-        if (m_model->selectedFace() != nullptr) {
+        if (m_mainWindow->selectedFace() != nullptr) {
             this->handleMoveYFace(static_cast<float>(-dy));
             m_lastPos = event->pos();
             return;
@@ -591,7 +468,7 @@ void GLView::mouseMoveEvent(QMouseEvent* event) {
             m_lastPos = event->pos();
             return;
         }
-        if (m_model->selectedFace() != nullptr) {
+        if (m_mainWindow->selectedFace() != nullptr) {
             this->handleMoveZFace(static_cast<float>(dx - dy) / 2.0f);
             m_lastPos = event->pos();
             return;
@@ -611,6 +488,7 @@ void GLView::mouseMoveEvent(QMouseEvent* event) {
             m_mainWindow->updateCirclesDual();
             m_mainWindow->updateCircles();
             this->updateData();
+            m_mainWindow->updateDataFaces();
         }
         update();
     }
@@ -628,6 +506,7 @@ void GLView::mouseMoveEvent(QMouseEvent* event) {
             m_mainWindow->updateCirclesDual();
             m_mainWindow->updateCircles();
             this->updateData();
+            m_mainWindow->updateDataFaces();
         }
         update();
     }
@@ -673,14 +552,8 @@ void GLView::clickFaceManagement() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     for (BatchGraphicsItem* item: m_items) {
-        item->render(true);
+        item->render(PickingType::PickingFace);
     }
-
-    //draw faces using the picking shader
-    m_programFacesPicking->bind();
-    m_vaoFaces.bind();
-    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountFace());
-    m_programFacesPicking->release();
 
     //get the rendered image of the scene
     QImage image = grabFramebuffer();
@@ -690,16 +563,11 @@ void GLView::clickFaceManagement() {
     QColor color = image.pixelColor(m_clickPos);
 
     //set the selected face using the red color
-    m_model->setSelectedFace(color.red() * 65536 + color.green() * 256 + color.blue());
+    m_mainWindow->setSelectedFace(color.red() * 65536 + color.green() * 256 + color.blue());
+
     m_mainWindow->updateUserData();
-
     //update the data for drawing the selected object in the right color
-    m_model->updateDataFaces();
-
-    //write data to the GPU
-    m_vboFaces.bind();
-    m_vboFaces.write(0, m_model->constDataFace(), m_model->countFace() * static_cast<int>(sizeof(GLfloat)));
-    m_vboFaces.release();
+    m_mainWindow->updateDataFaces();
 
     //reset color
     glClearColor(m_clearColor.x(), m_clearColor.y(), m_clearColor.z(), 1.0f);
@@ -718,17 +586,8 @@ void GLView::clickEdgeManagement() {
     //clear buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //draw only in depth buffer
-    glColorMask(false, false, false, false);
-    //draw faces
-    m_programFaces->bind();
-    m_vaoFaces.bind();
-    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountFace());
-    m_programFaces->release();
-    glColorMask(true, true, true, true);
-
     for (BatchGraphicsItem* item: m_items) {
-        item->render(true);
+        item->render(PickingType::PickingEdge);
     }
 
     //draw edges
@@ -787,18 +646,10 @@ void GLView::clickVertexManagement() {
     //clear buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //draw only in depth buffer
-    glColorMask(false, false, false, false);
-    //faces
-    m_programFaces->bind();
-    m_vaoFaces.bind();
-    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountFace());
-    m_programFaces->release();
-    glColorMask(true, true, true, true);
-
     for (BatchGraphicsItem* item: m_items) {
-        item->render(true);
+        item->render(PickingType::PickingVertex);
     }
+
 
     //draw vertices
     m_programVerticesPicking->bind();
@@ -851,7 +702,7 @@ void GLView::clickVertexManagement() {
 }
 
 void GLView::clickCircleManagement() {
-    /*//black background
+    //black background
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     //no multisample
@@ -860,17 +711,9 @@ void GLView::clickCircleManagement() {
     //clear buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //draw only in depth buffer
-    glColorMask(false, false, false, false);
-    //draw faces
-    m_programFaces->bind();
-    m_vaoFaces.bind();
-    glDrawArrays(GL_TRIANGLES, 0, m_model->vertexCountFace());
-    m_programFaces->release();
-
-    //draw sphere only in depth buffer
-    m_sphere.render();
-    glColorMask(true, true, true, true);
+    for (BatchGraphicsItem* item: m_items) {
+        item->render(PickingType::PickingCircle);
+    }
 
     //draw circles
     m_programCirclesPicking->bind();
@@ -915,7 +758,7 @@ void GLView::clickCircleManagement() {
     glClearColor(m_clearColor.x(), m_clearColor.y(), m_clearColor.z(), 1.0f);
 
     //enable multisample
-    glEnable(GL_MULTISAMPLE);*/
+    glEnable(GL_MULTISAMPLE);
 }
 
 void GLView::animationCameraStep() {
@@ -935,18 +778,10 @@ void GLView::animationCameraStep() {
 }
 
 void GLView::updateData() {
-    this->updateDataFaces();
     this->updateDataEdges();
     this->updateDataCircles();
     this->updateDataCirclesDual();
     this->updateDataVertices();
-    this->updateDataDebugLine();
-}
-
-void GLView::updateDataFaces() {
-    m_vboFaces.bind();
-    m_vboFaces.allocate(m_model->constDataFace(), m_model->countFace() * static_cast<int>(sizeof(GLfloat)));
-    m_vboFaces.release();
 }
 
 void GLView::updateDataEdges() {
@@ -973,25 +808,19 @@ void GLView::updateDataVertices() {
     m_vboVertices.release();
 }
 
-void GLView::updateDataDebugLine() {
-    m_vboDebugLine.bind();
-    m_vboDebugLine.allocate(m_model->constDataDebugLine(), m_model->countDebugLine() * static_cast<int>(sizeof(GLfloat)));
-    m_vboDebugLine.release();
-}
-
 void GLView::setPickingType(PickingType type) {
     if (type == m_pickingType) { return; }
     m_pickingType = type;
-    m_model->setSelectedFace(0);
+    m_mainWindow->setSelectedFace(0);
     m_model->setSelectedEdge(0);
     m_model->setSelectedVertex(0);
     m_model->setSelectedVertex2(0);
     m_model->setSelectedCircle(0);
-    m_model->updateDataFaces();
+    m_mainWindow->updateDataFaces();
     m_model->updateDataEdges();
     m_model->updateDataVertices();
     m_model->updateDataCircles();
-    this->updateDataFaces();
+    m_mainWindow->updateFaces();
     this->updateDataEdges();
     this->updateDataVertices();
     this->updateDataCircles();
@@ -1080,7 +909,7 @@ void GLView::keyReleaseEvent(QKeyEvent* event) {
         }
     }
     if (event->key() == Qt::Key_Delete) {
-        if (m_model->selectedFace() != nullptr) {
+        if (m_mainWindow->selectedFace() != nullptr) {
             this->removeSelectedFace();
         }
         if (m_model->selectedEdge() != nullptr) {
@@ -1100,6 +929,7 @@ void GLView::handleMoveXVertex(float dx) {
     m_mainWindow->updateCirclesDual();
     m_model->updateData();
     this->updateData();
+    m_mainWindow->updateDataFaces();
     update();
 }
 
@@ -1111,6 +941,7 @@ void GLView::handleMoveYVertex(float dy) {
     m_mainWindow->updateCirclesDual();
     m_model->updateData();
     this->updateData();
+    m_mainWindow->updateDataFaces();
     update();
 }
 
@@ -1122,6 +953,7 @@ void GLView::handleMoveZVertex(float dz) {
     m_mainWindow->updateCirclesDual();
     m_model->updateData();
     this->updateData();
+    m_mainWindow->updateDataFaces();
     update();
 }
 
@@ -1138,6 +970,7 @@ void GLView::handleMoveXEdge(float dx) {
     m_mainWindow->updateCirclesDual();
     m_model->updateData();
     this->updateData();
+    m_mainWindow->updateDataFaces();
     update();
 }
 
@@ -1154,6 +987,7 @@ void GLView::handleMoveYEdge(float dy) {
     m_mainWindow->updateCirclesDual();
     m_model->updateData();
     this->updateData();
+    m_mainWindow->updateDataFaces();
     update();
 }
 
@@ -1170,11 +1004,12 @@ void GLView::handleMoveZEdge(float dz) {
     m_mainWindow->updateCirclesDual();
     m_model->updateData();
     this->updateData();
+    m_mainWindow->updateDataFaces();
     update();
 }
 
 void GLView::handleMoveXFace(float dx) {
-    for (he::Vertex* v: m_model->selectedFace()->allVertices()) {
+    for (he::Vertex* v: m_mainWindow->selectedFace()->allVertices()) {
         QVector3D newPos = v->pos();
         newPos.setX(newPos.x() + dx / 100.0f);
         v->setPos(newPos);
@@ -1183,11 +1018,12 @@ void GLView::handleMoveXFace(float dx) {
     m_mainWindow->updateCirclesDual();
     m_model->updateData();
     this->updateData();
+    m_mainWindow->updateDataFaces();
     update();
 }
 
 void GLView::handleMoveYFace(float dy) {
-    for (he::Vertex* v: m_model->selectedFace()->allVertices()) {
+    for (he::Vertex* v: m_mainWindow->selectedFace()->allVertices()) {
         QVector3D newPos = v->pos();
         newPos.setY(newPos.y() + dy / 100.0f);
         v->setPos(newPos);
@@ -1196,11 +1032,12 @@ void GLView::handleMoveYFace(float dy) {
     m_mainWindow->updateCirclesDual();
     m_model->updateData();
     this->updateData();
+    m_mainWindow->updateDataFaces();
     update();
 }
 
 void GLView::handleMoveZFace(float dz) {
-    for (he::Vertex* v: m_model->selectedFace()->allVertices()) {
+    for (he::Vertex* v: m_mainWindow->selectedFace()->allVertices()) {
         QVector3D newPos = v->pos();
         newPos.setZ(newPos.z() + dz / 100.0f);
         v->setPos(newPos);
@@ -1209,6 +1046,7 @@ void GLView::handleMoveZFace(float dz) {
     m_mainWindow->updateCirclesDual();
     m_model->updateData();
     this->updateData();
+    m_mainWindow->updateDataFaces();
     update();
 }
 
@@ -1232,12 +1070,13 @@ void GLView::cutFaceOnSelectedVertices() {
     m_model->mesh()->cutFace(face, v1, v2);
     m_model->mesh()->updateHalfEdgeNotTwin();
     m_model->mesh()->updateOtherHalfEdges();
-    m_model->updateDataFaces();
+    m_mainWindow->updateDataFaces();
     m_model->updateDataEdges();
     m_model->updateDataVertices();
-    this->updateDataFaces();
+    m_mainWindow->updateFaces();
     this->updateDataEdges();
     this->updateDataVertices();
+    m_mainWindow->updateDataFaces();
     this->update();
 }
 
@@ -1249,30 +1088,27 @@ void GLView::cutSelectedHalfEdge() {
     m_model->mesh()->updateHalfEdgeNotTwin();
     m_model->mesh()->updateOtherHalfEdges();
     m_model->setSelectedEdge(0);
-    m_model->updateDataFaces();
+    m_mainWindow->updateDataFaces();
     m_model->updateDataEdges();
     m_model->updateDataVertices();
-    this->updateDataFaces();
     this->updateDataEdges();
     this->updateDataVertices();
     this->update();
 }
 
 void GLView::removeSelectedFace() {
-    m_model->mesh()->remove(m_model->selectedFace());
-    m_model->setSelectedFace(0);
-    m_model->updateDataFaces();
-    this->updateDataFaces();
+    m_model->mesh()->remove(m_mainWindow->selectedFace());
+    m_mainWindow->setSelectedFace(0);
+    m_mainWindow->updateDataFaces();
     this->update();
 }
 
 void GLView::removeSelectedHalfEdge() {
     m_model->mesh()->remove(m_model->selectedEdge());
     m_model->setSelectedEdge(0);
-    m_model->updateDataFaces();
+    m_mainWindow->updateDataFaces();
     m_model->updateDataEdges();
     m_model->updateDataVertices();
-    this->updateDataFaces();
     this->updateDataEdges();
     this->updateDataVertices();
     this->update();
@@ -1282,10 +1118,9 @@ void GLView::removeSelectedVertex() {
     m_model->mesh()->remove(m_model->selectedVertex());
     m_model->setSelectedVertex(0);
     m_model->setSelectedVertex2(0);
-    m_model->updateDataFaces();
+    m_mainWindow->updateDataFaces();
     m_model->updateDataEdges();
     m_model->updateDataVertices();
-    this->updateDataFaces();
     this->updateDataEdges();
     this->updateDataVertices();
     this->update();

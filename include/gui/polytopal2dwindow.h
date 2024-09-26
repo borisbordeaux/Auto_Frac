@@ -7,6 +7,8 @@
 #include "model.h"
 #include "sphere.h"
 #include "skybox.h"
+#include "debugline.h"
+#include "batchface.h"
 
 class QStatusBar;
 
@@ -30,6 +32,11 @@ public:
     void updateUserData();
     void openOBJFile(QString const& file);
     void setInfo(std::string const& textInfo, int timeoutMs = 2000);
+
+    void updateFaces();
+    void updateDataFaces();
+    he::Face* selectedFace();
+    void setSelectedFace(int faceIndex);
 
 public slots:
     [[maybe_unused]] void slotOpenOBJFile();
@@ -79,6 +86,8 @@ private:
 
     Sphere m_sphere;
     SkyBox m_skybox;
+    DebugLine m_debugLine;
+    BatchFace m_batchFace;
 
     he::Mesh m_mesh;
     he::Mesh m_sphereMesh;

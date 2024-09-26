@@ -5,19 +5,9 @@
 
 void SkyBox::init() {
     this->initializeOpenGLFunctions();
+
     m_vao.create();
     m_vbo.create();
-
-    //init shader for sky box
-    m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/skybox/vs.glsl");
-    m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/skybox/fs.glsl");
-    m_program.bindAttributeLocation("aPos", 0);
-    m_program.link();
-
-    //get location of uniforms
-    m_program.bind();
-    m_projMatrixLocSkyBox = m_program.uniformLocation("projection");
-    m_viewMatrixLocSkyBox = m_program.uniformLocation("view");
 
     float skyboxVertices[] = {
             // positions
@@ -76,11 +66,22 @@ void SkyBox::init() {
     m_vbo.release();
     m_vao.release();
 
+    //init shader for sky box
+    m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/skybox/vs.glsl");
+    m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/skybox/fs.glsl");
+    m_program.bindAttributeLocation("aPos", 0);
+    m_program.link();
+
+    //get location of uniforms
+    m_program.bind();
+    m_projMatrixLoc = m_program.uniformLocation("projection");
+    m_viewMatrixLoc = m_program.uniformLocation("view");
+
     setSkyBox(SkyBoxType::SkyBox2);
 }
 
-void SkyBox::render(bool picking) {
-    if (picking) { return; }
+void SkyBox::render(PickingType type) {
+    if (type != PickingType::PickingNone) { return; }
     glDepthMask(GL_FALSE);
     m_program.bind();
     m_vao.bind();
@@ -93,7 +94,7 @@ void SkyBox::render(bool picking) {
 
 void SkyBox::setProjection(QMatrix4x4 matrix) {
     m_program.bind();
-    m_program.setUniformValue(m_projMatrixLocSkyBox, matrix);
+    m_program.setUniformValue(m_projMatrixLoc, matrix);
     m_program.release();
 }
 
@@ -102,7 +103,7 @@ void SkyBox::setCamera(Camera camera) {
     //remove translation part, set only rotation part of the camera
     view.setColumn(3, { 0, 0, 0, 1 });
     m_program.bind();
-    m_program.setUniformValue(m_viewMatrixLocSkyBox, view);
+    m_program.setUniformValue(m_viewMatrixLoc, view);
     m_program.release();
 }
 
