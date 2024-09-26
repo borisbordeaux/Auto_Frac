@@ -1295,6 +1295,9 @@ void GLView::clearScene() {
 
 void GLView::addItem(BatchGraphicsItem* item) {
     m_items.push_back(item);
+    std::sort(m_items.begin(), m_items.end(), [](BatchGraphicsItem* item1, BatchGraphicsItem* item2) -> bool {
+        return item1->layer() > item2->layer();
+    });
 }
 
 void GLView::removeItem(BatchGraphicsItem* item) {

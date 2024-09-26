@@ -7,6 +7,7 @@
 class BatchGraphicsItem : protected QOpenGLFunctions {
 public:
     explicit BatchGraphicsItem() = default;
+
     virtual ~BatchGraphicsItem() = default;
 
     virtual void init() {}
@@ -20,6 +21,8 @@ public:
     virtual void setCamera(Camera /*camera*/) {}
 
     virtual void setLight(QVector3D /*lightPos*/) {}
+
+    virtual int layer() { return 0; }
 };
 
 

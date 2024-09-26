@@ -21,6 +21,8 @@ public:
 
     void setSkyBox(SkyBoxType type);
 
+    int layer() override { return 1; }
+
 private:
     unsigned int m_textureID = 0;
 
