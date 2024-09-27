@@ -1,5 +1,5 @@
-#ifndef AUTOFRAC_SPHERE_H
-#define AUTOFRAC_SPHERE_H
+#ifndef AUTOFRAC_BATCHSPHERE_H
+#define AUTOFRAC_BATCHSPHERE_H
 
 #include "gui/batchgraphicsitem.h"
 #include <QOpenGLVertexArrayObject>
@@ -13,10 +13,11 @@ class Face;
 class Mesh;
 }
 
-class Sphere : public BatchGraphicsItem {
+class BatchSphere : public BatchGraphicsItem {
 public:
     void init() override;
     void update() override;
+    void updateData() override;
     void render(PickingType type) override;
 
     void setProjection(QMatrix4x4 projection) override;
@@ -24,7 +25,6 @@ public:
     void setLight(QVector3D lightPos) override;
 
     void setSphereMesh(he::Mesh* mesh);
-    he::Mesh* sphereMesh() const;
 
 private:
     void addFaceSphere(he::Face* f);
@@ -50,4 +50,4 @@ private:
 };
 
 
-#endif //AUTOFRAC_SPHERE_H
+#endif //AUTOFRAC_BATCHSPHERE_H

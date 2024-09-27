@@ -1,12 +1,12 @@
-#ifndef AUTOFRAC_DEBUGLINE_H
-#define AUTOFRAC_DEBUGLINE_H
+#ifndef AUTOFRAC_BATCHDEBUGLINE_H
+#define AUTOFRAC_BATCHDEBUGLINE_H
 
 #include <QOpenGLShaderProgram>
 #include <QOpenGLBuffer>
 #include <QOpenGLVertexArrayObject>
 #include "batchgraphicsitem.h"
 
-class DebugLine : public BatchGraphicsItem {
+class BatchDebugLine : public BatchGraphicsItem {
 public:
     void init() override;
     void update() override;
@@ -31,4 +31,4 @@ private:
 };
 
 
-#endif //AUTOFRAC_DEBUGLINE_H
+#endif //AUTOFRAC_BATCHDEBUGLINE_H

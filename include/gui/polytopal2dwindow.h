@@ -5,10 +5,12 @@
 #include <QTimer>
 #include "halfedge/mesh.h"
 #include "model.h"
-#include "sphere.h"
-#include "skybox.h"
-#include "debugline.h"
+#include "batchsphere.h"
+#include "batchskybox.h"
+#include "batchdebugline.h"
 #include "batchface.h"
+#include "batchedge.h"
+#include "batchvertex.h"
 
 class QStatusBar;
 
@@ -33,10 +35,19 @@ public:
     void openOBJFile(QString const& file);
     void setInfo(std::string const& textInfo, int timeoutMs = 2000);
 
-    void updateFaces();
     void updateDataFaces();
     he::Face* selectedFace();
     void setSelectedFace(int faceIndex);
+
+    void updateDataEdges();
+    he::HalfEdge* selectedEdge();
+    void setSelectedEdge(int edgeIndex);
+
+    void updateDataVertices();
+    he::Vertex* selectedVertex();
+    he::Vertex* selectedVertex2();
+    void setSelectedVertex(int vertexIndex);
+    void setSelectedVertex2(int vertexIndex);
 
 public slots:
     [[maybe_unused]] void slotOpenOBJFile();
@@ -84,10 +95,12 @@ private:
 
     QStatusBar* m_statusBar;
 
-    Sphere m_sphere;
-    SkyBox m_skybox;
-    DebugLine m_debugLine;
+    BatchSphere m_batchSphere;
+    BatchSkyBox m_batchSkybox;
+    BatchDebugLine m_batchDebugLine;
     BatchFace m_batchFace;
+    BatchEdge m_batchEdge;
+    BatchVertex m_batchVertex;
 
     he::Mesh m_mesh;
     he::Mesh m_sphereMesh;

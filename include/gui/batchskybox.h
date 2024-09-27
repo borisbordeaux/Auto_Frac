@@ -1,5 +1,5 @@
-#ifndef AUTOFRAC_SKYBOX_H
-#define AUTOFRAC_SKYBOX_H
+#ifndef AUTOFRAC_BATCHSKYBOX_H
+#define AUTOFRAC_BATCHSKYBOX_H
 
 #include "gui/batchgraphicsitem.h"
 #include <QOpenGLVertexArrayObject>
@@ -11,7 +11,7 @@ enum class SkyBoxType {
     SkyBox2
 };
 
-class SkyBox : public BatchGraphicsItem {
+class BatchSkyBox : public BatchGraphicsItem {
 public:
     void init() override;
     void render(PickingType type) override;
@@ -21,7 +21,7 @@ public:
 
     void setSkyBox(SkyBoxType type);
 
-    int layer() override { return 1; }
+    int priority() override { return 1; }
 
 private:
     unsigned int m_textureID = 0;
@@ -35,4 +35,4 @@ private:
 };
 
 
-#endif //AUTOFRAC_SKYBOX_H
+#endif //AUTOFRAC_BATCHSKYBOX_H

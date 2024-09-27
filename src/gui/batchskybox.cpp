@@ -1,9 +1,9 @@
 #include <QImage>
 #include <QtOpenGL/QOpenGLShaderProgram>
 #include <iostream>
-#include "gui/skybox.h"
+#include "gui/batchskybox.h"
 
-void SkyBox::init() {
+void BatchSkyBox::init() {
     this->initializeOpenGLFunctions();
 
     m_vao.create();
@@ -80,7 +80,7 @@ void SkyBox::init() {
     setSkyBox(SkyBoxType::SkyBox2);
 }
 
-void SkyBox::render(PickingType type) {
+void BatchSkyBox::render(PickingType type) {
     if (type != PickingType::PickingNone) { return; }
     glDepthMask(GL_FALSE);
     m_program.bind();
@@ -92,13 +92,13 @@ void SkyBox::render(PickingType type) {
     glDepthMask(GL_TRUE);
 }
 
-void SkyBox::setProjection(QMatrix4x4 matrix) {
+void BatchSkyBox::setProjection(QMatrix4x4 matrix) {
     m_program.bind();
     m_program.setUniformValue(m_projMatrixLoc, matrix);
     m_program.release();
 }
 
-void SkyBox::setCamera(Camera camera) {
+void BatchSkyBox::setCamera(Camera camera) {
     QMatrix4x4 view = camera.getViewMatrix();
     //remove translation part, set only rotation part of the camera
     view.setColumn(3, { 0, 0, 0, 1 });
@@ -107,7 +107,7 @@ void SkyBox::setCamera(Camera camera) {
     m_program.release();
 }
 
-void SkyBox::setSkyBox(SkyBoxType type) {
+void BatchSkyBox::setSkyBox(SkyBoxType type) {
     glDeleteTextures(1, &m_textureID);
     glGenTextures(1, &m_textureID);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_textureID);

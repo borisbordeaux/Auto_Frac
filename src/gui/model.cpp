@@ -8,37 +8,8 @@
 #include <QMatrix4x4>
 
 void Model::updateData() {
-    this->updateDataEdges();
     this->updateDataCircles();
     this->updateDataCirclesDual();
-    this->updateDataVertices();
-}
-
-void Model::updateDataEdges() {
-    m_countEdge = 0;
-    m_dataEdge.clear();
-
-    if (m_mesh == nullptr) { return; }
-
-    //the number of edges
-    qsizetype nbOfEdges = static_cast<qsizetype>(m_mesh->halfEdgesNoTwin().size());
-
-    //for each edge, there are 2 vertices
-    qsizetype nbOfAdd = 2 * nbOfEdges;
-
-    //we resize the data for rapidity
-    m_dataEdge.resize(nbOfAdd * 8);
-
-    int ID = 1;
-
-    //for each halfedge
-    for (he::HalfEdge* he: m_mesh->halfEdgesNoTwin()) {
-        float isSelected = (ID == m_selectedEdge && m_selectedEdge != 0) ? 1.0f : -1.0f;
-        //we will display a line
-        this->addVertexEdge(he->origin()->pos(), { 0, 0, 0 }, static_cast<float>(ID), isSelected);
-        this->addVertexEdge(he->next()->origin()->pos(), { 0, 0, 0 }, static_cast<float>(ID), isSelected);
-        ID++;
-    }
 }
 
 void Model::updateDataCircles() {
@@ -114,59 +85,6 @@ void Model::updateDataCirclesDual() {
     }
 }
 
-void Model::updateDataVertices() {
-    m_countVertices = 0;
-    m_dataVertices.clear();
-
-    //the number of vertices plus the projection point of the sphere mesh
-    //qsizetype nbOfVertices = (m_mesh != nullptr ? static_cast<qsizetype>(m_mesh->vertices().size()) : 0) + (m_sphereMesh == nullptr ? 0 : 1);
-    qsizetype nbOfVertices = (m_mesh != nullptr ? static_cast<qsizetype>(m_mesh->vertices().size()) : 0);
-
-    //if no vertices, no need to compute the rest
-    if (nbOfVertices == 0) { return; }
-
-    //for each vertex, there is 1 add
-    qsizetype nbOfAdd = 1 * nbOfVertices;
-
-    //we resize the data for rapidity
-    m_dataVertices.resize(nbOfAdd * 8);
-
-    int ID = 1;
-
-    if (m_mesh != nullptr) {
-        //for each vertex
-        for (he::Vertex* v: m_mesh->vertices()) {
-            //will display a point
-            float isSelected = ((ID == m_selectedVertex && m_selectedVertex != 0) || (ID == m_selectedVertex2 && m_selectedVertex2 != 0)) ? 1.0f : -1.0f;
-            this->addVertex(v->pos(), { 0.0f, 0.0f, 0.0f }, static_cast<float>(ID), isSelected);
-            ID++;
-        }
-    }
-
-//    if (m_sphereMesh != nullptr) {
-//        //display projection point
-//        this->addVertex({ 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, 0.0f, -1.0f);
-//    }
-}
-
-void Model::addVertexEdge(QVector3D const& v, QVector3D const& color, float ID, float isSelected) {
-    //add to the end of the data already added
-    float* p = m_dataEdge.data() + m_countEdge;
-    //the coordinates of the vertex
-    *p++ = v.x();
-    *p++ = v.y();
-    *p++ = v.z();
-    *p++ = color.x();
-    *p++ = color.y();
-    *p++ = color.z();
-    //the ID of the edge
-    *p++ = ID;
-    //whether the edge is selected or not
-    *p = isSelected;
-    //we update the amount of data
-    m_countEdge += 8;
-}
-
 void Model::addVertexCircle(QVector3D const& v, QVector3D const& color, float ID, float isSelected) {
     //add to the end of the data already added
     float* p = m_dataCircles.data() + m_countCircle;
@@ -199,79 +117,18 @@ void Model::addVertexCircleDual(QVector3D const& v, QVector3D const& color) {
     m_countCircleDual += 6;
 }
 
-void Model::addVertex(QVector3D const& v, QVector3D const& color, float ID, float isSelected) {
-    //add to the end of the data already added
-    float* p = m_dataVertices.data() + m_countVertices;
-    //the coordinates of the vertex
-    *p++ = v.x();
-    *p++ = v.y();
-    *p++ = v.z();
-    *p++ = color.x();
-    *p++ = color.y();
-    *p++ = color.z();
-    //the ID of the face
-    *p++ = ID;
-    //whether the face is selected or not
-    *p = isSelected;
-    //we update the amount of data
-    m_countVertices += 8;
-}
-
 void Model::setMesh(he::Mesh* mesh) {
     m_mesh = mesh;
     //reset the selected elements
-    this->setSelectedEdge(0);
-    this->setSelectedVertex(0);
     this->setSelectedCircle(0);
     //update buffers
     this->updateData();
-}
-
-void Model::setSelectedEdge(int edgeIndex) {
-    m_selectedEdge = edgeIndex;
-}
-
-void Model::setSelectedVertex(int vertexIndex) {
-    m_selectedVertex = vertexIndex;
-}
-
-void Model::setSelectedVertex2(int vertexIndex) {
-    m_selectedVertex2 = vertexIndex;
 }
 
 void Model::setSelectedCircle(int circleIndex) {
     m_selectedCircle = circleIndex;
 }
 
-he::HalfEdge* Model::selectedEdge() {
-    he::HalfEdge* res = nullptr;
-
-    if (m_selectedEdge - 1 >= 0 && m_selectedEdge - 1 < static_cast<qsizetype>(m_mesh->halfEdgesNoTwin().size())) {
-        res = m_mesh->halfEdgesNoTwin().at(m_selectedEdge - 1);
-    }
-
-    return res;
-}
-
-he::Vertex* Model::selectedVertex() {
-    he::Vertex* res = nullptr;
-
-    if (m_selectedVertex - 1 >= 0 && m_selectedVertex - 1 < static_cast<qsizetype>(m_mesh->vertices().size())) {
-        res = m_mesh->vertices().at(m_selectedVertex - 1);
-    }
-
-    return res;
-}
-
-he::Vertex* Model::selectedVertex2() {
-    he::Vertex* res = nullptr;
-
-    if (m_selectedVertex2 - 1 >= 0 && m_selectedVertex2 - 1 < static_cast<qsizetype>(m_mesh->vertices().size())) {
-        res = m_mesh->vertices().at(m_selectedVertex2 - 1);
-    }
-
-    return res;
-}
 
 poly::Circle* Model::selectedCircle() {
     poly::Circle* res = nullptr;
@@ -313,8 +170,6 @@ void Model::transformMesh(QMatrix4x4 const& transform) {
         v->setPos((transform * v->pos().toVector4D()).toVector3D());
     }
     m_mesh->updateDoublePosFromFloatPos();
-    this->updateDataEdges();
-    this->updateDataVertices();
 }
 
 void Model::updateColorOfCircles(QVector3D const& color) {

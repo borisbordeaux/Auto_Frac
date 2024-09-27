@@ -1,10 +1,10 @@
-#include "gui/sphere.h"
+#include "gui/batchsphere.h"
 #include "halfedge/face.h"
 #include "halfedge/halfedge.h"
 #include "halfedge/mesh.h"
 #include "halfedge/vertex.h"
 
-void Sphere::init() {
+void BatchSphere::init() {
     this->initializeOpenGLFunctions();
 
     m_vao.create();
@@ -33,13 +33,19 @@ void Sphere::init() {
     m_cameraPosLocSphere = m_program.uniformLocation("cameraPosition");
 }
 
-void Sphere::update() {
+void BatchSphere::update() {
+    m_vbo.bind();
+    m_vbo.allocate(m_data.constData(), m_count * static_cast<int>(sizeof(GLfloat)));
+    m_vbo.release();
+}
+
+void BatchSphere::updateData() {
     m_count = 0;
     m_data.clear();
 
     if (m_sphereMesh == nullptr) { return; }
     //we add data using triangles
-    qsizetype nbTriangle = Sphere::findNbOfTriangle(m_sphereMesh);
+    qsizetype nbTriangle = BatchSphere::findNbOfTriangle(m_sphereMesh);
 
     //for each triangleSphere, there are 3 vertices
     qsizetype nbOfAdd = 3 * nbTriangle;
@@ -51,14 +57,9 @@ void Sphere::update() {
     for (he::Face* f: m_sphereMesh->faces()) {
         this->addFaceSphere(f);
     }
-
-    //send data to GPU
-    m_vbo.bind();
-    m_vbo.allocate(m_data.constData(), m_count * static_cast<int>(sizeof(GLfloat)));
-    m_vbo.release();
 }
 
-void Sphere::render(PickingType type) {
+void BatchSphere::render(PickingType type) {
     if (type != PickingType::PickingNone) { glColorMask(false, false, false, false); }
     m_program.bind();
     m_vao.bind();
@@ -67,34 +68,31 @@ void Sphere::render(PickingType type) {
     if (type != PickingType::PickingNone) { glColorMask(true, true, true, true); }
 }
 
-void Sphere::setProjection(QMatrix4x4 matrix) {
+void BatchSphere::setProjection(QMatrix4x4 matrix) {
     m_program.bind();
     m_program.setUniformValue(m_projMatrixLocSphere, matrix);
     m_program.release();
 }
 
-void Sphere::setCamera(Camera camera) {
+void BatchSphere::setCamera(Camera camera) {
     m_program.bind();
     m_program.setUniformValue(m_mvMatrixLocSphere, camera.getViewMatrix());
     m_program.setUniformValue(m_cameraPosLocSphere, camera.getEye());
     m_program.release();
 }
 
-void Sphere::setLight(QVector3D lightPos) {
+void BatchSphere::setLight(QVector3D lightPos) {
     m_program.bind();
     m_program.setUniformValue(m_lightPosLocSphere, lightPos);
     m_program.release();
 }
 
-void Sphere::setSphereMesh(he::Mesh* mesh) {
+void BatchSphere::setSphereMesh(he::Mesh* mesh) {
     m_sphereMesh = mesh;
+    this->updateData();
 }
 
-he::Mesh* Sphere::sphereMesh() const {
-    return m_sphereMesh;
-}
-
-void Sphere::addFaceSphere(he::Face* f) {
+void BatchSphere::addFaceSphere(he::Face* f) {
     //we compute the number of halfedges
     he::HalfEdge* he = f->halfEdge();
     he::HalfEdge* temp = f->halfEdge()->next();
@@ -120,7 +118,7 @@ void Sphere::addFaceSphere(he::Face* f) {
     }
 }
 
-void Sphere::addVertexSphere(const QVector3D& v) {
+void BatchSphere::addVertexSphere(const QVector3D& v) {
     //add to the end of the data already added
     float* p = m_data.data() + m_count;
     //the coordinates of the vertex
@@ -131,13 +129,13 @@ void Sphere::addVertexSphere(const QVector3D& v) {
     m_count += 3;
 }
 
-void Sphere::triangleSphere(const QVector3D& pos1, const QVector3D& pos2, const QVector3D& pos3) {
+void BatchSphere::triangleSphere(const QVector3D& pos1, const QVector3D& pos2, const QVector3D& pos3) {
     this->addVertexSphere(pos1);
     this->addVertexSphere(pos2);
     this->addVertexSphere(pos3);
 }
 
-qsizetype Sphere::findNbOfTriangle(he::Mesh* mesh) {
+qsizetype BatchSphere::findNbOfTriangle(he::Mesh* mesh) {
     qsizetype nb = 0;
 
     //for each face

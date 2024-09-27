@@ -27,7 +27,6 @@ public:
      * @param parent the parent of this widget
      */
     explicit GLView(Model* model, Polytopal2DWindow* parent = nullptr);
-    ~GLView() override;
 
     /**
      * @brief indicates that the mesh changed, so we have
@@ -36,10 +35,8 @@ public:
     void initBuffers();
 
     void updateData();
-    void updateDataEdges();
     void updateDataCircles();
     void updateDataCirclesDual();
-    void updateDataVertices();
 
     void setPickingType(PickingType type);
 
@@ -107,36 +104,13 @@ private:
 
     //OpenGL stuff for rendering
     QVector3D m_clearColor = { 0.3f, 0.3f, 0.3f };
-    QOpenGLVertexArrayObject m_vaoEdges;
     QOpenGLVertexArrayObject m_vaoCircles;
     QOpenGLVertexArrayObject m_vaoCirclesDual;
-    QOpenGLVertexArrayObject m_vaoVertices;
-    QOpenGLBuffer m_vboEdges;
     QOpenGLBuffer m_vboCircles;
     QOpenGLBuffer m_vboCirclesDual;
-    QOpenGLBuffer m_vboVertices;
-    QOpenGLShaderProgram* m_programEdges = nullptr;
-    QOpenGLShaderProgram* m_programEdgesPicking = nullptr;
-    QOpenGLShaderProgram* m_programVertices = nullptr;
-    QOpenGLShaderProgram* m_programVerticesPicking = nullptr;
     QOpenGLShaderProgram* m_programCircles = nullptr;
     QOpenGLShaderProgram* m_programCirclesPicking = nullptr;
     QOpenGLShaderProgram* m_programCirclesDual = nullptr;
-
-    //Edges viewing
-    int m_projMatrixLocEdge = 0;
-    int m_mvMatrixLocEdge = 0;
-    //Edges picking
-    int m_projMatrixPickingLocEdge = 0;
-    int m_mvMatrixPickingLocEdge = 0;
-    int m_invViewportPickingLocEdge = 0;
-
-    //Vertices viewing
-    int m_projMatrixLocVertices = 0;
-    int m_mvMatrixLocVertices = 0;
-    //Vertices picking
-    int m_projMatrixPickingLocVertices = 0;
-    int m_mvMatrixPickingLocVertices = 0;
 
     //Circles viewing
     int m_projMatrixLocCircle = 0;
@@ -155,6 +129,7 @@ private:
 
     //flag to update clear color
     bool m_clearColorDirty = true;
+    bool m_itemsAddedInList = false;
 
     //matrices for rendering
     QMatrix4x4 m_proj;

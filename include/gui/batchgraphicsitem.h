@@ -7,25 +7,61 @@
 
 class BatchGraphicsItem : protected QOpenGLFunctions {
 public:
-    explicit BatchGraphicsItem() = default;
+    /**
+     * default constructor
+     */
+    BatchGraphicsItem() = default;
 
+    /**
+     * default destructor
+     */
     virtual ~BatchGraphicsItem() = default;
 
+    /**
+     * intialize the object (must call initializeOpenGLFunctions())
+     */
     virtual void init() {}
 
+    /**
+     * send data to GPU
+     */
     virtual void update() {}
 
+    /**
+     * update data to send to GPU
+     */
     virtual void updateData() {}
 
-    virtual void render(PickingType /*type*/ = PickingType::PickingNone) {}
+    /**
+     * render depending on the given picking type
+     */
+    virtual void render(PickingType /*type*/) {}
 
+    /**
+     * set a projection matrix
+     */
     virtual void setProjection(QMatrix4x4 /*projection*/) {}
 
+    /**
+     * set a camera (matrix, position...)
+     */
     virtual void setCamera(Camera /*camera*/) {}
 
+    /**
+     * set light position
+     */
     virtual void setLight(QVector3D /*lightPos*/) {}
 
-    virtual int layer() { return 0; }
+    /**
+     * set inverse of viewport
+     */
+    virtual void setInvViewport(float /*x*/, float /*y*/) {}
+
+    /**
+     * an object with a high priority will be drawn before the others
+     * @return the priority of the object
+     */
+    virtual int priority() { return 0; }
 };
 
 

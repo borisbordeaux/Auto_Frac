@@ -1,6 +1,6 @@
-#include "gui/debugline.h"
+#include "gui/batchdebugline.h"
 
-void DebugLine::init() {
+void BatchDebugLine::init() {
     this->initializeOpenGLFunctions();
 
     m_vao.create();
@@ -25,13 +25,13 @@ void DebugLine::init() {
     m_viewMatrixLoc = m_program->uniformLocation("mvMatrix");
 }
 
-void DebugLine::update() {
+void BatchDebugLine::update() {
     m_vbo.bind();
     m_vbo.allocate(m_data.constData(), m_count * static_cast<int>(sizeof(GLfloat)));
     m_vbo.release();
 }
 
-void DebugLine::render(PickingType type) {
+void BatchDebugLine::render(PickingType type) {
     if (type != PickingType::PickingNone) { return; }
     m_program->bind();
     m_vao.bind();
@@ -39,13 +39,13 @@ void DebugLine::render(PickingType type) {
     m_program->release();
 }
 
-void DebugLine::setProjection(QMatrix4x4 projection) {
+void BatchDebugLine::setProjection(QMatrix4x4 projection) {
     m_program->bind();
     m_program->setUniformValue(m_projMatrixLoc, projection);
     m_program->release();
 }
 
-void DebugLine::setCamera(Camera camera) {
+void BatchDebugLine::setCamera(Camera camera) {
     //to be sure to draw in front of sphere and faces
     camera.zoom(0.001f);
     m_program->bind();
@@ -53,7 +53,7 @@ void DebugLine::setCamera(Camera camera) {
     m_program->release();
 }
 
-void DebugLine::addDebugLine(QVector3D const& v1, QVector3D const& v2) {
+void BatchDebugLine::addDebugLine(QVector3D const& v1, QVector3D const& v2) {
     //the coordinates of the vertex
     m_data.append(v1.x());
     m_data.append(v1.y());
@@ -65,7 +65,7 @@ void DebugLine::addDebugLine(QVector3D const& v1, QVector3D const& v2) {
     m_count += 6;
 }
 
-void DebugLine::clearDebugLine() {
+void BatchDebugLine::clearDebugLine() {
     m_count = 0;
     m_data.clear();
 }
