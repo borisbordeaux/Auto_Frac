@@ -1,7 +1,7 @@
 #include "halfedge/mesh.h"
 
 #include <set>
-#include <iostream>
+#include <QMatrix4x4>
 #include "halfedge/face.h"
 #include "halfedge/halfedge.h"
 #include "halfedge/vertex.h"
@@ -297,4 +297,11 @@ void he::Mesh::remove(he::Vertex* v) {
     }
 
     delete v;
+}
+
+void he::Mesh::transformMesh(QMatrix4x4 const& transform) {
+    for (he::Vertex* v: m_vertices) {
+        v->setPos((transform * v->pos().toVector4D()).toVector3D());
+    }
+    this->updateDoublePosFromFloatPos();
 }

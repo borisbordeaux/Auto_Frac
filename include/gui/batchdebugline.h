@@ -25,7 +25,7 @@ private:
 
     QOpenGLVertexArrayObject m_vao;
     QOpenGLBuffer m_vbo;
-    QOpenGLShaderProgram* m_program = nullptr;
+    QOpenGLShaderProgram m_program;
     int m_projMatrixLoc = 0;
     int m_viewMatrixLoc = 0;
 };

@@ -25,7 +25,7 @@ Polytopal2DWindow::Polytopal2DWindow(QWidget* parent) :
     ui->setupUi(this);
 
     this->updateEnablementPoly();
-    m_view = new GLView(&m_modelMesh, this);
+    m_view = new GLView(this);
     m_view->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     m_view->setFocusPolicy(Qt::ClickFocus);
 
@@ -48,6 +48,7 @@ Polytopal2DWindow::Polytopal2DWindow(QWidget* parent) :
     m_view->addItem(&m_batchFace);
     m_view->addItem(&m_batchEdge);
     m_view->addItem(&m_batchVertex);
+    m_view->addItem(&m_batchCircle);
 
     m_progressBar = new QProgressBar();
     m_progressBar->setRange(0, 100);
@@ -80,14 +81,16 @@ void Polytopal2DWindow::openOBJFile(QString const& file) {
         m_circles.clear();
         m_circlesDual.clear();
         he::reader::readOBJ(file, m_mesh);
-        m_modelMesh.resetCircles();
-        m_modelMesh.resetCirclesDual();
-        m_modelMesh.setMesh(&m_mesh);
+        m_batchCircle.resetCircles();
+        m_batchCircle.resetCirclesDual();
+        m_batchCircle.updateData();
         m_batchFace.setMesh(&m_mesh);
         m_batchEdge.setMesh(&m_mesh);
         m_batchVertex.setMesh(&m_mesh);
         m_batchDebugLine.clearDebugLine();
-        m_view->updateData();
+        m_view->addItem(&m_batchFace);
+        m_view->addItem(&m_batchEdge);
+        m_view->addItem(&m_batchVertex);
         m_view->update();
         m_openedMesh = true;
         m_canonicalized = false;
@@ -99,29 +102,11 @@ void Polytopal2DWindow::openOBJFile(QString const& file) {
     m_timerCanonicalize.stop();
     m_progressBar->reset();
     m_step = 0;
+
     QString file = QFileDialog::getOpenFileName(this, "Open an OBJ File...", "../obj/polyhedrons", "OBJ Files (*.obj)");
 
     if (file != "") {
-        this->ui->checkBox_displayMesh->setChecked(true);
-        m_inversionLevel = 0;
-        m_circlesIndex = 0;
-        poly::Face::reset();
-        m_mesh.reset();
-        m_circles.clear();
-        m_circlesDual.clear();
-        he::reader::readOBJ(file, m_mesh);
-        m_modelMesh.resetCircles();
-        m_modelMesh.resetCirclesDual();
-        m_batchDebugLine.clearDebugLine();
-        m_modelMesh.setMesh(&m_mesh);
-        m_batchFace.setMesh(&m_mesh);
-        m_batchEdge.setMesh(&m_mesh);
-        m_batchVertex.setMesh(&m_mesh);
-        m_view->updateData();
-        m_view->update();
-        m_openedMesh = true;
-        m_canonicalized = false;
-        this->updateEnablementPoly();
+        this->openOBJFile(file);
     }
 }
 
@@ -238,24 +223,23 @@ void Polytopal2DWindow::canonicalizeStep() {
     if (!m_mesh.vertices().empty()) {
         m_inversionLevel = 0;
         m_circlesIndex = 0;
-        m_modelMesh.resetCircles();
+        m_batchCircle.resetCircles();
 
         if (m_circles.empty()) {
             m_circles = poly::computeIlluminatedCircles(m_mesh, this->ui->checkBox_darkTheme->isChecked() ? m_colorDarkTheme : m_colorWhiteTheme);
 
             for (poly::Circle const& c: m_circles) {
                 if (this->ui->checkBox_projectCircles->isChecked()) {
-                    m_modelMesh.addCircle(c);
+                    m_batchCircle.addCircle(c);
                 } else {
-                    m_modelMesh.addCircle(c.inverseStereographicProject());
+                    m_batchCircle.addCircle(c.inverseStereographicProject());
                 }
             }
         } else {
             m_circles.clear();
         }
 
-        m_modelMesh.updateDataCircles();
-        m_view->updateDataCircles();
+        m_batchCircle.updateDataCircles();
         m_view->update();
         this->updateEnablementPoly();
     }
@@ -263,37 +247,34 @@ void Polytopal2DWindow::canonicalizeStep() {
 
 [[maybe_unused]] void Polytopal2DWindow::slotDisplayDualAreaCircles() {
     if (!m_mesh.vertices().empty()) {
-        m_modelMesh.resetCirclesDual();
+        m_batchCircle.resetCirclesDual();
 
         if (m_circlesDual.empty()) {
             m_circlesDual = poly::computeIlluminatedCirclesDual(m_mesh, this->ui->checkBox_darkTheme->isChecked() ? m_colorDarkThemeDual : m_colorWhiteThemeDual);
 
             for (poly::Circle const& c: m_circlesDual) {
                 if (this->ui->checkBox_projectCircles->isChecked()) {
-                    m_modelMesh.addCircleDual(c);
+                    m_batchCircle.addCircleDual(c);
                 } else {
-                    m_modelMesh.addCircleDual(c.inverseStereographicProject());
+                    m_batchCircle.addCircleDual(c.inverseStereographicProject());
                 }
             }
         } else {
             m_circlesDual.clear();
         }
 
-        m_modelMesh.updateDataCirclesDual();
-        m_view->updateDataCirclesDual();
+        m_batchCircle.updateDataCirclesDual();
         m_view->update();
     }
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotDisplayMeshClicked() {
     if (this->ui->checkBox_displayMesh->isChecked()) {
-        m_modelMesh.setMesh(&m_mesh);
         m_view->addItem(&m_batchFace);
         m_view->addItem(&m_batchEdge);
         //always in scene
         m_batchVertex.setDisplayMesh(true);
     } else {
-        m_modelMesh.setMesh(nullptr);
         m_view->removeItem(&m_batchFace);
         m_view->removeItem(&m_batchEdge);
         //always in scene
@@ -322,7 +303,7 @@ void Polytopal2DWindow::canonicalizeStep() {
     m_inversionLevel = 0;
     m_circlesIndex = 0;
 
-    m_modelMesh.resetCircles();
+    m_batchCircle.resetCircles();
 
     float val = this->ui->checkBox_darkTheme->isChecked() ? 1.0f : 0.0f;
     QVector3D color { val, val, val };
@@ -340,16 +321,15 @@ void Polytopal2DWindow::canonicalizeStep() {
 
     for (poly::Circle const& c: m_circles) {
         if (this->ui->checkBox_projectCircles->isChecked()) {
-            m_modelMesh.addCircle(c);
+            m_batchCircle.addCircle(c);
         } else {
-            m_modelMesh.addCircle(c.inverseStereographicProject());
+            m_batchCircle.addCircle(c.inverseStereographicProject());
         }
     }
 
     this->setInfo("Iteration level : " + std::to_string(m_inversionLevel) + ", " + std::to_string(m_circles.size()) + " circles in total", 4000);
 
-    m_modelMesh.updateDataCircles();
-    m_view->updateDataCircles();
+    m_batchCircle.updateDataCircles();
     m_view->update();
 }
 
@@ -359,29 +339,26 @@ void Polytopal2DWindow::canonicalizeStep() {
         m_circlesDualAnimProject = m_circlesDual;
         m_timerAnimProject.start();
     } else {
-        m_modelMesh.resetCircles();
-        m_modelMesh.resetCirclesDual();
+        m_batchCircle.resetCircles();
+        m_batchCircle.resetCirclesDual();
 
         for (poly::Circle const& c: m_circles) {
             if (this->ui->checkBox_projectCircles->isChecked()) {
-                m_modelMesh.addCircle(c);
+                m_batchCircle.addCircle(c);
             } else {
-                m_modelMesh.addCircle(c.inverseStereographicProject());
+                m_batchCircle.addCircle(c.inverseStereographicProject());
             }
         }
 
         for (poly::Circle const& c: m_circlesDual) {
             if (this->ui->checkBox_projectCircles->isChecked()) {
-                m_modelMesh.addCircleDual(c);
+                m_batchCircle.addCircleDual(c);
             } else {
-                m_modelMesh.addCircleDual(c.inverseStereographicProject());
+                m_batchCircle.addCircleDual(c.inverseStereographicProject());
             }
         }
 
-        m_modelMesh.updateDataCircles();
-        m_modelMesh.updateDataCirclesDual();
-        m_view->updateDataCircles();
-        m_view->updateDataCirclesDual();
+        m_batchCircle.updateData();
         m_view->update();
         this->updateEnablementPoly();
     }
@@ -393,8 +370,8 @@ void Polytopal2DWindow::animProjectStep() {
         return;
     }
 
-    m_modelMesh.resetCircles();
-    m_modelMesh.resetCirclesDual();
+    m_batchCircle.resetCircles();
+    m_batchCircle.resetCirclesDual();
     for (size_t i = 0; i < m_circlesAnimProject.size(); i++) {
         if (!this->ui->checkBox_projectCircles->isChecked()) {
             m_circlesAnimProject[i].setRadius((1 - m_tAnimProject) * m_circles[i].radius() + m_tAnimProject * m_circles[i].inverseStereographicProject().radius());
@@ -407,7 +384,7 @@ void Polytopal2DWindow::animProjectStep() {
             m_circlesAnimProject[i].setAxisX((1 - m_tAnimProject) * m_circles[i].inverseStereographicProject().axisX() + m_tAnimProject * m_circles[i].axisX());
             m_circlesAnimProject[i].setAxisY((1 - m_tAnimProject) * m_circles[i].inverseStereographicProject().axisY() + m_tAnimProject * m_circles[i].axisY());
         }
-        m_modelMesh.addCircle(m_circlesAnimProject[i]);
+        m_batchCircle.addCircle(m_circlesAnimProject[i]);
     }
 
     for (size_t i = 0; i < m_circlesDual.size(); i++) {
@@ -422,7 +399,7 @@ void Polytopal2DWindow::animProjectStep() {
             m_circlesDualAnimProject[i].setAxisX((1 - m_tAnimProject) * m_circlesDual[i].inverseStereographicProject().axisX() + m_tAnimProject * m_circlesDual[i].axisX());
             m_circlesDualAnimProject[i].setAxisY((1 - m_tAnimProject) * m_circlesDual[i].inverseStereographicProject().axisY() + m_tAnimProject * m_circlesDual[i].axisY());
         }
-        m_modelMesh.addCircleDual(m_circlesDualAnimProject[i]);
+        m_batchCircle.addCircleDual(m_circlesDualAnimProject[i]);
     }
 
     m_tAnimProject += 0.02f;
@@ -430,31 +407,28 @@ void Polytopal2DWindow::animProjectStep() {
     if (m_tAnimProject > 1.0f) {
         m_timerAnimProject.stop();
         m_tAnimProject = 0.0f;
-        m_modelMesh.resetCircles();
-        m_modelMesh.resetCirclesDual();
+        m_batchCircle.resetCircles();
+        m_batchCircle.resetCirclesDual();
 
         for (poly::Circle const& c: m_circles) {
             if (this->ui->checkBox_projectCircles->isChecked()) {
-                m_modelMesh.addCircle(c);
+                m_batchCircle.addCircle(c);
             } else {
-                m_modelMesh.addCircle(c.inverseStereographicProject());
+                m_batchCircle.addCircle(c.inverseStereographicProject());
             }
         }
 
         for (poly::Circle const& c: m_circlesDual) {
             if (this->ui->checkBox_projectCircles->isChecked()) {
-                m_modelMesh.addCircleDual(c);
+                m_batchCircle.addCircleDual(c);
             } else {
-                m_modelMesh.addCircleDual(c.inverseStereographicProject());
+                m_batchCircle.addCircleDual(c.inverseStereographicProject());
             }
         }
         this->updateEnablementPoly();
     }
 
-    m_modelMesh.updateDataCircles();
-    m_modelMesh.updateDataCirclesDual();
-    m_view->updateDataCircles();
-    m_view->updateDataCirclesDual();
+    m_batchCircle.updateData();
     m_view->update();
 }
 
@@ -464,12 +438,12 @@ void Polytopal2DWindow::animInversionStep() {
         return;
     }
 
-    m_modelMesh.resetCircles();
+    m_batchCircle.resetCircles();
     for (size_t i = 0; i < m_circlesIndex; i++) {
         if (this->ui->checkBox_projectCircles->isChecked()) {
-            m_modelMesh.addCircle(m_circles[i]);
+            m_batchCircle.addCircle(m_circles[i]);
         } else {
-            m_modelMesh.addCircle(m_circles[i].inverseStereographicProject());
+            m_batchCircle.addCircle(m_circles[i].inverseStereographicProject());
         }
     }
 
@@ -477,18 +451,18 @@ void Polytopal2DWindow::animInversionStep() {
         m_circles[i].setRadius((1 - m_tAnimInversion) * m_circles[i].oldCircleBeforeInversion().radius() + m_tAnimInversion * m_circles[i].newCircleAfterInversion().radius());
         m_circles[i].setCenter((1 - m_tAnimInversion) * m_circles[i].oldCircleBeforeInversion().center() + m_tAnimInversion * m_circles[i].newCircleAfterInversion().center());
         if (this->ui->checkBox_projectCircles->isChecked()) {
-            m_modelMesh.addCircle(m_circles[i]);
+            m_batchCircle.addCircle(m_circles[i]);
         } else {
             m_circles[i].initInversiveCoordinates();
-            m_modelMesh.addCircle(m_circles[i].inverseStereographicProject());
+            m_batchCircle.addCircle(m_circles[i].inverseStereographicProject());
         }
     }
 
     for (poly::Circle const& c: m_circlesDual) {
         if (this->ui->checkBox_projectCircles->isChecked()) {
-            m_modelMesh.addCircleDual(c);
+            m_batchCircle.addCircleDual(c);
         } else {
-            m_modelMesh.addCircleDual(c.inverseStereographicProject());
+            m_batchCircle.addCircleDual(c.inverseStereographicProject());
         }
     }
 
@@ -497,30 +471,30 @@ void Polytopal2DWindow::animInversionStep() {
     if (m_tAnimInversion > 1.0f) {
         m_timerAnimInversion.stop();
         m_tAnimInversion = 0.0f;
-        m_modelMesh.resetCircles();
+        m_batchCircle.resetCircles();
 
         for (size_t i = 0; i < m_circlesIndex; i++) {
             if (this->ui->checkBox_projectCircles->isChecked()) {
-                m_modelMesh.addCircle(m_circles[i]);
+                m_batchCircle.addCircle(m_circles[i]);
             } else {
-                m_modelMesh.addCircle(m_circles[i].inverseStereographicProject());
+                m_batchCircle.addCircle(m_circles[i].inverseStereographicProject());
             }
         }
 
         for (size_t i = m_circlesIndex; i < m_circles.size(); i++) {
             m_circles[i].setInvertedValues();
             if (this->ui->checkBox_projectCircles->isChecked()) {
-                m_modelMesh.addCircle(m_circles[i]);
+                m_batchCircle.addCircle(m_circles[i]);
             } else {
-                m_modelMesh.addCircle(m_circles[i].inverseStereographicProject());
+                m_batchCircle.addCircle(m_circles[i].inverseStereographicProject());
             }
         }
 
         for (poly::Circle const& c: m_circlesDual) {
             if (this->ui->checkBox_projectCircles->isChecked()) {
-                m_modelMesh.addCircleDual(c);
+                m_batchCircle.addCircleDual(c);
             } else {
-                m_modelMesh.addCircleDual(c.inverseStereographicProject());
+                m_batchCircle.addCircleDual(c.inverseStereographicProject());
             }
         }
 
@@ -531,8 +505,7 @@ void Polytopal2DWindow::animInversionStep() {
         this->setInfo("Iteration level : " + std::to_string(m_inversionLevel) + ", " + std::to_string(m_nbInversions) + " inversions, " + std::to_string(m_circles.size()) + " circles in total", 4000);
     }
 
-    m_modelMesh.updateDataCircles();
-    m_view->updateDataCircles();
+    m_batchCircle.updateDataCircles();
     m_view->update();
 }
 
@@ -555,17 +528,17 @@ void Polytopal2DWindow::updateCircles() {
 
             m_inversionLevel++;
 
-            m_modelMesh.resetCircles();
+            m_batchCircle.resetCircles();
 
             for (poly::Circle const& c: m_circles) {
                 if (this->ui->checkBox_projectCircles->isChecked()) {
-                    m_modelMesh.addCircle(c);
+                    m_batchCircle.addCircle(c);
                 } else {
-                    m_modelMesh.addCircle(c.inverseStereographicProject());
+                    m_batchCircle.addCircle(c.inverseStereographicProject());
                 }
             }
         }
-        m_modelMesh.updateDataCircles();
+        m_batchCircle.updateDataCircles();
     }
 }
 
@@ -577,7 +550,7 @@ void Polytopal2DWindow::updateCirclesDual() {
         //set circles
         this->slotDisplayDualAreaCircles();
 
-        m_modelMesh.updateDataCirclesDual();
+        m_batchCircle.updateDataCirclesDual();
     }
 }
 
@@ -592,20 +565,19 @@ void Polytopal2DWindow::increaseInversion() {
 
     m_inversionLevel++;
 
-    m_modelMesh.resetCircles();
+    m_batchCircle.resetCircles();
 
     for (poly::Circle const& c: m_circles) {
         if (this->ui->checkBox_projectCircles->isChecked()) {
-            m_modelMesh.addCircle(c);
+            m_batchCircle.addCircle(c);
         } else {
-            m_modelMesh.addCircle(c.inverseStereographicProject());
+            m_batchCircle.addCircle(c.inverseStereographicProject());
         }
     }
 
     this->setInfo("Iteration level : " + std::to_string(m_inversionLevel) + ", " + std::to_string(m_circles.size()) + " circles in total", 4000);
 
-    m_modelMesh.updateDataCircles();
-    m_view->updateDataCircles();
+    m_batchCircle.updateDataCircles();
     m_view->update();
 }
 
@@ -624,7 +596,7 @@ void Polytopal2DWindow::updateEnablementPoly() {
     this->ui->pushButton_canonizeMesh->setEnabled(m_openedMesh);
     this->ui->pushButton_displayCircles->setEnabled(m_openedMesh);
     this->ui->pushButton_displayCirclesDual->setEnabled(m_openedMesh);
-    this->ui->pushButton_OBJFromCircles->setEnabled(!m_modelMesh.circles().empty() && this->ui->checkBox_projectCircles->isChecked());
+    this->ui->pushButton_OBJFromCircles->setEnabled(!m_batchCircle.circles().empty() && this->ui->checkBox_projectCircles->isChecked());
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotUpdateLabelPrecision(int value) {
@@ -643,17 +615,16 @@ void Polytopal2DWindow::updateEnablementPoly() {
     poly::Face::reset();
     m_circles.clear();
     m_circlesDual.clear();
-    m_modelMesh.resetCircles();
-    m_modelMesh.resetCirclesDual();
-    m_modelMesh.setMesh(&m_mesh);
+    m_batchCircle.resetCircles();
+    m_batchCircle.resetCirclesDual();
     m_batchFace.updateData();
     m_batchEdge.updateData();
     m_batchVertex.updateData();
-    m_view->updateData();
-    m_view->update();
+    m_batchCircle.updateData();
     m_openedMesh = true;
     m_canonicalized = false;
     this->updateEnablementPoly();
+    m_view->update();
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotGeneralizedBarycentricSubdivision() {
@@ -667,17 +638,16 @@ void Polytopal2DWindow::updateEnablementPoly() {
     poly::Face::reset();
     m_circles.clear();
     m_circlesDual.clear();
-    m_modelMesh.resetCircles();
-    m_modelMesh.resetCirclesDual();
-    m_modelMesh.setMesh(&m_mesh);
+    m_batchCircle.resetCircles();
+    m_batchCircle.resetCirclesDual();
     m_batchFace.updateData();
     m_batchEdge.updateData();
     m_batchVertex.updateData();
-    m_view->updateData();
-    m_view->update();
+    m_batchCircle.updateData();
     m_openedMesh = true;
     m_canonicalized = false;
     this->updateEnablementPoly();
+    m_view->update();
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotLoopSubdivision() {
@@ -691,17 +661,16 @@ void Polytopal2DWindow::updateEnablementPoly() {
     poly::Face::reset();
     m_circles.clear();
     m_circlesDual.clear();
-    m_modelMesh.resetCircles();
-    m_modelMesh.resetCirclesDual();
-    m_modelMesh.setMesh(&m_mesh);
+    m_batchCircle.resetCircles();
+    m_batchCircle.resetCirclesDual();
     m_batchFace.updateData();
     m_batchEdge.updateData();
     m_batchVertex.updateData();
-    m_view->updateData();
-    m_view->update();
+    m_batchCircle.updateData();
     m_openedMesh = true;
     m_canonicalized = false;
     this->updateEnablementPoly();
+    m_view->update();
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotChangeTheme() {
@@ -715,10 +684,9 @@ void Polytopal2DWindow::updateEnablementPoly() {
         c.setColor(this->ui->checkBox_darkTheme->isChecked() ? m_colorDarkThemeDual : m_colorWhiteThemeDual);
     }
 
-    m_modelMesh.updateColorOfCircles(this->ui->checkBox_darkTheme->isChecked() ? m_colorDarkTheme : m_colorWhiteTheme);
-    m_modelMesh.updateColorOfCirclesDual(this->ui->checkBox_darkTheme->isChecked() ? m_colorDarkThemeDual : m_colorWhiteThemeDual);
-    m_view->updateDataCircles();
-    m_view->updateDataCirclesDual();
+    m_batchCircle.updateColorOfCircles(this->ui->checkBox_darkTheme->isChecked() ? m_colorDarkTheme : m_colorWhiteTheme);
+    m_batchCircle.updateColorOfCirclesDual(this->ui->checkBox_darkTheme->isChecked() ? m_colorDarkThemeDual : m_colorWhiteThemeDual);
+    m_batchCircle.updateData();
     m_view->update();
 }
 
@@ -772,8 +740,8 @@ void Polytopal2DWindow::updateUserData() {
             }
             break;
         case PickingType::PickingCircle:
-            if (m_modelMesh.selectedCircle() != nullptr) {
-                qDebug() << "Radius: " << m_modelMesh.selectedCircle()->radius();
+            if (m_batchCircle.selectedCircle() != nullptr) {
+                qDebug() << "Radius: " << m_batchCircle.selectedCircle()->radius();
                 qDebug() << "----------------";
             }
             break;
@@ -800,23 +768,19 @@ void Polytopal2DWindow::updateUserData() {
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotScaleUpCircles() {
-    m_modelMesh.scaleCircles(static_cast<float>(this->ui->doubleSpinBox_scaleForce->value()));
-    m_modelMesh.updateDataCircles();
-
-    m_view->updateDataCircles();
+    m_batchCircle.scaleCircles(static_cast<float>(this->ui->doubleSpinBox_scaleForce->value()));
+    m_batchCircle.updateDataCircles();
     m_view->update();
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotScaleDownCircles() {
-    m_modelMesh.scaleCircles(-static_cast<float>(this->ui->doubleSpinBox_scaleForce->value()));
-    m_modelMesh.updateDataCircles();
-
-    m_view->updateDataCircles();
+    m_batchCircle.scaleCircles(-static_cast<float>(this->ui->doubleSpinBox_scaleForce->value()));
+    m_batchCircle.updateDataCircles();
     m_view->update();
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotOBJFromCircles() {
-    QVector<poly::Circle> circles = m_modelMesh.circles();
+    QVector<poly::Circle> circles = m_batchCircle.circles();
     if (circles.empty()) { return; }
 
     he::Mesh m;
@@ -951,7 +915,7 @@ void Polytopal2DWindow::updateUserData() {
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotOBJOfCircles() {
-    QVector<poly::Circle> circles = m_modelMesh.circles();
+    QVector<poly::Circle> circles = m_batchCircle.circles();
     if (circles.empty()) { return; }
 
     he::Mesh m;
@@ -1050,4 +1014,16 @@ void Polytopal2DWindow::setSelectedVertex(int vertexIndex) {
 
 void Polytopal2DWindow::setSelectedVertex2(int vertexIndex) {
     m_batchVertex.setSelectedVertex2(vertexIndex);
+}
+
+void Polytopal2DWindow::setSelectedCircle(int circleIndex) {
+    m_batchCircle.setSelectedCircle(circleIndex);
+}
+
+void Polytopal2DWindow::updateDataCircles() {
+    m_batchCircle.updateDataCircles();
+}
+
+he::Mesh* Polytopal2DWindow::mesh() {
+    return &m_mesh;
 }

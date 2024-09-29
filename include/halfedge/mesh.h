@@ -4,6 +4,8 @@
 #include <QString>
 #include <vector>
 
+class QMatrix4x4;
+
 namespace he {
 
 class Vertex;
@@ -45,6 +47,8 @@ public:
     void remove(he::Face* f);
     void remove(he::HalfEdge* he);
     void remove(he::Vertex* v);
+
+    void transformMesh(QMatrix4x4 const& transform);
 
 private:
     std::vector<he::Vertex*> m_vertices;

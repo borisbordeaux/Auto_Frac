@@ -28,35 +28,33 @@ void BatchEdge::init() {
     m_vbo.release();
     m_vao.release();
 
-    m_program = new QOpenGLShaderProgram();
-    m_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/edges/vs.glsl");
-    m_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/edges/fs.glsl");
-    m_program->bindAttributeLocation("vertex", 0);
-    m_program->bindAttributeLocation("color", 1);
-    m_program->bindAttributeLocation("ID", 2);
-    m_program->bindAttributeLocation("isSelected", 3);
-    m_program->link();
+    m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/edges/vs.glsl");
+    m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/edges/fs.glsl");
+    m_program.bindAttributeLocation("vertex", 0);
+    m_program.bindAttributeLocation("color", 1);
+    m_program.bindAttributeLocation("ID", 2);
+    m_program.bindAttributeLocation("isSelected", 3);
+    m_program.link();
 
     //get location of uniforms
-    m_program->bind();
-    m_projMatrixLoc = m_program->uniformLocation("projMatrix");
-    m_viewMatrixLoc = m_program->uniformLocation("mvMatrix");
+    m_program.bind();
+    m_projMatrixLoc = m_program.uniformLocation("projMatrix");
+    m_viewMatrixLoc = m_program.uniformLocation("mvMatrix");
     //picking
-    m_programPicking = new QOpenGLShaderProgram();
-    m_programPicking->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/edges/picking/vs.glsl");
-    m_programPicking->addShaderFromSourceFile(QOpenGLShader::Geometry, "../shaders/edges/picking/gs.glsl");
-    m_programPicking->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/edges/picking/fs.glsl");
-    m_programPicking->bindAttributeLocation("vertex", 0);
-    m_programPicking->bindAttributeLocation("color", 1);
-    m_programPicking->bindAttributeLocation("ID", 2);
-    m_programPicking->bindAttributeLocation("isSelected", 3);
-    m_programPicking->link();
+    m_programPicking.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/edges/picking/vs.glsl");
+    m_programPicking.addShaderFromSourceFile(QOpenGLShader::Geometry, "../shaders/edges/picking/gs.glsl");
+    m_programPicking.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/edges/picking/fs.glsl");
+    m_programPicking.bindAttributeLocation("vertex", 0);
+    m_programPicking.bindAttributeLocation("color", 1);
+    m_programPicking.bindAttributeLocation("ID", 2);
+    m_programPicking.bindAttributeLocation("isSelected", 3);
+    m_programPicking.link();
 
     //get location of uniforms
-    m_programPicking->bind();
-    m_projMatrixPickingLoc = m_programPicking->uniformLocation("projMatrix");
-    m_viewMatrixPickingLoc = m_programPicking->uniformLocation("mvMatrix");
-    m_invViewportPickingLoc = m_programPicking->uniformLocation("invViewport");
+    m_programPicking.bind();
+    m_projMatrixPickingLoc = m_programPicking.uniformLocation("projMatrix");
+    m_viewMatrixPickingLoc = m_programPicking.uniformLocation("mvMatrix");
+    m_invViewportPickingLoc = m_programPicking.uniformLocation("invViewport");
 }
 
 void BatchEdge::update() {
@@ -97,16 +95,16 @@ void BatchEdge::updateData() {
 void BatchEdge::render(PickingType type) {
     switch (type) {
         case PickingType::PickingEdge:
-            m_programPicking->bind();
+            m_programPicking.bind();
             m_vao.bind();
             glDrawArrays(GL_LINES, 0, m_count / m_floatsPerVertex);
-            m_programPicking->release();
+            m_programPicking.release();
             break;
         case PickingType::PickingNone:
-            m_program->bind();
+            m_program.bind();
             m_vao.bind();
             glDrawArrays(GL_LINES, 0, m_count / m_floatsPerVertex);
-            m_program->release();
+            m_program.release();
             break;
         case PickingType::PickingFace:
         case PickingType::PickingVertex:
@@ -116,34 +114,35 @@ void BatchEdge::render(PickingType type) {
 }
 
 void BatchEdge::setProjection(QMatrix4x4 matrix) {
-    m_program->bind();
-    m_program->setUniformValue(m_projMatrixLoc, matrix);
-    m_program->release();
+    m_program.bind();
+    m_program.setUniformValue(m_projMatrixLoc, matrix);
+    m_program.release();
 
-    m_programPicking->bind();
-    m_programPicking->setUniformValue(m_projMatrixPickingLoc, matrix);
-    m_programPicking->release();
+    m_programPicking.bind();
+    m_programPicking.setUniformValue(m_projMatrixPickingLoc, matrix);
+    m_programPicking.release();
 }
 
 void BatchEdge::setCamera(Camera camera) {
     camera.zoom(0.001f);
-    m_program->bind();
-    m_program->setUniformValue(m_viewMatrixLoc, camera.getViewMatrix());
-    m_program->release();
+    m_program.bind();
+    m_program.setUniformValue(m_viewMatrixLoc, camera.getViewMatrix());
+    m_program.release();
 
-    m_programPicking->bind();
-    m_programPicking->setUniformValue(m_viewMatrixPickingLoc, camera.getViewMatrix());
-    m_programPicking->release();
+    m_programPicking.bind();
+    m_programPicking.setUniformValue(m_viewMatrixPickingLoc, camera.getViewMatrix());
+    m_programPicking.release();
 }
 
 void BatchEdge::setInvViewport(float x, float y) {
-    m_programPicking->bind();
-    m_programPicking->setUniformValue(m_invViewportPickingLoc, x, y);
-    m_programPicking->release();
+    m_programPicking.bind();
+    m_programPicking.setUniformValue(m_invViewportPickingLoc, x, y);
+    m_programPicking.release();
 }
 
 void BatchEdge::setMesh(he::Mesh* mesh) {
     m_mesh = mesh;
+    m_selectedEdge = 0;
     this->updateData();
 }
 

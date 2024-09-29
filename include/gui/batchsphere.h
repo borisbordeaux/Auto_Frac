@@ -33,10 +33,10 @@ private:
     static qsizetype findNbOfTriangle(he::Mesh* mesh);
 
 private:
-    int m_projMatrixLocSphere = 0;
-    int m_mvMatrixLocSphere = 0;
-    int m_lightPosLocSphere = 0;
-    int m_cameraPosLocSphere = 0;
+    int m_projMatrixLoc = 0;
+    int m_viewMatrixLoc = 0;
+    int m_lightPosLoc = 0;
+    int m_cameraPosLoc = 0;
 
     he::Mesh* m_sphereMesh = nullptr;
 

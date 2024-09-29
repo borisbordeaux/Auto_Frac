@@ -11,10 +11,6 @@
 #include "gui/batchgraphicsitem.h"
 #include "gui/pickingtype.h"
 
-class QOpenGLShaderProgram;
-
-class Model;
-
 class Polytopal2DWindow;
 
 class GLView : public QOpenGLWidget, protected QOpenGLFunctions {
@@ -26,17 +22,7 @@ public:
      * @param model the model that has to be drawn
      * @param parent the parent of this widget
      */
-    explicit GLView(Model* model, Polytopal2DWindow* parent = nullptr);
-
-    /**
-     * @brief indicates that the mesh changed, so we have
-     * to reallocate memory and resend data to the GPU
-     */
-    void initBuffers();
-
-    void updateData();
-    void updateDataCircles();
-    void updateDataCirclesDual();
+    explicit GLView(Polytopal2DWindow* parent = nullptr);
 
     void setPickingType(PickingType type);
 
@@ -65,10 +51,6 @@ protected:
     void keyReleaseEvent(QKeyEvent* event) override;
 
 private:
-    void initShaders();
-    void initShadersView();
-    void initShadersPicking();
-
     //manage face picking
     void clickFaceManagement();
     void clickEdgeManagement();
@@ -104,25 +86,6 @@ private:
 
     //OpenGL stuff for rendering
     QVector3D m_clearColor = { 0.3f, 0.3f, 0.3f };
-    QOpenGLVertexArrayObject m_vaoCircles;
-    QOpenGLVertexArrayObject m_vaoCirclesDual;
-    QOpenGLBuffer m_vboCircles;
-    QOpenGLBuffer m_vboCirclesDual;
-    QOpenGLShaderProgram* m_programCircles = nullptr;
-    QOpenGLShaderProgram* m_programCirclesPicking = nullptr;
-    QOpenGLShaderProgram* m_programCirclesDual = nullptr;
-
-    //Circles viewing
-    int m_projMatrixLocCircle = 0;
-    int m_mvMatrixLocCircle = 0;
-    //Circles picking
-    int m_projMatrixPickingLocCircle = 0;
-    int m_mvMatrixPickingLocCircle = 0;
-    int m_invViewportPickingLocCircle = 0;
-
-    //Circles dual viewing
-    int m_projMatrixLocCircleDual = 0;
-    int m_mvMatrixLocCircleDual = 0;
 
     //flag to update uniforms if needed
     bool m_uniformsDirty = true;
@@ -134,9 +97,6 @@ private:
     //matrices for rendering
     QMatrix4x4 m_proj;
     QMatrix4x4 m_world;
-
-    //the model that will be displayed
-    Model* m_model;
 
     //useful for item picking
     bool m_clicked = false;

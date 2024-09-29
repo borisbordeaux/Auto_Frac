@@ -4,13 +4,13 @@
 #include <QWidget>
 #include <QTimer>
 #include "halfedge/mesh.h"
-#include "model.h"
 #include "batchsphere.h"
 #include "batchskybox.h"
 #include "batchdebugline.h"
 #include "batchface.h"
 #include "batchedge.h"
 #include "batchvertex.h"
+#include "batchcircle.h"
 
 class QStatusBar;
 
@@ -48,6 +48,11 @@ public:
     he::Vertex* selectedVertex2();
     void setSelectedVertex(int vertexIndex);
     void setSelectedVertex2(int vertexIndex);
+
+    void updateDataCircles();
+    void setSelectedCircle(int circleIndex);
+
+    he::Mesh* mesh();
 
 public slots:
     [[maybe_unused]] void slotOpenOBJFile();
@@ -101,10 +106,10 @@ private:
     BatchFace m_batchFace;
     BatchEdge m_batchEdge;
     BatchVertex m_batchVertex;
+    BatchCircle m_batchCircle;
 
     he::Mesh m_mesh;
     he::Mesh m_sphereMesh;
-    Model m_modelMesh;
     GLView* m_view = nullptr;
     bool m_openedMesh;
 

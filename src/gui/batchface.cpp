@@ -29,35 +29,33 @@ void BatchFace::init() {
     m_vbo.release();
     m_vao.release();
 
-    m_program = new QOpenGLShaderProgram();
-    m_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/faces/vs.glsl");
-    m_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/faces/fs.glsl");
-    m_program->bindAttributeLocation("vertex", 0);
-    m_program->bindAttributeLocation("normal", 1);
-    m_program->bindAttributeLocation("ID", 2);
-    m_program->bindAttributeLocation("isSelected", 3);
-    m_program->link();
+    m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/faces/vs.glsl");
+    m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/faces/fs.glsl");
+    m_program.bindAttributeLocation("vertex", 0);
+    m_program.bindAttributeLocation("normal", 1);
+    m_program.bindAttributeLocation("ID", 2);
+    m_program.bindAttributeLocation("isSelected", 3);
+    m_program.link();
 
     //get locations of uniforms
-    m_program->bind();
-    m_projMatrixLoc = m_program->uniformLocation("projMatrix");
-    m_viewMatrixLoc = m_program->uniformLocation("mvMatrix");
-    m_lightPosLoc = m_program->uniformLocation("lightPos");
-    m_cameraPosLoc = m_program->uniformLocation("cameraPosition");
+    m_program.bind();
+    m_projMatrixLoc = m_program.uniformLocation("projMatrix");
+    m_viewMatrixLoc = m_program.uniformLocation("mvMatrix");
+    m_lightPosLoc = m_program.uniformLocation("lightPos");
+    m_cameraPosLoc = m_program.uniformLocation("cameraPosition");
 
-    m_programPicking = new QOpenGLShaderProgram();
-    m_programPicking->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/faces/picking/vs.glsl");
-    m_programPicking->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/faces/picking/fs.glsl");
-    m_programPicking->bindAttributeLocation("vertex", 0);
-    m_programPicking->bindAttributeLocation("normal", 1);
-    m_programPicking->bindAttributeLocation("ID", 2);
-    m_programPicking->bindAttributeLocation("isSelected", 3);
-    m_programPicking->link();
+    m_programPicking.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/faces/picking/vs.glsl");
+    m_programPicking.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/faces/picking/fs.glsl");
+    m_programPicking.bindAttributeLocation("vertex", 0);
+    m_programPicking.bindAttributeLocation("normal", 1);
+    m_programPicking.bindAttributeLocation("ID", 2);
+    m_programPicking.bindAttributeLocation("isSelected", 3);
+    m_programPicking.link();
 
     //get locations of uniforms
-    m_programPicking->bind();
-    m_projMatrixPickingLoc = m_programPicking->uniformLocation("projMatrix");
-    m_viewMatrixPickingLoc = m_programPicking->uniformLocation("mvMatrix");
+    m_programPicking.bind();
+    m_projMatrixPickingLoc = m_programPicking.uniformLocation("projMatrix");
+    m_viewMatrixPickingLoc = m_programPicking.uniformLocation("mvMatrix");
 }
 
 void BatchFace::update() {
@@ -98,60 +96,61 @@ void BatchFace::updateData() {
 void BatchFace::render(PickingType type) {
     switch (type) {
         case PickingType::PickingFace:
-            m_programPicking->bind();
+            m_programPicking.bind();
             m_vao.bind();
             glDrawArrays(GL_TRIANGLES, 0, m_count / m_floatsPerVertex);
-            m_programPicking->release();
+            m_programPicking.release();
             break;
         case PickingType::PickingEdge:
         case PickingType::PickingVertex:
         case PickingType::PickingCircle:
             //draw only in depth buffer
             glColorMask(false, false, false, false);
-            m_program->bind();
+            m_program.bind();
             m_vao.bind();
             glDrawArrays(GL_TRIANGLES, 0, m_count / m_floatsPerVertex);
-            m_program->release();
+            m_program.release();
             glColorMask(true, true, true, true);
             break;
         case PickingType::PickingNone:
-            m_program->bind();
+            m_program.bind();
             m_vao.bind();
             glDrawArrays(GL_TRIANGLES, 0, m_count / m_floatsPerVertex);
-            m_program->release();
+            m_program.release();
             break;
     }
 }
 
 void BatchFace::setProjection(QMatrix4x4 projection) {
-    m_program->bind();
-    m_program->setUniformValue(m_projMatrixLoc, projection);
-    m_program->release();
+    m_program.bind();
+    m_program.setUniformValue(m_projMatrixLoc, projection);
+    m_program.release();
 
-    m_programPicking->bind();
-    m_programPicking->setUniformValue(m_projMatrixPickingLoc, projection);
-    m_programPicking->release();
+    m_programPicking.bind();
+    m_programPicking.setUniformValue(m_projMatrixPickingLoc, projection);
+    m_programPicking.release();
 }
 
 void BatchFace::setCamera(Camera camera) {
-    m_program->bind();
-    m_program->setUniformValue(m_viewMatrixLoc, camera.getViewMatrix());
-    m_program->setUniformValue(m_cameraPosLoc, camera.getEye());
-    m_program->release();
+    m_program.bind();
+    m_program.setUniformValue(m_viewMatrixLoc, camera.getViewMatrix());
+    m_program.setUniformValue(m_cameraPosLoc, camera.getEye());
+    m_program.release();
 
-    m_programPicking->bind();
-    m_programPicking->setUniformValue(m_viewMatrixPickingLoc, camera.getViewMatrix());
-    m_programPicking->release();
+    m_programPicking.bind();
+    m_programPicking.setUniformValue(m_viewMatrixPickingLoc, camera.getViewMatrix());
+    m_programPicking.release();
 }
 
 void BatchFace::setLight(QVector3D lightPos) {
-    m_program->bind();
-    m_program->setUniformValue(m_lightPosLoc, lightPos);
-    m_program->release();
+    m_program.bind();
+    m_program.setUniformValue(m_lightPosLoc, lightPos);
+    m_program.release();
 }
 
 void BatchFace::setMesh(he::Mesh* mesh) {
     m_mesh = mesh;
+    m_selectedFace = 0;
     this->updateData();
 }
 

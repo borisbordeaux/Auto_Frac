@@ -27,10 +27,10 @@ void BatchSphere::init() {
 
     //get locations of uniforms
     m_program.bind();
-    m_projMatrixLocSphere = m_program.uniformLocation("projMatrix");
-    m_mvMatrixLocSphere = m_program.uniformLocation("mvMatrix");
-    m_lightPosLocSphere = m_program.uniformLocation("lightPos");
-    m_cameraPosLocSphere = m_program.uniformLocation("cameraPosition");
+    m_projMatrixLoc = m_program.uniformLocation("projMatrix");
+    m_viewMatrixLoc = m_program.uniformLocation("mvMatrix");
+    m_lightPosLoc = m_program.uniformLocation("lightPos");
+    m_cameraPosLoc = m_program.uniformLocation("cameraPosition");
 }
 
 void BatchSphere::update() {
@@ -70,20 +70,20 @@ void BatchSphere::render(PickingType type) {
 
 void BatchSphere::setProjection(QMatrix4x4 matrix) {
     m_program.bind();
-    m_program.setUniformValue(m_projMatrixLocSphere, matrix);
+    m_program.setUniformValue(m_projMatrixLoc, matrix);
     m_program.release();
 }
 
 void BatchSphere::setCamera(Camera camera) {
     m_program.bind();
-    m_program.setUniformValue(m_mvMatrixLocSphere, camera.getViewMatrix());
-    m_program.setUniformValue(m_cameraPosLocSphere, camera.getEye());
+    m_program.setUniformValue(m_viewMatrixLoc, camera.getViewMatrix());
+    m_program.setUniformValue(m_cameraPosLoc, camera.getEye());
     m_program.release();
 }
 
 void BatchSphere::setLight(QVector3D lightPos) {
     m_program.bind();
-    m_program.setUniformValue(m_lightPosLocSphere, lightPos);
+    m_program.setUniformValue(m_lightPosLoc, lightPos);
     m_program.release();
 }
 

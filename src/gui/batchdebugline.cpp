@@ -15,14 +15,13 @@ void BatchDebugLine::init() {
     m_vbo.release();
     m_vao.release();
 
-    m_program = new QOpenGLShaderProgram();
-    m_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/debugline/vs.glsl");
-    m_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/debugline/fs.glsl");
-    m_program->bindAttributeLocation("vertex", 0);
-    m_program->link();
-    m_program->bind();
-    m_projMatrixLoc = m_program->uniformLocation("projMatrix");
-    m_viewMatrixLoc = m_program->uniformLocation("mvMatrix");
+    m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/debugline/vs.glsl");
+    m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/debugline/fs.glsl");
+    m_program.bindAttributeLocation("vertex", 0);
+    m_program.link();
+    m_program.bind();
+    m_projMatrixLoc = m_program.uniformLocation("projMatrix");
+    m_viewMatrixLoc = m_program.uniformLocation("mvMatrix");
 }
 
 void BatchDebugLine::update() {
@@ -33,24 +32,24 @@ void BatchDebugLine::update() {
 
 void BatchDebugLine::render(PickingType type) {
     if (type != PickingType::PickingNone) { return; }
-    m_program->bind();
+    m_program.bind();
     m_vao.bind();
     glDrawArrays(GL_LINES, 0, m_count / m_floatsPerVertex);
-    m_program->release();
+    m_program.release();
 }
 
 void BatchDebugLine::setProjection(QMatrix4x4 projection) {
-    m_program->bind();
-    m_program->setUniformValue(m_projMatrixLoc, projection);
-    m_program->release();
+    m_program.bind();
+    m_program.setUniformValue(m_projMatrixLoc, projection);
+    m_program.release();
 }
 
 void BatchDebugLine::setCamera(Camera camera) {
     //to be sure to draw in front of sphere and faces
     camera.zoom(0.001f);
-    m_program->bind();
-    m_program->setUniformValue(m_viewMatrixLoc, camera.getViewMatrix());
-    m_program->release();
+    m_program.bind();
+    m_program.setUniformValue(m_viewMatrixLoc, camera.getViewMatrix());
+    m_program.release();
 }
 
 void BatchDebugLine::addDebugLine(QVector3D const& v1, QVector3D const& v2) {

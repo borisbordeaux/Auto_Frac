@@ -1,5 +1,4 @@
 #include "gui/glview.h"
-#include "gui/model.h"
 #include "gui/polytopal2dwindow.h"
 #include <QMouseEvent>
 #include <QMimeData>
@@ -9,108 +8,13 @@
 #include "halfedge/halfedge.h"
 #include "halfedge/face.h"
 
-GLView::GLView(Model* model, Polytopal2DWindow* parent) :
+GLView::GLView(Polytopal2DWindow* parent) :
         QOpenGLWidget(parent),
         m_camera(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.01f, 49.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)),
-        m_model(model),
         m_cameraBeforeAnim(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.01f, 49.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)),
         m_mainWindow(parent) {
     connect(&m_timerAnimCamera, &QTimer::timeout, this, &GLView::animationCameraStep);
     this->setAcceptDrops(true);
-}
-
-void GLView::initBuffers() {
-    //------for the circles------//
-    m_vaoCircles.bind();
-    m_vboCircles.bind();
-    //allocate necessary memory
-    m_vboCircles.allocate(m_model->constDataCircles(), m_model->countCircles() * static_cast<int>(sizeof(GLfloat)));
-
-    //enable enough attrib array for all the data of the circle's vertex
-    glEnableVertexAttribArray(0); //coordinates
-    glEnableVertexAttribArray(1); //color
-    glEnableVertexAttribArray(2); //ID for picking
-    glEnableVertexAttribArray(3); //is selected
-    //coordinates of the vertex
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), nullptr);
-    //color of the edge
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
-    //the ID
-    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(6 * sizeof(GLfloat)));
-    //whether it's selected or not, to simplify the code, a negative value means not selected while a positive value means selected
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(7 * sizeof(GLfloat)));
-    m_vboCircles.release();
-    m_vaoCircles.release();
-
-    //------for the circles dual ------//
-    m_vaoCirclesDual.bind();
-    m_vboCirclesDual.bind();
-    //allocate necessary memory
-    m_vboCirclesDual.allocate(m_model->constDataCirclesDual(), m_model->countCirclesDual() * static_cast<int>(sizeof(GLfloat)));
-
-    //enable enough attrib array for all the data of the edge's vertex
-    glEnableVertexAttribArray(0); //coordinates
-    glEnableVertexAttribArray(1); //color
-    //coordinates of the vertex
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), nullptr);
-    //color of the edge
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
-    m_vboCirclesDual.release();
-    m_vaoCirclesDual.release();
-}
-
-void GLView::initShaders() {
-    this->initShadersView();
-    this->initShadersPicking();
-}
-
-void GLView::initShadersView() {
-    //init shader for circles
-    m_programCircles = new QOpenGLShaderProgram();
-    m_programCircles->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/circles/vs.glsl");
-    m_programCircles->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/circles/fs.glsl");
-    m_programCircles->bindAttributeLocation("vertex", 0);
-    m_programCircles->bindAttributeLocation("color", 1);
-    m_programCircles->bindAttributeLocation("ID", 2);
-    m_programCircles->bindAttributeLocation("isSelected", 3);
-    m_programCircles->link();
-
-    //get locations of uniforms
-    m_programCircles->bind();
-    m_projMatrixLocCircle = m_programCircles->uniformLocation("projMatrix");
-    m_mvMatrixLocCircle = m_programCircles->uniformLocation("mvMatrix");
-
-    //init shader for circles dual
-    m_programCirclesDual = new QOpenGLShaderProgram();
-    m_programCirclesDual->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/circlesdual/vs.glsl");
-    m_programCirclesDual->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/circlesdual/fs.glsl");
-    m_programCirclesDual->bindAttributeLocation("vertex", 0);
-    m_programCirclesDual->bindAttributeLocation("color", 1);
-    m_programCirclesDual->link();
-
-    //get locations of uniforms
-    m_programCirclesDual->bind();
-    m_projMatrixLocCircleDual = m_programCirclesDual->uniformLocation("projMatrix");
-    m_mvMatrixLocCircleDual = m_programCirclesDual->uniformLocation("mvMatrix");
-}
-
-void GLView::initShadersPicking() {
-    //init shader for circles picking
-    m_programCirclesPicking = new QOpenGLShaderProgram();
-    m_programCirclesPicking->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/circles/picking/vs.glsl");
-    m_programCirclesPicking->addShaderFromSourceFile(QOpenGLShader::Geometry, "../shaders/circles/picking/gs.glsl");
-    m_programCirclesPicking->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/circles/picking/fs.glsl");
-    m_programCirclesPicking->bindAttributeLocation("vertex", 0);
-    m_programCirclesPicking->bindAttributeLocation("color", 1);
-    m_programCirclesPicking->bindAttributeLocation("ID", 2);
-    m_programCirclesPicking->bindAttributeLocation("isSelected", 3);
-    m_programCirclesPicking->link();
-
-    //get location of uniforms
-    m_programCirclesPicking->bind();
-    m_projMatrixPickingLocCircle = m_programCirclesPicking->uniformLocation("projMatrix");
-    m_mvMatrixPickingLocCircle = m_programCirclesPicking->uniformLocation("mvMatrix");
-    m_invViewportPickingLocCircle = m_programCirclesPicking->uniformLocation("invViewport");
 }
 
 void GLView::initializeGL() {
@@ -127,19 +31,8 @@ void GLView::initializeGL() {
     val = QString::fromLatin1((char*) glGetString(GL_SHADING_LANGUAGE_VERSION));
     qDebug() << "GLSL version : " << val;
 
-    //for compatibility
-    m_vaoCircles.create();
-    m_vaoCirclesDual.create();
-
-    m_vboCircles.create();
-    m_vboCirclesDual.create();
-
     //background
     glClearColor(m_clearColor.x(), m_clearColor.y(), m_clearColor.z(), 1.0f);
-
-    this->initShaders();
-
-    this->initBuffers();
 
     for (BatchGraphicsItem* item: m_items) {
         item->init();
@@ -158,28 +51,6 @@ void GLView::paintGL() {
             item->setLight(m_camera.getEye());
             item->setInvViewport(1.0f / m_viewportWidth, 1.0f / m_viewportHeight);
         }
-
-        //to be sure to draw in front of sphere and faces
-        m_camera.zoom(0.001f);
-
-        m_programCircles->bind();
-        m_programCircles->setUniformValue(m_projMatrixLocCircle, m_proj);
-        m_programCircles->setUniformValue(m_mvMatrixLocCircle, m_camera.getViewMatrix());
-        m_programCircles->release();
-
-        m_programCirclesPicking->bind();
-        m_programCirclesPicking->setUniformValue(m_projMatrixPickingLocCircle, m_proj);
-        m_programCirclesPicking->setUniformValue(m_mvMatrixPickingLocCircle, m_camera.getViewMatrix());
-        m_programCirclesPicking->setUniformValue(m_invViewportPickingLocCircle, 1.0f / m_viewportWidth, 1.0f / m_viewportHeight);
-        m_programCirclesPicking->release();
-
-        m_programCirclesDual->bind();
-        m_programCirclesDual->setUniformValue(m_projMatrixLocCircleDual, m_proj);
-        m_programCirclesDual->setUniformValue(m_mvMatrixLocCircleDual, m_camera.getViewMatrix());
-        m_programCirclesDual->release();
-
-        //dezoom to reset camera position
-        m_camera.dezoom(0.001f);
 
         m_uniformsDirty = false;
         m_itemsAddedInList = false;
@@ -217,18 +88,6 @@ void GLView::paintGL() {
     for (BatchGraphicsItem* item: m_items) {
         item->render(PickingType::PickingNone);
     }
-
-    //draw circles
-    m_programCircles->bind();
-    m_vaoCircles.bind();
-    glDrawArrays(GL_LINES, 0, m_model->vertexCountCircles());
-    m_programCircles->release();
-
-    //draw circles dual
-    m_programCirclesDual->bind();
-    m_vaoCirclesDual.bind();
-    glDrawArrays(GL_LINES, 0, m_model->vertexCountCirclesDual());
-    m_programCirclesDual->release();
 }
 
 void GLView::resizeGL(int w, int h) {
@@ -236,7 +95,7 @@ void GLView::resizeGL(int w, int h) {
     m_viewportHeight = static_cast<float>(h);
     //reset the projection with the new window size
     m_proj.setToIdentity();
-    m_proj.perspective(45.0f, m_viewportWidth / m_viewportHeight, 0.005f, 50.0f);
+    m_proj.perspective(45.0f, m_viewportWidth / m_viewportHeight, 0.005f, 500.0f);
     m_uniformsDirty = true;
 }
 
@@ -317,10 +176,9 @@ void GLView::mouseMoveEvent(QMouseEvent* event) {
             m_world.setToIdentity();
             m_world.rotate(static_cast<float>(dy) / 4.0f, 1, 0, 0);
             m_world.rotate(static_cast<float>(dx) / 4.0f, 0, 1, 0);
-            m_model->transformMesh(m_world);
-            m_mainWindow->updateCirclesDual();
+            m_mainWindow->mesh()->transformMesh(m_world);
             m_mainWindow->updateCircles();
-            this->updateData();
+            m_mainWindow->updateCirclesDual();
             m_mainWindow->updateDataFaces();
             m_mainWindow->updateDataEdges();
             m_mainWindow->updateDataVertices();
@@ -337,10 +195,9 @@ void GLView::mouseMoveEvent(QMouseEvent* event) {
             m_world.setToIdentity();
             m_world.rotate(static_cast<float>(-dx) / 4.0f, 0, 0, 1);
             m_world.rotate(static_cast<float>(dy) / 4.0f, 0, 1, 0);
-            m_model->transformMesh(m_world);
+            m_mainWindow->mesh()->transformMesh(m_world);
             m_mainWindow->updateCirclesDual();
             m_mainWindow->updateCircles();
-            this->updateData();
             m_mainWindow->updateDataFaces();
             m_mainWindow->updateDataEdges();
             m_mainWindow->updateDataVertices();
@@ -528,12 +385,6 @@ void GLView::clickCircleManagement() {
         item->render(PickingType::PickingCircle);
     }
 
-    //draw circles
-    m_programCirclesPicking->bind();
-    m_vaoCircles.bind();
-    glDrawArrays(GL_LINES, 0, m_model->vertexCountCircles());
-    m_programCirclesPicking->release();
-
     //render the scene
     QImage image = grabFramebuffer();
 
@@ -556,16 +407,11 @@ void GLView::clickCircleManagement() {
     image.save("picking.png");
 
     //set the selected circle using the color
-    m_model->setSelectedCircle(max);
+    m_mainWindow->setSelectedCircle(max);
     m_mainWindow->updateUserData();
 
     //update the data for drawing the selected object in the right color
-    m_model->updateDataCircles();
-
-    //write data to the GPU
-    m_vboCircles.bind();
-    m_vboCircles.write(0, m_model->constDataCircles(), m_model->countCircles() * static_cast<int>(sizeof(GLfloat)));
-    m_vboCircles.release();
+    m_mainWindow->updateCircles();
 
     //reset clear color
     glClearColor(m_clearColor.x(), m_clearColor.y(), m_clearColor.z(), 1.0f);
@@ -590,23 +436,6 @@ void GLView::animationCameraStep() {
     update();
 }
 
-void GLView::updateData() {
-    this->updateDataCircles();
-    this->updateDataCirclesDual();
-}
-
-void GLView::updateDataCircles() {
-    m_vboCircles.bind();
-    m_vboCircles.allocate(m_model->constDataCircles(), m_model->countCircles() * static_cast<int>(sizeof(GLfloat)));
-    m_vboCircles.release();
-}
-
-void GLView::updateDataCirclesDual() {
-    m_vboCirclesDual.bind();
-    m_vboCirclesDual.allocate(m_model->constDataCirclesDual(), m_model->countCirclesDual() * static_cast<int>(sizeof(GLfloat)));
-    m_vboCirclesDual.release();
-}
-
 void GLView::setPickingType(PickingType type) {
     if (type == m_pickingType) { return; }
     m_pickingType = type;
@@ -614,12 +443,11 @@ void GLView::setPickingType(PickingType type) {
     m_mainWindow->setSelectedEdge(0);
     m_mainWindow->setSelectedVertex(0);
     m_mainWindow->setSelectedVertex2(0);
-    m_model->setSelectedCircle(0);
+    m_mainWindow->setSelectedCircle(0);
     m_mainWindow->updateDataFaces();
     m_mainWindow->updateDataEdges();
     m_mainWindow->updateDataVertices();
-    m_model->updateDataCircles();
-    this->updateDataCircles();
+    m_mainWindow->updateDataCircles();
     this->update();
 }
 
@@ -723,8 +551,6 @@ void GLView::handleMoveXVertex(float dx) {
     m_mainWindow->selectedVertex()->setPos(newPos);
     m_mainWindow->updateCircles();
     m_mainWindow->updateCirclesDual();
-    m_model->updateData();
-    this->updateData();
     m_mainWindow->updateDataFaces();
     m_mainWindow->updateDataEdges();
     m_mainWindow->updateDataVertices();
@@ -737,8 +563,6 @@ void GLView::handleMoveYVertex(float dy) {
     m_mainWindow->selectedVertex()->setPos(newPos);
     m_mainWindow->updateCircles();
     m_mainWindow->updateCirclesDual();
-    m_model->updateData();
-    this->updateData();
     m_mainWindow->updateDataFaces();
     m_mainWindow->updateDataEdges();
     m_mainWindow->updateDataVertices();
@@ -751,8 +575,6 @@ void GLView::handleMoveZVertex(float dz) {
     m_mainWindow->selectedVertex()->setPos(newPos);
     m_mainWindow->updateCircles();
     m_mainWindow->updateCirclesDual();
-    m_model->updateData();
-    this->updateData();
     m_mainWindow->updateDataFaces();
     m_mainWindow->updateDataEdges();
     m_mainWindow->updateDataVertices();
@@ -770,8 +592,6 @@ void GLView::handleMoveXEdge(float dx) {
     v2->setPos(newPos2);
     m_mainWindow->updateCircles();
     m_mainWindow->updateCirclesDual();
-    m_model->updateData();
-    this->updateData();
     m_mainWindow->updateDataFaces();
     m_mainWindow->updateDataEdges();
     m_mainWindow->updateDataVertices();
@@ -789,8 +609,6 @@ void GLView::handleMoveYEdge(float dy) {
     v2->setPos(newPos2);
     m_mainWindow->updateCircles();
     m_mainWindow->updateCirclesDual();
-    m_model->updateData();
-    this->updateData();
     m_mainWindow->updateDataFaces();
     m_mainWindow->updateDataEdges();
     m_mainWindow->updateDataVertices();
@@ -808,8 +626,6 @@ void GLView::handleMoveZEdge(float dz) {
     v2->setPos(newPos2);
     m_mainWindow->updateCircles();
     m_mainWindow->updateCirclesDual();
-    m_model->updateData();
-    this->updateData();
     m_mainWindow->updateDataFaces();
     m_mainWindow->updateDataEdges();
     m_mainWindow->updateDataVertices();
@@ -824,8 +640,6 @@ void GLView::handleMoveXFace(float dx) {
     }
     m_mainWindow->updateCircles();
     m_mainWindow->updateCirclesDual();
-    m_model->updateData();
-    this->updateData();
     m_mainWindow->updateDataFaces();
     m_mainWindow->updateDataEdges();
     m_mainWindow->updateDataVertices();
@@ -840,8 +654,6 @@ void GLView::handleMoveYFace(float dy) {
     }
     m_mainWindow->updateCircles();
     m_mainWindow->updateCirclesDual();
-    m_model->updateData();
-    this->updateData();
     m_mainWindow->updateDataFaces();
     m_mainWindow->updateDataEdges();
     m_mainWindow->updateDataVertices();
@@ -856,8 +668,6 @@ void GLView::handleMoveZFace(float dz) {
     }
     m_mainWindow->updateCircles();
     m_mainWindow->updateCirclesDual();
-    m_model->updateData();
-    this->updateData();
     m_mainWindow->updateDataFaces();
     m_mainWindow->updateDataEdges();
     m_mainWindow->updateDataVertices();
@@ -881,9 +691,9 @@ void GLView::cutFaceOnSelectedVertices() {
     }
 
     if (face == nullptr) { return; }
-    m_model->mesh()->cutFace(face, v1, v2);
-    m_model->mesh()->updateHalfEdgeNotTwin();
-    m_model->mesh()->updateOtherHalfEdges();
+    m_mainWindow->mesh()->cutFace(face, v1, v2);
+    m_mainWindow->mesh()->updateHalfEdgeNotTwin();
+    m_mainWindow->mesh()->updateOtherHalfEdges();
     m_mainWindow->updateDataFaces();
     m_mainWindow->updateDataEdges();
     m_mainWindow->updateDataVertices();
@@ -894,9 +704,9 @@ void GLView::cutSelectedHalfEdge() {
     he::HalfEdge* he = m_mainWindow->selectedEdge();
     if (he == nullptr) { return; }
 
-    m_model->mesh()->cutHalfEdge(he);
-    m_model->mesh()->updateHalfEdgeNotTwin();
-    m_model->mesh()->updateOtherHalfEdges();
+    m_mainWindow->mesh()->cutHalfEdge(he);
+    m_mainWindow->mesh()->updateHalfEdgeNotTwin();
+    m_mainWindow->mesh()->updateOtherHalfEdges();
     m_mainWindow->setSelectedEdge(0);
     m_mainWindow->updateDataFaces();
     m_mainWindow->updateDataEdges();
@@ -905,14 +715,14 @@ void GLView::cutSelectedHalfEdge() {
 }
 
 void GLView::removeSelectedFace() {
-    m_model->mesh()->remove(m_mainWindow->selectedFace());
+    m_mainWindow->mesh()->remove(m_mainWindow->selectedFace());
     m_mainWindow->setSelectedFace(0);
     m_mainWindow->updateDataFaces();
     this->update();
 }
 
 void GLView::removeSelectedHalfEdge() {
-    m_model->mesh()->remove(m_mainWindow->selectedEdge());
+    m_mainWindow->mesh()->remove(m_mainWindow->selectedEdge());
     m_mainWindow->setSelectedEdge(0);
     m_mainWindow->updateDataFaces();
     m_mainWindow->updateDataEdges();
@@ -921,7 +731,7 @@ void GLView::removeSelectedHalfEdge() {
 }
 
 void GLView::removeSelectedVertex() {
-    m_model->mesh()->remove(m_mainWindow->selectedVertex());
+    m_mainWindow->mesh()->remove(m_mainWindow->selectedVertex());
     m_mainWindow->setSelectedVertex(0);
     m_mainWindow->setSelectedVertex2(0);
     m_mainWindow->updateDataFaces();

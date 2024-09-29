@@ -7,10 +7,10 @@
 void BatchVertex::init() {
     this->initializeOpenGLFunctions();
 
-    m_vaoVertices.create();
-    m_vboVertices.create();
-    m_vaoVertices.bind();
-    m_vboVertices.bind();
+    m_vao.create();
+    m_vbo.create();
+    m_vao.bind();
+    m_vbo.bind();
 
     //enable enough attrib array for all the data of the edge's vertex
     glEnableVertexAttribArray(0); //coordinates
@@ -25,49 +25,47 @@ void BatchVertex::init() {
     glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(6 * sizeof(GLfloat)));
     //whether it's selected or not, to simplify the code, a negative value means not selected while a positive value means selected
     glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(7 * sizeof(GLfloat)));
-    m_vboVertices.release();
-    m_vaoVertices.release();
+    m_vbo.release();
+    m_vao.release();
 
-    m_programVertices = new QOpenGLShaderProgram();
-    m_programVertices->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/vertices/vs.glsl");
-    m_programVertices->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/vertices/fs.glsl");
-    m_programVertices->bindAttributeLocation("vertex", 0);
-    m_programVertices->bindAttributeLocation("color", 1);
-    m_programVertices->bindAttributeLocation("ID", 2);
-    m_programVertices->bindAttributeLocation("isSelected", 3);
-    m_programVertices->link();
-
-    //get location of uniforms
-    m_programVertices->bind();
-    m_projMatrixLocVertices = m_programVertices->uniformLocation("projMatrix");
-    m_mvMatrixLocVertices = m_programVertices->uniformLocation("mvMatrix");
-
-    m_programVerticesPicking = new QOpenGLShaderProgram();
-    m_programVerticesPicking->addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/vertices/picking/vs.glsl");
-    m_programVerticesPicking->addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/vertices/picking/fs.glsl");
-    m_programVerticesPicking->bindAttributeLocation("vertex", 0);
-    m_programVerticesPicking->bindAttributeLocation("color", 1);
-    m_programVerticesPicking->bindAttributeLocation("ID", 2);
-    m_programVerticesPicking->bindAttributeLocation("isSelected", 3);
-    m_programVerticesPicking->link();
+    m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/vertices/vs.glsl");
+    m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/vertices/fs.glsl");
+    m_program.bindAttributeLocation("vertex", 0);
+    m_program.bindAttributeLocation("color", 1);
+    m_program.bindAttributeLocation("ID", 2);
+    m_program.bindAttributeLocation("isSelected", 3);
+    m_program.link();
 
     //get location of uniforms
-    m_programVerticesPicking->bind();
-    m_projMatrixPickingLocVertices = m_programVerticesPicking->uniformLocation("projMatrix");
-    m_mvMatrixPickingLocVertices = m_programVerticesPicking->uniformLocation("mvMatrix");
+    m_program.bind();
+    m_projMatrixLoc = m_program.uniformLocation("projMatrix");
+    m_viewMatrixLoc = m_program.uniformLocation("mvMatrix");
+    
+    m_programPicking.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/vertices/picking/vs.glsl");
+    m_programPicking.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/vertices/picking/fs.glsl");
+    m_programPicking.bindAttributeLocation("vertex", 0);
+    m_programPicking.bindAttributeLocation("color", 1);
+    m_programPicking.bindAttributeLocation("ID", 2);
+    m_programPicking.bindAttributeLocation("isSelected", 3);
+    m_programPicking.link();
+
+    //get location of uniforms
+    m_programPicking.bind();
+    m_projMatrixPickingLoc = m_programPicking.uniformLocation("projMatrix");
+    m_viewMatrixPickingLoc = m_programPicking.uniformLocation("mvMatrix");
 
     this->updateData();
 }
 
 void BatchVertex::update() {
-    m_vboVertices.bind();
-    m_vboVertices.allocate(m_dataVertices.constData(), m_countVertices * static_cast<int>(sizeof(GLfloat)));
-    m_vboVertices.release();
+    m_vbo.bind();
+    m_vbo.allocate(m_data.constData(), m_count * static_cast<int>(sizeof(GLfloat)));
+    m_vbo.release();
 }
 
 void BatchVertex::updateData() {
-    m_countVertices = 0;
-    m_dataVertices.clear();
+    m_count = 0;
+    m_data.clear();
 
     //the number of vertices of the mesh plus the projection point on sphere
     qsizetype nbOfVertices = (m_mesh != nullptr ? static_cast<qsizetype>(m_mesh->vertices().size()) : 0) + 1;
@@ -76,7 +74,7 @@ void BatchVertex::updateData() {
     qsizetype nbOfAdd = 1 * nbOfVertices;
 
     //we resize the data for rapidity
-    m_dataVertices.resize(nbOfAdd * 8);
+    m_data.resize(nbOfAdd * 8);
 
     this->addVertex({ 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, 0.0f, -1.0f);
 
@@ -100,24 +98,24 @@ void BatchVertex::render(PickingType type) {
     switch (type) {
         case PickingType::PickingVertex:
             if (!m_displayMesh) { return; }
-            m_programVerticesPicking->bind();
-            m_vaoVertices.bind();
-            glDrawArrays(GL_POINTS, 1, m_countVertices / m_floatsPerVertex - 1);
-            m_programVerticesPicking->release();
+            m_programPicking.bind();
+            m_vao.bind();
+            glDrawArrays(GL_POINTS, 1, m_count / m_floatsPerVertex - 1);
+            m_programPicking.release();
             break;
         case PickingType::PickingNone:
-            m_programVertices->bind();
-            m_vaoVertices.bind();
+            m_program.bind();
+            m_vao.bind();
             if (m_displayMesh && !m_displayProjectionPoint) {
-                glDrawArrays(GL_POINTS, 1, m_countVertices / m_floatsPerVertex - 1);
+                glDrawArrays(GL_POINTS, 1, m_count / m_floatsPerVertex - 1);
             }
             if (!m_displayMesh && m_displayProjectionPoint) {
                 glDrawArrays(GL_POINTS, 0, 1);
             }
             if (m_displayMesh && m_displayProjectionPoint) {
-                glDrawArrays(GL_POINTS, 0, m_countVertices / m_floatsPerVertex);
+                glDrawArrays(GL_POINTS, 0, m_count / m_floatsPerVertex);
             }
-            m_programVertices->release();
+            m_program.release();
             break;
         case PickingType::PickingFace:
         case PickingType::PickingEdge:
@@ -127,31 +125,33 @@ void BatchVertex::render(PickingType type) {
 }
 
 void BatchVertex::setProjection(QMatrix4x4 matrix) {
-    m_programVertices->bind();
-    m_programVertices->setUniformValue(m_projMatrixLocVertices, matrix);
-    m_programVertices->release();
+    m_program.bind();
+    m_program.setUniformValue(m_projMatrixLoc, matrix);
+    m_program.release();
 
-    m_programVerticesPicking->bind();
-    m_programVerticesPicking->setUniformValue(m_projMatrixPickingLocVertices, matrix);
-    m_programVerticesPicking->release();
+    m_programPicking.bind();
+    m_programPicking.setUniformValue(m_projMatrixPickingLoc, matrix);
+    m_programPicking.release();
 }
 
 void BatchVertex::setCamera(Camera camera) {
     camera.zoom(0.001f);
     camera.zoom(0.001f);
 
-    m_programVertices->bind();
-    m_programVertices->setUniformValue(m_mvMatrixLocVertices, camera.getViewMatrix());
-    m_programVertices->release();
+    m_program.bind();
+    m_program.setUniformValue(m_viewMatrixLoc, camera.getViewMatrix());
+    m_program.release();
 
-    m_programVerticesPicking->bind();
-    m_programVerticesPicking->setUniformValue(m_mvMatrixPickingLocVertices, camera.getViewMatrix());
-    m_programVerticesPicking->release();
+    m_programPicking.bind();
+    m_programPicking.setUniformValue(m_viewMatrixPickingLoc, camera.getViewMatrix());
+    m_programPicking.release();
 }
 
 void BatchVertex::setMesh(he::Mesh* mesh) {
     m_mesh = mesh;
     m_displayMesh = true;
+    m_selectedVertex = 0;
+    m_selectedVertex2 = 0;
     this->updateData();
 }
 
@@ -193,7 +193,7 @@ he::Vertex* BatchVertex::selectedVertex2() {
 
 void BatchVertex::addVertex(const QVector3D& v, const QVector3D& color, float ID, float isSelected) {
     //add to the end of the data already added
-    float* p = m_dataVertices.data() + m_countVertices;
+    float* p = m_data.data() + m_count;
     //the coordinates of the vertex
     *p++ = v.x();
     *p++ = v.y();
@@ -206,5 +206,5 @@ void BatchVertex::addVertex(const QVector3D& v, const QVector3D& color, float ID
     //whether the vertex is selected or not
     *p = isSelected;
     //we update the amount of data
-    m_countVertices += 8;
+    m_count += 8;
 }

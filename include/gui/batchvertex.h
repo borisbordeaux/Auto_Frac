@@ -34,19 +34,20 @@ private:
     void addVertex(QVector3D const& v, QVector3D const& color, float ID, float isSelected);
 
 private:
-    QVector<float> m_dataVertices;
-    int m_countVertices = 0;
+    QVector<float> m_data;
+    int m_count = 0;
     int m_floatsPerVertex = 8;
 
-    QOpenGLVertexArrayObject m_vaoVertices;
-    QOpenGLBuffer m_vboVertices;
-    QOpenGLShaderProgram* m_programVertices = nullptr;
-    QOpenGLShaderProgram* m_programVerticesPicking = nullptr;
-    int m_projMatrixLocVertices = 0;
-    int m_mvMatrixLocVertices = 0;
+    QOpenGLVertexArrayObject m_vao;
+    QOpenGLBuffer m_vbo;
+    QOpenGLShaderProgram m_program;
+    QOpenGLShaderProgram m_programPicking;
+
+    int m_projMatrixLoc = 0;
+    int m_viewMatrixLoc = 0;
     //Vertices picking
-    int m_projMatrixPickingLocVertices = 0;
-    int m_mvMatrixPickingLocVertices = 0;
+    int m_projMatrixPickingLoc = 0;
+    int m_viewMatrixPickingLoc = 0;
 
     he::Mesh* m_mesh = nullptr;
     bool m_displayProjectionPoint = true;

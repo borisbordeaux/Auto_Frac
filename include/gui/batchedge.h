@@ -37,8 +37,8 @@ private:
 
     QOpenGLVertexArrayObject m_vao;
     QOpenGLBuffer m_vbo;
-    QOpenGLShaderProgram* m_program = nullptr;
-    QOpenGLShaderProgram* m_programPicking = nullptr;
+    QOpenGLShaderProgram m_program;
+    QOpenGLShaderProgram m_programPicking;
     //Edges viewing
     int m_projMatrixLoc = 0;
     int m_viewMatrixLoc = 0;
