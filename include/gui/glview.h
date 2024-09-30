@@ -85,7 +85,7 @@ private:
     QPointF m_lastPos;
 
     //OpenGL stuff for rendering
-    QVector3D m_clearColor = { 0.3f, 0.3f, 0.3f };
+    QVector3D m_clearColor = { 1.0f, 1.0f, 1.0f };
 
     //flag to update uniforms if needed
     bool m_uniformsDirty = true;
