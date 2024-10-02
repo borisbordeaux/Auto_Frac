@@ -85,8 +85,8 @@ std::vector<frac::Face> frac::LinksOnCorners::subdivide(const frac::Face& face) 
             }
         }
         for (std::size_t i = 0; i < res.size(); ++i) {
-            frac::Face current = res[i];
-            frac::Face next = res[frac::utils::mod(i + 1, res.size())];
+            frac::Face const& current = res[i];
+            frac::Face const& next = res[frac::utils::mod(i + 1, res.size())];
             if (writeConstraints) {
                 Face::addAdjacencyConstraint(face, current, next, i, current.firstInterior(), frac::utils::mod(i + 1, res.size()), next.lastInterior());
             }
