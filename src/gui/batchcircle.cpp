@@ -1,5 +1,4 @@
 #include "gui/batchcircle.h"
-#include "polytopal/circle.h"
 
 void BatchCircle::init() {
     this->initializeOpenGLFunctions();

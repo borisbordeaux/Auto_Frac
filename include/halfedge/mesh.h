@@ -17,7 +17,11 @@ class Face;
 class Mesh {
 public:
     Mesh() = default;
-    ~Mesh();
+    Mesh(Mesh const& mesh) = delete;            //copy constructor
+    Mesh(Mesh&& mesh) = default;                //move constructor
+    Mesh& operator=(Mesh const& mesh) = delete; //copy assignment operator
+    Mesh& operator=(Mesh&& mesh) = default;     //move assignment operator
+    ~Mesh();                                    //destructeur
 
     [[nodiscard]] std::vector<he::Vertex*> const& vertices() const;
     [[nodiscard]] std::vector<he::HalfEdge*> const& halfEdges() const;

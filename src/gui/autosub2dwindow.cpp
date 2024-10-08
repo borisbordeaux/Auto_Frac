@@ -59,7 +59,7 @@ AutoSub2DWindow::~AutoSub2DWindow() {
     frac::Structure s { faces, this->ui->comboBox_typeBezier->currentIndex() == 1 };
 
     for (int i = 0; i < this->ui->listWidget_constraints->count(); ++i) {
-        frac::Adjacency c = toConstraint(this->ui->listWidget_constraints->item(i)->text());
+        frac::Adjacency c = AutoSub2DWindow::toConstraint(this->ui->listWidget_constraints->item(i)->text());
         //checks if constraint valid
         try {
             bool res = faces.at(c.Face1)[c.Edge1] == faces.at(c.Face2)[c.Edge2];
@@ -353,7 +353,7 @@ AutoSub2DWindow::~AutoSub2DWindow() {
     std::unique_ptr<frac::Structure> newStruct = std::make_unique<frac::Structure>(faces, this->ui->comboBox_typeBezier->currentIndex() == 1);
 
     for (int i = 0; i < this->ui->listWidget_constraints->count(); ++i) {
-        frac::Adjacency c = toConstraint(this->ui->listWidget_constraints->item(i)->text());
+        frac::Adjacency c = AutoSub2DWindow::toConstraint(this->ui->listWidget_constraints->item(i)->text());
         //checks if constraint valid
         try {
             bool res = faces.at(c.Face1)[c.Edge1] == faces.at(c.Face2)[c.Edge2];
@@ -547,8 +547,8 @@ frac::Adjacency AutoSub2DWindow::toConstraint(QString const& constraintText) {
     QString sepFaceInfo = ".";
 
     QStringList splitFaces = constraintText.split(sepFaces);
-    QString face1Info = splitFaces[0];
-    QString face2Info = splitFaces[1];
+    QString const& face1Info = splitFaces[0];
+    QString const& face2Info = splitFaces[1];
 
     QStringList splitFace1 = face1Info.split(sepFaceInfo);
     QStringList splitFace2 = face2Info.split(sepFaceInfo);

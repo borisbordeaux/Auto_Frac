@@ -47,7 +47,7 @@ private:
     int m_viewMatrixPickingLoc = 0;
     int m_invViewportPickingLoc = 0;
 
-    he::Mesh* m_mesh;
+    he::Mesh* m_mesh = nullptr;
     int m_selectedEdge = 0;
 };
 

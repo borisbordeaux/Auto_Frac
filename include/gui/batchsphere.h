@@ -2,6 +2,7 @@
 #define AUTOFRAC_BATCHSPHERE_H
 
 #include "gui/batchgraphicsitem.h"
+#include "halfedge/mesh.h"
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
 #include <QOpenGLShaderProgram>
@@ -9,8 +10,6 @@
 
 namespace he {
 class Face;
-
-class Mesh;
 }
 
 class BatchSphere : public BatchGraphicsItem {
@@ -24,13 +23,15 @@ public:
     void setCamera(Camera camera) override;
     void setLight(QVector3D lightPos) override;
 
-    void setSphereMesh(he::Mesh* mesh);
+    void setSphereMesh(he::Mesh&& mesh);
+
+    int priority() override { return 2; }
 
 private:
     void addFaceSphere(he::Face* f);
     void addVertexSphere(QVector3D const& v);
     void triangleSphere(const QVector3D& pos1, const QVector3D& pos2, const QVector3D& pos3);
-    static qsizetype findNbOfTriangle(he::Mesh* mesh);
+    qsizetype findNbOfTriangle();
 
 private:
     int m_projMatrixLoc = 0;
@@ -38,10 +39,10 @@ private:
     int m_lightPosLoc = 0;
     int m_cameraPosLoc = 0;
 
-    he::Mesh* m_sphereMesh = nullptr;
+    he::Mesh m_sphereMesh;
 
     QList<float> m_data;
-    int m_count;
+    int m_count = 0;
     int m_floatsPerVertex = 3;
 
     QOpenGLVertexArrayObject m_vao;

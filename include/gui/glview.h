@@ -8,10 +8,11 @@
 #include <QtOpenGLWidgets/QOpenGLWidget>
 #include <QTimer>
 #include "gui/camera.h"
-#include "gui/batchgraphicsitem.h"
 #include "gui/pickingtype.h"
 
 class Polytopal2DWindow;
+
+class BatchGraphicsItem;
 
 class GLView : public QOpenGLWidget, protected QOpenGLFunctions {
 Q_OBJECT
@@ -51,11 +52,7 @@ protected:
     void keyReleaseEvent(QKeyEvent* event) override;
 
 private:
-    //manage face picking
-    void clickFaceManagement();
-    void clickEdgeManagement();
-    void clickVertexManagement();
-    void clickCircleManagement();
+    void pickingManagement(PickingType type);
 
     //manage mesh editing
     void handleMoveXVertex(float dx);

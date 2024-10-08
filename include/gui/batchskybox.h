@@ -21,7 +21,7 @@ public:
 
     void setSkyBox(SkyBoxType type);
 
-    int priority() override { return 1; }
+    int priority() override { return 3; }
 
 private:
     unsigned int m_textureID = 0;

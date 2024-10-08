@@ -38,8 +38,9 @@ Polytopal2DWindow::Polytopal2DWindow(QWidget* parent) :
     connect(&m_timerAnimProject, &QTimer::timeout, this, &Polytopal2DWindow::animProjectStep);
     connect(&m_timerAnimInversion, &QTimer::timeout, this, &Polytopal2DWindow::animInversionStep);
 
-    he::reader::readOBJ("../obj/unit_sphere.obj", m_sphereMesh);
-    m_batchSphere.setSphereMesh(&m_sphereMesh);
+    he::Mesh sphereMesh;
+    he::reader::readOBJ("../obj/unit_sphere.obj", sphereMesh);
+    m_batchSphere.setSphereMesh(std::move(sphereMesh));
     m_batchVertex.setProjectionPoint(true);
 
     m_view->addItem(&m_batchSkybox);
@@ -713,43 +714,6 @@ void Polytopal2DWindow::updateEnablementPoly() {
     }
 }
 
-void Polytopal2DWindow::updateUserData() {
-    switch (m_view->pickingType()) {
-        case PickingType::PickingFace:
-            if (m_batchFace.selectedFace() != nullptr) {
-                this->ui->lineEdit_userData->setText(m_batchFace.selectedFace()->userData());
-                qDebug() << m_batchFace.selectedFace()->toString();
-                qDebug() << "----------------";
-            }
-            break;
-        case PickingType::PickingEdge:
-            if (m_batchEdge.selectedEdge() != nullptr) {
-                this->ui->lineEdit_userData->setText(m_batchEdge.selectedEdge()->userData());
-                qDebug() << m_batchEdge.selectedEdge()->toString();
-                if (m_batchEdge.selectedEdge()->twin() != nullptr) {
-                    qDebug() << "---" << Qt::endl << m_batchEdge.selectedEdge()->twin()->toString();
-                }
-                qDebug() << "----------------";
-            }
-            break;
-        case PickingType::PickingVertex:
-            if (m_batchVertex.selectedVertex() != nullptr) {
-                this->ui->lineEdit_userData->setText(m_batchVertex.selectedVertex()->userData());
-                qDebug() << m_batchVertex.selectedVertex()->toString();
-                qDebug() << "----------------";
-            }
-            break;
-        case PickingType::PickingCircle:
-            if (m_batchCircle.selectedCircle() != nullptr) {
-                qDebug() << "Radius: " << m_batchCircle.selectedCircle()->radius();
-                qDebug() << "----------------";
-            }
-            break;
-        default:
-            break;
-    }
-}
-
 [[maybe_unused]] void Polytopal2DWindow::slotChangeAllUserData() {
     switch (m_view->pickingType()) {
         case PickingType::PickingFace:
@@ -982,6 +946,11 @@ he::Face* Polytopal2DWindow::selectedFace() {
 
 void Polytopal2DWindow::setSelectedFace(int faceIndex) {
     m_batchFace.setSelectedFace(faceIndex);
+    if (m_batchFace.selectedFace() != nullptr) {
+        this->ui->lineEdit_userData->setText(m_batchFace.selectedFace()->userData());
+        qDebug() << m_batchFace.selectedFace()->toString();
+        qDebug() << "----------------";
+    }
 }
 
 void Polytopal2DWindow::updateDataEdges() {
@@ -994,6 +963,14 @@ he::HalfEdge* Polytopal2DWindow::selectedEdge() {
 
 void Polytopal2DWindow::setSelectedEdge(int edgeIndex) {
     m_batchEdge.setSelectedEdge(edgeIndex);
+    if (m_batchEdge.selectedEdge() != nullptr) {
+        this->ui->lineEdit_userData->setText(m_batchEdge.selectedEdge()->userData());
+        qDebug() << m_batchEdge.selectedEdge()->toString();
+        if (m_batchEdge.selectedEdge()->twin() != nullptr) {
+            qDebug() << "---" << Qt::endl << m_batchEdge.selectedEdge()->twin()->toString();
+        }
+        qDebug() << "----------------";
+    }
 }
 
 void Polytopal2DWindow::updateDataVertices() {
@@ -1010,6 +987,11 @@ he::Vertex* Polytopal2DWindow::selectedVertex2() {
 
 void Polytopal2DWindow::setSelectedVertex(int vertexIndex) {
     m_batchVertex.setSelectedVertex(vertexIndex);
+    if (m_batchVertex.selectedVertex() != nullptr) {
+        this->ui->lineEdit_userData->setText(m_batchVertex.selectedVertex()->userData());
+        qDebug() << m_batchVertex.selectedVertex()->toString();
+        qDebug() << "----------------";
+    }
 }
 
 void Polytopal2DWindow::setSelectedVertex2(int vertexIndex) {
@@ -1018,6 +1000,10 @@ void Polytopal2DWindow::setSelectedVertex2(int vertexIndex) {
 
 void Polytopal2DWindow::setSelectedCircle(int circleIndex) {
     m_batchCircle.setSelectedCircle(circleIndex);
+    if (m_batchCircle.selectedCircle() != nullptr) {
+        qDebug() << "Radius: " << m_batchCircle.selectedCircle()->radius();
+        qDebug() << "----------------";
+    }
 }
 
 void Polytopal2DWindow::updateDataCircles() {
@@ -1026,4 +1012,16 @@ void Polytopal2DWindow::updateDataCircles() {
 
 he::Mesh* Polytopal2DWindow::mesh() {
     return &m_mesh;
+}
+
+void Polytopal2DWindow::updateDataMesh() {
+    this->updateDataFaces();
+    this->updateDataEdges();
+    this->updateDataVertices();
+}
+
+void Polytopal2DWindow::updateData() {
+    this->updateCircles();
+    this->updateCirclesDual();
+    this->updateDataMesh();
 }

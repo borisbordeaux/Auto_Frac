@@ -2,14 +2,12 @@
 #define AUTOFRAC_BATCHGRAPHICSITEM_H
 
 #include <QOpenGLFunctions>
+#include <utility>
 #include "gui/camera.h"
 #include "gui/pickingtype.h"
 
 class BatchGraphicsItem : protected QOpenGLFunctions {
 public:
-    /**
-     * default constructor
-     */
     BatchGraphicsItem() = default;
 
     /**
@@ -35,7 +33,7 @@ public:
     /**
      * render depending on the given picking type
      */
-    virtual void render(PickingType /*type*/) {}
+    virtual void render(PickingType type) = 0;
 
     /**
      * set a projection matrix

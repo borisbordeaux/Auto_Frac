@@ -2,11 +2,10 @@
 #include "gui/polytopal2dwindow.h"
 #include <QMouseEvent>
 #include <QMimeData>
-#include <QtOpenGL/QOpenGLShaderProgram>
-#include <iostream>
 #include "halfedge/vertex.h"
 #include "halfedge/halfedge.h"
 #include "halfedge/face.h"
+#include "gui/batchgraphicsitem.h"
 
 GLView::GLView(Polytopal2DWindow* parent) :
         QOpenGLWidget(parent),
@@ -61,24 +60,8 @@ void GLView::paintGL() {
         m_clearColorDirty = false;
     }
 
-    //click management
     if (m_clicked) {
-        switch (m_pickingType) {
-            case PickingType::PickingFace:
-                clickFaceManagement();
-                break;
-            case PickingType::PickingEdge:
-                clickEdgeManagement();
-                break;
-            case PickingType::PickingVertex:
-                clickVertexManagement();
-                break;
-            case PickingType::PickingCircle:
-                clickCircleManagement();
-                break;
-            default:
-                break;
-        }
+        this->pickingManagement(m_pickingType);
         m_clicked = false;
     }
 
@@ -177,11 +160,7 @@ void GLView::mouseMoveEvent(QMouseEvent* event) {
             m_world.rotate(static_cast<float>(dy) / 4.0f, 1, 0, 0);
             m_world.rotate(static_cast<float>(dx) / 4.0f, 0, 1, 0);
             m_mainWindow->mesh()->transformMesh(m_world);
-            m_mainWindow->updateCircles();
-            m_mainWindow->updateCirclesDual();
-            m_mainWindow->updateDataFaces();
-            m_mainWindow->updateDataEdges();
-            m_mainWindow->updateDataVertices();
+            m_mainWindow->updateData();
         }
         update();
     }
@@ -196,13 +175,9 @@ void GLView::mouseMoveEvent(QMouseEvent* event) {
             m_world.rotate(static_cast<float>(-dx) / 4.0f, 0, 0, 1);
             m_world.rotate(static_cast<float>(dy) / 4.0f, 0, 1, 0);
             m_mainWindow->mesh()->transformMesh(m_world);
-            m_mainWindow->updateCirclesDual();
-            m_mainWindow->updateCircles();
-            m_mainWindow->updateDataFaces();
-            m_mainWindow->updateDataEdges();
-            m_mainWindow->updateDataVertices();
+            m_mainWindow->updateData();
         }
-        update();
+        this->update();
     }
 
     m_lastPos = event->pos();
@@ -219,7 +194,7 @@ void GLView::wheelEvent(QWheelEvent* event) {
     }
 
     m_uniformsDirty = true;
-    update();
+    this->update();
 }
 
 void GLView::mouseReleaseEvent(QMouseEvent* event) {
@@ -230,194 +205,58 @@ void GLView::mouseReleaseEvent(QMouseEvent* event) {
         if (v.length() < 5.0f) {
             //then will do the picking
             m_clicked = true;
-            update();
+            this->update();
         }
     }
 }
 
-void GLView::clickFaceManagement() {
-    //black background
+void GLView::pickingManagement(PickingType type) {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-    //no multisample
-    glDisable(GL_MULTISAMPLE);
-
-    //clear buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     for (BatchGraphicsItem* item: m_items) {
-        item->render(PickingType::PickingFace);
+        item->render(type);
     }
 
     //get the rendered image of the scene
     QImage image = grabFramebuffer();
-    image.save("picking.png");
 
     //read the pixel under the mouse
     QColor color = image.pixelColor(m_clickPos);
+    const int index = color.red() * 65536 + color.green() * 256 + color.blue();
 
-    //set the selected face using the red color
-    m_mainWindow->setSelectedFace(color.red() * 65536 + color.green() * 256 + color.blue());
-
-    m_mainWindow->updateUserData();
-    //update the data for drawing the selected object in the right color
-    m_mainWindow->updateDataFaces();
-
-    //reset color
-    glClearColor(m_clearColor.x(), m_clearColor.y(), m_clearColor.z(), 1.0f);
-
-    //re enable multisample
-    glEnable(GL_MULTISAMPLE);
-}
-
-void GLView::clickEdgeManagement() {
-    //black background
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-    //no multisample
-    glDisable(GL_MULTISAMPLE);
-
-    //clear buffers
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    for (BatchGraphicsItem* item: m_items) {
-        item->render(PickingType::PickingEdge);
-    }
-
-    //render the scene
-    QImage image = grabFramebuffer();
-
-    //read the pixel under the mouse
-    int max = 0;
-    int area = 5;
-
-    for (int i = -area; i < area; i++) {
-        for (int j = -area; j < area; j++) {
-            QColor color = image.pixelColor(m_clickPos.x() + i, m_clickPos.y() + j);
-            if (color.isValid()) {
-                int val = color.red() * 65536 + color.green() * 256 + color.blue();
-                if (val > max) {
-                    max = val;
-                }
-                image.setPixelColor(m_clickPos.x() + i, m_clickPos.y() + j, Qt::blue);
-            }
-        }
-    }
+    image.setPixelColor(m_clickPos, Qt::white);
     image.save("picking.png");
 
-    m_mainWindow->setSelectedEdge(max);
-    m_mainWindow->updateUserData();
-
-    //update the data for drawing the selected object in the right color
-    m_mainWindow->updateDataEdges();
-
-    //reset clear color
-    glClearColor(m_clearColor.x(), m_clearColor.y(), m_clearColor.z(), 1.0f);
-
-    //enable multisample
-    glEnable(GL_MULTISAMPLE);
-}
-
-void GLView::clickVertexManagement() {
-    //black background
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-    //no multisample
-    glDisable(GL_MULTISAMPLE);
-
-    //clear buffers
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    for (BatchGraphicsItem* item: m_items) {
-        item->render(PickingType::PickingVertex);
-    }
-
-    //render the scene
-    QImage image = grabFramebuffer();
-    image.save("picking.png");
-
-    //read the pixel under the mouse
-    int max = 0;
-    int area = 5;
-
-    for (int i = -area; i < area; i++) {
-        for (int j = -area; j < area; j++) {
-            QColor color = image.pixelColor(m_clickPos.x() + i, m_clickPos.y() + j);
-            if (color.isValid()) {
-                int val = color.red() * 65536 + color.green() * 256 + color.blue();
-                if (val > max) {
-                    max = val;
-                }
+    //set the selected item using the color and update the
+    //data for drawing the selected object in the right color
+    switch (type) {
+        case PickingType::PickingFace:
+            m_mainWindow->setSelectedFace(index);
+            m_mainWindow->updateDataFaces();
+            break;
+        case PickingType::PickingEdge:
+            m_mainWindow->setSelectedEdge(index);
+            m_mainWindow->updateDataEdges();
+            break;
+        case PickingType::PickingVertex:
+            if (m_mainWindow->selectedVertex() != nullptr && m_isShiftPressed) {
+                m_mainWindow->setSelectedVertex2(index);
+            } else {
+                m_mainWindow->setSelectedVertex2(0);
+                m_mainWindow->setSelectedVertex(index);
             }
-        }
+            m_mainWindow->updateDataVertices();
+            break;
+        case PickingType::PickingCircle:
+            m_mainWindow->setSelectedCircle(index);
+            m_mainWindow->updateDataCircles();
+            break;
+        default:
+            break;
     }
 
-    //set the selected vertex or vertices
-    if (m_mainWindow->selectedVertex() != nullptr && m_isShiftPressed) {
-        m_mainWindow->setSelectedVertex2(max);
-    } else {
-        m_mainWindow->setSelectedVertex2(0);
-        m_mainWindow->setSelectedVertex(max);
-    }
-    m_mainWindow->updateUserData();
-
-    //update the data for drawing the selected object in the right color
-    m_mainWindow->updateDataVertices();
-
-    //reset clear color
     glClearColor(m_clearColor.x(), m_clearColor.y(), m_clearColor.z(), 1.0f);
-
-    //enable multisample
-    glEnable(GL_MULTISAMPLE);
-}
-
-void GLView::clickCircleManagement() {
-    //black background
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-    //no multisample
-    glDisable(GL_MULTISAMPLE);
-
-    //clear buffers
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    for (BatchGraphicsItem* item: m_items) {
-        item->render(PickingType::PickingCircle);
-    }
-
-    //render the scene
-    QImage image = grabFramebuffer();
-
-    //read the pixel under the mouse
-    int max = 0;
-    int area = 5;
-
-    for (int i = -area; i < area; i++) {
-        for (int j = -area; j < area; j++) {
-            QColor color = image.pixelColor(m_clickPos.x() + i, m_clickPos.y() + j);
-            if (color.isValid()) {
-                int val = color.red() * 65536 + color.green() * 256 + color.blue();
-                if (val > max) {
-                    max = val;
-                }
-                image.setPixelColor(m_clickPos.x() + i, m_clickPos.y() + j, Qt::blue);
-            }
-        }
-    }
-    image.save("picking.png");
-
-    //set the selected circle using the color
-    m_mainWindow->setSelectedCircle(max);
-    m_mainWindow->updateUserData();
-
-    //update the data for drawing the selected object in the right color
-    m_mainWindow->updateCircles();
-
-    //reset clear color
-    glClearColor(m_clearColor.x(), m_clearColor.y(), m_clearColor.z(), 1.0f);
-
-    //enable multisample
-    glEnable(GL_MULTISAMPLE);
 }
 
 void GLView::animationCameraStep() {
@@ -444,17 +283,13 @@ void GLView::setPickingType(PickingType type) {
     m_mainWindow->setSelectedVertex(0);
     m_mainWindow->setSelectedVertex2(0);
     m_mainWindow->setSelectedCircle(0);
-    m_mainWindow->updateDataFaces();
-    m_mainWindow->updateDataEdges();
-    m_mainWindow->updateDataVertices();
+    m_mainWindow->updateDataMesh();
     m_mainWindow->updateDataCircles();
     this->update();
 }
 
 void GLView::setBackGroundColor(float r, float g, float b) {
-    m_clearColor.setX(r);
-    m_clearColor.setY(g);
-    m_clearColor.setZ(b);
+    m_clearColor = QVector3D(r, g, b);
     m_clearColorDirty = true;
 }
 
@@ -549,11 +384,7 @@ void GLView::handleMoveXVertex(float dx) {
     QVector3D newPos = m_mainWindow->selectedVertex()->pos();
     newPos.setX(newPos.x() + dx / 100.0f);
     m_mainWindow->selectedVertex()->setPos(newPos);
-    m_mainWindow->updateCircles();
-    m_mainWindow->updateCirclesDual();
-    m_mainWindow->updateDataFaces();
-    m_mainWindow->updateDataEdges();
-    m_mainWindow->updateDataVertices();
+    m_mainWindow->updateData();
     update();
 }
 
@@ -561,11 +392,7 @@ void GLView::handleMoveYVertex(float dy) {
     QVector3D newPos = m_mainWindow->selectedVertex()->pos();
     newPos.setY(newPos.y() + dy / 100.0f);
     m_mainWindow->selectedVertex()->setPos(newPos);
-    m_mainWindow->updateCircles();
-    m_mainWindow->updateCirclesDual();
-    m_mainWindow->updateDataFaces();
-    m_mainWindow->updateDataEdges();
-    m_mainWindow->updateDataVertices();
+    m_mainWindow->updateData();
     update();
 }
 
@@ -573,11 +400,7 @@ void GLView::handleMoveZVertex(float dz) {
     QVector3D newPos = m_mainWindow->selectedVertex()->pos();
     newPos.setZ(newPos.z() + dz / 100.0f);
     m_mainWindow->selectedVertex()->setPos(newPos);
-    m_mainWindow->updateCircles();
-    m_mainWindow->updateCirclesDual();
-    m_mainWindow->updateDataFaces();
-    m_mainWindow->updateDataEdges();
-    m_mainWindow->updateDataVertices();
+    m_mainWindow->updateData();
     update();
 }
 
@@ -590,11 +413,7 @@ void GLView::handleMoveXEdge(float dx) {
     newPos2.setX(newPos2.x() + dx / 100.0f);
     v1->setPos(newPos1);
     v2->setPos(newPos2);
-    m_mainWindow->updateCircles();
-    m_mainWindow->updateCirclesDual();
-    m_mainWindow->updateDataFaces();
-    m_mainWindow->updateDataEdges();
-    m_mainWindow->updateDataVertices();
+    m_mainWindow->updateData();
     update();
 }
 
@@ -607,11 +426,7 @@ void GLView::handleMoveYEdge(float dy) {
     newPos2.setY(newPos2.y() + dy / 100.0f);
     v1->setPos(newPos1);
     v2->setPos(newPos2);
-    m_mainWindow->updateCircles();
-    m_mainWindow->updateCirclesDual();
-    m_mainWindow->updateDataFaces();
-    m_mainWindow->updateDataEdges();
-    m_mainWindow->updateDataVertices();
+    m_mainWindow->updateData();
     update();
 }
 
@@ -624,11 +439,7 @@ void GLView::handleMoveZEdge(float dz) {
     newPos2.setZ(newPos2.z() + dz / 100.0f);
     v1->setPos(newPos1);
     v2->setPos(newPos2);
-    m_mainWindow->updateCircles();
-    m_mainWindow->updateCirclesDual();
-    m_mainWindow->updateDataFaces();
-    m_mainWindow->updateDataEdges();
-    m_mainWindow->updateDataVertices();
+    m_mainWindow->updateData();
     update();
 }
 
@@ -638,11 +449,7 @@ void GLView::handleMoveXFace(float dx) {
         newPos.setX(newPos.x() + dx / 100.0f);
         v->setPos(newPos);
     }
-    m_mainWindow->updateCircles();
-    m_mainWindow->updateCirclesDual();
-    m_mainWindow->updateDataFaces();
-    m_mainWindow->updateDataEdges();
-    m_mainWindow->updateDataVertices();
+    m_mainWindow->updateData();
     update();
 }
 
@@ -652,11 +459,7 @@ void GLView::handleMoveYFace(float dy) {
         newPos.setY(newPos.y() + dy / 100.0f);
         v->setPos(newPos);
     }
-    m_mainWindow->updateCircles();
-    m_mainWindow->updateCirclesDual();
-    m_mainWindow->updateDataFaces();
-    m_mainWindow->updateDataEdges();
-    m_mainWindow->updateDataVertices();
+    m_mainWindow->updateData();
     update();
 }
 
@@ -666,11 +469,7 @@ void GLView::handleMoveZFace(float dz) {
         newPos.setZ(newPos.z() + dz / 100.0f);
         v->setPos(newPos);
     }
-    m_mainWindow->updateCircles();
-    m_mainWindow->updateCirclesDual();
-    m_mainWindow->updateDataFaces();
-    m_mainWindow->updateDataEdges();
-    m_mainWindow->updateDataVertices();
+    m_mainWindow->updateData();
     update();
 }
 
@@ -694,9 +493,7 @@ void GLView::cutFaceOnSelectedVertices() {
     m_mainWindow->mesh()->cutFace(face, v1, v2);
     m_mainWindow->mesh()->updateHalfEdgeNotTwin();
     m_mainWindow->mesh()->updateOtherHalfEdges();
-    m_mainWindow->updateDataFaces();
-    m_mainWindow->updateDataEdges();
-    m_mainWindow->updateDataVertices();
+    m_mainWindow->updateData();
     this->update();
 }
 
@@ -708,25 +505,21 @@ void GLView::cutSelectedHalfEdge() {
     m_mainWindow->mesh()->updateHalfEdgeNotTwin();
     m_mainWindow->mesh()->updateOtherHalfEdges();
     m_mainWindow->setSelectedEdge(0);
-    m_mainWindow->updateDataFaces();
-    m_mainWindow->updateDataEdges();
-    m_mainWindow->updateDataVertices();
+    m_mainWindow->updateData();
     this->update();
 }
 
 void GLView::removeSelectedFace() {
     m_mainWindow->mesh()->remove(m_mainWindow->selectedFace());
     m_mainWindow->setSelectedFace(0);
-    m_mainWindow->updateDataFaces();
+    m_mainWindow->updateData();
     this->update();
 }
 
 void GLView::removeSelectedHalfEdge() {
     m_mainWindow->mesh()->remove(m_mainWindow->selectedEdge());
     m_mainWindow->setSelectedEdge(0);
-    m_mainWindow->updateDataFaces();
-    m_mainWindow->updateDataEdges();
-    m_mainWindow->updateDataVertices();
+    m_mainWindow->updateData();
     this->update();
 }
 
@@ -734,9 +527,7 @@ void GLView::removeSelectedVertex() {
     m_mainWindow->mesh()->remove(m_mainWindow->selectedVertex());
     m_mainWindow->setSelectedVertex(0);
     m_mainWindow->setSelectedVertex2(0);
-    m_mainWindow->updateDataFaces();
-    m_mainWindow->updateDataEdges();
-    m_mainWindow->updateDataVertices();
+    m_mainWindow->updateData();
     this->update();
 }
 

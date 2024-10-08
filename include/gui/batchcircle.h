@@ -5,10 +5,7 @@
 #include <QOpenGLBuffer>
 #include <QOpenGLVertexArrayObject>
 #include "batchgraphicsitem.h"
-
-namespace poly {
-class Circle;
-}
+#include "polytopal/circle.h"
 
 class BatchCircle : public BatchGraphicsItem {
 public:

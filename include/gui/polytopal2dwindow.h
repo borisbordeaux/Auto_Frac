@@ -31,7 +31,6 @@ public:
 
     void updateCircles();
     void updateCirclesDual();
-    void updateUserData();
     void openOBJFile(QString const& file);
     void setInfo(std::string const& textInfo, int timeoutMs = 2000);
 
@@ -51,6 +50,9 @@ public:
 
     void updateDataCircles();
     void setSelectedCircle(int circleIndex);
+
+    void updateDataMesh();
+    void updateData();
 
     he::Mesh* mesh();
 
@@ -109,7 +111,6 @@ private:
     BatchCircle m_batchCircle;
 
     he::Mesh m_mesh;
-    he::Mesh m_sphereMesh;
     GLView* m_view = nullptr;
     bool m_openedMesh;
 

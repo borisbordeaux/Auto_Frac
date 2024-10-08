@@ -28,6 +28,8 @@ public:
     void setSelectedFace(int faceIndex);
     he::Face* selectedFace();
 
+    int priority() override { return 1; }
+
 private:
     static qsizetype findNbOfTriangle(he::Mesh* mesh);
     void addFace(he::Face* f, int ID);
@@ -53,7 +55,7 @@ private:
     int m_projMatrixPickingLoc = 0;
     int m_viewMatrixPickingLoc = 0;
 
-    he::Mesh* m_mesh;
+    he::Mesh* m_mesh = nullptr;
     int m_selectedFace = 0;
 };
 

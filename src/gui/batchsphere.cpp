@@ -43,9 +43,9 @@ void BatchSphere::updateData() {
     m_count = 0;
     m_data.clear();
 
-    if (m_sphereMesh == nullptr) { return; }
+    if (m_sphereMesh.faces().empty()) { return; }
     //we add data using triangles
-    qsizetype nbTriangle = BatchSphere::findNbOfTriangle(m_sphereMesh);
+    qsizetype nbTriangle = this->findNbOfTriangle();
 
     //for each triangleSphere, there are 3 vertices
     qsizetype nbOfAdd = 3 * nbTriangle;
@@ -54,7 +54,7 @@ void BatchSphere::updateData() {
     m_data.resize(nbOfAdd * 6);
 
     //add each face
-    for (he::Face* f: m_sphereMesh->faces()) {
+    for (he::Face* f: m_sphereMesh.faces()) {
         this->addFaceSphere(f);
     }
 }
@@ -87,8 +87,8 @@ void BatchSphere::setLight(QVector3D lightPos) {
     m_program.release();
 }
 
-void BatchSphere::setSphereMesh(he::Mesh* mesh) {
-    m_sphereMesh = mesh;
+void BatchSphere::setSphereMesh(he::Mesh&& mesh) {
+    m_sphereMesh = std::move(mesh);
     this->updateData();
 }
 
@@ -135,11 +135,11 @@ void BatchSphere::triangleSphere(const QVector3D& pos1, const QVector3D& pos2, c
     this->addVertexSphere(pos3);
 }
 
-qsizetype BatchSphere::findNbOfTriangle(he::Mesh* mesh) {
+qsizetype BatchSphere::findNbOfTriangle() {
     qsizetype nb = 0;
 
     //for each face
-    for (he::Face* f: mesh->faces()) {
+    for (he::Face* f: m_sphereMesh.faces()) {
         //the number of triangle of a face
         //is the number of edges - 2
         nb += static_cast<qsizetype>(f->nbEdges() - 2);
