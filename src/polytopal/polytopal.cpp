@@ -143,7 +143,7 @@ void projectToPlan(QVector3D& point) {
 void poly::canonicalizeMesh(he::Mesh& m, int steps, double d, bool recenterMesh) {
     for (int i = 0; i < steps; i++) {
         tangentify(m, d);
-        if(recenterMesh) recenter(m);
+        if (recenterMesh) { recenter(m); }
         planarize(m);
     }
     m.updateFloatPosFromDoublePos();
