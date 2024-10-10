@@ -174,7 +174,7 @@ void Polytopal2DWindow::canonicalizeStep() {
         oldPos.push_back(v->posD());
     }
 
-    poly::canonicalizeMesh(m_mesh, this->ui->spinBox_canonicalizeStep->value(), this->ui->doubleSpinBox_canonicalizeForce->value());
+    poly::canonicalizeMesh(m_mesh, this->ui->spinBox_canonicalizeStep->value(), this->ui->doubleSpinBox_canonicalizeForce->value(), this->ui->checkBox_canonicForm->isChecked());
 
     //compute the difference of positions for the point that moved the more
     double maxError = -1.0;

@@ -35,15 +35,6 @@ QVector3D closestPoint(QVector3D const& p1, QVector3D const& p2) {
     return p1 + BH;
 }
 
-he::Point3D barycenter(std::vector<he::Point3D> const& positions) {
-    he::Point3D res { 0, 0, 0 };
-    for (he::Point3D const& p: positions) {
-        res += p;
-    }
-    res /= static_cast<double>(positions.size());
-    return res;
-}
-
 he::Point3D barycenter(std::vector<he::Vertex*> const& positions) {
     he::Point3D res { 0, 0, 0 };
     for (he::Vertex* v: positions) {
@@ -149,25 +140,10 @@ void projectToPlan(QVector3D& point) {
 }
 } //end anonymous namespace for local functions
 
-
-void poly::setMeshToOrigin(he::Mesh& m) {
-    std::vector<he::Point3D> positions;
-
-    for (he::Vertex* v: m.vertices()) {
-        positions.push_back(v->posD());
-    }
-
-    he::Point3D bary = barycenter(positions);
-
-    for (he::Vertex* v: m.vertices()) {
-        v->setPosD(v->posD() - bary);
-    }
-}
-
-void poly::canonicalizeMesh(he::Mesh& m, int steps, double d) {
+void poly::canonicalizeMesh(he::Mesh& m, int steps, double d, bool recenterMesh) {
     for (int i = 0; i < steps; i++) {
         tangentify(m, d);
-        recenter(m);
+        if(recenterMesh) recenter(m);
         planarize(m);
     }
     m.updateFloatPosFromDoublePos();

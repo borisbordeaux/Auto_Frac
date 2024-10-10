@@ -16,13 +16,7 @@ namespace poly {
  * @param m the mesh to canonize
  * @param steps the number of steps to do
  */
-void canonicalizeMesh(he::Mesh& m, int steps, double d);
-
-/**
- * Centers the mesh around the origin
- * @param m the mesh to recenter
- */
-void setMeshToOrigin(he::Mesh& m);
+void canonicalizeMesh(he::Mesh& m, int steps, double d, bool recenterMesh);
 
 std::vector<poly::Circle> computeIlluminatedCircles(he::Mesh const& m, QVector3D const& color);
 std::vector<poly::Circle> computeIlluminatedCirclesDual(he::Mesh const& m, QVector3D const& color);
