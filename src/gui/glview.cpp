@@ -19,8 +19,7 @@ GLView::GLView(Polytopal2DWindow* parent) :
 void GLView::initializeGL() {
     //init OpenGL
     this->initializeOpenGLFunctions();
-
-    //to hide faces that are behind others
+    
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_PROGRAM_POINT_SIZE);
 

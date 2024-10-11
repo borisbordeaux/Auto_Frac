@@ -3,8 +3,6 @@
 
 #include <QMatrix4x4>
 #include <QOpenGLFunctions>
-#include <QtOpenGL/QOpenGLBuffer>
-#include <QtOpenGL/QOpenGLVertexArrayObject>
 #include <QtOpenGLWidgets/QOpenGLWidget>
 #include <QTimer>
 #include "gui/camera.h"
