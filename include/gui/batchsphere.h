@@ -24,6 +24,7 @@ public:
     void setLight(QVector3D lightPos) override;
 
     void setSphereMesh(he::Mesh&& mesh);
+    void updateMeshData(he::Mesh* mesh);
 
     int priority() override { return 2; }
 
@@ -39,6 +40,8 @@ private:
     int m_lightPosLoc = 0;
     int m_cameraPosLoc = 0;
 
+    int m_nbVerticesLoc = 0;
+
     he::Mesh m_sphereMesh;
 
     QList<float> m_data;
@@ -47,6 +50,7 @@ private:
 
     QOpenGLVertexArrayObject m_vao;
     QOpenGLBuffer m_vbo;
+    unsigned int m_ssbo = 0;
     QOpenGLShaderProgram m_program;
 };
 

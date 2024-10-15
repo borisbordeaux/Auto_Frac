@@ -1,12 +1,12 @@
 #ifndef AUTOFRAC_BATCHGRAPHICSITEM_H
 #define AUTOFRAC_BATCHGRAPHICSITEM_H
 
-#include <QOpenGLFunctions>
+#include <QOpenGLExtraFunctions>
 #include <utility>
 #include "gui/camera.h"
 #include "gui/pickingtype.h"
 
-class BatchGraphicsItem : protected QOpenGLFunctions {
+class BatchGraphicsItem : protected QOpenGLExtraFunctions {
 public:
     BatchGraphicsItem() = default;
 

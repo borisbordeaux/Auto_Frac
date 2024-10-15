@@ -8,15 +8,22 @@ void BatchSphere::init() {
     this->initializeOpenGLFunctions();
 
     m_vao.create();
+    glGenBuffers(1, &m_ssbo);
     m_vbo.create();
 
     m_vao.bind();
+
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_ssbo);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0); // unbind
+
     m_vbo.bind();
 
     //enable enough attrib array for all the data of the mesh's vertices
     glEnableVertexAttribArray(0); //coordinates
     //3 coordinates of the vertex
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
+
     m_vbo.release();
     m_vao.release();
 
@@ -31,6 +38,9 @@ void BatchSphere::init() {
     m_viewMatrixLoc = m_program.uniformLocation("mvMatrix");
     m_lightPosLoc = m_program.uniformLocation("lightPos");
     m_cameraPosLoc = m_program.uniformLocation("cameraPosition");
+    m_nbVerticesLoc = m_program.uniformLocation("nbVertices");
+
+    this->updateMeshData(nullptr);
 }
 
 void BatchSphere::update() {
@@ -63,6 +73,7 @@ void BatchSphere::render(PickingType type) {
     if (type != PickingType::PickingNone) { glColorMask(false, false, false, false); }
     m_program.bind();
     m_vao.bind();
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);
     glDrawArrays(GL_TRIANGLES, 0, m_count / m_floatsPerVertex);
     m_program.release();
     if (type != PickingType::PickingNone) { glColorMask(true, true, true, true); }
@@ -146,4 +157,31 @@ qsizetype BatchSphere::findNbOfTriangle() {
     }
 
     return nb;
+}
+
+void BatchSphere::updateMeshData(he::Mesh* mesh) {
+    if (mesh == nullptr) {
+        m_program.bind();
+        glUniform1ui(m_nbVerticesLoc, 0);
+        m_program.release();
+        return;
+    }
+
+    std::size_t size = 3 * mesh->vertices().size();
+
+    std::vector<float> data;
+    data.reserve(size);
+    for (he::Vertex* v: mesh->vertices()) {
+        data.push_back(v->pos().x());
+        data.push_back(v->pos().y());
+        data.push_back(v->pos().z());
+    }
+
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, static_cast<long>(data.size() * sizeof(float)), data.data(), GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0); // unbind
+
+    m_program.bind();
+    glUniform1ui(m_nbVerticesLoc, static_cast<unsigned int>(size));
+    m_program.release();
 }

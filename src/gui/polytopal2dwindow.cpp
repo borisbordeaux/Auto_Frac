@@ -20,7 +20,7 @@
 #include "utils/utils.h"
 
 Polytopal2DWindow::Polytopal2DWindow(QWidget* parent) :
-        QWidget(parent), ui(new Ui::Polytopal2DWindow), m_statusBar(new QStatusBar(this)), m_batchSphere(), m_batchSkybox(),
+        QWidget(parent), ui(new Ui::Polytopal2DWindow), m_statusBar(new QStatusBar(this)),
         m_openedMesh(false), m_inversionLevel(0), m_circlesIndex(0) {
     ui->setupUi(this);
 
@@ -92,6 +92,9 @@ void Polytopal2DWindow::openOBJFile(QString const& file) {
         m_view->addItem(&m_batchFace);
         m_view->addItem(&m_batchEdge);
         m_view->addItem(&m_batchVertex);
+
+        m_batchSphere.updateMeshData(nullptr);
+
         m_view->update();
         m_openedMesh = true;
         m_canonicalized = false;
@@ -214,9 +217,7 @@ void Polytopal2DWindow::canonicalizeStep() {
         slotDisplayDualAreaCircles();
     }
 
-    m_batchFace.updateData();
-    m_batchEdge.updateData();
-    m_batchVertex.updateData();
+    this->updateDataMesh();
     m_view->update();
 }
 
@@ -241,6 +242,14 @@ void Polytopal2DWindow::canonicalizeStep() {
         }
 
         m_batchCircle.updateDataCircles();
+
+        //set into a function
+        if (!this->ui->checkBox_projectCircles->isChecked() && !m_circles.empty()) {
+            m_batchSphere.updateMeshData(&m_mesh);
+        }else{
+            m_batchSphere.updateMeshData(nullptr);
+        }
+
         m_view->update();
         this->updateEnablementPoly();
     }
@@ -618,10 +627,8 @@ void Polytopal2DWindow::updateEnablementPoly() {
     m_circlesDual.clear();
     m_batchCircle.resetCircles();
     m_batchCircle.resetCirclesDual();
-    m_batchFace.updateData();
-    m_batchEdge.updateData();
-    m_batchVertex.updateData();
     m_batchCircle.updateData();
+    this->updateDataMesh();
     m_openedMesh = true;
     m_canonicalized = false;
     this->updateEnablementPoly();
@@ -641,10 +648,8 @@ void Polytopal2DWindow::updateEnablementPoly() {
     m_circlesDual.clear();
     m_batchCircle.resetCircles();
     m_batchCircle.resetCirclesDual();
-    m_batchFace.updateData();
-    m_batchEdge.updateData();
-    m_batchVertex.updateData();
     m_batchCircle.updateData();
+    this->updateDataMesh();
     m_openedMesh = true;
     m_canonicalized = false;
     this->updateEnablementPoly();
@@ -664,10 +669,8 @@ void Polytopal2DWindow::updateEnablementPoly() {
     m_circlesDual.clear();
     m_batchCircle.resetCircles();
     m_batchCircle.resetCirclesDual();
-    m_batchFace.updateData();
-    m_batchEdge.updateData();
-    m_batchVertex.updateData();
     m_batchCircle.updateData();
+    this->updateDataMesh();
     m_openedMesh = true;
     m_canonicalized = false;
     this->updateEnablementPoly();
@@ -1018,6 +1021,11 @@ void Polytopal2DWindow::updateDataMesh() {
     this->updateDataFaces();
     this->updateDataEdges();
     this->updateDataVertices();
+    if (this->ui->checkBox_displayUnitSphere->isChecked() && !this->ui->checkBox_projectCircles->isChecked() && !m_circles.empty()) {
+        m_batchSphere.updateMeshData(&m_mesh);
+    }else{
+        m_batchSphere.updateMeshData(nullptr);
+    }
 }
 
 void Polytopal2DWindow::updateData() {
