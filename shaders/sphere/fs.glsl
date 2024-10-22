@@ -41,7 +41,7 @@ void main() {
     float RV = max(dot(R, V), 0.0);
     float specular = pow(RV, 100.0);
     vec3 specularColor = specular * vec3(0.2, 0.2, 0.2);
-    vec3 color = vec3(0.6);
+    vec3 color = vec3(0.8);
     color -= checkInCircle()*vec3(0.1);
     vec3 ambientColor = 0.4 * color;
     vec3 diffuseColor = diffuse * color;

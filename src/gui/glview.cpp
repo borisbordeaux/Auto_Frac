@@ -9,7 +9,7 @@
 
 GLView::GLView(Polytopal2DWindow* parent) :
         QOpenGLWidget(parent),
-        m_camera(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.01f, 49.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)),
+        m_camera(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.01f, 500.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)),
         m_cameraBeforeAnim(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.01f, 49.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)),
         m_mainWindow(parent) {
     connect(&m_timerAnimCamera, &QTimer::timeout, this, &GLView::animationCameraStep);
