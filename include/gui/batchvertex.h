@@ -30,6 +30,8 @@ public:
     he::Vertex* selectedVertex();
     he::Vertex* selectedVertex2();
 
+    int priority() override { return 2; }
+
 private:
     void addVertex(QVector3D const& v, QVector3D const& color, float ID, float isSelected);
 

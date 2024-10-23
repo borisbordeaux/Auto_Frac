@@ -23,8 +23,8 @@ void main() {
         vec3 color = vec3(0.36, 0.64, 0.89);
         vec3 ambientColor = 0.4 * color;
         vec3 diffuseColor = diffuse * color;
-        fragColor = vec4(clamp(specularColor + ambientColor + diffuseColor, 0.0, 1.0), 1.0);
+        fragColor = vec4(clamp(specularColor + ambientColor + diffuseColor, 0.0, 1.0), 0.4);
     } else {
-        fragColor = vec4(1.0, 0.3, 0.3, 1.0);
+        fragColor = vec4(1.0, 0.3, 0.3, 0.4);
     }
 }

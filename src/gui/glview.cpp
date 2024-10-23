@@ -23,6 +23,11 @@ void GLView::initializeGL() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_PROGRAM_POINT_SIZE);
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glEnable(GL_CULL_FACE);
+
     //print information
     QString val = QString::fromLatin1((char*) glGetString(GL_VERSION));
     qDebug() << "OpenGL version : " << val;
