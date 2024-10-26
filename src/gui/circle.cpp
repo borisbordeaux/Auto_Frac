@@ -2,10 +2,10 @@
 #include "gui/circle.h"
 #include "polytopal/inversivecoordinates.h"
 
-Circle::Circle(QVector3D const& center, float radius, QVector3D const& axisX, QVector3D const& axisY) :
+gui::Circle::Circle(QVector3D const& center, float radius, QVector3D const& axisX, QVector3D const& axisY) :
         m_center(center), m_radius(radius), m_axisX(axisX), m_axisY(axisY) {}
 
-Circle::Circle(QVector3D const& P1, QVector3D const& P2, QVector3D const& P3) {
+gui::Circle::Circle(QVector3D const& P1, QVector3D const& P2, QVector3D const& P3) {
     //find new base
     m_axisX = (P2 - P1).normalized();
     QVector3D vecP1P3 = P3 - P1;
@@ -36,13 +36,7 @@ Circle::Circle(QVector3D const& P1, QVector3D const& P2, QVector3D const& P3) {
     m_center = (P * QVector4D(m_center, 1.0f)).toVector3D();
 }
 
-Circle::Circle(poly::InversiveCoordinates const& invCoord) :
-        Circle({ static_cast<float>(invCoord.e1() / (invCoord.e4() - invCoord.e3())),
-                 static_cast<float>(invCoord.e2() / (invCoord.e4() - invCoord.e3())),
-                 0.0f },
-               static_cast<float>(qAbs(1.0 / (invCoord.e4() - invCoord.e3())))) {}
-
-poly::InversiveCoordinates Circle::getInversiveCoordinates() const {
+poly::InversiveCoordinates gui::Circle::getInversiveCoordinates() const {
     double K = 1.0 / m_radius;
     double e1 = K * m_center.x();
     double e2 = K * m_center.y();
@@ -51,10 +45,30 @@ poly::InversiveCoordinates Circle::getInversiveCoordinates() const {
     return { e1, e2, e3, e4 };
 }
 
-void Circle::setColor(const QVector3D& color) {
+void gui::Circle::setColor(const QVector3D& color) {
     m_color = color;
 }
 
-QVector3D const& Circle::color() const {
+QVector3D const& gui::Circle::color() const {
     return m_color;
+}
+
+QVector3D const& gui::Circle::center() const {
+    return m_center;
+}
+
+float gui::Circle::radius() const {
+    return m_radius;
+}
+
+QVector3D const& gui::Circle::axisX() const {
+    return m_axisX;
+}
+
+QVector3D const& gui::Circle::axisY() const {
+    return m_axisY;
+}
+
+void gui::Circle::setRadius(float radius) {
+    m_radius = radius;
 }

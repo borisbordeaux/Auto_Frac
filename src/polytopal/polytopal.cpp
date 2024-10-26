@@ -5,6 +5,7 @@
 #include "halfedge/vertex.h"
 #include "halfedge/halfedge.h"
 #include "halfedge/face.h"
+#include "gui/circle.h"
 #include "utils/utils.h"
 
 namespace {
@@ -149,19 +150,17 @@ void poly::canonicalizeMesh(he::Mesh& m, int steps, double d, bool recenterMesh)
     m.updateFloatPosFromDoublePos();
 }
 
-std::vector<poly::Circle> poly::computeIlluminatedCircles(const he::Mesh& m, QVector3D const& color) {
-    std::vector<poly::Circle> res;
+std::vector<poly::InversiveCoordinates> poly::computeIlluminatedCircles(const he::Mesh& m) {
+    std::vector<poly::InversiveCoordinates> res;
     for (he::Vertex* v: m.vertices()) {
-        float coef = 1.0f / qSqrt(v->pos().lengthSquared() - 1.0f);
-        poly::Circle c { coef * v->pos().x(), coef * v->pos().y(), coef * v->pos().z(), coef };
-        c.setColor(color);
+        poly::InversiveCoordinates c { v->posD() };
         res.push_back(c);
     }
     return res;
 }
 
-std::vector<poly::Circle> poly::computeIlluminatedCirclesDual(he::Mesh const& m, QVector3D const& color) {
-    std::vector<poly::Circle> res;
+std::vector<poly::InversiveCoordinates> poly::computeIlluminatedCirclesDual(he::Mesh const& m) {
+    std::vector<poly::InversiveCoordinates> res;
 
     for (he::Face* f: m.faces()) {
         std::vector<he::HalfEdge*> allHE = f->allHalfEdges();
@@ -175,37 +174,27 @@ std::vector<poly::Circle> poly::computeIlluminatedCirclesDual(he::Mesh const& m,
             projectToPlan(v2);
             projectToPlan(v3);
 
-            poly::Circle c { v1, v2, v3 };
-            c.setAxisX({ 1, 0, 0 });
-            c.setAxisY({ 0, 1, 0 });
-            c.setColor(color);
-            res.push_back(c);
+            gui::Circle c { v1, v2, v3 };
+            res.push_back(c.getInversiveCoordinates());
         }
     }
 
     return res;
 }
 
-std::size_t poly::computeInversions(std::vector<poly::Circle>& circlesToInverse, std::vector<poly::Circle>& circlesInvertive, std::size_t index) {
-    std::vector<poly::Circle> res;
+std::size_t poly::computeInversions(std::vector<poly::InversiveCoordinates>& circlesToInverse, std::vector<poly::InversiveCoordinates>& circlesInvertive, std::size_t index) {
+    std::vector<poly::InversiveCoordinates> res;
     res.reserve((circlesToInverse.size() - index) * circlesInvertive.size());
     std::size_t count = 0;
 
     //inversion always in plan using inversive coordinates
     for (std::size_t i = index; i != circlesToInverse.size(); i++) {
-        for (poly::Circle const& cInv: circlesInvertive) {
-            float precision = 0.003f;
-            if (circlesToInverse[i].inversionCircle() != &cInv && !poly::Circle::areOrthogonalCircles(circlesToInverse[i], cInv)) {
-                if (circlesToInverse[i].radius() > precision) {
-                    poly::Circle inverted = poly::Circle::inverse(circlesToInverse[i], cInv);
-                    inverted.setInversionCircle(&cInv);
-                    inverted.updateR3Coord();
-                    //for animations
-                    inverted.setOldCircleBeforeInversion(circlesToInverse[i]);
-                    inverted.setNewCircleAfterInversion(inverted);
-                    res.push_back(inverted);
-                    count++;
-                }
+        for (poly::InversiveCoordinates const& cInv: circlesInvertive) {
+            if (circlesToInverse[i].inverter() != &cInv && !poly::InversiveCoordinates::areOrthogonal(circlesToInverse[i], cInv)) {
+                poly::InversiveCoordinates inverted = poly::InversiveCoordinates::inverse(circlesToInverse[i], cInv);
+                inverted.setInverter(&cInv);
+                res.push_back(inverted);
+                count++;
             }
         }
     }

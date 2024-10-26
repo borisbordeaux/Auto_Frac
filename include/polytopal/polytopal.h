@@ -1,7 +1,7 @@
 #ifndef AUTOFRAC_POLYTOPAL_H
 #define AUTOFRAC_POLYTOPAL_H
 
-#include "polytopal/circle.h"
+#include "inversivecoordinates.h"
 
 namespace he {
 class Mesh;
@@ -18,9 +18,9 @@ namespace poly {
  */
 void canonicalizeMesh(he::Mesh& m, int steps, double d, bool recenterMesh);
 
-std::vector<poly::Circle> computeIlluminatedCircles(he::Mesh const& m, QVector3D const& color);
-std::vector<poly::Circle> computeIlluminatedCirclesDual(he::Mesh const& m, QVector3D const& color);
-std::size_t computeInversions(std::vector<poly::Circle>& circlesToInverse, std::vector<poly::Circle>& circlesInvertive, std::size_t index);
+std::vector<poly::InversiveCoordinates> computeIlluminatedCircles(he::Mesh const& m);
+std::vector<poly::InversiveCoordinates> computeIlluminatedCirclesDual(he::Mesh const& m);
+std::size_t computeInversions(std::vector<poly::InversiveCoordinates>& circlesToInverse, std::vector<poly::InversiveCoordinates>& circlesInvertive, std::size_t index);
 
 } // poly
 

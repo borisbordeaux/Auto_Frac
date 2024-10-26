@@ -11,6 +11,7 @@
 #include "batchedge.h"
 #include "batchvertex.h"
 #include "batchcircle.h"
+#include "polytopal/inversivecoordinates.h"
 
 class QStatusBar;
 
@@ -69,8 +70,6 @@ public slots:
     [[maybe_unused]] void slotIncreaseInversion();
     [[maybe_unused]] void slotDecreaseInversion();
     [[maybe_unused]] void slotProjectCirclesClicked();
-    void animProjectStep();
-    void animInversionStep();
     void increaseInversion();
     [[maybe_unused]] void slotExportOBJ();
 
@@ -96,6 +95,7 @@ public slots:
 private:
     void updateEnablementPoly();
     void setInfoAdvancement(int percent);
+    void updateBatchCircles(bool dual);
 
 private:
     Ui::Polytopal2DWindow* ui;
@@ -115,17 +115,11 @@ private:
     bool m_openedMesh;
 
     QTimer m_timerCanonicalize;
-    std::vector<poly::Circle> m_circles;
-    std::vector<poly::Circle> m_circlesDual;
+    std::vector<poly::InversiveCoordinates> m_circles;
+    std::vector<poly::InversiveCoordinates> m_circlesDual;
     int m_inversionLevel;
-    std::size_t m_circlesIndex;
-    QTimer m_timerAnimProject;
-    std::vector<poly::Circle> m_circlesAnimProject;
-    std::vector<poly::Circle> m_circlesDualAnimProject;
-    float m_tAnimProject = 0.0f;
-    QTimer m_timerAnimInversion;
-    float m_tAnimInversion = 0.0f;
     std::size_t m_nbInversions = 0;
+    std::size_t m_circlesIndex;
 
     double m_firstError = -1.0;
 

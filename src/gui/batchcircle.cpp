@@ -176,7 +176,7 @@ void BatchCircle::updateDataCircles() {
     int ID = 1;
 
     QVector3D first;
-    for (poly::Circle const& c: m_circles) {
+    for (gui::Circle const& c: m_circles) {
         float isSelected = (ID == m_selectedCircle && m_selectedCircle != 0) ? 1.0f : -1.0f;
 
         for (int i = 0; i < 360; i += 4) {
@@ -215,7 +215,7 @@ void BatchCircle::updateDataCirclesDual() {
     m_dataDual.resize(nbOfAdd * 8);
 
     QVector3D first;
-    for (poly::Circle const& c: m_circlesDual) {
+    for (gui::Circle const& c: m_circlesDual) {
         for (int i = 0; i < 360; i += 4) {
             float alpha = qDegreesToRadians(static_cast<float>(i));
             float x = c.center().x() + c.radius() * std::cos(alpha) * c.axisX().x() + c.radius() * std::sin(alpha) * c.axisY().x();
@@ -239,20 +239,18 @@ void BatchCircle::updateDataCirclesDual() {
 void BatchCircle::scaleCircles(float by) {
     if (this->selectedCircle() != nullptr) {
         this->selectedCircle()->setRadius(this->selectedCircle()->radius() + by);
-        this->selectedCircle()->initInversiveCoordinates();
     } else {
-        for (poly::Circle& c: m_circles) {
+        for (gui::Circle& c: m_circles) {
             c.setRadius(c.radius() + by);
-            c.initInversiveCoordinates();
         }
     }
 }
 
-void BatchCircle::addCircle(poly::Circle const& circle) {
+void BatchCircle::addCircle(gui::Circle const& circle) {
     m_circles.push_back(circle);
 }
 
-void BatchCircle::addCircleDual(poly::Circle const& circle) {
+void BatchCircle::addCircleDual(gui::Circle const& circle) {
     m_circlesDual.push_back(circle);
 }
 
@@ -268,8 +266,8 @@ void BatchCircle::setSelectedCircle(int circleIndex) {
     m_selectedCircle = circleIndex;
 }
 
-poly::Circle* BatchCircle::selectedCircle() {
-    poly::Circle* res = nullptr;
+gui::Circle* BatchCircle::selectedCircle() {
+    gui::Circle* res = nullptr;
 
     if (m_selectedCircle - 1 >= 0 && m_selectedCircle - 1 < m_circles.size()) {
         res = &m_circles[m_selectedCircle - 1];
@@ -279,20 +277,20 @@ poly::Circle* BatchCircle::selectedCircle() {
 }
 
 void BatchCircle::updateColorOfCircles(QVector3D const& color) {
-    for (poly::Circle& c: m_circles) {
+    for (gui::Circle& c: m_circles) {
         c.setColor(color);
     }
     this->updateDataCircles();
 }
 
 void BatchCircle::updateColorOfCirclesDual(QVector3D const& color) {
-    for (poly::Circle& c: m_circlesDual) {
+    for (gui::Circle& c: m_circlesDual) {
         c.setColor(color);
     }
     this->updateDataCirclesDual();
 }
 
-QVector<poly::Circle> const& BatchCircle::circles() const {
+QVector<gui::Circle> const& BatchCircle::circles() const {
     return m_circles;
 }
 

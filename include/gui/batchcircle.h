@@ -5,7 +5,7 @@
 #include <QOpenGLBuffer>
 #include <QOpenGLVertexArrayObject>
 #include "batchgraphicsitem.h"
-#include "polytopal/circle.h"
+#include "gui/circle.h"
 
 class BatchCircle : public BatchGraphicsItem {
 public:
@@ -21,15 +21,15 @@ public:
     void updateDataCirclesDual();
 
     void scaleCircles(float by);
-    void addCircle(poly::Circle const& circle);
-    void addCircleDual(poly::Circle const& circle);
+    void addCircle(gui::Circle const& circle);
+    void addCircleDual(gui::Circle const& circle);
     void resetCircles();
     void resetCirclesDual();
     void setSelectedCircle(int circleIndex);
-    poly::Circle* selectedCircle();
+    gui::Circle* selectedCircle();
     void updateColorOfCircles(QVector3D const& color);
     void updateColorOfCirclesDual(QVector3D const& color);
-    QVector<poly::Circle> const& circles() const;
+    QVector<gui::Circle> const& circles() const;
 
 private:
     void addVertexCircle(QVector3D const& v, QVector3D const& color, float ID, float isSelected);
@@ -61,8 +61,8 @@ private:
     int m_projMatrixLocDual = 0;
     int m_viewMatrixLocDual = 0;
 
-    QVector<poly::Circle> m_circles;
-    QVector<poly::Circle> m_circlesDual;
+    QVector<gui::Circle> m_circles;
+    QVector<gui::Circle> m_circlesDual;
 
     int m_selectedCircle = 0;
 };

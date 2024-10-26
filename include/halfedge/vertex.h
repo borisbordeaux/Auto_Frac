@@ -24,6 +24,7 @@ public:
     Vertex(float x, float y, float z, QString name = "");
 
     explicit Vertex(QVector3D const& pos, QString name = "");
+    explicit Vertex(he::Point3D const& pos, QString name = "");
 
     /**
      * @brief getter
