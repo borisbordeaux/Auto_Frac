@@ -11,7 +11,7 @@ uniform vec3 cameraPosition;
 //nb readable floats
 uniform uint nbVertices;
 
-layout(std430, binding = 2) readonly buffer polyhedronData
+layout (std430, binding = 2) readonly buffer polyhedronData
 {
     float polyhedronVertices[];
 };
@@ -32,18 +32,20 @@ float checkInCircle() {
 }
 
 void main() {
-    vec3 fragVertModel = vert;
-    vec3 fragNormalModel = vertNormal;
-    vec3 L = normalize(lightPos - fragVertModel);
-    float diffuse = abs(dot(fragNormalModel, L));
-    vec3 R = reflect(-L, fragNormalModel);
-    vec3 V = normalize(cameraPosition - fragVertModel);
-    float RV = max(dot(R, V), 0.0);
-    float specular = pow(RV, 100.0);
-    vec3 specularColor = specular * vec3(0.2, 0.2, 0.2);
-    vec3 color = vec3(0.8);
-    color -= checkInCircle()*vec3(0.1);
-    vec3 ambientColor = 0.4 * color;
-    vec3 diffuseColor = diffuse * color;
-    fragColor = vec4(clamp(specularColor + ambientColor + diffuseColor, 0.0, 1.0), 1.0);
+    /*if(checkInCircle() > 0.5){
+        discard;
+    }*/
+
+    vec3 color = vec3(0.5);
+    color -= checkInCircle() * vec3(0.1);
+
+    vec3 ambientColor = 0.7 * color.rgb;
+    vec3 diffuseColor = color.rgb;
+
+    vec3 N = normalize(vertNormal);
+    vec3 L = normalize(lightPos - vert);
+
+    // Lambert's cosine law
+    float lambertian = max(dot(N, L), 0.0);
+    fragColor = vec4(ambientColor + lambertian * diffuseColor, 1.0);
 }

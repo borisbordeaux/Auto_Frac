@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QTimer>
+#include <QColorDialog>
 #include "halfedge/mesh.h"
 #include "batchsphere.h"
 #include "batchskybox.h"
@@ -91,6 +92,11 @@ public slots:
     [[maybe_unused]] void slotOBJOfCircles();
 
     [[maybe_unused]] void slotUpdateSkyBox(int index);
+    [[maybe_unused]] void slotChangeMeshColor();
+    [[maybe_unused]] void slotChangeMeshTransparency(int value);
+
+protected:
+    void closeEvent(QCloseEvent* event) override;
 
 private:
     void updateEnablementPoly();
@@ -132,6 +138,7 @@ private:
     QVector3D m_colorDarkTheme { 1.0f, 1.0f, 1.0f };
     QVector3D m_colorWhiteThemeDual { 255. / 255., 0. / 255., 255. / 255. };
     QVector3D m_colorDarkThemeDual { 1.0f, 0.0f, 0.0f };
+    QColorDialog m_colorDialog;
 };
 
 

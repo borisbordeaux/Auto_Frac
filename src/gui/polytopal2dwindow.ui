@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1757</width>
+    <width>1842</width>
     <height>992</height>
    </rect>
   </property>
@@ -647,31 +647,13 @@
         <property name="sizeConstraint">
          <enum>QLayout::SetMinimumSize</enum>
         </property>
-        <item row="1" column="2" alignment="Qt::AlignRight">
-         <widget class="QLabel" name="label_4">
-          <property name="text">
-           <string>Corner edges</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="2" alignment="Qt::AlignRight">
-         <widget class="QLabel" name="label_5">
-          <property name="text">
-           <string>Edge edges</string>
-          </property>
-         </widget>
+        <item row="0" column="5">
+         <widget class="QLineEdit" name="lineEdit_userData"/>
         </item>
         <item row="0" column="0" colspan="2">
          <widget class="QPushButton" name="pushButton_barycentricSubd">
           <property name="text">
            <string>Barycentric Subdivision</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0" colspan="2">
-         <widget class="QPushButton" name="pushButton_loopSubdivision">
-          <property name="text">
-           <string>Loop Subdivision</string>
           </property>
          </widget>
         </item>
@@ -682,8 +664,22 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="3">
-         <widget class="QSpinBox" name="spinBox_cornerEdges">
+        <item row="1" column="4">
+         <widget class="QPushButton" name="pushButton_changeUserData">
+          <property name="text">
+           <string>Change Selected</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2" alignment="Qt::AlignRight">
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>Corner edges</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="3">
+         <widget class="QSpinBox" name="spinBox_edgeEdges">
           <property name="minimum">
            <number>1</number>
           </property>
@@ -692,13 +688,17 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="3">
-         <widget class="QSpinBox" name="spinBox_edgeEdges">
-          <property name="minimum">
-           <number>1</number>
+        <item row="1" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButton_loopSubdivision">
+          <property name="text">
+           <string>Loop Subdivision</string>
           </property>
-          <property name="value">
-           <number>2</number>
+         </widget>
+        </item>
+        <item row="1" column="5">
+         <widget class="QPushButton" name="pushButton_changeAllUserData">
+          <property name="text">
+           <string>Change All</string>
           </property>
          </widget>
         </item>
@@ -712,20 +712,40 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="5">
-         <widget class="QLineEdit" name="lineEdit_userData"/>
-        </item>
-        <item row="1" column="4">
-         <widget class="QPushButton" name="pushButton_changeUserData">
+        <item row="2" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButton_colorMesh">
           <property name="text">
-           <string>Change Selected</string>
+           <string>Color...</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="5">
-         <widget class="QPushButton" name="pushButton_changeAllUserData">
+        <item row="2" column="2" alignment="Qt::AlignRight">
+         <widget class="QLabel" name="label_5">
           <property name="text">
-           <string>Change All</string>
+           <string>Edge edges</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="3">
+         <widget class="QSpinBox" name="spinBox_cornerEdges">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="value">
+           <number>2</number>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QSlider" name="horizontalSlider_transparency">
+          <property name="maximum">
+           <number>255</number>
+          </property>
+          <property name="value">
+           <number>182</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
           </property>
          </widget>
         </item>
@@ -741,32 +761,6 @@
         <property name="sizeConstraint">
          <enum>QLayout::SetMinimumSize</enum>
         </property>
-        <item row="1" column="0">
-         <widget class="QCheckBox" name="checkBox_displayMesh">
-          <property name="layoutDirection">
-           <enum>Qt::RightToLeft</enum>
-          </property>
-          <property name="text">
-           <string>Mesh</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QCheckBox" name="checkBox_darkTheme">
-          <property name="layoutDirection">
-           <enum>Qt::RightToLeft</enum>
-          </property>
-          <property name="text">
-           <string>Dark theme</string>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="0">
          <widget class="QCheckBox" name="checkBox_displayUnitSphere">
           <property name="layoutDirection">
@@ -781,16 +775,6 @@
          </widget>
         </item>
         <item row="3" column="0">
-         <widget class="QCheckBox" name="checkBox_animations">
-          <property name="layoutDirection">
-           <enum>Qt::RightToLeft</enum>
-          </property>
-          <property name="text">
-           <string>Animations</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
          <widget class="QComboBox" name="comboBox_skybox">
           <property name="currentIndex">
            <number>2</number>
@@ -810,6 +794,32 @@
             <string>Skybox 2</string>
            </property>
           </item>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QCheckBox" name="checkBox_darkTheme">
+          <property name="layoutDirection">
+           <enum>Qt::RightToLeft</enum>
+          </property>
+          <property name="text">
+           <string>Dark theme</string>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QCheckBox" name="checkBox_displayMesh">
+          <property name="layoutDirection">
+           <enum>Qt::RightToLeft</enum>
+          </property>
+          <property name="text">
+           <string>Mesh</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
        </layout>
@@ -988,8 +998,8 @@
    <slot>slotIncreaseInversion()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1408</x>
-     <y>128</y>
+     <x>1497</x>
+     <y>119</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -1004,8 +1014,8 @@
    <slot>slotDecreaseInversion()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1454</x>
-     <y>128</y>
+     <x>1543</x>
+     <y>119</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1020,8 +1030,8 @@
    <slot>slotProjectCirclesClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1526</x>
-     <y>127</y>
+     <x>1617</x>
+     <y>118</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -1036,8 +1046,8 @@
    <slot>slotDisplayAreaCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1526</x>
-     <y>66</y>
+     <x>1617</x>
+     <y>61</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1052,8 +1062,8 @@
    <slot>slotDisplayUnitSphereChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1133</x>
-     <y>64</y>
+     <x>1295</x>
+     <y>59</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1068,8 +1078,8 @@
    <slot>slotDisplayMeshClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1133</x>
-     <y>93</y>
+     <x>1295</x>
+     <y>86</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1084,8 +1094,8 @@
    <slot>slotCanonizeMesh()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>359</x>
-     <y>66</y>
+     <x>460</x>
+     <y>61</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1100,8 +1110,8 @@
    <slot>slotOpenOBJFile()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>130</x>
-     <y>66</y>
+     <x>132</x>
+     <y>61</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -1116,8 +1126,8 @@
    <slot>slotExportOBJ()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>216</x>
-     <y>66</y>
+     <x>224</x>
+     <y>61</y>
     </hint>
     <hint type="destinationlabel">
      <x>1</x>
@@ -1132,8 +1142,8 @@
    <slot>slotExportAllFaces()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1338</x>
-     <y>97</y>
+     <x>1427</x>
+     <y>90</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1148,8 +1158,8 @@
    <slot>slotExportSelectedFace()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1338</x>
-     <y>66</y>
+     <x>1427</x>
+     <y>61</y>
     </hint>
     <hint type="destinationlabel">
      <x>6</x>
@@ -1164,8 +1174,8 @@
    <slot>slotDisplayDualAreaCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1526</x>
-     <y>97</y>
+     <x>1617</x>
+     <y>90</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -1180,8 +1190,8 @@
    <slot>slotUpdateLabelPrecision(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>439</x>
-     <y>88</y>
+     <x>460</x>
+     <y>82</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -1196,8 +1206,8 @@
    <slot>slotBarycentricSubdivision()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>680</x>
-     <y>66</y>
+     <x>746</x>
+     <y>61</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -1212,8 +1222,8 @@
    <slot>slotChangeTheme()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1212</x>
-     <y>122</y>
+     <x>1295</x>
+     <y>113</y>
     </hint>
     <hint type="destinationlabel">
      <x>1751</x>
@@ -1228,8 +1238,8 @@
    <slot>slotChangeUserData()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1004</x>
-     <y>97</y>
+     <x>1084</x>
+     <y>90</y>
     </hint>
     <hint type="destinationlabel">
      <x>1752</x>
@@ -1244,8 +1254,8 @@
    <slot>slotGeneralizedBarycentricSubdivision()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>745</x>
-     <y>66</y>
+     <x>971</x>
+     <y>61</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -1260,8 +1270,8 @@
    <slot>slotChangeAllUserData()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1090</x>
-     <y>97</y>
+     <x>1170</x>
+     <y>90</y>
     </hint>
     <hint type="destinationlabel">
      <x>1754</x>
@@ -1276,8 +1286,8 @@
    <slot>slotLoopSubdivision()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>680</x>
-     <y>97</y>
+     <x>746</x>
+     <y>90</y>
     </hint>
     <hint type="destinationlabel">
      <x>1752</x>
@@ -1292,8 +1302,8 @@
    <slot>slotOBJFromCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>130</x>
-     <y>97</y>
+     <x>132</x>
+     <y>90</y>
     </hint>
     <hint type="destinationlabel">
      <x>1753</x>
@@ -1308,8 +1318,8 @@
    <slot>slotOBJOfCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>305</x>
-     <y>66</y>
+     <x>321</x>
+     <y>61</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -1324,8 +1334,8 @@
    <slot>slotScaleUpCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1636</x>
-     <y>66</y>
+     <x>1727</x>
+     <y>61</y>
     </hint>
     <hint type="destinationlabel">
      <x>1753</x>
@@ -1340,8 +1350,8 @@
    <slot>slotScaleDownCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1722</x>
-     <y>66</y>
+     <x>1813</x>
+     <y>61</y>
     </hint>
     <hint type="destinationlabel">
      <x>1752</x>
@@ -1356,12 +1366,44 @@
    <slot>slotUpdateSkyBox(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1180</x>
-     <y>176</y>
+     <x>1295</x>
+     <y>142</y>
     </hint>
     <hint type="destinationlabel">
      <x>1750</x>
      <y>184</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_colorMesh</sender>
+   <signal>clicked()</signal>
+   <receiver>Polytopal2DWindow</receiver>
+   <slot>slotChangeMeshColor()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>641</x>
+     <y>112</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>260</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSlider_transparency</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>Polytopal2DWindow</receiver>
+   <slot>slotChangeMeshTransparency(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>622</x>
+     <y>135</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>3</x>
+     <y>326</y>
     </hint>
    </hints>
   </connection>
@@ -1391,5 +1433,7 @@
   <slot>slotOBJOfCircles()</slot>
   <slot>slotScaleDownCircles()</slot>
   <slot>slotUpdateSkyBox(int)</slot>
+  <slot>slotChangeMeshColor()</slot>
+  <slot>slotChangeMeshTransparency(int)</slot>
  </slots>
 </ui>

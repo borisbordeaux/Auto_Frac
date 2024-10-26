@@ -3,6 +3,7 @@
 #include "halfedge/face.h"
 #include "halfedge/halfedge.h"
 #include "halfedge/vertex.h"
+#include <QColor>
 
 void BatchFace::init() {
     this->initializeOpenGLFunctions();
@@ -43,6 +44,7 @@ void BatchFace::init() {
     m_viewMatrixLoc = m_program.uniformLocation("mvMatrix");
     m_lightPosLoc = m_program.uniformLocation("lightPos");
     m_cameraPosLoc = m_program.uniformLocation("cameraPosition");
+    m_colorLoc = m_program.uniformLocation("color");
 
     m_programPicking.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/faces/picking/vs.glsl");
     m_programPicking.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/faces/picking/fs.glsl");
@@ -145,6 +147,12 @@ void BatchFace::setCamera(Camera camera) {
 void BatchFace::setLight(QVector3D lightPos) {
     m_program.bind();
     m_program.setUniformValue(m_lightPosLoc, lightPos);
+    m_program.release();
+}
+
+void BatchFace::setColor(QColor const& color) {
+    m_program.bind();
+    m_program.setUniformValue(m_colorLoc, color);
     m_program.release();
 }
 

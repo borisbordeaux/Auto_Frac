@@ -19,7 +19,7 @@ GLView::GLView(Polytopal2DWindow* parent) :
 void GLView::initializeGL() {
     //init OpenGL
     this->initializeOpenGLFunctions();
-    
+
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_PROGRAM_POINT_SIZE);
 
@@ -53,6 +53,7 @@ void GLView::paintGL() {
             item->setCamera(m_camera);
             item->setLight(m_camera.getEye());
             item->setInvViewport(1.0f / m_viewportWidth, 1.0f / m_viewportHeight);
+            item->setColor(m_meshColor);
         }
 
         m_uniformsDirty = false;
@@ -387,7 +388,7 @@ void GLView::keyReleaseEvent(QKeyEvent* event) {
 void GLView::handleMoveXVertex(float dx) {
     QVector3D newPos = m_mainWindow->selectedVertex()->pos();
     newPos.setX(newPos.x() + dx / 100.0f);
-    m_mainWindow->selectedVertex()->setPos(newPos);
+    m_mainWindow->selectedVertex()->setPos(newPos, true);
     m_mainWindow->updateData();
     update();
 }
@@ -395,7 +396,7 @@ void GLView::handleMoveXVertex(float dx) {
 void GLView::handleMoveYVertex(float dy) {
     QVector3D newPos = m_mainWindow->selectedVertex()->pos();
     newPos.setY(newPos.y() + dy / 100.0f);
-    m_mainWindow->selectedVertex()->setPos(newPos);
+    m_mainWindow->selectedVertex()->setPos(newPos, true);
     m_mainWindow->updateData();
     update();
 }
@@ -403,7 +404,7 @@ void GLView::handleMoveYVertex(float dy) {
 void GLView::handleMoveZVertex(float dz) {
     QVector3D newPos = m_mainWindow->selectedVertex()->pos();
     newPos.setZ(newPos.z() + dz / 100.0f);
-    m_mainWindow->selectedVertex()->setPos(newPos);
+    m_mainWindow->selectedVertex()->setPos(newPos, true);
     m_mainWindow->updateData();
     update();
 }
@@ -415,8 +416,8 @@ void GLView::handleMoveXEdge(float dx) {
     QVector3D newPos2 = v2->pos();
     newPos1.setX(newPos1.x() + dx / 100.0f);
     newPos2.setX(newPos2.x() + dx / 100.0f);
-    v1->setPos(newPos1);
-    v2->setPos(newPos2);
+    v1->setPos(newPos1, true);
+    v2->setPos(newPos2, true);
     m_mainWindow->updateData();
     update();
 }
@@ -428,8 +429,8 @@ void GLView::handleMoveYEdge(float dy) {
     QVector3D newPos2 = v2->pos();
     newPos1.setY(newPos1.y() + dy / 100.0f);
     newPos2.setY(newPos2.y() + dy / 100.0f);
-    v1->setPos(newPos1);
-    v2->setPos(newPos2);
+    v1->setPos(newPos1, true);
+    v2->setPos(newPos2, true);
     m_mainWindow->updateData();
     update();
 }
@@ -441,8 +442,8 @@ void GLView::handleMoveZEdge(float dz) {
     QVector3D newPos2 = v2->pos();
     newPos1.setZ(newPos1.z() + dz / 100.0f);
     newPos2.setZ(newPos2.z() + dz / 100.0f);
-    v1->setPos(newPos1);
-    v2->setPos(newPos2);
+    v1->setPos(newPos1, true);
+    v2->setPos(newPos2, true);
     m_mainWindow->updateData();
     update();
 }
@@ -451,7 +452,7 @@ void GLView::handleMoveXFace(float dx) {
     for (he::Vertex* v: m_mainWindow->selectedFace()->allVertices()) {
         QVector3D newPos = v->pos();
         newPos.setX(newPos.x() + dx / 100.0f);
-        v->setPos(newPos);
+        v->setPos(newPos, true);
     }
     m_mainWindow->updateData();
     update();
@@ -461,7 +462,7 @@ void GLView::handleMoveYFace(float dy) {
     for (he::Vertex* v: m_mainWindow->selectedFace()->allVertices()) {
         QVector3D newPos = v->pos();
         newPos.setY(newPos.y() + dy / 100.0f);
-        v->setPos(newPos);
+        v->setPos(newPos, true);
     }
     m_mainWindow->updateData();
     update();
@@ -471,7 +472,7 @@ void GLView::handleMoveZFace(float dz) {
     for (he::Vertex* v: m_mainWindow->selectedFace()->allVertices()) {
         QVector3D newPos = v->pos();
         newPos.setZ(newPos.z() + dz / 100.0f);
-        v->setPos(newPos);
+        v->setPos(newPos, true);
     }
     m_mainWindow->updateData();
     update();
@@ -554,4 +555,22 @@ void GLView::removeItem(BatchGraphicsItem* item) {
 bool GLView::containsItem(BatchGraphicsItem* item) {
     if (m_items.empty()) { return false; }
     return std::find(m_items.begin(), m_items.end(), item) != m_items.end();
+}
+
+void GLView::changeMeshColor(QColor const& color) {
+    m_meshColor = color;
+    m_uniformsDirty = true;
+    this->update();
+}
+
+QColor const& GLView::meshColor() const {
+    return m_meshColor;
+}
+
+void GLView::initOldMeshColor() {
+    m_oldMeshColor = m_meshColor;
+}
+
+void GLView::restoreMeshColor() {
+    this->changeMeshColor(m_oldMeshColor);
 }

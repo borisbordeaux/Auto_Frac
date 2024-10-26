@@ -56,6 +56,11 @@ public:
     virtual void setInvViewport(float /*x*/, float /*y*/) {}
 
     /**
+     * set color
+     */
+    virtual void setColor(QColor const& /*color*/) {}
+
+    /**
      * an object with a high priority will be drawn before the others
      * @return the priority of the object
      */

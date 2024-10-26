@@ -28,8 +28,13 @@ public:
     void setBackGroundColor(float r, float g, float b);
     PickingType pickingType() const;
 
+    QColor const& meshColor() const;
+    void initOldMeshColor();
+
 public slots:
     void animationCameraStep();
+    void changeMeshColor(QColor const& color);
+    void restoreMeshColor();
 
 protected:
     // QOpenGLWidget interface
@@ -110,6 +115,9 @@ private:
     bool m_isKeyZPressed = false;
     bool m_isKeyRPressed = false;
     bool m_isShiftPressed = false;
+
+    QColor m_meshColor { 92, 163, 227, 182 };
+    QColor m_oldMeshColor { m_meshColor };
 
 public:
     void removeItem(BatchGraphicsItem* item);

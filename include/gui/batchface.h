@@ -22,6 +22,7 @@ public:
     void setProjection(QMatrix4x4 projection) override;
     void setCamera(Camera camera) override;
     void setLight(QVector3D lightPos) override;
+    void setColor(QColor const& color) override;
 
     void setMesh(he::Mesh* mesh);
 
@@ -51,6 +52,7 @@ private:
     int m_viewMatrixLoc = 0;
     int m_lightPosLoc = 0;
     int m_cameraPosLoc = 0;
+    int m_colorLoc = 0;
     //Faces picking
     int m_projMatrixPickingLoc = 0;
     int m_viewMatrixPickingLoc = 0;

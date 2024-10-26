@@ -36,7 +36,7 @@ public:
      * setter
      * @param pos the new position of the vertex
      */
-    void setPos(QVector3D const& pos);
+    void setPos(QVector3D const& pos, bool changePosD = false);
 
     /**
      * @brief getter

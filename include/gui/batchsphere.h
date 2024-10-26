@@ -12,6 +12,10 @@ namespace he {
 class Face;
 }
 
+namespace poly {
+class InversiveCoordinates;
+}
+
 class BatchSphere : public BatchGraphicsItem {
 public:
     void init() override;
@@ -24,7 +28,7 @@ public:
     void setLight(QVector3D lightPos) override;
 
     void setSphereMesh(he::Mesh&& mesh);
-    void updateMeshData(he::Mesh* mesh);
+    void updateMeshData(std::vector<poly::InversiveCoordinates> const& circles);
 
     int priority() override { return 2; }
 

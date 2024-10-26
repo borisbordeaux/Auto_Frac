@@ -21,8 +21,11 @@ QVector3D he::Vertex::pos() const {
     return m_pos;
 }
 
-void he::Vertex::setPos(QVector3D const& pos) {
+void he::Vertex::setPos(QVector3D const& pos, bool changePosD) {
     m_pos = pos;
+    if (changePosD) {
+        m_posD = Point3D(pos.x(), pos.y(), pos.z());
+    }
 }
 
 he::Point3D he::Vertex::posD() const {

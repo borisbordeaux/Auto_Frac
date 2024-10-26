@@ -3,6 +3,7 @@
 #include "halfedge/halfedge.h"
 #include "halfedge/mesh.h"
 #include "halfedge/vertex.h"
+#include "polytopal/inversivecoordinates.h"
 
 void BatchSphere::init() {
     this->initializeOpenGLFunctions();
@@ -40,7 +41,7 @@ void BatchSphere::init() {
     m_cameraPosLoc = m_program.uniformLocation("cameraPosition");
     m_nbVerticesLoc = m_program.uniformLocation("nbVertices");
 
-    this->updateMeshData(nullptr);
+    this->updateMeshData({});
 }
 
 void BatchSphere::update() {
@@ -159,22 +160,25 @@ qsizetype BatchSphere::findNbOfTriangle() {
     return nb;
 }
 
-void BatchSphere::updateMeshData(he::Mesh* mesh) {
-    if (mesh == nullptr) {
+void BatchSphere::updateMeshData(std::vector<poly::InversiveCoordinates> const& circles) {
+    if (circles.empty()) {
         m_program.bind();
         glUniform1ui(m_nbVerticesLoc, 0);
         m_program.release();
         return;
     }
 
-    std::size_t size = 3 * mesh->vertices().size();
-
     std::vector<float> data;
-    data.reserve(size);
-    for (he::Vertex* v: mesh->vertices()) {
-        data.push_back(v->pos().x());
-        data.push_back(v->pos().y());
-        data.push_back(v->pos().z());
+    data.reserve(circles.size());
+    for (poly::InversiveCoordinates const& c: circles) {
+        //to limit the display of a lot of circles
+        //since it is not really efficient
+        if (c.inverseStereographicProject().radius() > 0.01f) {
+            QVector3D v = c.lightPoint().toQVector3D();
+            data.push_back(v.x());
+            data.push_back(v.y());
+            data.push_back(v.z());
+        }
     }
 
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);
@@ -182,6 +186,6 @@ void BatchSphere::updateMeshData(he::Mesh* mesh) {
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0); // unbind
 
     m_program.bind();
-    glUniform1ui(m_nbVerticesLoc, static_cast<unsigned int>(size));
+    glUniform1ui(m_nbVerticesLoc, static_cast<unsigned int>(data.size()));
     m_program.release();
 }

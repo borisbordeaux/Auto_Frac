@@ -52,6 +52,12 @@ Polytopal2DWindow::Polytopal2DWindow(QWidget* parent) :
     m_progressBar = new QProgressBar();
     m_progressBar->setRange(0, 100);
     m_statusBar->insertPermanentWidget(0, m_progressBar);
+
+    m_colorDialog.setOptions(QColorDialog::ShowAlphaChannel | QColorDialog::DontUseNativeDialog);
+    m_colorDialog.setCurrentColor(m_view->meshColor());
+
+    connect(&m_colorDialog, &QColorDialog::currentColorChanged, m_view, &GLView::changeMeshColor);
+    connect(&m_colorDialog, &QColorDialog::rejected, m_view, &GLView::restoreMeshColor);
 }
 
 Polytopal2DWindow::~Polytopal2DWindow() {
@@ -89,9 +95,6 @@ void Polytopal2DWindow::openOBJFile(QString const& file) {
         m_view->addItem(&m_batchFace);
         m_view->addItem(&m_batchEdge);
         m_view->addItem(&m_batchVertex);
-
-        m_batchSphere.updateMeshData(nullptr);
-
         m_view->update();
         m_openedMesh = true;
         m_canonicalized = false;
@@ -802,8 +805,28 @@ void Polytopal2DWindow::updateBatchCircles(bool dual) {
 
     //update circles display on sphere
     if (!this->ui->checkBox_projectCircles->isChecked() && !m_circles.empty()) {
-        m_batchSphere.updateMeshData(&m_mesh);
+        m_batchSphere.updateMeshData(m_circles);
     } else {
-        m_batchSphere.updateMeshData(nullptr);
+        m_batchSphere.updateMeshData({});
     }
+}
+
+[[maybe_unused]] void Polytopal2DWindow::slotChangeMeshColor() {
+    if (!m_colorDialog.isVisible()) {
+        m_view->initOldMeshColor();
+        m_colorDialog.setVisible(true);
+    }
+}
+
+void Polytopal2DWindow::closeEvent(QCloseEvent* event) {
+    if (m_colorDialog.isVisible()) {
+        m_colorDialog.close();
+    }
+    QWidget::closeEvent(event);
+}
+
+[[maybe_unused]] void Polytopal2DWindow::slotChangeMeshTransparency(int value) {
+    QColor c = m_view->meshColor();
+    c.setAlpha(value);
+    m_view->changeMeshColor(c);
 }
