@@ -8,6 +8,11 @@ out vec4 fragColor;
 uniform vec3 lightPos;
 uniform vec3 cameraPosition;
 
+// 0 : transparent
+// 1 : illuminated regions
+// 2 : no specific coloring
+uniform int renderType;
+
 //nb readable floats
 uniform uint nbVertices;
 
@@ -32,13 +37,17 @@ float checkInCircle() {
 }
 
 void main() {
-    if(checkInCircle() > 0.5){
-        discard;
-        return;
-    }
-
     vec3 color = vec3(0.5);
-    //color -= checkInCircle() * vec3(0.1);
+
+    if (renderType == 0) {
+        // transparent
+        if (checkInCircle() > 0.5) {
+            discard;
+        }
+    } else if (renderType == 1) {
+        // illuminated regions
+        color -= checkInCircle() * vec3(0.1);
+    }
 
     vec3 ambientColor = 0.7 * color.rgb;
     vec3 diffuseColor = color.rgb;

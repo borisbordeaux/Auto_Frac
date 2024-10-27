@@ -392,6 +392,9 @@ void Polytopal2DWindow::updateEnablementPoly() {
     m_openedMesh = true;
     m_canonicalized = false;
     this->updateEnablementPoly();
+    m_view->addItem(&m_batchFace);
+    m_view->addItem(&m_batchEdge);
+    m_view->addItem(&m_batchVertex);
     m_view->update();
 }
 
@@ -412,6 +415,9 @@ void Polytopal2DWindow::updateEnablementPoly() {
     m_openedMesh = true;
     m_canonicalized = false;
     this->updateEnablementPoly();
+    m_view->addItem(&m_batchFace);
+    m_view->addItem(&m_batchEdge);
+    m_view->addItem(&m_batchVertex);
     m_view->update();
 }
 
@@ -432,6 +438,9 @@ void Polytopal2DWindow::updateEnablementPoly() {
     m_openedMesh = true;
     m_canonicalized = false;
     this->updateEnablementPoly();
+    m_view->addItem(&m_batchFace);
+    m_view->addItem(&m_batchEdge);
+    m_view->addItem(&m_batchVertex);
     m_view->update();
 }
 
@@ -841,5 +850,10 @@ void Polytopal2DWindow::closeEvent(QCloseEvent* event) {
 
 [[maybe_unused]] void Polytopal2DWindow::slotCullFaceChanged() {
     m_view->enableCullFace(this->ui->checkBox_cullFace->isChecked());
+    m_view->update();
+}
+
+[[maybe_unused]] void Polytopal2DWindow::slotSphereRenderTypeChanged(int newValue) {
+    m_batchSphere.setCircleRenderType(static_cast<CircleRenderType>(newValue));
     m_view->update();
 }

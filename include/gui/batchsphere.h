@@ -16,6 +16,12 @@ namespace poly {
 class InversiveCoordinates;
 }
 
+enum class CircleRenderType {
+    TRANSPARENT,
+    ILLUMINATED,
+    NONE
+};
+
 class BatchSphere : public BatchGraphicsItem {
 public:
     void init() override;
@@ -32,6 +38,8 @@ public:
 
     int priority() override { return 2; }
 
+    void setCircleRenderType(CircleRenderType type);
+
 private:
     void addFaceSphere(he::Face* f);
     void addVertexSphere(QVector3D const& v);
@@ -44,6 +52,7 @@ private:
     int m_lightPosLoc = 0;
     int m_cameraPosLoc = 0;
 
+    int m_renderTypeLoc = 0;
     int m_nbVerticesLoc = 0;
 
     he::Mesh m_sphereMesh;

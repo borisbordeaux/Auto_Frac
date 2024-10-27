@@ -459,12 +459,12 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <property name="sizeConstraint">
-      <enum>QLayout::SetMinimumSize</enum>
+      <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
      </property>
      <item>
       <spacer name="horizontalSpacer_12">
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -474,54 +474,40 @@
        </property>
       </spacer>
      </item>
-     <item alignment="Qt::AlignTop">
+     <item>
       <widget class="QGroupBox" name="groupBox">
        <property name="title">
         <string>IO</string>
        </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+       </property>
        <layout class="QGridLayout" name="gridLayout_2">
-        <property name="sizeConstraint">
-         <enum>QLayout::SetMinimumSize</enum>
-        </property>
-        <item row="0" column="0">
-         <widget class="QPushButton" name="pushButton_openOBJ">
+        <item row="1" column="1">
+         <widget class="QLabel" name="label_2">
           <property name="text">
-           <string>Open OBJ...</string>
+           <string>Threshold</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
           </property>
          </widget>
         </item>
-        <item row="0" column="1">
+        <item row="1" column="0">
          <widget class="QPushButton" name="pushButton_ExportOBJ">
           <property name="text">
            <string>Export OBJ...</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
+        <item row="0" column="1">
          <widget class="QPushButton" name="pushButton_OBJFromCircles">
           <property name="text">
            <string>OBJ from circles</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="2">
-         <widget class="QPushButton" name="pushButton_OBJOfCircles">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="text">
-           <string>OBJ of Circles</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1" alignment="Qt::AlignRight">
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>Threshold</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="2">
+        <item row="2" column="1">
          <widget class="QDoubleSpinBox" name="doubleSpinBox_thresholdAdjacency">
           <property name="minimum">
            <double>0.010000000000000</double>
@@ -534,38 +520,39 @@
           </property>
          </widget>
         </item>
+        <item row="0" column="0">
+         <widget class="QPushButton" name="pushButton_openOBJ">
+          <property name="text">
+           <string>Open OBJ...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QPushButton" name="pushButton_OBJOfCircles">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="text">
+           <string>OBJ of Circles</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </item>
-     <item alignment="Qt::AlignTop">
+     <item>
       <widget class="QGroupBox" name="groupBox_4">
        <property name="title">
         <string>Canonicalize</string>
        </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+       </property>
        <layout class="QGridLayout" name="gridLayout_3">
         <property name="sizeConstraint">
-         <enum>QLayout::SetMinimumSize</enum>
+         <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
         </property>
-        <item row="2" column="0">
-         <widget class="QSlider" name="horizontalSlider_precision">
-          <property name="minimum">
-           <number>3</number>
-          </property>
-          <property name="maximum">
-           <number>16</number>
-          </property>
-          <property name="pageStep">
-           <number>1</number>
-          </property>
-          <property name="value">
-           <number>6</number>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1">
+        <item row="3" column="1">
          <widget class="QDoubleSpinBox" name="doubleSpinBox_canonicalizeForce">
           <property name="decimals">
            <number>4</number>
@@ -584,28 +571,57 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
+        <item row="1" column="0">
+         <widget class="QSlider" name="horizontalSlider_precision">
+          <property name="minimum">
+           <number>3</number>
+          </property>
+          <property name="maximum">
+           <number>16</number>
+          </property>
+          <property name="pageStep">
+           <number>1</number>
+          </property>
+          <property name="value">
+           <number>6</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Orientation::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
          <widget class="QLabel" name="label_precision">
           <property name="text">
            <string>1e-6</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="0" alignment="Qt::AlignRight">
-         <widget class="QLabel" name="label_6">
+        <item row="0" column="1">
+         <widget class="QCheckBox" name="checkBox_canonicForm">
           <property name="text">
-           <string>Canonicalize steps</string>
+           <string>Canonic form</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
-        <item row="4" column="0" alignment="Qt::AlignRight">
+        <item row="0" column="0">
+         <widget class="QPushButton" name="pushButton_canonizeMesh">
+          <property name="text">
+           <string>Tangentify</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
          <widget class="QLabel" name="label_7">
           <property name="text">
            <string>Canonicalize force</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
+        <item row="2" column="1">
          <widget class="QSpinBox" name="spinBox_canonicalizeStep">
           <property name="minimum">
            <number>1</number>
@@ -618,38 +634,25 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
-         <widget class="QPushButton" name="pushButton_canonizeMesh">
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_6">
           <property name="text">
-           <string>Tangentify</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QCheckBox" name="checkBox_canonicForm">
-          <property name="text">
-           <string>Canonic form</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
+           <string>Canonicalize steps</string>
           </property>
          </widget>
         </item>
        </layout>
       </widget>
      </item>
-     <item alignment="Qt::AlignTop">
+     <item>
       <widget class="QGroupBox" name="groupBox_5">
        <property name="title">
         <string>Mesh</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_4">
         <property name="sizeConstraint">
-         <enum>QLayout::SetMinimumSize</enum>
+         <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
         </property>
-        <item row="0" column="5">
-         <widget class="QLineEdit" name="lineEdit_userData"/>
-        </item>
         <item row="0" column="0" colspan="2">
          <widget class="QPushButton" name="pushButton_barycentricSubd">
           <property name="text">
@@ -657,34 +660,10 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="2" colspan="2">
-         <widget class="QPushButton" name="pushButton_generalizedBarycentricSubd">
-          <property name="text">
-           <string>Generalized Barycentric Subdivision</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="4">
-         <widget class="QPushButton" name="pushButton_changeUserData">
-          <property name="text">
-           <string>Change Selected</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="2" alignment="Qt::AlignRight">
+        <item row="1" column="2">
          <widget class="QLabel" name="label_4">
           <property name="text">
            <string>Corner edges</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="3">
-         <widget class="QSpinBox" name="spinBox_edgeEdges">
-          <property name="minimum">
-           <number>1</number>
-          </property>
-          <property name="value">
-           <number>2</number>
           </property>
          </widget>
         </item>
@@ -692,37 +671,6 @@
          <widget class="QPushButton" name="pushButton_loopSubdivision">
           <property name="text">
            <string>Loop Subdivision</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="5">
-         <widget class="QPushButton" name="pushButton_changeAllUserData">
-          <property name="text">
-           <string>Change All</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="4">
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>User Data</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0" colspan="2">
-         <widget class="QPushButton" name="pushButton_colorMesh">
-          <property name="text">
-           <string>Color...</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="2" alignment="Qt::AlignRight">
-         <widget class="QLabel" name="label_5">
-          <property name="text">
-           <string>Edge edges</string>
           </property>
          </widget>
         </item>
@@ -736,6 +684,57 @@
           </property>
          </widget>
         </item>
+        <item row="2" column="3">
+         <widget class="QSpinBox" name="spinBox_edgeEdges">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="value">
+           <number>2</number>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="5">
+         <widget class="QPushButton" name="pushButton_changeAllUserData">
+          <property name="text">
+           <string>Change All</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="5">
+         <widget class="QLineEdit" name="lineEdit_userData"/>
+        </item>
+        <item row="1" column="4">
+         <widget class="QPushButton" name="pushButton_changeUserData">
+          <property name="text">
+           <string>Change Selected</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="4">
+         <widget class="QPushButton" name="pushButton_scaleMesh">
+          <property name="text">
+           <string>Scale by</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>Edge edges</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="4">
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>User Data</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
         <item row="3" column="0">
          <widget class="QSlider" name="horizontalSlider_transparency">
           <property name="maximum">
@@ -745,14 +744,21 @@
            <number>182</number>
           </property>
           <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+           <enum>Qt::Orientation::Horizontal</enum>
           </property>
          </widget>
         </item>
-        <item row="2" column="4">
-         <widget class="QPushButton" name="pushButton_scaleMesh">
+        <item row="2" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButton_colorMesh">
           <property name="text">
-           <string>Scale by</string>
+           <string>Color...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2" colspan="2">
+         <widget class="QPushButton" name="pushButton_generalizedBarycentricSubd">
+          <property name="text">
+           <string>G-Barycentric Subdivision</string>
           </property>
          </widget>
         </item>
@@ -771,36 +777,48 @@
            <double>0.010000000000000</double>
           </property>
           <property name="value">
-           <double>0.990000000000000</double>
+           <double>0.999000000000000</double>
           </property>
          </widget>
         </item>
        </layout>
       </widget>
      </item>
-     <item alignment="Qt::AlignTop">
+     <item>
       <widget class="QGroupBox" name="groupBox_2">
        <property name="title">
         <string>Display</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_5">
         <property name="sizeConstraint">
-         <enum>QLayout::SetMinimumSize</enum>
+         <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
         </property>
-        <item row="1" column="0">
-         <widget class="QCheckBox" name="checkBox_displayMesh">
-          <property name="layoutDirection">
-           <enum>Qt::RightToLeft</enum>
+        <item row="2" column="1">
+         <widget class="QComboBox" name="comboBox_sphereRenderType">
+          <property name="currentText">
+           <string>ILLUMINATED</string>
           </property>
-          <property name="text">
-           <string>Mesh</string>
+          <property name="currentIndex">
+           <number>1</number>
           </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
+          <item>
+           <property name="text">
+            <string>TRANSPARENT</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>ILLUMINATED</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>NONE</string>
+           </property>
+          </item>
          </widget>
         </item>
-        <item row="3" column="0">
+        <item row="0" column="1">
          <widget class="QComboBox" name="comboBox_skybox">
           <property name="currentIndex">
            <number>2</number>
@@ -825,7 +843,7 @@
         <item row="0" column="0">
          <widget class="QCheckBox" name="checkBox_displayUnitSphere">
           <property name="layoutDirection">
-           <enum>Qt::RightToLeft</enum>
+           <enum>Qt::LayoutDirection::RightToLeft</enum>
           </property>
           <property name="text">
            <string>Sphere</string>
@@ -835,20 +853,7 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
-         <widget class="QCheckBox" name="checkBox_darkTheme">
-          <property name="layoutDirection">
-           <enum>Qt::RightToLeft</enum>
-          </property>
-          <property name="text">
-           <string>Dark theme</string>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
+        <item row="1" column="1">
          <widget class="QCheckBox" name="checkBox_cullFace">
           <property name="text">
            <string>Cull Faces</string>
@@ -858,17 +863,43 @@
           </property>
          </widget>
         </item>
+        <item row="2" column="0">
+         <widget class="QCheckBox" name="checkBox_darkTheme">
+          <property name="layoutDirection">
+           <enum>Qt::LayoutDirection::RightToLeft</enum>
+          </property>
+          <property name="text">
+           <string>Dark theme</string>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QCheckBox" name="checkBox_displayMesh">
+          <property name="layoutDirection">
+           <enum>Qt::LayoutDirection::RightToLeft</enum>
+          </property>
+          <property name="text">
+           <string>Mesh</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </item>
-     <item alignment="Qt::AlignTop">
+     <item>
       <widget class="QGroupBox" name="groupBox_3">
        <property name="title">
         <string>Fractal</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_6">
         <property name="sizeConstraint">
-         <enum>QLayout::SetMinimumSize</enum>
+         <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
         </property>
         <item row="0" column="0">
          <widget class="QPushButton" name="pushButton_ExportSelectedFace">
@@ -884,10 +915,10 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="0" alignment="Qt::AlignRight">
+        <item row="2" column="0">
          <widget class="QCheckBox" name="checkBox_polytopalPlanarControlPoints">
           <property name="layoutDirection">
-           <enum>Qt::RightToLeft</enum>
+           <enum>Qt::LayoutDirection::RightToLeft</enum>
           </property>
           <property name="text">
            <string>Planar CP</string>
@@ -897,15 +928,22 @@
        </layout>
       </widget>
      </item>
-     <item alignment="Qt::AlignTop">
+     <item>
       <widget class="QGroupBox" name="groupBox_6">
        <property name="title">
         <string>Polytopal</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_7">
         <property name="sizeConstraint">
-         <enum>QLayout::SetMinimumSize</enum>
+         <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
         </property>
+        <item row="0" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButton_displayCircles">
+          <property name="text">
+           <string>Primal Circles</string>
+          </property>
+         </widget>
+        </item>
         <item row="2" column="0">
          <widget class="QPushButton" name="pushButton_IncrementIteration">
           <property name="maximumSize">
@@ -932,34 +970,27 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="0" colspan="3">
-         <widget class="QPushButton" name="pushButton_displayCircles">
+        <item row="1" column="0" colspan="2">
+         <widget class="QPushButton" name="pushButton_displayCirclesDual">
           <property name="text">
-           <string>Illuminated Circles</string>
+           <string>Dual Circles</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="2">
+        <item row="3" column="0" colspan="2">
          <widget class="QCheckBox" name="checkBox_projectCircles">
           <property name="layoutDirection">
-           <enum>Qt::RightToLeft</enum>
+           <enum>Qt::LayoutDirection::LeftToRight</enum>
           </property>
           <property name="text">
            <string>Project</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="0" colspan="3">
-         <widget class="QPushButton" name="pushButton_displayCirclesDual">
-          <property name="text">
-           <string>Dual Illuminated Circles</string>
-          </property>
-         </widget>
-        </item>
        </layout>
       </widget>
      </item>
-     <item alignment="Qt::AlignTop">
+     <item>
       <widget class="QGroupBox" name="groupBox_7">
        <property name="title">
         <string>Circles</string>
@@ -998,7 +1029,7 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="0" alignment="Qt::AlignRight">
+        <item row="1" column="0">
          <widget class="QLabel" name="label">
           <property name="text">
            <string>Scale force</string>
@@ -1011,7 +1042,7 @@
      <item>
       <spacer name="horizontalSpacer_11">
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -1034,7 +1065,7 @@
    <slot>slotIncreaseInversion()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1497</x>
+     <x>1538</x>
      <y>119</y>
     </hint>
     <hint type="destinationlabel">
@@ -1050,7 +1081,7 @@
    <slot>slotDecreaseInversion()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1543</x>
+     <x>1584</x>
      <y>119</y>
     </hint>
     <hint type="destinationlabel">
@@ -1066,8 +1097,8 @@
    <slot>slotProjectCirclesClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1617</x>
-     <y>118</y>
+     <x>1576</x>
+     <y>146</y>
     </hint>
     <hint type="destinationlabel">
      <x>7</x>
@@ -1082,7 +1113,7 @@
    <slot>slotDisplayAreaCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1617</x>
+     <x>1576</x>
      <y>61</y>
     </hint>
     <hint type="destinationlabel">
@@ -1098,8 +1129,8 @@
    <slot>slotDisplayUnitSphereChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1295</x>
-     <y>59</y>
+     <x>1210</x>
+     <y>60</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1114,8 +1145,8 @@
    <slot>slotDisplayMeshClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1295</x>
-     <y>86</y>
+     <x>1210</x>
+     <y>88</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1130,7 +1161,7 @@
    <slot>slotCanonizeMesh()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>460</x>
+     <x>399</x>
      <y>61</y>
     </hint>
     <hint type="destinationlabel">
@@ -1162,8 +1193,8 @@
    <slot>slotExportOBJ()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>224</x>
-     <y>61</y>
+     <x>149</x>
+     <y>90</y>
     </hint>
     <hint type="destinationlabel">
      <x>1</x>
@@ -1210,7 +1241,7 @@
    <slot>slotDisplayDualAreaCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1617</x>
+     <x>1576</x>
      <y>90</y>
     </hint>
     <hint type="destinationlabel">
@@ -1226,7 +1257,7 @@
    <slot>slotUpdateLabelPrecision(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>460</x>
+     <x>399</x>
      <y>82</y>
     </hint>
     <hint type="destinationlabel">
@@ -1242,7 +1273,7 @@
    <slot>slotBarycentricSubdivision()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>746</x>
+     <x>685</x>
      <y>61</y>
     </hint>
     <hint type="destinationlabel">
@@ -1258,8 +1289,8 @@
    <slot>slotChangeTheme()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1295</x>
-     <y>113</y>
+     <x>1210</x>
+     <y>116</y>
     </hint>
     <hint type="destinationlabel">
      <x>1751</x>
@@ -1274,7 +1305,7 @@
    <slot>slotChangeUserData()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1084</x>
+     <x>962</x>
      <y>90</y>
     </hint>
     <hint type="destinationlabel">
@@ -1290,7 +1321,7 @@
    <slot>slotGeneralizedBarycentricSubdivision()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>971</x>
+     <x>849</x>
      <y>61</y>
     </hint>
     <hint type="destinationlabel">
@@ -1306,7 +1337,7 @@
    <slot>slotChangeAllUserData()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1170</x>
+     <x>1085</x>
      <y>90</y>
     </hint>
     <hint type="destinationlabel">
@@ -1322,7 +1353,7 @@
    <slot>slotLoopSubdivision()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>746</x>
+     <x>685</x>
      <y>90</y>
     </hint>
     <hint type="destinationlabel">
@@ -1338,8 +1369,8 @@
    <slot>slotOBJFromCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>132</x>
-     <y>90</y>
+     <x>260</x>
+     <y>61</y>
     </hint>
     <hint type="destinationlabel">
      <x>1753</x>
@@ -1354,8 +1385,8 @@
    <slot>slotOBJOfCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>321</x>
-     <y>61</y>
+     <x>149</x>
+     <y>119</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -1370,7 +1401,7 @@
    <slot>slotScaleUpCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1727</x>
+     <x>1686</x>
      <y>61</y>
     </hint>
     <hint type="destinationlabel">
@@ -1386,7 +1417,7 @@
    <slot>slotScaleDownCircles()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1813</x>
+     <x>1772</x>
      <y>61</y>
     </hint>
     <hint type="destinationlabel">
@@ -1402,8 +1433,8 @@
    <slot>slotUpdateSkyBox(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1295</x>
-     <y>142</y>
+     <x>1326</x>
+     <y>61</y>
     </hint>
     <hint type="destinationlabel">
      <x>1750</x>
@@ -1450,8 +1481,8 @@
    <slot>slotScaleMesh()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1065</x>
-     <y>105</y>
+     <x>962</x>
+     <y>119</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -1466,12 +1497,28 @@
    <slot>slotCullFaceChanged()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1269</x>
-     <y>160</y>
+     <x>1326</x>
+     <y>88</y>
     </hint>
     <hint type="destinationlabel">
      <x>1835</x>
      <y>414</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_sphereRenderType</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>Polytopal2DWindow</receiver>
+   <slot>slotSphereRenderTypeChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1292</x>
+     <y>106</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1833</x>
+     <y>452</y>
     </hint>
    </hints>
   </connection>
@@ -1505,5 +1552,6 @@
   <slot>slotChangeMeshTransparency(int)</slot>
   <slot>slotScaleMesh()</slot>
   <slot>slotCullFaceChanged()</slot>
+  <slot>slotSphereRenderTypeChanged(int)</slot>
  </slots>
 </ui>

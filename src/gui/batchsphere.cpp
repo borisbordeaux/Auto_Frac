@@ -40,8 +40,10 @@ void BatchSphere::init() {
     m_lightPosLoc = m_program.uniformLocation("lightPos");
     m_cameraPosLoc = m_program.uniformLocation("cameraPosition");
     m_nbVerticesLoc = m_program.uniformLocation("nbVertices");
+    m_renderTypeLoc = m_program.uniformLocation("renderType");
 
     this->updateMeshData({});
+    this->setCircleRenderType(CircleRenderType::ILLUMINATED);
 }
 
 void BatchSphere::update() {
@@ -187,5 +189,21 @@ void BatchSphere::updateMeshData(std::vector<poly::InversiveCoordinates> const& 
 
     m_program.bind();
     glUniform1ui(m_nbVerticesLoc, static_cast<unsigned int>(data.size()));
+    m_program.release();
+}
+
+void BatchSphere::setCircleRenderType(CircleRenderType type) {
+    m_program.bind();
+    switch (type) {
+        case CircleRenderType::TRANSPARENT:
+            glUniform1i(m_renderTypeLoc, 0);
+            break;
+        case CircleRenderType::ILLUMINATED:
+            glUniform1i(m_renderTypeLoc, 1);
+            break;
+        case CircleRenderType::NONE:
+            glUniform1i(m_renderTypeLoc, 2);
+            break;
+    }
     m_program.release();
 }
