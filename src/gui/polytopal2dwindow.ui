@@ -749,6 +749,32 @@
           </property>
          </widget>
         </item>
+        <item row="2" column="4">
+         <widget class="QPushButton" name="pushButton_scaleMesh">
+          <property name="text">
+           <string>Scale by</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="5">
+         <widget class="QDoubleSpinBox" name="doubleSpinBox_scaleMesh">
+          <property name="decimals">
+           <number>4</number>
+          </property>
+          <property name="minimum">
+           <double>0.500000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>2.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>0.010000000000000</double>
+          </property>
+          <property name="value">
+           <double>0.990000000000000</double>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </item>
@@ -761,13 +787,13 @@
         <property name="sizeConstraint">
          <enum>QLayout::SetMinimumSize</enum>
         </property>
-        <item row="0" column="0">
-         <widget class="QCheckBox" name="checkBox_displayUnitSphere">
+        <item row="1" column="0">
+         <widget class="QCheckBox" name="checkBox_displayMesh">
           <property name="layoutDirection">
            <enum>Qt::RightToLeft</enum>
           </property>
           <property name="text">
-           <string>Sphere</string>
+           <string>Mesh</string>
           </property>
           <property name="checked">
            <bool>true</bool>
@@ -796,6 +822,19 @@
           </item>
          </widget>
         </item>
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="checkBox_displayUnitSphere">
+          <property name="layoutDirection">
+           <enum>Qt::RightToLeft</enum>
+          </property>
+          <property name="text">
+           <string>Sphere</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
         <item row="2" column="0">
          <widget class="QCheckBox" name="checkBox_darkTheme">
           <property name="layoutDirection">
@@ -809,13 +848,10 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
-         <widget class="QCheckBox" name="checkBox_displayMesh">
-          <property name="layoutDirection">
-           <enum>Qt::RightToLeft</enum>
-          </property>
+        <item row="4" column="0">
+         <widget class="QCheckBox" name="checkBox_cullFace">
           <property name="text">
-           <string>Mesh</string>
+           <string>Cull Faces</string>
           </property>
           <property name="checked">
            <bool>true</bool>
@@ -1407,6 +1443,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton_scaleMesh</sender>
+   <signal>clicked()</signal>
+   <receiver>Polytopal2DWindow</receiver>
+   <slot>slotScaleMesh()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1065</x>
+     <y>105</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>2</x>
+     <y>477</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_cullFace</sender>
+   <signal>clicked()</signal>
+   <receiver>Polytopal2DWindow</receiver>
+   <slot>slotCullFaceChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1269</x>
+     <y>160</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1835</x>
+     <y>414</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>slotOpenOBJFile()</slot>
@@ -1435,5 +1503,7 @@
   <slot>slotUpdateSkyBox(int)</slot>
   <slot>slotChangeMeshColor()</slot>
   <slot>slotChangeMeshTransparency(int)</slot>
+  <slot>slotScaleMesh()</slot>
+  <slot>slotCullFaceChanged()</slot>
  </slots>
 </ui>

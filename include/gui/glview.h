@@ -31,6 +31,8 @@ public:
     QColor const& meshColor() const;
     void initOldMeshColor();
 
+    void enableCullFace(bool enable);
+
 public slots:
     void animationCameraStep();
     void changeMeshColor(QColor const& color);
@@ -118,6 +120,9 @@ private:
 
     QColor m_meshColor { 92, 163, 227, 182 };
     QColor m_oldMeshColor { m_meshColor };
+
+    bool m_flagCullFaceChanged = false;
+    bool m_cullFace = true;
 
 public:
     void removeItem(BatchGraphicsItem* item);

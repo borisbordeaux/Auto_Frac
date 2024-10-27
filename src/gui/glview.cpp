@@ -47,6 +47,15 @@ void GLView::initializeGL() {
 }
 
 void GLView::paintGL() {
+    if (m_flagCullFaceChanged) {
+        if (m_cullFace) {
+            glEnable(GL_CULL_FACE);
+        } else {
+            glDisable(GL_CULL_FACE);
+        }
+        m_flagCullFaceChanged = false;
+    }
+
     if (m_uniformsDirty || m_itemsAddedInList) {
         for (BatchGraphicsItem* item: m_items) {
             item->setProjection(m_proj);
@@ -573,4 +582,9 @@ void GLView::initOldMeshColor() {
 
 void GLView::restoreMeshColor() {
     this->changeMeshColor(m_oldMeshColor);
+}
+
+void GLView::enableCullFace(bool enable) {
+    m_cullFace = enable;
+    m_flagCullFaceChanged = true;
 }

@@ -830,3 +830,16 @@ void Polytopal2DWindow::closeEvent(QCloseEvent* event) {
     c.setAlpha(value);
     m_view->changeMeshColor(c);
 }
+
+[[maybe_unused]] void Polytopal2DWindow::slotScaleMesh() {
+    QMatrix4x4 transform;
+    transform.scale(static_cast<float>(this->ui->doubleSpinBox_scaleMesh->value()));
+    m_mesh.transformMesh(transform);
+    this->updateData();
+    m_view->update();
+}
+
+[[maybe_unused]] void Polytopal2DWindow::slotCullFaceChanged() {
+    m_view->enableCullFace(this->ui->checkBox_cullFace->isChecked());
+    m_view->update();
+}

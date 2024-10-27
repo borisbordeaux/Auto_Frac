@@ -32,12 +32,13 @@ float checkInCircle() {
 }
 
 void main() {
-    /*if(checkInCircle() > 0.5){
+    if(checkInCircle() > 0.5){
         discard;
-    }*/
+        return;
+    }
 
     vec3 color = vec3(0.5);
-    color -= checkInCircle() * vec3(0.1);
+    //color -= checkInCircle() * vec3(0.1);
 
     vec3 ambientColor = 0.7 * color.rgb;
     vec3 diffuseColor = color.rgb;

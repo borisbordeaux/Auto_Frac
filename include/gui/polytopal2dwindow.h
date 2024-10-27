@@ -94,6 +94,8 @@ public slots:
     [[maybe_unused]] void slotUpdateSkyBox(int index);
     [[maybe_unused]] void slotChangeMeshColor();
     [[maybe_unused]] void slotChangeMeshTransparency(int value);
+    [[maybe_unused]] void slotScaleMesh();
+    [[maybe_unused]] void slotCullFaceChanged();
 
 protected:
     void closeEvent(QCloseEvent* event) override;
