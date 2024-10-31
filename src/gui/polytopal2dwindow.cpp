@@ -841,9 +841,13 @@ void Polytopal2DWindow::closeEvent(QCloseEvent* event) {
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotScaleMesh() {
-    QMatrix4x4 transform;
-    transform.scale(static_cast<float>(this->ui->doubleSpinBox_scaleMesh->value()));
-    m_mesh.transformMesh(transform);
+    for (he::Vertex* v: m_mesh.vertices()) {
+        QVector3D pos = v->pos();
+        float dist = pos.length() - 1.0f;
+        pos.normalize();
+        pos *= (1.0f + dist * static_cast<float>(this->ui->doubleSpinBox_scaleMesh->value()));
+        v->setPos(pos, true);
+    }
     this->updateData();
     m_view->update();
 }
