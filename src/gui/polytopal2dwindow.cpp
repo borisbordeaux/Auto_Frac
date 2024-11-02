@@ -764,7 +764,7 @@ void Polytopal2DWindow::setSelectedVertex2(int vertexIndex) {
 void Polytopal2DWindow::setSelectedCircle(int circleIndex) {
     m_batchCircle.setSelectedCircle(circleIndex);
     if (m_batchCircle.selectedCircle() != nullptr) {
-        qDebug() << "Radius: " << m_batchCircle.selectedCircle()->radius();
+        qDebug() << "Radius:" << m_batchCircle.selectedCircle()->radius() << " real radius:" << m_circles[circleIndex - 1].radius();
         qDebug() << "----------------";
     }
 }
@@ -784,8 +784,8 @@ void Polytopal2DWindow::updateDataMesh() {
 }
 
 void Polytopal2DWindow::updateData() {
-    this->updateCircles();
     this->updateCirclesDual();
+    this->updateCircles();
     this->updateDataMesh();
 }
 

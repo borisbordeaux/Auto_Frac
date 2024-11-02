@@ -181,8 +181,8 @@ void GLView::mouseMoveEvent(QMouseEvent* event) {
 
     if (event->buttons() & Qt::RightButton) {
         if (!m_isKeyRPressed) {
-            m_camera.moveHorizontal(static_cast<float>(-dx) / 100.0f);
-            m_camera.moveVertical(static_cast<float>(dy) / 100.0f);
+            m_camera.moveHorizontal(static_cast<float>(-dx) / 10.0f);
+            m_camera.moveVertical(static_cast<float>(dy) / 10.0f);
             m_uniformsDirty = true;
         } else {
             m_world.setToIdentity();

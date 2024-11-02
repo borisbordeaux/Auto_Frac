@@ -2,14 +2,12 @@
 
 in vec4 vertex;
 
-out vec3 vert;
-out vec3 vertNormal;
+out vec3 vertPos;
 
 uniform mat4 projMatrix;
 uniform mat4 mvMatrix;
 
 void main() {
-    vert = vertex.xyz;
-    vertNormal = vertex.xyz;
+    vertPos = vertex.xyz;
     gl_Position = projMatrix * mvMatrix * vertex;
 }
