@@ -154,7 +154,7 @@ void Polytopal2DWindow::openOBJFile(QString const& file) {
 [[maybe_unused]] void Polytopal2DWindow::slotDisplayUnitSphereChanged() {
     if (this->ui->checkBox_displayUnitSphere->isChecked()) {
         m_view->addItem(&m_batchSphere);
-        m_batchVertex.setProjectionPoint(true);
+        m_batchVertex.setProjectionPoint(this->ui->checkBox_displayProjectionPoint->isChecked());
     } else {
         m_view->removeItem(&m_batchSphere);
         m_batchVertex.setProjectionPoint(false);
@@ -859,5 +859,10 @@ void Polytopal2DWindow::closeEvent(QCloseEvent* event) {
 
 [[maybe_unused]] void Polytopal2DWindow::slotSphereRenderTypeChanged(int newValue) {
     m_batchSphere.setCircleRenderType(static_cast<CircleRenderType>(newValue));
+    m_view->update();
+}
+
+[[maybe_unused]] void Polytopal2DWindow::slotDisplayProjectionPoint() {
+    m_batchVertex.setProjectionPoint(this->ui->checkBox_displayProjectionPoint->isChecked() && this->ui->checkBox_displayUnitSphere->isChecked());
     m_view->update();
 }
