@@ -72,12 +72,13 @@ std::vector<poly::Face> poly::Face::subdivisions() const {
             for (std::size_t j = 0; j < res[i].constData().size(); ++j) { //for each edge of one subdivision
                 for (std::size_t k = 0; k < this->m_edges.size(); ++k) { //for each edge of current face
                     //get all faces around vertex, with current face the last in the list
-                    std::vector orderedFacesAroundVertex = this->m_edges[k].HEVertex()->getAllFacesAroundVertex(this->m_face);
+                    std::vector<he::Face*> orderedFacesAroundVertex = this->m_edges[k].HEVertex()->getAllFacesAroundVertex(this->m_face);
 
                     //for each face that is around vertex
                     for (std::size_t l = 0; l < orderedFacesAroundVertex.size() - 1; ++l) {
+                        //if the sub-face is the l-th face around vertex
                         if (res[i].m_face == orderedFacesAroundVertex[l]) {
-                            // same vertex represented is necessary condition but not enough
+                            //need to test if the vertices edges are the same
                             if (res[i].m_edges[j].HEVertex() == this->m_edges[k].HEVertex()) {
                                 addIncidenceConstraint(*this, k, orderedFacesAroundVertex.size() - 2 - l, j, i);
                             }
