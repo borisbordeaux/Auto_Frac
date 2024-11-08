@@ -20,15 +20,12 @@ layout (std430, binding = 2) readonly buffer polyhedronData
     float polyhedronVertices[];
 };
 
-bool isInCircleInducedBy(vec3 vertexPosition) {
-    return dot(vertPos, vertexPosition) > 1.0;
-}
-
 float checkInCircle(bool testAll) {
+    vec3 normalizedPos = normalize(vertPos);
     float nb = 0.0;
     for (uint i = 0; i < nbVertices; i += 3) {
         vec3 pos = vec3(polyhedronVertices[i], polyhedronVertices[i + 1], polyhedronVertices[i + 2]);
-        if (isInCircleInducedBy(pos)) {
+        if (dot(normalizedPos, pos) > 1.0) { //test if in circle
             if (testAll) {
                 nb += 1.0;
             } else {
@@ -56,11 +53,10 @@ void main() {
     vec3 diffuseColor = color.rgb;
 
     // the normal is the position since vertices are on the unit sphere
-    // vec3 N = normalize(vertNormal);
+    vec3 N = normalize(vertPos);
     vec3 L = normalize(lightPos - vertPos);
 
     // Lambert's cosine law
-    // float lambertian = max(dot(N, L), 0.0);
-    float lambertian = max(dot(vertPos, L), 0.0);
+    float lambertian = max(dot(N, L), 0.0);
     fragColor = vec4(ambientColor + lambertian * diffuseColor, 1.0);
 }

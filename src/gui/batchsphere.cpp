@@ -173,14 +173,10 @@ void BatchSphere::updateMeshData(std::vector<poly::InversiveCoordinates> const& 
     std::vector<float> data;
     data.reserve(circles.size());
     for (poly::InversiveCoordinates const& c: circles) {
-        //to limit the display of a lot of circles
-        //since it is not really efficient
-        if (c.inverseStereographicProject().radius() > 0.01f) {
-            QVector3D v = c.lightPoint().toQVector3D();
-            data.push_back(v.x());
-            data.push_back(v.y());
-            data.push_back(v.z());
-        }
+        QVector3D v = c.lightPoint().toQVector3D();
+        data.push_back(v.x());
+        data.push_back(v.y());
+        data.push_back(v.z());
     }
 
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);
