@@ -100,12 +100,20 @@ void BatchCircle::updateData() {
 
 void BatchCircle::render(PickingType type) {
     switch (type) {
-        case PickingType::PickingCircle:
+        case PickingType::PickingCircle: {
+            bool cullFaceEnabled = glIsEnabled(GL_CULL_FACE);
+            if (cullFaceEnabled) {
+                glDisable(GL_CULL_FACE);
+            }
             m_programPicking.bind();
             m_vao.bind();
             glDrawArrays(GL_LINES, 0, m_count / m_floatsPerVertex);
             m_programPicking.release();
+            if (cullFaceEnabled) {
+                glEnable(GL_CULL_FACE);
+            }
             break;
+        }
         case PickingType::PickingNone:
             m_program.bind();
             m_vao.bind();

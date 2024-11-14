@@ -116,14 +116,16 @@ void BatchFace::render(PickingType type) {
             break;
         case PickingType::PickingNone:
             bool cullFaceEnabled = glIsEnabled(GL_CULL_FACE);
-            if (!cullFaceEnabled)
+            if (!cullFaceEnabled) {
                 glEnable(GL_CULL_FACE);
+            }
             m_program.bind();
             m_vao.bind();
             glDrawArrays(GL_TRIANGLES, 0, m_count / m_floatsPerVertex);
             m_program.release();
-            if (!cullFaceEnabled)
+            if (!cullFaceEnabled) {
                 glDisable(GL_CULL_FACE);
+            }
             break;
     }
 }
