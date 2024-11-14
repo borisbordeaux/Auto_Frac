@@ -7,6 +7,7 @@
 #include "gui/pickingtype.h"
 
 class BatchGraphicsItem : protected QOpenGLExtraFunctions {
+
 public:
     BatchGraphicsItem() = default;
 
@@ -61,10 +62,12 @@ public:
     virtual void setColor(QColor const& /*color*/) {}
 
     /**
-     * an object with a high priority will be drawn before the others
-     * @return the priority of the object
+     * an object with a high renderOrder will be drawn before the others
+     * @return the renderOrder of the object
      */
-    virtual int priority() { return 0; }
+    virtual int renderOrder() = 0;
+
+    virtual int pickingOrder() = 0;
 };
 
 

@@ -68,3 +68,11 @@ void BatchDebugLine::clearDebugLine() {
     m_count = 0;
     m_data.clear();
 }
+
+int BatchDebugLine::renderOrder() {
+    return 0;
+}
+
+int BatchDebugLine::pickingOrder() {
+    return 0;
+}

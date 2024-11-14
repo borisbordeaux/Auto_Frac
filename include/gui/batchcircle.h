@@ -31,6 +31,9 @@ public:
     void updateColorOfCirclesDual(QVector3D const& color);
     QVector<gui::Circle> const& circles() const;
 
+    int renderOrder() override;
+    int pickingOrder() override;
+
 private:
     void addVertexCircle(QVector3D const& v, QVector3D const& color, float ID, float isSelected);
     void addVertexCircleDual(QVector3D const& v, QVector3D const& color);

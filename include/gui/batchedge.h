@@ -27,7 +27,8 @@ public:
     void setSelectedEdge(int edgeIndex);
     he::HalfEdge* selectedEdge();
 
-    int priority() override { return 2; }
+    int renderOrder() override;
+    int pickingOrder() override;
 
 private:
     void addVertexEdge(QVector3D const& v, QVector3D const& color, float ID, float isSelected);

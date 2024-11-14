@@ -132,3 +132,11 @@ void BatchSkyBox::setSkyBox(SkyBoxType type) {
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 }
+
+int BatchSkyBox::renderOrder() {
+    return 5;
+}
+
+int BatchSkyBox::pickingOrder() {
+    return 5;
+}

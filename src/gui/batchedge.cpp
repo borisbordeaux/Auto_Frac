@@ -177,3 +177,11 @@ void BatchEdge::addVertexEdge(const QVector3D& v, const QVector3D& color, float 
     //we update the amount of data
     m_count += 8;
 }
+
+int BatchEdge::renderOrder() {
+    return 2;
+}
+
+int BatchEdge::pickingOrder() {
+    return 2;
+}

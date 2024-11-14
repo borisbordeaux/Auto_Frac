@@ -254,3 +254,11 @@ void BatchFace::addVertexFace(QVector3D const& v, QVector3D const& n, float ID, 
     //we update the amount of data
     m_count += m_floatsPerVertex;
 }
+
+int BatchFace::renderOrder() {
+    return 0;
+}
+
+int BatchFace::pickingOrder() {
+    return 3;
+}

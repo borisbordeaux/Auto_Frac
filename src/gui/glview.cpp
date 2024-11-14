@@ -228,9 +228,17 @@ void GLView::pickingManagement(PickingType type) {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    std::sort(m_items.begin(), m_items.end(), [](BatchGraphicsItem* item1, BatchGraphicsItem* item2) -> bool {
+        return item1->pickingOrder() > item2->pickingOrder();
+    });
+
     for (BatchGraphicsItem* item: m_items) {
         item->render(type);
     }
+
+    std::sort(m_items.begin(), m_items.end(), [](BatchGraphicsItem* item1, BatchGraphicsItem* item2) -> bool {
+        return item1->renderOrder() > item2->renderOrder();
+    });
 
     //get the rendered image of the scene
     QImage image = grabFramebuffer();
@@ -549,7 +557,7 @@ void GLView::addItem(BatchGraphicsItem* item) {
     if (this->containsItem(item)) { return; }
     m_items.push_back(item);
     std::sort(m_items.begin(), m_items.end(), [](BatchGraphicsItem* item1, BatchGraphicsItem* item2) -> bool {
-        return item1->priority() > item2->priority();
+        return item1->renderOrder() > item2->renderOrder();
     });
     m_itemsAddedInList = true;
 }

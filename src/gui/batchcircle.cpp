@@ -341,3 +341,11 @@ qsizetype BatchCircle::findNbOfSegmentsCircles() const {
 qsizetype BatchCircle::findNbOfSegmentsCirclesDual() const {
     return 90 * m_circlesDual.size();
 }
+
+int BatchCircle::renderOrder() {
+    return 4;
+}
+
+int BatchCircle::pickingOrder() {
+    return 0;
+}

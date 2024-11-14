@@ -208,3 +208,11 @@ void BatchVertex::addVertex(const QVector3D& v, const QVector3D& color, float ID
     //we update the amount of data
     m_count += 8;
 }
+
+int BatchVertex::renderOrder() {
+    return 1;
+}
+
+int BatchVertex::pickingOrder() {
+    return 1;
+}

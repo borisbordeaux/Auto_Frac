@@ -18,6 +18,9 @@ public:
     void addDebugLine(QVector3D const& v1, QVector3D const& v2);
     void clearDebugLine();
 
+    int renderOrder() override;
+    int pickingOrder() override;
+
 private:
     QVector<float> m_data;
     int m_count = 0;

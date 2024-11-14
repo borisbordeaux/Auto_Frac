@@ -203,3 +203,11 @@ void BatchSphere::setCircleRenderType(CircleRenderType type) {
     }
     m_program.release();
 }
+
+int BatchSphere::renderOrder() {
+    return 3;
+}
+
+int BatchSphere::pickingOrder() {
+    return 4;
+}

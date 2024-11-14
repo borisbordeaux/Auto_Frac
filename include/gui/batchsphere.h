@@ -36,9 +36,10 @@ public:
     void setSphereMesh(he::Mesh&& mesh);
     void updateMeshData(std::vector<poly::InversiveCoordinates> const& circles);
 
-    int priority() override { return 2; }
-
     void setCircleRenderType(CircleRenderType type);
+
+    int renderOrder() override;
+    int pickingOrder() override;
 
 private:
     void addFaceSphere(he::Face* f);

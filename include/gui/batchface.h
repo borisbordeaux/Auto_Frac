@@ -29,7 +29,8 @@ public:
     void setSelectedFace(int faceIndex);
     he::Face* selectedFace();
 
-    int priority() override { return 1; }
+    int renderOrder() override;
+    int pickingOrder() override;
 
 private:
     static qsizetype findNbOfTriangle(he::Mesh* mesh);
