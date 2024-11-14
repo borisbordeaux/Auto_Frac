@@ -1,3 +1,0 @@
-[submodule "vendor/NazaraUtils"]
-	path = vendor/NazaraUtils
-	url = https://github.com/NazaraEngine/NazaraUtils.git

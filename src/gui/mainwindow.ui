@@ -468,13 +468,6 @@
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="pushButton">
-      <property name="text">
-       <string>Auto Sub 3D</string>
-      </property>
-     </widget>
-    </item>
-    <item>
      <widget class="QPushButton" name="pushButton_10">
       <property name="text">
        <string>Polytopal 2D</string>
@@ -610,22 +603,6 @@
     </hint>
    </hints>
   </connection>
-  <connection>
-   <sender>pushButton</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>slotOpenAutoSub3DWindow()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>67</x>
-     <y>85</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>61</x>
-     <y>58</y>
-    </hint>
-   </hints>
-  </connection>
  </connections>
  <slots>
   <slot>slotOpenPersistentHomologyWindow()</slot>
@@ -634,6 +611,5 @@
   <slot>slotOpenFractalDimensionWindow()</slot>
   <slot>slotOpenAutoSub2DWindow()</slot>
   <slot>slotOpenPolytopal2DWindow()</slot>
-  <slot>slotOpenAutoSub3DWindow()</slot>
  </slots>
 </ui>

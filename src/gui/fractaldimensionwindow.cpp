@@ -6,8 +6,8 @@
 #include <QValueAxis>
 #include "gui/fractaldimensionwindow.h"
 #include "ui_fractaldimensionwindow.h"
-#include "NazaraUtils/Algorithm.hpp"
 #include "fractaldimension/fractaldimension.h"
+#include "utils/utils.h"
 
 
 FractalDimensionWindow::FractalDimensionWindow(QWidget* parent) :
@@ -40,8 +40,8 @@ FractalDimensionWindow::~FractalDimensionWindow() {
         std::cout << "image size : " << img.size().width << " x " << img.size().height << std::endl;
 
         // resize image to make it squared
-        if (img.cols != img.rows || !Nz::IsPow2(img.rows)) {
-            int max = Nz::RoundToPow2(std::max(img.cols, img.rows));
+        if (img.cols != img.rows || !frac::utils::isPow2(img.rows)) {
+            int max = frac::utils::roundToPow2(std::max(img.cols, img.rows));
             int top = (max - img.rows) / 2;
             int bottom = (max - img.rows) - top;
             int left = (max - img.cols) / 2;

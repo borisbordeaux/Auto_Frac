@@ -130,9 +130,3 @@ std::vector<frac::Face> frac::LinksOnCorners::subdivide(const frac::Face& face) 
     Face::s_subdivisions[face.name()] = res;
     return res;
 }
-
-std::vector<frac::Volume> frac::LinksOnCorners::subdivide(frac::Volume const& volume) {
-    std::vector<frac::Volume> res;
-    res.push_back(volume);
-    return res;
-}

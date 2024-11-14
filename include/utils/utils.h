@@ -117,19 +117,28 @@ inline Point2D coordOfPointOnCubicCurveAt(float t, Point2D p0, Point2D p1, Point
 }
 
 template<typename T>
-inline T findDuplicate(std::vector<T> const& vec) {
-    // number of occurrences of each element
-    std::unordered_map<T, int> occurrences;
+constexpr bool isPow2(T value) {
+    return (value & (value - 1)) == 0;
+}
 
-    for (T val: vec) {
-        occurrences[val]++;
-        if (occurrences[val] > 1) {
-            return val;
-        }
+template<typename T>
+constexpr T roundToPow2(T value) {
+    // https://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
+    value--;
+    value |= value >> 1;
+    value |= value >> 2;
+    value |= value >> 4;
+    if constexpr (sizeof(T) * 8 > 8) {
+        value |= value >> 8;
     }
-
-    //if no duplicate
-    return {};
+    if constexpr (sizeof(T) * 8 > 16) {
+        value |= value >> 16;
+    }
+    if constexpr (sizeof(T) * 8 > 32) {
+        value |= value >> 32;
+    }
+    value++;
+    return value;
 }
 
 }

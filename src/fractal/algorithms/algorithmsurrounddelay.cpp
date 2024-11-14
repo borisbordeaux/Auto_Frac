@@ -156,9 +156,3 @@ std::vector<frac::Face> frac::LinksSurroundDelay::subdivide(const frac::Face& fa
     Face::s_subdivisions[face.name()] = res;
     return res;
 }
-
-std::vector<frac::Volume> frac::LinksSurroundDelay::subdivide(frac::Volume const& volume) {
-    std::vector<frac::Volume> res;
-    res.emplace_back(volume);
-    return res;
-}

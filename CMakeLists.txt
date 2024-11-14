@@ -18,7 +18,7 @@ file(GLOB_RECURSE WINDOWS "include/gui/*window.h" "include/gui/glview.h")
 # add *window.h files for the ui
 add_executable(AutoFrac ${FILES} ${WINDOWS})
 
-target_include_directories(AutoFrac PUBLIC include vendor/NazaraUtils/include ${OpenCV_INCLUDE_DIRS} vendor/gudhi.3.9.0/include)
+target_include_directories(AutoFrac PUBLIC include ${OpenCV_INCLUDE_DIRS} vendor/gudhi.3.9.0/include)
 
 target_link_libraries(AutoFrac PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets Qt6::OpenGLWidgets Qt6::Charts ${OpenCV_LIBS} gmp gmpxx)
 

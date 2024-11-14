@@ -8,7 +8,6 @@ class DensityWindow;
 class AreaPerimeterWindow;
 class FractalDimensionWindow;
 class AutoSub2DWindow;
-class AutoSub3DWindow;
 class Polytopal2DWindow;
 
 namespace Ui {
@@ -28,7 +27,6 @@ public:
 
 public slots:
     [[maybe_unused]] void slotOpenAutoSub2DWindow();
-    [[maybe_unused]] void slotOpenAutoSub3DWindow();
     [[maybe_unused]] void slotOpenPolytopal2DWindow();
     [[maybe_unused]] void slotOpenFractalDimensionWindow();
     [[maybe_unused]] void slotOpenAreaPerimeterWindow();
@@ -42,7 +40,6 @@ private:
     Ui::MainWindow* ui;
 
     std::unique_ptr<AutoSub2DWindow> m_autoSub2DWindow;
-    std::unique_ptr<AutoSub3DWindow> m_autoSub3DWindow;
     std::unique_ptr<Polytopal2DWindow> m_polytopal2DWindow;
     std::unique_ptr<FractalDimensionWindow> m_fractalDimensionWindow;
     std::unique_ptr<AreaPerimeterWindow> m_areaPerimeterWindow;
