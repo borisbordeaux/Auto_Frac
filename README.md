@@ -2,31 +2,33 @@
 Software to help conception of fractals and study fractal properties.
 
 ## How to build
-
-Clone this repo with the `--recurse-submodules` option to be sure you have all you need to build this project.  
+ 
 Replace the `{path_to_Qt6}` with the path to Qt. Be sure to have Qt6 installed.  
 Replace `{NB_CORES}` by the number of cores you want to use for compiling the project.
 
 ```bash
-git clone --recurse-submodules https://github.com/borisbordeaux/AutoFrac.git
+git clone https://github.com/borisbordeaux/AutoFrac.git
 cd AutoFrac
 mkdir build
 cd build
-cmake -DQt6_DIR="{path_to_Qt6}/Qt/6.6.1/gcc_64/lib/cmake/Qt6" ..
+export QT_PATH={path_to_Qt6}/Qt/6.6.1/gcc_64
+cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j {NB_CORES}
 ```
+
+For an integration within an IDE, be sure to set the `QT_PATH` environment variable for the project.
 
 ## Main features
 
 ### Automatic subdivision 2D
 
 Define parameters of a fractal topology, and eventually define control points position by editing the scheme.  
-Then export the structure in a python file that will be interpreted by another software (link coming soon...).
+Then export the structure in a python file that will be interpreted by a fractal modeler (link coming soon...).
 
 ### Fractal from polyhedron sphere packing
 
 Import a polyhedron and display the sphere packing.  
-Export the fractal structure associated in a python file that will be interpreted by another software (link coming soon...).
+Export the fractal structure associated in a python file that will be interpreted by a fractal modeler (link coming soon...).
 
 ### Computations on fractals
 
