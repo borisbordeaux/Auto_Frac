@@ -12,6 +12,7 @@
 #include "batchedge.h"
 #include "batchvertex.h"
 #include "batchcircle.h"
+#include "batchcircledual.h"
 #include "polytopal/inversivecoordinates.h"
 
 class QStatusBar;
@@ -119,6 +120,7 @@ private:
     BatchEdge m_batchEdge;
     BatchVertex m_batchVertex;
     BatchCircle m_batchCircle;
+    BatchCircleDual m_batchCircleDual;
 
     he::Mesh m_mesh;
     GLView* m_view = nullptr;

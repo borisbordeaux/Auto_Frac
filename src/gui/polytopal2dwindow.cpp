@@ -48,6 +48,7 @@ Polytopal2DWindow::Polytopal2DWindow(QWidget* parent) :
     m_view->addItem(&m_batchEdge);
     m_view->addItem(&m_batchVertex);
     m_view->addItem(&m_batchCircle);
+    m_view->addItem(&m_batchCircleDual);
 
     m_progressBar = new QProgressBar();
     m_progressBar->setRange(0, 100);
@@ -239,7 +240,7 @@ void Polytopal2DWindow::canonicalizeStep() {
 
 [[maybe_unused]] void Polytopal2DWindow::slotDisplayDualAreaCircles() {
     if (!m_mesh.vertices().empty()) {
-        m_batchCircle.resetCirclesDual();
+        m_batchCircleDual.resetCircles();
 
         if (m_circlesDual.empty()) {
             m_circlesDual = poly::computeIlluminatedCirclesDual(m_mesh);
@@ -449,7 +450,7 @@ void Polytopal2DWindow::updateEnablementPoly() {
     m_view->setBackGroundColor(val, val, val);
 
     m_batchCircle.updateColorOfCircles(this->ui->checkBox_darkTheme->isChecked() ? m_colorDarkTheme : m_colorWhiteTheme);
-    m_batchCircle.updateColorOfCirclesDual(this->ui->checkBox_darkTheme->isChecked() ? m_colorDarkThemeDual : m_colorWhiteThemeDual);
+    m_batchCircleDual.updateColorOfCircles(this->ui->checkBox_darkTheme->isChecked() ? m_colorDarkThemeDual : m_colorWhiteThemeDual);
     m_batchCircle.updateData();
     m_view->update();
 }
@@ -500,13 +501,13 @@ void Polytopal2DWindow::updateEnablementPoly() {
 
 [[maybe_unused]] void Polytopal2DWindow::slotScaleUpCircles() {
     m_batchCircle.scaleCircles(static_cast<float>(this->ui->doubleSpinBox_scaleForce->value()));
-    m_batchCircle.updateDataCircles();
+    m_batchCircle.updateData();
     m_view->update();
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotScaleDownCircles() {
     m_batchCircle.scaleCircles(-static_cast<float>(this->ui->doubleSpinBox_scaleForce->value()));
-    m_batchCircle.updateDataCircles();
+    m_batchCircle.updateData();
     m_view->update();
 }
 
@@ -770,7 +771,8 @@ void Polytopal2DWindow::setSelectedCircle(int circleIndex) {
 }
 
 void Polytopal2DWindow::updateDataCircles() {
-    m_batchCircle.updateDataCircles();
+    m_batchCircle.updateData();
+    m_batchCircleDual.updateData();
 }
 
 he::Mesh* Polytopal2DWindow::mesh() {
@@ -791,15 +793,15 @@ void Polytopal2DWindow::updateData() {
 
 void Polytopal2DWindow::updateBatchCircles(bool dual) {
     if (dual) {
-        m_batchCircle.resetCirclesDual();
+        m_batchCircleDual.resetCircles();
         for (poly::InversiveCoordinates const& c: m_circlesDual) {
             if (this->ui->checkBox_projectCircles->isChecked()) {
-                m_batchCircle.addCircleDual(c.toCircle());
+                m_batchCircleDual.addCircle(c.toCircle());
             } else {
-                m_batchCircle.addCircleDual(c.inverseStereographicProject());
+                m_batchCircleDual.addCircle(c.inverseStereographicProject());
             }
         }
-        m_batchCircle.updateDataCirclesDual();
+        m_batchCircleDual.updateData();
     } else {
         m_batchCircle.resetCircles();
         for (poly::InversiveCoordinates const& c: m_circles) {
@@ -809,7 +811,7 @@ void Polytopal2DWindow::updateBatchCircles(bool dual) {
                 m_batchCircle.addCircle(c.inverseStereographicProject());
             }
         }
-        m_batchCircle.updateDataCircles();
+        m_batchCircle.updateData();
     }
 
     //update circles display on sphere
