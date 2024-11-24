@@ -867,4 +867,5 @@ void Polytopal2DWindow::closeEvent(QCloseEvent* event) {
 [[maybe_unused]] void Polytopal2DWindow::slotDisplayProjectionPoint() {
     m_batchVertex.setProjectionPoint(this->ui->checkBox_displayProjectionPoint->isChecked() && this->ui->checkBox_displayUnitSphere->isChecked());
     m_view->update();
+    qDebug() << m_view->size();
 }

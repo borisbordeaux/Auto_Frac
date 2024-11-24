@@ -2,11 +2,12 @@
 #define AUTOFRAC_BATCHGRAPHICSITEM_H
 
 #include <QOpenGLExtraFunctions>
+#include <QOpenGLFunctions_4_5_Core>
 #include <utility>
 #include "gui/camera.h"
 #include "gui/pickingtype.h"
 
-class BatchGraphicsItem : protected QOpenGLExtraFunctions {
+class BatchGraphicsItem : protected QOpenGLFunctions_4_5_Core {
 
 public:
     BatchGraphicsItem() = default;
@@ -14,7 +15,7 @@ public:
     /**
      * default destructor
      */
-    virtual ~BatchGraphicsItem() = default;
+    ~BatchGraphicsItem() override = default;
 
     /**
      * intialize the object (must call initializeOpenGLFunctions())
