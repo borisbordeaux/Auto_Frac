@@ -51,6 +51,7 @@ void main() {
 
     vec3 ambientColor = 0.7 * color.rgb;
     vec3 diffuseColor = color.rgb;
+    vec3 specularColor = vec3(0.2);
 
     // the normal is the position since vertices are on the unit sphere
     vec3 N = normalize(vertPos);
@@ -58,5 +59,16 @@ void main() {
 
     // Lambert's cosine law
     float lambertian = max(dot(N, L), 0.0);
-    fragColor = vec4(ambientColor + lambertian * diffuseColor, 1.0);
+
+    float specular = 0.0;
+
+    if (renderType != 0 && lambertian > 0.0) {
+        vec3 R = reflect(-L, N);      // Reflected light vector
+        vec3 V = normalize(cameraPosition - vertPos); // Vector to viewer
+        // Compute the specular term
+        float specAngle = max(dot(R, V), 0.0);
+        specular = pow(specAngle, 1.0);
+    }
+
+    fragColor = vec4(ambientColor + lambertian * diffuseColor + specular * specularColor, 1.0);
 }

@@ -1,4 +1,3 @@
-#include <iostream>
 #include "gui/batchcircledual.h"
 
 void BatchCircleDual::init() {
