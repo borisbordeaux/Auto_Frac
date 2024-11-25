@@ -15,7 +15,7 @@ uniform mat4 projMatrix;
 uniform mat4 mvMatrix;
 
 void main() {
-    float n = 3.0;
+    float n = 3.0; //nb of tessellated lines
     float alpha = (gl_TessCoord.x + n * gl_TessCoord.y) * 2.0 * PI / n;
     vec3 vertPos = center[0] + radius[0] * (cos(alpha) * xAxis[0] + sin(alpha) * yAxis[0]);
     gl_Position = projMatrix * mvMatrix * vec4(vertPos, 1.0);

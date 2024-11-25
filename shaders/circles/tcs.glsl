@@ -41,7 +41,7 @@ void main() {
         //radius in pixels
         float vpcRadius = length(vpcCenter - vpcNorth);
 
-        //arbitrary number of lines for the circle depending on its radius length in pixels
+        //arbitrary number of lines for the circle corresponding to its perimeter length in pixels
         int nb = max(1, 2 * int(PI * vpcRadius));
 
         gl_TessLevelOuter[0] = 3.0; //lines to tessellate
