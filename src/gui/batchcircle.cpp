@@ -38,18 +38,13 @@ void BatchCircle::init() {
     m_program.addShaderFromSourceFile(QOpenGLShader::TessellationControl, "../shaders/circles/tcs.glsl");
     m_program.addShaderFromSourceFile(QOpenGLShader::TessellationEvaluation, "../shaders/circles/tes.glsl");
     m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/circles/fs.glsl");
-    m_program.bindAttributeLocation("center", 0);
-    m_program.bindAttributeLocation("radius", 1);
-    m_program.bindAttributeLocation("axisX", 2);
-    m_program.bindAttributeLocation("axisY", 3);
-    m_program.bindAttributeLocation("color", 4);
-    m_program.bindAttributeLocation("ID", 5);
     m_program.link();
 
     //get locations of uniforms
     m_program.bind();
     m_projMatrixLoc = m_program.uniformLocation("projMatrix");
     m_viewMatrixLoc = m_program.uniformLocation("mvMatrix");
+    m_cameraPosLoc = m_program.uniformLocation("cameraPosition");
 
     //init shader for circles picking
 //    m_programPicking.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/circles/picking/vs.glsl");
@@ -117,6 +112,7 @@ void BatchCircle::setCamera(Camera camera) {
     camera.zoom(0.001f);
     m_program.bind();
     m_program.setUniformValue(m_viewMatrixLoc, camera.getViewMatrix());
+    m_program.setUniformValue(m_cameraPosLoc, camera.getEye());
     m_program.release();
 
 //    m_programPicking.bind();
@@ -213,10 +209,6 @@ void BatchCircle::addVertexCircle(QVector3D const& center, float radius, QVector
     *p = ID;
     //we update the amount of data
     m_count += m_floatsPerVertex;
-}
-
-qsizetype BatchCircle::findNbOfSegmentsCircles() const {
-    return 90 * m_circles.size();
 }
 
 int BatchCircle::renderOrder() {

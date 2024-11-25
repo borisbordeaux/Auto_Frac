@@ -30,7 +30,6 @@ public:
 
 private:
     void addVertexCircle(QVector3D const& center, float radius, QVector3D const& xAxis, QVector3D const& yAxis, QVector3D const& color, float ID);
-    qsizetype findNbOfSegmentsCircles() const;
 
 private:
     QVector<float> m_data;
@@ -44,6 +43,7 @@ private:
 
     int m_projMatrixLoc = 0;
     int m_viewMatrixLoc = 0;
+    int m_cameraPosLoc = 0;
     int m_projMatrixPickingLoc = 0;
     int m_viewMatrixPickingLoc = 0;
     int m_invViewportPickingLoc = 0;
