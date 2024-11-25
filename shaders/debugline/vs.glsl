@@ -1,6 +1,6 @@
 #version 460 core
 
-in vec4 vertex;
+layout (location = 0) in vec4 vertex;
 
 uniform mat4 projMatrix;
 uniform mat4 mvMatrix;

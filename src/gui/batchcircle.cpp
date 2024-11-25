@@ -44,7 +44,7 @@ void BatchCircle::init() {
     m_program.bind();
     m_projMatrixLoc = m_program.uniformLocation("projMatrix");
     m_viewMatrixLoc = m_program.uniformLocation("mvMatrix");
-    m_cameraPosLoc = m_program.uniformLocation("cameraPosition");
+    m_windowMatrixLoc = m_program.uniformLocation("windowMatrix");
 
     //init shader for circles picking
 //    m_programPicking.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/circles/picking/vs.glsl");
@@ -112,7 +112,6 @@ void BatchCircle::setCamera(Camera camera) {
     camera.zoom(0.001f);
     m_program.bind();
     m_program.setUniformValue(m_viewMatrixLoc, camera.getViewMatrix());
-    m_program.setUniformValue(m_cameraPosLoc, camera.getEye());
     m_program.release();
 
 //    m_programPicking.bind();
@@ -120,7 +119,14 @@ void BatchCircle::setCamera(Camera camera) {
 //    m_programPicking.release();
 }
 
-void BatchCircle::setInvViewport(float /*x*/, float /*y*/) {
+void BatchCircle::setInvViewport(float x, float y) {
+    float w = 1.0f / x;
+    float h = 1.0f / y;
+    QMatrix4x4 windowMatrix;
+    windowMatrix.scale(w / 2.0f, h / 2.0f, 1.0f);
+    windowMatrix.translate(1.0f, 1.0f);
+    m_program.bind();
+    m_program.setUniformValue(m_windowMatrixLoc, windowMatrix);
 //    m_programPicking.bind();
 //    m_programPicking.setUniformValue(m_invViewportPickingLoc, x, y);
 //    m_programPicking.release();

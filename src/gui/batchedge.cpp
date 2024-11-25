@@ -16,24 +16,17 @@ void BatchEdge::init() {
     glEnableVertexAttribArray(0); //coordinates
     glEnableVertexAttribArray(1); //color
     glEnableVertexAttribArray(2); //ID for picking
-    glEnableVertexAttribArray(3); //is selected
     //coordinates of the vertex
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, static_cast<int>(m_floatsPerVertex * sizeof(GLfloat)), nullptr);
     //color of the edge
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, static_cast<int>(m_floatsPerVertex * sizeof(GLfloat)), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
     //the ID
-    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(6 * sizeof(GLfloat)));
-    //whether it's selected or not, to simplify the code, a negative value means not selected while a positive value means selected
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(7 * sizeof(GLfloat)));
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, static_cast<int>(m_floatsPerVertex * sizeof(GLfloat)), reinterpret_cast<void*>(6 * sizeof(GLfloat)));
     m_vbo.release();
     m_vao.release();
 
     m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/edges/vs.glsl");
     m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/edges/fs.glsl");
-    m_program.bindAttributeLocation("vertex", 0);
-    m_program.bindAttributeLocation("color", 1);
-    m_program.bindAttributeLocation("ID", 2);
-    m_program.bindAttributeLocation("isSelected", 3);
     m_program.link();
 
     //get location of uniforms
@@ -44,10 +37,6 @@ void BatchEdge::init() {
     m_programPicking.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/edges/picking/vs.glsl");
     m_programPicking.addShaderFromSourceFile(QOpenGLShader::Geometry, "../shaders/edges/picking/gs.glsl");
     m_programPicking.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/edges/picking/fs.glsl");
-    m_programPicking.bindAttributeLocation("vertex", 0);
-    m_programPicking.bindAttributeLocation("color", 1);
-    m_programPicking.bindAttributeLocation("ID", 2);
-    m_programPicking.bindAttributeLocation("isSelected", 3);
     m_programPicking.link();
 
     //get location of uniforms
@@ -76,16 +65,17 @@ void BatchEdge::updateData() {
     qsizetype nbOfAdd = 2 * nbOfEdges;
 
     //we resize the data for rapidity
-    m_data.resize(nbOfAdd * 8);
+    m_data.resize(nbOfAdd * m_floatsPerVertex);
 
     int ID = 1;
 
     //for each halfedge
     for (he::HalfEdge* he: m_mesh->halfEdgesNoTwin()) {
-        float isSelected = (ID == m_selectedEdge && m_selectedEdge != 0) ? 1.0f : -1.0f;
+        bool isSelected = ID == m_selectedEdge;
+        QVector3D color = isSelected ? QVector3D(0.0, 0.6, 0.0) : QVector3D(0.0, 0.0, 0.0);
         //we will display a line
-        this->addVertexEdge(he->origin()->pos(), { 0, 0, 0 }, static_cast<float>(ID), isSelected);
-        this->addVertexEdge(he->next()->origin()->pos(), { 0, 0, 0 }, static_cast<float>(ID), isSelected);
+        this->addVertexEdge(he->origin()->pos(), color, static_cast<float>(ID));
+        this->addVertexEdge(he->next()->origin()->pos(), color, static_cast<float>(ID));
         ID++;
     }
 
@@ -160,7 +150,7 @@ he::HalfEdge* BatchEdge::selectedEdge() {
     return res;
 }
 
-void BatchEdge::addVertexEdge(const QVector3D& v, const QVector3D& color, float ID, float isSelected) {
+void BatchEdge::addVertexEdge(QVector3D const& v, QVector3D const& color, float ID) {
     //add to the end of the data already added
     float* p = m_data.data() + m_count;
     //the coordinates of the vertex
@@ -171,11 +161,9 @@ void BatchEdge::addVertexEdge(const QVector3D& v, const QVector3D& color, float 
     *p++ = color.y();
     *p++ = color.z();
     //the ID of the edge
-    *p++ = ID;
-    //whether the edge is selected or not
-    *p = isSelected;
+    *p = ID;
     //we update the amount of data
-    m_count += 8;
+    m_count += m_floatsPerVertex;
 }
 
 int BatchEdge::renderOrder() {

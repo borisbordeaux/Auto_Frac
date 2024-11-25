@@ -2,7 +2,6 @@
 #define AUTOFRAC_BATCHGRAPHICSITEM_H
 
 #include <QOpenGLExtraFunctions>
-#include <QOpenGLFunctions_4_5_Core>
 #include <utility>
 #include "gui/camera.h"
 #include "gui/pickingtype.h"
@@ -18,7 +17,7 @@ public:
     ~BatchGraphicsItem()  = default;
 
     /**
-     * intialize the object (must call initializeOpenGLFunctions())
+     * initialize the object (must call initializeOpenGLFunctions())
      */
     virtual void init() {}
 

@@ -27,9 +27,6 @@ void BatchCircleDual::init() {
     //init shader for circles dual
     m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/circlesdual/vs.glsl");
     m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/circlesdual/fs.glsl");
-    m_program.bindAttributeLocation("vertex", 0);
-    m_program.bindAttributeLocation("color", 1);
-    m_program.bindAttributeLocation("dist", 2);
     m_program.link();
 
     //get locations of uniforms
@@ -113,7 +110,7 @@ void BatchCircleDual::updateData() {
 
     QMatrix4x4 windowMatrix;
     windowMatrix.scale(m_w / 2.0f, m_h / 2.0f, 1.0f);
-    windowMatrix.translate(1.0f, 1.0f, 0.0f);
+    windowMatrix.translate(1.0f, 1.0f);
 
     unsigned int j = 0;
     for (gui::Circle const& c: m_circles) {

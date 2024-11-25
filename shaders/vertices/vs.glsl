@@ -1,9 +1,8 @@
 #version 460 core
 
-in vec4 vertex;
-in vec3 color;
-in float ID;
-in float isSelected;
+layout (location = 0) in vec4 vertex;
+layout (location = 1) in vec3 color;
+layout (location = 2) in float ID;
 
 uniform mat4 projMatrix;
 uniform mat4 mvMatrix;
@@ -13,9 +12,5 @@ out vec3 vecColor;
 void main() {
     gl_Position = projMatrix * mvMatrix * vertex;
     gl_PointSize = 8.0;
-    if (isSelected > 0.5) {
-        vecColor = vec3(1.0, 1.0, 1.0);
-    } else {
-        vecColor = color;
-    }
+    vecColor = color;
 }

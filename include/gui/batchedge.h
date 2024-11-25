@@ -31,12 +31,12 @@ public:
     int pickingOrder() override;
 
 private:
-    void addVertexEdge(QVector3D const& v, QVector3D const& color, float ID, float isSelected);
+    void addVertexEdge(QVector3D const& v, QVector3D const& color, float ID);
 
 private:
     QVector<float> m_data;
     int m_count = 0;
-    int m_floatsPerVertex = 8;
+    int m_floatsPerVertex = 7;
 
     QOpenGLVertexArrayObject m_vao;
     QOpenGLBuffer m_vbo;

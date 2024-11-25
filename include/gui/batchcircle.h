@@ -43,7 +43,7 @@ private:
 
     int m_projMatrixLoc = 0;
     int m_viewMatrixLoc = 0;
-    int m_cameraPosLoc = 0;
+    int m_windowMatrixLoc = 0;
     int m_projMatrixPickingLoc = 0;
     int m_viewMatrixPickingLoc = 0;
     int m_invViewportPickingLoc = 0;

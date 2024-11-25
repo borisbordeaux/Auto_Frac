@@ -17,7 +17,6 @@ void BatchDebugLine::init() {
 
     m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/debugline/vs.glsl");
     m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/debugline/fs.glsl");
-    m_program.bindAttributeLocation("vertex", 0);
     m_program.link();
     m_program.bind();
     m_projMatrixLoc = m_program.uniformLocation("projMatrix");

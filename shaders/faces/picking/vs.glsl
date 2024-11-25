@@ -1,9 +1,9 @@
 #version 460 core
 
-in vec4 vertex;
-in vec3 normal;
-in float ID;
-in float isSelected;
+layout (location = 0) in vec4 vertex;
+layout (location = 1) in vec3 normal;
+layout (location = 2) in float ID;
+layout (location = 3) in float isSelected;
 
 out vec3 pickingColor;
 

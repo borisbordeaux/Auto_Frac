@@ -30,7 +30,6 @@ void BatchSphere::init() {
 
     m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/sphere/vs.glsl");
     m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/sphere/fs.glsl");
-    m_program.bindAttributeLocation("vertex", 0);
     m_program.link();
 
     //get locations of uniforms

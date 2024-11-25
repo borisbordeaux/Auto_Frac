@@ -1,4 +1,5 @@
 #version 460 core
+#define PI 3.1415926535897932384626433832795
 
 layout (vertices = 1) out;
 
@@ -14,7 +15,9 @@ out vec3 xAxis[];
 out vec3 yAxis[];
 out vec3 color[];
 
-uniform vec3 cameraPosition;
+uniform mat4 projMatrix;
+uniform mat4 mvMatrix;
+uniform mat4 windowMatrix;
 
 void main() {
     gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
@@ -25,13 +28,23 @@ void main() {
     color[gl_InvocationID] = vecColor[gl_InvocationID];
 
     if (gl_InvocationID == 0) {
-        float dist = length(vecCenter[0] - cameraPosition);
-        float ratio = vecRadius[0] / dist;
-        //radius of 1, dist of 8 => 60 pts
-        //if dist +++ then nb ---
-        //if radius +++ then nb +++
-        int nb = max(3, int(60.0 * 8 * ratio));
-        gl_TessLevelOuter[0] = 1.0; // one line to tesselate
-        gl_TessLevelOuter[1] = nb; // 10 points per line to be changed in the future
+        //center in window coordinates
+        vec4 clipCenter = projMatrix * mvMatrix * vec4(center[0], 1.0);
+        vec4 ndcCenter = clipCenter / clipCenter.w;
+        vec4 vpcCenter = windowMatrix * ndcCenter;
+
+        //north of the circle in window coordinates
+        vec4 clipNorth = projMatrix * mvMatrix * vec4(center[0] + radius[0] * xAxis[0], 1.0);
+        vec4 ndcNorth = clipNorth / clipNorth.w;
+        vec4 vpcNorth = windowMatrix * ndcNorth;
+
+        //radius in pixels
+        float vpcRadius = length(vpcCenter - vpcNorth);
+
+        //arbitrary number of lines for the circle depending on its radius length in pixels
+        int nb = max(1, 2 * int(PI * vpcRadius));
+
+        gl_TessLevelOuter[0] = 3.0; //lines to tessellate
+        gl_TessLevelOuter[1] = nb;
     }
 }

@@ -16,37 +16,26 @@ void BatchVertex::init() {
     glEnableVertexAttribArray(0); //coordinates
     glEnableVertexAttribArray(1); //color
     glEnableVertexAttribArray(2); //ID for picking
-    glEnableVertexAttribArray(3); //is selected
     //coordinates of the vertex
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, static_cast<int>(m_floatsPerVertex * sizeof(GLfloat)), nullptr);
     //color of the vertex
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, static_cast<int>(m_floatsPerVertex * sizeof(GLfloat)), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
     //the ID
-    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(6 * sizeof(GLfloat)));
-    //whether it's selected or not, to simplify the code, a negative value means not selected while a positive value means selected
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(7 * sizeof(GLfloat)));
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, static_cast<int>(m_floatsPerVertex * sizeof(GLfloat)), reinterpret_cast<void*>(6 * sizeof(GLfloat)));
     m_vbo.release();
     m_vao.release();
 
     m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/vertices/vs.glsl");
     m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/vertices/fs.glsl");
-    m_program.bindAttributeLocation("vertex", 0);
-    m_program.bindAttributeLocation("color", 1);
-    m_program.bindAttributeLocation("ID", 2);
-    m_program.bindAttributeLocation("isSelected", 3);
     m_program.link();
 
     //get location of uniforms
     m_program.bind();
     m_projMatrixLoc = m_program.uniformLocation("projMatrix");
     m_viewMatrixLoc = m_program.uniformLocation("mvMatrix");
-    
+
     m_programPicking.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/vertices/picking/vs.glsl");
     m_programPicking.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/vertices/picking/fs.glsl");
-    m_programPicking.bindAttributeLocation("vertex", 0);
-    m_programPicking.bindAttributeLocation("color", 1);
-    m_programPicking.bindAttributeLocation("ID", 2);
-    m_programPicking.bindAttributeLocation("isSelected", 3);
     m_programPicking.link();
 
     //get location of uniforms
@@ -74,9 +63,10 @@ void BatchVertex::updateData() {
     qsizetype nbOfAdd = 1 * nbOfVertices;
 
     //we resize the data for rapidity
-    m_data.resize(nbOfAdd * 8);
+    m_data.resize(nbOfAdd * m_floatsPerVertex);
 
-    this->addVertex({ 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, 0.0f, -1.0f);
+    //the projection point
+    this->addVertex({ 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, 0.0f);
 
     int ID = 1;
 
@@ -84,8 +74,9 @@ void BatchVertex::updateData() {
         //for each vertex
         for (he::Vertex* v: m_mesh->vertices()) {
             //will display a point
-            float isSelected = ((ID == m_selectedVertex && m_selectedVertex != 0) || (ID == m_selectedVertex2 && m_selectedVertex2 != 0)) ? 1.0f : -1.0f;
-            this->addVertex(v->pos(), { 0.0f, 0.0f, 0.0f }, static_cast<float>(ID), isSelected);
+            bool isSelected = (ID == m_selectedVertex && m_selectedVertex != 0) || (ID == m_selectedVertex2 && m_selectedVertex2 != 0);
+            QVector3D color = isSelected ? QVector3D(0.0f, 0.8f, 0.0f) : QVector3D(0.0f, 0.0f, 0.0f);
+            this->addVertex(v->pos(), color, static_cast<float>(ID));
             ID++;
         }
     }
@@ -191,7 +182,7 @@ he::Vertex* BatchVertex::selectedVertex2() {
     return res;
 }
 
-void BatchVertex::addVertex(const QVector3D& v, const QVector3D& color, float ID, float isSelected) {
+void BatchVertex::addVertex(const QVector3D& v, const QVector3D& color, float ID) {
     //add to the end of the data already added
     float* p = m_data.data() + m_count;
     //the coordinates of the vertex
@@ -202,11 +193,9 @@ void BatchVertex::addVertex(const QVector3D& v, const QVector3D& color, float ID
     *p++ = color.y();
     *p++ = color.z();
     //the ID of the vertex
-    *p++ = ID;
-    //whether the vertex is selected or not
-    *p = isSelected;
+    *p = ID;
     //we update the amount of data
-    m_count += 8;
+    m_count += m_floatsPerVertex;
 }
 
 int BatchVertex::renderOrder() {

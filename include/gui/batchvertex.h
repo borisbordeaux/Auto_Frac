@@ -34,7 +34,7 @@ public:
     int pickingOrder() override;
 
 private:
-    void addVertex(QVector3D const& v, QVector3D const& color, float ID, float isSelected);
+    void addVertex(QVector3D const& v, QVector3D const& color, float ID);
 
 private:
     QVector<float> m_data;

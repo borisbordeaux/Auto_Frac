@@ -69,7 +69,6 @@ void BatchSkyBox::init() {
     //init shader for sky box
     m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/skybox/vs.glsl");
     m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/skybox/fs.glsl");
-    m_program.bindAttributeLocation("aPos", 0);
     m_program.link();
 
     //get location of uniforms

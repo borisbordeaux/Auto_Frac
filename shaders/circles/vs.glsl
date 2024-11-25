@@ -1,11 +1,11 @@
 #version 460 core
 
-in vec3 center;
-in float radius;
-in vec3 xAxis;
-in vec3 yAxis;
-in vec3 color;
-in float ID;
+layout (location = 0) in vec3 center;
+layout (location = 1) in float radius;
+layout (location = 2) in vec3 xAxis;
+layout (location = 3) in vec3 yAxis;
+layout (location = 4) in vec3 color;
+layout (location = 5) in float ID;
 
 out vec3 vecCenter;
 out float vecRadius;

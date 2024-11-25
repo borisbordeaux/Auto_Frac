@@ -32,10 +32,6 @@ void BatchFace::init() {
 
     m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/faces/vs.glsl");
     m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/faces/fs.glsl");
-    m_program.bindAttributeLocation("vertex", 0);
-    m_program.bindAttributeLocation("normal", 1);
-    m_program.bindAttributeLocation("ID", 2);
-    m_program.bindAttributeLocation("isSelected", 3);
     m_program.link();
 
     //get locations of uniforms
@@ -48,10 +44,6 @@ void BatchFace::init() {
 
     m_programPicking.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/faces/picking/vs.glsl");
     m_programPicking.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/faces/picking/fs.glsl");
-    m_programPicking.bindAttributeLocation("vertex", 0);
-    m_programPicking.bindAttributeLocation("normal", 1);
-    m_programPicking.bindAttributeLocation("ID", 2);
-    m_programPicking.bindAttributeLocation("isSelected", 3);
     m_programPicking.link();
 
     //get locations of uniforms
