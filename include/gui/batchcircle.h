@@ -29,13 +29,13 @@ public:
     int pickingOrder() override;
 
 private:
-    void addVertexCircle(QVector3D const& v, QVector3D const& color, float ID, float isSelected);
+    void addVertexCircle(QVector3D const& center, float radius, QVector3D const& xAxis, QVector3D const& yAxis, QVector3D const& color, float ID);
     qsizetype findNbOfSegmentsCircles() const;
 
 private:
     QVector<float> m_data;
     int m_count = 0;
-    int m_floatsPerVertex = 8;
+    int m_floatsPerVertex = 14;
 
     QOpenGLVertexArrayObject m_vao;
     QOpenGLBuffer m_vbo;

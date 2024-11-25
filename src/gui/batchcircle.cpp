@@ -3,6 +3,8 @@
 void BatchCircle::init() {
     this->initializeOpenGLFunctions();
 
+    glPatchParameteri(GL_PATCH_VERTICES, 1);
+
     m_vao.create();
     m_vbo.create();
 
@@ -10,28 +12,38 @@ void BatchCircle::init() {
     m_vbo.bind();
 
     //enable enough attrib array for all the data of the circle's vertex
-    glEnableVertexAttribArray(0); //coordinates
-    glEnableVertexAttribArray(1); //color
-    glEnableVertexAttribArray(2); //ID for picking
-    glEnableVertexAttribArray(3); //is selected
-    //coordinates
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), nullptr);
+    glEnableVertexAttribArray(0); //center
+    glEnableVertexAttribArray(1); //radius
+    glEnableVertexAttribArray(2); //x axis
+    glEnableVertexAttribArray(3); //y axis
+    glEnableVertexAttribArray(4); //color
+    glEnableVertexAttribArray(5); //ID
+    //center
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, static_cast<int>(m_floatsPerVertex * sizeof(GLfloat)), nullptr);
+    //radius
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, static_cast<int>(m_floatsPerVertex * sizeof(GLfloat)), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
+    //x axis
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, static_cast<int>(m_floatsPerVertex * sizeof(GLfloat)), reinterpret_cast<void*>(4 * sizeof(GLfloat)));
+    //y axis
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, static_cast<int>(m_floatsPerVertex * sizeof(GLfloat)), reinterpret_cast<void*>(7 * sizeof(GLfloat)));
     //color
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
-    //the ID
-    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(6 * sizeof(GLfloat)));
-    //whether it's selected or not, to simplify the code, a negative value means not selected while a positive value means selected
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(7 * sizeof(GLfloat)));
+    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, static_cast<int>(m_floatsPerVertex * sizeof(GLfloat)), reinterpret_cast<void*>(10 * sizeof(GLfloat)));
+    //ID
+    glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, static_cast<int>(m_floatsPerVertex * sizeof(GLfloat)), reinterpret_cast<void*>(13 * sizeof(GLfloat)));
     m_vbo.release();
     m_vao.release();
 
     //init shader for circles
     m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/circles/vs.glsl");
+    m_program.addShaderFromSourceFile(QOpenGLShader::TessellationControl, "../shaders/circles/tcs.glsl");
+    m_program.addShaderFromSourceFile(QOpenGLShader::TessellationEvaluation, "../shaders/circles/tes.glsl");
     m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/circles/fs.glsl");
-    m_program.bindAttributeLocation("vertex", 0);
-    m_program.bindAttributeLocation("color", 1);
-    m_program.bindAttributeLocation("ID", 2);
-    m_program.bindAttributeLocation("isSelected", 3);
+    m_program.bindAttributeLocation("center", 0);
+    m_program.bindAttributeLocation("radius", 1);
+    m_program.bindAttributeLocation("axisX", 2);
+    m_program.bindAttributeLocation("axisY", 3);
+    m_program.bindAttributeLocation("color", 4);
+    m_program.bindAttributeLocation("ID", 5);
     m_program.link();
 
     //get locations of uniforms
@@ -40,20 +52,20 @@ void BatchCircle::init() {
     m_viewMatrixLoc = m_program.uniformLocation("mvMatrix");
 
     //init shader for circles picking
-    m_programPicking.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/circles/picking/vs.glsl");
-    m_programPicking.addShaderFromSourceFile(QOpenGLShader::Geometry, "../shaders/circles/picking/gs.glsl");
-    m_programPicking.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/circles/picking/fs.glsl");
-    m_programPicking.bindAttributeLocation("vertex", 0);
-    m_programPicking.bindAttributeLocation("color", 1);
-    m_programPicking.bindAttributeLocation("ID", 2);
-    m_programPicking.bindAttributeLocation("isSelected", 3);
-    m_programPicking.link();
-
-    //get location of uniforms
-    m_programPicking.bind();
-    m_projMatrixPickingLoc = m_programPicking.uniformLocation("projMatrix");
-    m_viewMatrixPickingLoc = m_programPicking.uniformLocation("mvMatrix");
-    m_invViewportPickingLoc = m_programPicking.uniformLocation("invViewport");
+//    m_programPicking.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/circles/picking/vs.glsl");
+//    m_programPicking.addShaderFromSourceFile(QOpenGLShader::Geometry, "../shaders/circles/picking/gs.glsl");
+//    m_programPicking.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/circles/picking/fs.glsl");
+//    m_programPicking.bindAttributeLocation("vertex", 0);
+//    m_programPicking.bindAttributeLocation("color", 1);
+//    m_programPicking.bindAttributeLocation("ID", 2);
+//    m_programPicking.bindAttributeLocation("isSelected", 3);
+//    m_programPicking.link();
+//
+//    //get location of uniforms
+//    m_programPicking.bind();
+//    m_projMatrixPickingLoc = m_programPicking.uniformLocation("projMatrix");
+//    m_viewMatrixPickingLoc = m_programPicking.uniformLocation("mvMatrix");
+//    m_invViewportPickingLoc = m_programPicking.uniformLocation("invViewport");
 }
 
 void BatchCircle::update() {
@@ -65,23 +77,23 @@ void BatchCircle::update() {
 void BatchCircle::render(PickingType type) {
     switch (type) {
         case PickingType::PickingCircle: {
-            bool cullFaceEnabled = glIsEnabled(GL_CULL_FACE);
-            if (cullFaceEnabled) {
-                glDisable(GL_CULL_FACE);
-            }
-            m_programPicking.bind();
-            m_vao.bind();
-            glDrawArrays(GL_LINES, 0, m_count / m_floatsPerVertex);
-            m_programPicking.release();
-            if (cullFaceEnabled) {
-                glEnable(GL_CULL_FACE);
-            }
-            break;
+//            bool cullFaceEnabled = glIsEnabled(GL_CULL_FACE);
+//            if (cullFaceEnabled) {
+//                glDisable(GL_CULL_FACE);
+//            }
+//            m_programPicking.bind();
+//            m_vao.bind();
+//            glDrawArrays(GL_LINES, 0, m_count / m_floatsPerVertex);
+//            m_programPicking.release();
+//            if (cullFaceEnabled) {
+//                glEnable(GL_CULL_FACE);
+//            }
+//            break;
         }
         case PickingType::PickingNone:
             m_program.bind();
             m_vao.bind();
-            glDrawArrays(GL_LINES, 0, m_count / m_floatsPerVertex);
+            glDrawArrays(GL_PATCHES, 0, static_cast<int>(m_circles.size()));
             m_program.release();
             break;
         case PickingType::PickingFace:
@@ -96,9 +108,9 @@ void BatchCircle::setProjection(QMatrix4x4 matrix) {
     m_program.setUniformValue(m_projMatrixLoc, matrix);
     m_program.release();
 
-    m_programPicking.bind();
-    m_programPicking.setUniformValue(m_projMatrixPickingLoc, matrix);
-    m_programPicking.release();
+//    m_programPicking.bind();
+//    m_programPicking.setUniformValue(m_projMatrixPickingLoc, matrix);
+//    m_programPicking.release();
 }
 
 void BatchCircle::setCamera(Camera camera) {
@@ -107,15 +119,15 @@ void BatchCircle::setCamera(Camera camera) {
     m_program.setUniformValue(m_viewMatrixLoc, camera.getViewMatrix());
     m_program.release();
 
-    m_programPicking.bind();
-    m_programPicking.setUniformValue(m_viewMatrixPickingLoc, camera.getViewMatrix());
-    m_programPicking.release();
+//    m_programPicking.bind();
+//    m_programPicking.setUniformValue(m_viewMatrixPickingLoc, camera.getViewMatrix());
+//    m_programPicking.release();
 }
 
-void BatchCircle::setInvViewport(float x, float y) {
-    m_programPicking.bind();
-    m_programPicking.setUniformValue(m_invViewportPickingLoc, x, y);
-    m_programPicking.release();
+void BatchCircle::setInvViewport(float /*x*/, float /*y*/) {
+//    m_programPicking.bind();
+//    m_programPicking.setUniformValue(m_invViewportPickingLoc, x, y);
+//    m_programPicking.release();
 }
 
 void BatchCircle::updateData() {
@@ -123,36 +135,14 @@ void BatchCircle::updateData() {
     m_count = 0;
     m_data.clear();
 
-    //the number of edges
-    qsizetype nbOfEdges = findNbOfSegmentsCircles();
-
-    //for each edge, there are 2 vertices
-    qsizetype nbOfAdd = 2 * nbOfEdges;
-
     //we resize the data for rapidity
-    m_data.resize(nbOfAdd * 8);
+    m_data.resize(m_circles.size() * m_floatsPerVertex);
 
     int ID = 1;
-
-    QVector3D first;
     for (gui::Circle const& c: m_circles) {
-        float isSelected = (ID == m_selectedCircle && m_selectedCircle != 0) ? 1.0f : -1.0f;
-
-        for (int i = 0; i < 360; i += 4) {
-            float alpha = qDegreesToRadians(static_cast<float>(i));
-            float x = c.center().x() + c.radius() * std::cos(alpha) * c.axisX().x() + c.radius() * std::sin(alpha) * c.axisY().x();
-            float y = c.center().y() + c.radius() * std::cos(alpha) * c.axisX().y() + c.radius() * std::sin(alpha) * c.axisY().y();
-            float z = c.center().z() + c.radius() * std::cos(alpha) * c.axisX().z() + c.radius() * std::sin(alpha) * c.axisY().z();
-            if (i == 0) {
-                first = { x, y, z };
-            } else {
-                this->addVertexCircle({ x, y, z }, c.color(), static_cast<float>(ID), isSelected);
-            }
-            this->addVertexCircle({ x, y, z }, c.color(), static_cast<float>(ID), isSelected);
-            if (i == 356) {
-                this->addVertexCircle(first, c.color(), static_cast<float>(ID), isSelected);
-            }
-        }
+        bool isSelected = ID == m_selectedCircle;
+        QVector3D color = isSelected ? QVector3D(0, 1, 0) : c.color();
+        this->addVertexCircle(c.center(), c.radius(), c.axisX(), c.axisY(), color, static_cast<float>(ID));
         ID++;
     }
 
@@ -202,22 +192,27 @@ QVector<gui::Circle> const& BatchCircle::circles() const {
     return m_circles;
 }
 
-void BatchCircle::addVertexCircle(QVector3D const& v, QVector3D const& color, float ID, float isSelected) {
+void BatchCircle::addVertexCircle(QVector3D const& center, float radius, QVector3D const& xAxis, QVector3D const& yAxis, QVector3D const& color, float ID) {
     //add to the end of the data already added
     float* p = m_data.data() + m_count;
     //the coordinates of the vertex
-    *p++ = v.x();
-    *p++ = v.y();
-    *p++ = v.z();
+    *p++ = center.x();
+    *p++ = center.y();
+    *p++ = center.z();
+    *p++ = radius;
+    *p++ = xAxis.x();
+    *p++ = xAxis.y();
+    *p++ = xAxis.z();
+    *p++ = yAxis.x();
+    *p++ = yAxis.y();
+    *p++ = yAxis.z();
     *p++ = color.x();
     *p++ = color.y();
     *p++ = color.z();
-    //the ID of the face
-    *p++ = ID;
-    //whether the face is selected or not
-    *p = isSelected;
+    //the ID of the circle
+    *p = ID;
     //we update the amount of data
-    m_count += 8;
+    m_count += m_floatsPerVertex;
 }
 
 qsizetype BatchCircle::findNbOfSegmentsCircles() const {

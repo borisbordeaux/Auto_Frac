@@ -7,7 +7,7 @@
 #include "gui/camera.h"
 #include "gui/pickingtype.h"
 
-class BatchGraphicsItem : protected QOpenGLFunctions_4_5_Core {
+class BatchGraphicsItem : protected QOpenGLExtraFunctions {
 
 public:
     BatchGraphicsItem() = default;
@@ -15,7 +15,7 @@ public:
     /**
      * default destructor
      */
-    ~BatchGraphicsItem() override = default;
+    ~BatchGraphicsItem()  = default;
 
     /**
      * intialize the object (must call initializeOpenGLFunctions())

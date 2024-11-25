@@ -3,8 +3,6 @@
 void BatchCircleDual::init() {
     this->initializeOpenGLFunctions();
 
-    glPrimitiveRestartIndex(0xFFFFFFFF);
-
     m_ibo.setUsagePattern(QOpenGLBuffer::DynamicDraw);
     m_vao.create();
     m_vbo.create();
