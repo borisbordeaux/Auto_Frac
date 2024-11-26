@@ -19,6 +19,15 @@ uniform mat4 projMatrix;
 uniform mat4 mvMatrix;
 uniform mat4 windowMatrix;
 
+bool checkInFrustum() {
+    // get all coords of the frustum
+    // c_world = inverse(projection * view) * vec4(c_ncd, 1);
+    // c_world /= c_world / w;
+    // get all normals of the planes
+    // check scalar product with all plane normals
+    return true;
+}
+
 void main() {
     gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
     center[gl_InvocationID] = vecCenter[gl_InvocationID];
@@ -28,23 +37,30 @@ void main() {
     color[gl_InvocationID] = vecColor[gl_InvocationID];
 
     if (gl_InvocationID == 0) {
-        //center in window coordinates
-        vec4 clipCenter = projMatrix * mvMatrix * vec4(center[0], 1.0);
-        vec4 ndcCenter = clipCenter / clipCenter.w;
-        vec4 vpcCenter = windowMatrix * ndcCenter;
 
-        //north of the circle in window coordinates
-        vec4 clipNorth = projMatrix * mvMatrix * vec4(center[0] + radius[0] * xAxis[0], 1.0);
-        vec4 ndcNorth = clipNorth / clipNorth.w;
-        vec4 vpcNorth = windowMatrix * ndcNorth;
+        bool inFrustum = checkInFrustum();
 
-        //radius in pixels
-        float vpcRadius = length(vpcCenter - vpcNorth);
+        int nb = 1;
 
-        //arbitrary number of lines for the circle corresponding to its perimeter length in pixels
-        int nb = max(1, 2 * int(PI * vpcRadius));
+        if (inFrustum){
+            //center in window coordinates
+            vec4 clipCenter = projMatrix * mvMatrix * vec4(center[0], 1.0);
+            vec4 ndcCenter = clipCenter / clipCenter.w;
+            vec4 vpcCenter = windowMatrix * ndcCenter;
 
-        gl_TessLevelOuter[0] = 3.0; //lines to tessellate
+            //north of the circle in window coordinates
+            vec4 clipNorth = projMatrix * mvMatrix * vec4(center[0] + radius[0] * xAxis[0], 1.0);
+            vec4 ndcNorth = clipNorth / clipNorth.w;
+            vec4 vpcNorth = windowMatrix * ndcNorth;
+
+            //radius in pixels
+            float vpcRadius = length(vpcCenter - vpcNorth);
+
+            //arbitrary number of lines for the circle corresponding to its perimeter length in pixels
+            nb = max(nb, 2 * int(PI * vpcRadius));
+        }
+
+        gl_TessLevelOuter[0] = 3.0;//lines to tessellate
         gl_TessLevelOuter[1] = nb;
     }
 }

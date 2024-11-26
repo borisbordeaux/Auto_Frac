@@ -9,8 +9,8 @@
 
 GLView::GLView(Polytopal2DWindow* parent) :
         QOpenGLWidget(parent),
-        m_camera(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.01f, 500.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)),
-        m_cameraBeforeAnim(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.01f, 49.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)),
+        m_camera(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.006f, 250.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)),
+        m_cameraBeforeAnim(m_camera),
         m_mainWindow(parent) {
     connect(&m_timerAnimCamera, &QTimer::timeout, this, &GLView::animationCameraStep);
     this->setAcceptDrops(true);
@@ -92,7 +92,7 @@ void GLView::resizeGL(int w, int h) {
     m_viewportHeight = static_cast<float>(h);
     //reset the projection with the new window size
     m_proj.setToIdentity();
-    m_proj.perspective(45.0f, m_viewportWidth / m_viewportHeight, 0.005f, 500.0f);
+    m_proj.perspective(45.0f, m_viewportWidth / m_viewportHeight, 0.005f, 250.0f);
     m_uniformsDirty = true;
 }
 
