@@ -20,9 +20,23 @@ uniform mat4 mvMatrix;
 uniform mat4 windowMatrix;
 
 bool checkInFrustum() {
+    // implementation of sphere/frustum intersection test:
+    // https://github.com/gszauer/GamePhysicsCookbook/blob/master/Code/Geometry3D.cpp#L1874
+    // test if it is completely outside one face (distance to plane)
+    // if so, then it is outside, else it might be inside
+    // so test if min distance to corners is < to radius
+    // if so, then it is inside, else it is outside
+    vec4 p001 = inverse(projMatrix * mvMatrix) * vec4(-1.0, -1.0,  1.0, 1.0); p001 /= p001.w;
+    vec4 p011 = inverse(projMatrix * mvMatrix) * vec4(-1.0,  1.0,  1.0, 1.0);
+    vec4 p101 = inverse(projMatrix * mvMatrix) * vec4( 1.0, -1.0,  1.0, 1.0);
+    vec4 p111 = inverse(projMatrix * mvMatrix) * vec4( 1.0,  1.0,  1.0, 1.0);
+    vec4 p000 = inverse(projMatrix * mvMatrix) * vec4(-1.0, -1.0, -1.0, 1.0);
+    vec4 p010 = inverse(projMatrix * mvMatrix) * vec4(-1.0,  1.0, -1.0, 1.0);
+    vec4 p100 = inverse(projMatrix * mvMatrix) * vec4( 1.0, -1.0, -1.0, 1.0);
+    vec4 p110 = inverse(projMatrix * mvMatrix) * vec4( 1.0,  1.0, -1.0, 1.0);
     // get all coords of the frustum
-    // c_world = inverse(projection * view) * vec4(c_ncd, 1);
-    // c_world /= c_world / w;
+    // c_world = inverse(projMatrix * mvMatrix) * vec4(c_ncd, 1);
+    // c_world /= c_world / c_world.w;
     // get all normals of the planes
     // check scalar product with all plane normals
     return true;
