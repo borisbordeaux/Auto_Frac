@@ -12,7 +12,7 @@ int main(int argc, char* argv[]) {
     fmt.setSamples(16);
     fmt.setVersion(4,6);
     fmt.setProfile(QSurfaceFormat::CoreProfile);
-    fmt.setSwapInterval(0);
+    fmt.setSwapInterval(1);
     QSurfaceFormat::setDefaultFormat(fmt);
 
     MainWindow w;

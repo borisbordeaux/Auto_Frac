@@ -20,7 +20,6 @@ GLView::GLView(Polytopal2DWindow* parent) :
     m_label.setStyleSheet("QLabel { background-color : white; color : black; }");
     m_prevTime = QDateTime::currentDateTime();
     m_currentTime = QDateTime::currentDateTime();
-    connect(this, &GLView::frameSwapped, this, &GLView::computeFrameRate);
 }
 
 void GLView::initializeGL() {
@@ -92,6 +91,8 @@ void GLView::paintGL() {
     for (BatchGraphicsItem* item: m_items) {
         item->render(PickingType::PickingNone);
     }
+
+    this->computeFrameRate();
 }
 
 void GLView::resizeGL(int w, int h) {
@@ -112,6 +113,7 @@ void GLView::mousePressEvent(QMouseEvent* event) {
         m_cameraBeforeAnim = m_camera;
         m_timerAnimCamera.start();
     }
+    m_prevTime = QDateTime::currentDateTime();
 }
 
 void GLView::mouseMoveEvent(QMouseEvent* event) {
@@ -608,7 +610,7 @@ void GLView::computeFrameRate() {
     m_currentTime = QDateTime::currentDateTime();
     timeDiffMs = static_cast<float>(m_prevTime.msecsTo(m_currentTime));
     m_counter += 1.0f;
-    if (timeDiffMs >= 100.0) { //every 100ms
+    if (timeDiffMs >= 50.0) { //every 50ms
         QString fps = QString::number(static_cast<int>(1000.0f / timeDiffMs * m_counter));
         QString ms = QString::number(timeDiffMs / m_counter);
 
