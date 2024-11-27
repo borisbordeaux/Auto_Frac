@@ -5,6 +5,8 @@
 #include <QOpenGLFunctions>
 #include <QtOpenGLWidgets/QOpenGLWidget>
 #include <QTimer>
+#include <QLabel>
+#include <QDateTime>
 #include "gui/camera.h"
 #include "gui/pickingtype.h"
 
@@ -37,6 +39,8 @@ public slots:
     void animationCameraStep();
     void changeMeshColor(QColor const& color);
     void restoreMeshColor();
+
+    void computeFrameRate();
 
 protected:
     // QOpenGLWidget interface
@@ -123,6 +127,12 @@ private:
 
     bool m_flagCullFaceChanged = false;
     bool m_cullFace = true;
+
+    QLabel m_label;
+    QDateTime m_prevTime;
+    QDateTime m_currentTime;
+    float timeDiffMs = 0.0f;
+    float m_counter = 0.0f;
 
 public:
     void removeItem(BatchGraphicsItem* item);

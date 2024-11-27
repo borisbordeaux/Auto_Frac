@@ -2,6 +2,7 @@
 #include "gui/polytopal2dwindow.h"
 #include <QMouseEvent>
 #include <QMimeData>
+#include <QStyle>
 #include "halfedge/vertex.h"
 #include "halfedge/halfedge.h"
 #include "halfedge/face.h"
@@ -11,9 +12,15 @@ GLView::GLView(Polytopal2DWindow* parent) :
         QOpenGLWidget(parent),
         m_camera(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.006f, 250.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)),
         m_cameraBeforeAnim(m_camera),
+        m_label(this),
         m_mainWindow(parent) {
     connect(&m_timerAnimCamera, &QTimer::timeout, this, &GLView::animationCameraStep);
     this->setAcceptDrops(true);
+    m_label.setText("Hello world");
+    m_label.setStyleSheet("QLabel { background-color : white; color : black; }");
+    m_prevTime = QDateTime::currentDateTime();
+    m_currentTime = QDateTime::currentDateTime();
+    connect(this, &GLView::frameSwapped, this, &GLView::computeFrameRate);
 }
 
 void GLView::initializeGL() {
@@ -595,4 +602,19 @@ void GLView::restoreMeshColor() {
 void GLView::enableCullFace(bool enable) {
     m_cullFace = enable;
     m_flagCullFaceChanged = true;
+}
+
+void GLView::computeFrameRate() {
+    m_currentTime = QDateTime::currentDateTime();
+    timeDiffMs = static_cast<float>(m_prevTime.msecsTo(m_currentTime));
+    m_counter += 1.0f;
+    if (timeDiffMs >= 100.0) { //every 100ms
+        QString fps = QString::number(static_cast<int>(1000.0f / timeDiffMs * m_counter));
+        QString ms = QString::number(timeDiffMs / m_counter);
+
+        m_label.setText(fps + " fps / " + ms + " ms");
+        m_label.adjustSize();
+        m_prevTime = m_currentTime;
+        m_counter = 0.0f;
+    }
 }
