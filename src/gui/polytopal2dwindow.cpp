@@ -49,6 +49,7 @@ Polytopal2DWindow::Polytopal2DWindow(QWidget* parent) :
     m_view->addItem(&m_batchVertex);
     m_view->addItem(&m_batchCircle);
     m_view->addItem(&m_batchCircleDual);
+    m_view->addItem(&m_batchPlane);
 
     m_progressBar = new QProgressBar();
     m_progressBar->setRange(0, 100);
@@ -814,11 +815,13 @@ void Polytopal2DWindow::updateBatchCircles(bool dual) {
         m_batchCircle.updateData();
     }
 
-    //update circles display on sphere
+    //update circles display on sphere and on plane depending on projection
     if (!this->ui->checkBox_projectCircles->isChecked() && !m_circles.empty()) {
         m_batchSphere.updateMeshData(m_circles);
+        m_batchPlane.updateMeshData({});
     } else {
         m_batchSphere.updateMeshData({});
+        m_batchPlane.updateMeshData(m_circles);
     }
 }
 

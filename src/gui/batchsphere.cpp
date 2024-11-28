@@ -170,7 +170,7 @@ void BatchSphere::updateMeshData(std::vector<poly::InversiveCoordinates> const& 
     }
 
     std::vector<float> data;
-    data.reserve(circles.size());
+    data.reserve(circles.size() * 3);
     for (poly::InversiveCoordinates const& c: circles) {
         QVector3D v = c.lightPoint().toQVector3D();
         data.push_back(v.x());
