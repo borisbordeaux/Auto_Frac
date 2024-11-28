@@ -40,6 +40,8 @@ public slots:
     void changeMeshColor(QColor const& color);
     void restoreMeshColor();
 
+    void computeFrameRate();
+
 protected:
     // QOpenGLWidget interface
     void initializeGL() override;
@@ -80,8 +82,6 @@ private:
     void removeSelectedFace();
     void removeSelectedHalfEdge();
     void removeSelectedVertex();
-
-    void computeFrameRate();
 
 private:
     //camera of the scene
@@ -131,7 +131,7 @@ private:
     QLabel m_label;
     QDateTime m_prevTime;
     QDateTime m_currentTime;
-    float timeDiffMs = 0.0f;
+    float m_timeDiffMs = 0.0f;
     float m_counter = 0.0f;
 
 public:

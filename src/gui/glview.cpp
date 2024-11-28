@@ -20,6 +20,7 @@ GLView::GLView(Polytopal2DWindow* parent) :
     m_label.setStyleSheet("QLabel { background-color : white; color : black; }");
     m_prevTime = QDateTime::currentDateTime();
     m_currentTime = QDateTime::currentDateTime();
+    connect(this, &GLView::frameSwapped, this, &GLView::computeFrameRate);
 }
 
 void GLView::initializeGL() {
@@ -92,7 +93,7 @@ void GLView::paintGL() {
         item->render(PickingType::PickingNone);
     }
 
-    this->computeFrameRate();
+    //this->computeFrameRate();
 }
 
 void GLView::resizeGL(int w, int h) {
@@ -608,11 +609,11 @@ void GLView::enableCullFace(bool enable) {
 
 void GLView::computeFrameRate() {
     m_currentTime = QDateTime::currentDateTime();
-    timeDiffMs = static_cast<float>(m_prevTime.msecsTo(m_currentTime));
+    m_timeDiffMs = static_cast<float>(m_prevTime.msecsTo(m_currentTime));
     m_counter += 1.0f;
-    if (timeDiffMs >= 50.0) { //every 50ms
-        QString fps = QString::number(static_cast<int>(1000.0f / timeDiffMs * m_counter));
-        QString ms = QString::number(timeDiffMs / m_counter);
+    if (m_timeDiffMs >= 50.0) { //every 50ms
+        QString fps = QString::number(static_cast<int>(1000.0f / m_timeDiffMs * m_counter));
+        QString ms = QString::number(m_timeDiffMs / m_counter);
 
         m_label.setText(fps + " fps / " + ms + " ms");
         m_label.adjustSize();
