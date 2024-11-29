@@ -26,7 +26,7 @@ Polytopal2DWindow::Polytopal2DWindow(QWidget* parent) :
 
     this->updateEnablementPoly();
     m_view = new GLView(this);
-    m_view->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+    m_view->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding));
     m_view->setFocusPolicy(Qt::ClickFocus);
 
     this->ui->verticalLayout->addWidget(m_view);
@@ -870,5 +870,13 @@ void Polytopal2DWindow::closeEvent(QCloseEvent* event) {
 [[maybe_unused]] void Polytopal2DWindow::slotDisplayProjectionPoint() {
     m_batchVertex.setProjectionPoint(this->ui->checkBox_displayProjectionPoint->isChecked() && this->ui->checkBox_displayUnitSphere->isChecked());
     m_view->update();
-    qDebug() << m_view->size();
+}
+
+[[maybe_unused]] void Polytopal2DWindow::slotDisplayPlane() {
+    if (this->ui->checkBox_displayPlane->isChecked()) {
+        m_view->addItem(&m_batchPlane);
+    } else {
+        m_view->removeItem(&m_batchPlane);
+    }
+    m_view->update();
 }

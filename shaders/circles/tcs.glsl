@@ -52,9 +52,7 @@ void main() {
 
     if (gl_InvocationID == 0) {
 
-        bool inFrustum = checkInFrustum();
-
-        int nb = 1;
+        bool inFrustum = true;//checkInFrustum();
 
         if (inFrustum) {
             //center in window coordinates
@@ -62,19 +60,26 @@ void main() {
             vec4 ndcCenter = clipCenter / clipCenter.w;
             vec4 vpcCenter = windowMatrix * ndcCenter;
 
-            //north of the circle in window coordinates
-            vec4 clipNorth = projMatrix * mvMatrix * vec4(center[0] + radius[0] * xAxis[0], 1.0);
-            vec4 ndcNorth = clipNorth / clipNorth.w;
-            vec4 vpcNorth = windowMatrix * ndcNorth;
+            //point at the X axis of the circle in window coordinates
+            vec4 clipPointX = projMatrix * mvMatrix * vec4(center[0] + radius[0] * xAxis[0], 1.0);
+            vec4 ndcPointX = clipPointX / clipPointX.w;
+            vec4 vpcPointX = windowMatrix * ndcPointX;
 
             //radius in pixels
-            float vpcRadius = length(vpcCenter - vpcNorth);
+            float vpcRadius = length(vpcCenter - vpcPointX);
 
-            //arbitrary number of lines for the circle corresponding to its perimeter length in pixels
-            nb = max(nb, int(PI * vpcRadius));
+            //arbitrary number of lines for the circle depending on its perimeter length in pixels
+            int nb = max(3, int(PI * vpcRadius / 2.0));
+
+            //number of lines to tessellate
+            gl_TessLevelOuter[0] = min(64, nb / 64 + 1);
+            //number of segments per line
+            gl_TessLevelOuter[1] = nb / gl_TessLevelOuter[0];
+        } else {
+            //number of lines to tessellate
+            gl_TessLevelOuter[0] = 1.0;
+            //number of segments per line
+            gl_TessLevelOuter[1] = 3;
         }
-
-        gl_TessLevelOuter[0] = 3.0;//lines to tessellate
-        gl_TessLevelOuter[1] = nb;
     }
 }
