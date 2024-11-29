@@ -68,13 +68,14 @@ void main() {
             //radius in pixels
             float vpcRadius = length(vpcCenter - vpcPointX);
 
-            //arbitrary number of lines for the circle depending on its perimeter length in pixels
+            //number of lines is a quarter of the perimeter length in pixels
             int nb = max(3, int(PI * vpcRadius / 2.0));
 
-            //number of lines to tessellate
+            //number of lines to tessellate (max 64)
             gl_TessLevelOuter[0] = min(64, nb / 64 + 1);
-            //number of segments per line
-            gl_TessLevelOuter[1] = nb / gl_TessLevelOuter[0];
+
+            //number of segments per line, same amount for each line (max 64)
+            gl_TessLevelOuter[1] = min(64, nb / gl_TessLevelOuter[0]);
         } else {
             //number of lines to tessellate
             gl_TessLevelOuter[0] = 1.0;
