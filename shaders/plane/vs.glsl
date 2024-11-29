@@ -2,12 +2,12 @@
 
 layout (location = 0) in vec4 vertex;
 
-out vec3 vertPos;
+out vec2 vertPos;
 
 uniform mat4 projMatrix;
 uniform mat4 mvMatrix;
 
 void main() {
-    vertPos = vertex.xyz;
+    vertPos = vertex.xy;
     gl_Position = projMatrix * mvMatrix * vertex;
 }

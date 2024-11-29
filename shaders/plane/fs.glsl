@@ -1,6 +1,6 @@
 #version 460 core
 
-in vec3 vertPos;
+in vec2 vertPos;
 
 out vec4 fragColor;
 
@@ -14,9 +14,9 @@ layout (std430, binding = 3) readonly buffer polyhedronData
 
 float checkInCircle() {
     float nb = 0.0;
-    for (uint i = 0; i < nbVertices; i += 4) {
-        vec3 center = vec3(polyhedronVertices[i], polyhedronVertices[i + 1], polyhedronVertices[i + 2]);
-        float radius = polyhedronVertices[i + 3];
+    for (uint i = 0; i < nbVertices; i += 3) {
+        vec2 center = vec2(polyhedronVertices[i], polyhedronVertices[i + 1]);
+        float radius = polyhedronVertices[i + 2];
         if (radius > 0) {
             if (length(center - vertPos) < radius) { //test if in circle
                 nb += 1.0;

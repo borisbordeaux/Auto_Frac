@@ -26,14 +26,14 @@ bool checkInFrustum() {
     // if so, then it is outside, else it might be inside
     // so test if min distance to corners is < to radius
     // if so, then it is inside, else it is outside
-    vec4 p001 = inverse(projMatrix * mvMatrix) * vec4(-1.0, -1.0,  1.0, 1.0); p001 /= p001.w;
-    vec4 p011 = inverse(projMatrix * mvMatrix) * vec4(-1.0,  1.0,  1.0, 1.0);
-    vec4 p101 = inverse(projMatrix * mvMatrix) * vec4( 1.0, -1.0,  1.0, 1.0);
-    vec4 p111 = inverse(projMatrix * mvMatrix) * vec4( 1.0,  1.0,  1.0, 1.0);
+    vec4 p001 = inverse(projMatrix * mvMatrix) * vec4(-1.0, -1.0, 1.0, 1.0); p001 /= p001.w;
+    vec4 p011 = inverse(projMatrix * mvMatrix) * vec4(-1.0, 1.0, 1.0, 1.0);
+    vec4 p101 = inverse(projMatrix * mvMatrix) * vec4(1.0, -1.0, 1.0, 1.0);
+    vec4 p111 = inverse(projMatrix * mvMatrix) * vec4(1.0, 1.0, 1.0, 1.0);
     vec4 p000 = inverse(projMatrix * mvMatrix) * vec4(-1.0, -1.0, -1.0, 1.0);
-    vec4 p010 = inverse(projMatrix * mvMatrix) * vec4(-1.0,  1.0, -1.0, 1.0);
-    vec4 p100 = inverse(projMatrix * mvMatrix) * vec4( 1.0, -1.0, -1.0, 1.0);
-    vec4 p110 = inverse(projMatrix * mvMatrix) * vec4( 1.0,  1.0, -1.0, 1.0);
+    vec4 p010 = inverse(projMatrix * mvMatrix) * vec4(-1.0, 1.0, -1.0, 1.0);
+    vec4 p100 = inverse(projMatrix * mvMatrix) * vec4(1.0, -1.0, -1.0, 1.0);
+    vec4 p110 = inverse(projMatrix * mvMatrix) * vec4(1.0, 1.0, -1.0, 1.0);
     // get all coords of the frustum
     // c_world = inverse(projMatrix * mvMatrix) * vec4(c_ncd, 1);
     // c_world /= c_world / c_world.w;
@@ -56,7 +56,7 @@ void main() {
 
         int nb = 1;
 
-        if (inFrustum){
+        if (inFrustum) {
             //center in window coordinates
             vec4 clipCenter = projMatrix * mvMatrix * vec4(center[0], 1.0);
             vec4 ndcCenter = clipCenter / clipCenter.w;
@@ -71,7 +71,7 @@ void main() {
             float vpcRadius = length(vpcCenter - vpcNorth);
 
             //arbitrary number of lines for the circle corresponding to its perimeter length in pixels
-            nb = max(nb, 2 * int(PI * vpcRadius));
+            nb = max(nb, int(PI * vpcRadius));
         }
 
         gl_TessLevelOuter[0] = 3.0;//lines to tessellate

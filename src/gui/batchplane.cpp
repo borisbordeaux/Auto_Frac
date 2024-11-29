@@ -89,12 +89,11 @@ void BatchPlane::updateMeshData(std::vector<poly::InversiveCoordinates> const& c
     }
 
     std::vector<float> data;
-    data.reserve(circles.size() * 4);
+    data.reserve(circles.size() * 3);
     for (poly::InversiveCoordinates const& c: circles) {
         gui::Circle v = c.toCircle();
         data.push_back(v.center().x());
         data.push_back(v.center().y());
-        data.push_back(v.center().z());
         data.push_back(static_cast<float>(c.radius()));
     }
 
