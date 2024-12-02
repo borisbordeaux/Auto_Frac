@@ -45,22 +45,32 @@ void BatchCircle::init() {
     m_projMatrixLoc = m_program.uniformLocation("projMatrix");
     m_viewMatrixLoc = m_program.uniformLocation("mvMatrix");
     m_windowMatrixLoc = m_program.uniformLocation("windowMatrix");
+    m_leftPlaneLoc = m_program.uniformLocation("leftPlane");
+    m_rightPlaneLoc = m_program.uniformLocation("rightPlane");
+    m_topPlaneLoc = m_program.uniformLocation("topPlane");
+    m_bottomPlaneLoc = m_program.uniformLocation("bottomPlane");
 
     //init shader for circles picking
-//    m_programPicking.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/circles/picking/vs.glsl");
-//    m_programPicking.addShaderFromSourceFile(QOpenGLShader::Geometry, "../shaders/circles/picking/gs.glsl");
-//    m_programPicking.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/circles/picking/fs.glsl");
-//    m_programPicking.bindAttributeLocation("vertex", 0);
-//    m_programPicking.bindAttributeLocation("color", 1);
-//    m_programPicking.bindAttributeLocation("ID", 2);
-//    m_programPicking.bindAttributeLocation("isSelected", 3);
-//    m_programPicking.link();
-//
-//    //get location of uniforms
-//    m_programPicking.bind();
-//    m_projMatrixPickingLoc = m_programPicking.uniformLocation("projMatrix");
-//    m_viewMatrixPickingLoc = m_programPicking.uniformLocation("mvMatrix");
-//    m_invViewportPickingLoc = m_programPicking.uniformLocation("invViewport");
+    m_programPicking.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/circles/picking/vs.glsl");
+    m_programPicking.addShaderFromSourceFile(QOpenGLShader::TessellationControl, "../shaders/circles/picking/tcs.glsl");
+    m_programPicking.addShaderFromSourceFile(QOpenGLShader::TessellationEvaluation, "../shaders/circles/picking/tes.glsl");
+    m_programPicking.addShaderFromSourceFile(QOpenGLShader::Geometry, "../shaders/circles/picking/gs.glsl");
+    m_programPicking.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/circles/picking/fs.glsl");
+    m_programPicking.bindAttributeLocation("vertex", 0);
+    m_programPicking.bindAttributeLocation("color", 1);
+    m_programPicking.bindAttributeLocation("ID", 2);
+    m_programPicking.bindAttributeLocation("isSelected", 3);
+    m_programPicking.link();
+
+    //get location of uniforms
+    m_programPicking.bind();
+    m_projMatrixPickingLoc = m_programPicking.uniformLocation("projMatrix");
+    m_viewMatrixPickingLoc = m_programPicking.uniformLocation("mvMatrix");
+    m_invViewportPickingLoc = m_programPicking.uniformLocation("invViewport");
+    m_leftPlanePickingLoc = m_program.uniformLocation("leftPlane");
+    m_rightPlanePickingLoc = m_program.uniformLocation("rightPlane");
+    m_topPlanePickingLoc = m_program.uniformLocation("topPlane");
+    m_bottomPlanePickingLoc = m_program.uniformLocation("bottomPlane");
 }
 
 void BatchCircle::update() {
@@ -72,18 +82,18 @@ void BatchCircle::update() {
 void BatchCircle::render(PickingType type) {
     switch (type) {
         case PickingType::PickingCircle: {
-//            bool cullFaceEnabled = glIsEnabled(GL_CULL_FACE);
-//            if (cullFaceEnabled) {
-//                glDisable(GL_CULL_FACE);
-//            }
-//            m_programPicking.bind();
-//            m_vao.bind();
-//            glDrawArrays(GL_LINES, 0, m_count / m_floatsPerVertex);
-//            m_programPicking.release();
-//            if (cullFaceEnabled) {
-//                glEnable(GL_CULL_FACE);
-//            }
-//            break;
+            bool cullFaceEnabled = glIsEnabled(GL_CULL_FACE);
+            if (cullFaceEnabled) {
+                glDisable(GL_CULL_FACE);
+            }
+            m_programPicking.bind();
+            m_vao.bind();
+            glDrawArrays(GL_PATCHES, 0, static_cast<int>(m_circles.size()));
+            m_programPicking.release();
+            if (cullFaceEnabled) {
+                glEnable(GL_CULL_FACE);
+            }
+            break;
         }
         case PickingType::PickingNone:
             m_program.bind();
@@ -99,24 +109,32 @@ void BatchCircle::render(PickingType type) {
 }
 
 void BatchCircle::setProjection(QMatrix4x4 matrix) {
+    m_projMatrix = matrix;
+
     m_program.bind();
-    m_program.setUniformValue(m_projMatrixLoc, matrix);
+    m_program.setUniformValue(m_projMatrixLoc, m_projMatrix);
+    this->sendUniformsPlaneFrustum();
     m_program.release();
 
-//    m_programPicking.bind();
-//    m_programPicking.setUniformValue(m_projMatrixPickingLoc, matrix);
-//    m_programPicking.release();
+    m_programPicking.bind();
+    m_programPicking.setUniformValue(m_projMatrixPickingLoc, matrix);
+    this->sendUniformsPlaneFrustum(true);
+    m_programPicking.release();
 }
 
 void BatchCircle::setCamera(Camera camera) {
     camera.zoom(0.001f);
+    m_viewMatrix = camera.getViewMatrix();
+
     m_program.bind();
-    m_program.setUniformValue(m_viewMatrixLoc, camera.getViewMatrix());
+    m_program.setUniformValue(m_viewMatrixLoc, m_viewMatrix);
+    this->sendUniformsPlaneFrustum();
     m_program.release();
 
-//    m_programPicking.bind();
-//    m_programPicking.setUniformValue(m_viewMatrixPickingLoc, camera.getViewMatrix());
-//    m_programPicking.release();
+    m_programPicking.bind();
+    m_programPicking.setUniformValue(m_viewMatrixPickingLoc, camera.getViewMatrix());
+    this->sendUniformsPlaneFrustum(true);
+    m_programPicking.release();
 }
 
 void BatchCircle::setInvViewport(float x, float y) {
@@ -127,9 +145,9 @@ void BatchCircle::setInvViewport(float x, float y) {
     windowMatrix.translate(1.0f, 1.0f);
     m_program.bind();
     m_program.setUniformValue(m_windowMatrixLoc, windowMatrix);
-//    m_programPicking.bind();
-//    m_programPicking.setUniformValue(m_invViewportPickingLoc, x, y);
-//    m_programPicking.release();
+    m_programPicking.bind();
+    m_programPicking.setUniformValue(m_invViewportPickingLoc, x, y);
+    m_programPicking.release();
 }
 
 void BatchCircle::updateData() {
@@ -223,4 +241,40 @@ int BatchCircle::renderOrder() {
 
 int BatchCircle::pickingOrder() {
     return 0;
+}
+
+QVector4D BatchCircle::planeOf(const QVector3D& p0, const QVector3D& p1, const QVector3D& p2, QMatrix4x4 const& invProjView) {
+    QVector4D pt0 = invProjView * QVector4D(p0, 1.0);
+    QVector4D pt1 = invProjView * QVector4D(p1, 1.0);
+    QVector4D pt2 = invProjView * QVector4D(p2, 1.0);
+    pt0 /= pt0.w();
+    pt1 /= pt1.w();
+    pt2 /= pt2.w();
+    QVector3D normal = QVector3D::crossProduct(pt1.toVector3D() - pt0.toVector3D(), pt2.toVector3D() - pt0.toVector3D());
+    normal.normalize();
+    QVector4D plane = normal.toVector4D();
+    plane.setW(-QVector3D::dotProduct(normal, pt0.toVector3D()));
+    return plane;
+}
+
+void BatchCircle::sendUniformsPlaneFrustum(bool picking) {
+    QMatrix4x4 inverseProjView = (m_projMatrix * m_viewMatrix).inverted();
+    QVector3D mmm { -1, -1, -1 };
+    QVector3D mmp { -1, -1, +1 };
+    QVector3D mpp { -1, +1, +1 };
+    QVector3D pmm { +1, -1, -1 };
+    QVector3D pmp { +1, -1, +1 };
+    QVector3D ppm { +1, +1, -1 };
+    QVector3D ppp { +1, +1, +1 };
+    if (picking) {
+        m_programPicking.setUniformValue(m_leftPlanePickingLoc, BatchCircle::planeOf(mmp, mmm, mpp, inverseProjView));
+        m_programPicking.setUniformValue(m_rightPlanePickingLoc, BatchCircle::planeOf(pmp, ppp, pmm, inverseProjView));
+        m_programPicking.setUniformValue(m_topPlanePickingLoc, BatchCircle::planeOf(ppp, mpp, ppm, inverseProjView));
+        m_programPicking.setUniformValue(m_bottomPlanePickingLoc, BatchCircle::planeOf(pmp, pmm, mmp, inverseProjView));
+    } else {
+        m_program.setUniformValue(m_leftPlaneLoc, BatchCircle::planeOf(mmp, mmm, mpp, inverseProjView));
+        m_program.setUniformValue(m_rightPlaneLoc, BatchCircle::planeOf(pmp, ppp, pmm, inverseProjView));
+        m_program.setUniformValue(m_topPlaneLoc, BatchCircle::planeOf(ppp, mpp, ppm, inverseProjView));
+        m_program.setUniformValue(m_bottomPlaneLoc, BatchCircle::planeOf(pmp, pmm, mmp, inverseProjView));
+    }
 }

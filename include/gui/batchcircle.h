@@ -30,6 +30,8 @@ public:
 
 private:
     void addVertexCircle(QVector3D const& center, float radius, QVector3D const& xAxis, QVector3D const& yAxis, QVector3D const& color, float ID);
+    void sendUniformsPlaneFrustum(bool picking = false);
+    static QVector4D planeOf(QVector3D const& pt0, QVector3D const& pt1, QVector3D const& pt2, QMatrix4x4 const& invProjView);
 
 private:
     QVector<float> m_data;
@@ -44,13 +46,25 @@ private:
     int m_projMatrixLoc = 0;
     int m_viewMatrixLoc = 0;
     int m_windowMatrixLoc = 0;
+    int m_leftPlaneLoc = 0;
+    int m_rightPlaneLoc = 0;
+    int m_topPlaneLoc = 0;
+    int m_bottomPlaneLoc = 0;
+
     int m_projMatrixPickingLoc = 0;
     int m_viewMatrixPickingLoc = 0;
     int m_invViewportPickingLoc = 0;
+    int m_leftPlanePickingLoc = 0;
+    int m_rightPlanePickingLoc = 0;
+    int m_topPlanePickingLoc = 0;
+    int m_bottomPlanePickingLoc = 0;
 
     QVector<gui::Circle> m_circles;
 
     int m_selectedCircle = 0;
+
+    QMatrix4x4 m_projMatrix;
+    QMatrix4x4 m_viewMatrix;
 };
 
 

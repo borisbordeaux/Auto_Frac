@@ -10,7 +10,7 @@
 
 GLView::GLView(Polytopal2DWindow* parent) :
         QOpenGLWidget(parent),
-        m_camera(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.006f, 250.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)),
+        m_camera(QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f), 8.0f, 0.0051f, 250.0f, qDegreesToRadians(90.0f), qDegreesToRadians(0.0f)),
         m_cameraBeforeAnim(m_camera),
         m_label(this),
         m_mainWindow(parent) {

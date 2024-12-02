@@ -7,8 +7,6 @@ in vec3 vecColor[];
 
 out vec3 vecCol;
 
-uniform mat4 projMatrix;
-uniform mat4 mvMatrix;
 uniform vec2 invViewport;
 
 void main()
