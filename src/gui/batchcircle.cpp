@@ -56,10 +56,6 @@ void BatchCircle::init() {
     m_programPicking.addShaderFromSourceFile(QOpenGLShader::TessellationEvaluation, "../shaders/circles/picking/tes.glsl");
     m_programPicking.addShaderFromSourceFile(QOpenGLShader::Geometry, "../shaders/circles/picking/gs.glsl");
     m_programPicking.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/circles/picking/fs.glsl");
-    m_programPicking.bindAttributeLocation("vertex", 0);
-    m_programPicking.bindAttributeLocation("color", 1);
-    m_programPicking.bindAttributeLocation("ID", 2);
-    m_programPicking.bindAttributeLocation("isSelected", 3);
     m_programPicking.link();
 
     //get location of uniforms
@@ -67,11 +63,11 @@ void BatchCircle::init() {
     m_projMatrixPickingLoc = m_programPicking.uniformLocation("projMatrix");
     m_viewMatrixPickingLoc = m_programPicking.uniformLocation("mvMatrix");
     m_invViewportPickingLoc = m_programPicking.uniformLocation("invViewport");
-    m_windowMatrixPickingLoc = m_program.uniformLocation("windowMatrix");
-    m_leftPlanePickingLoc = m_program.uniformLocation("leftPlane");
-    m_rightPlanePickingLoc = m_program.uniformLocation("rightPlane");
-    m_topPlanePickingLoc = m_program.uniformLocation("topPlane");
-    m_bottomPlanePickingLoc = m_program.uniformLocation("bottomPlane");
+    m_windowMatrixPickingLoc = m_programPicking.uniformLocation("windowMatrix");
+    m_leftPlanePickingLoc = m_programPicking.uniformLocation("leftPlane");
+    m_rightPlanePickingLoc = m_programPicking.uniformLocation("rightPlane");
+    m_topPlanePickingLoc = m_programPicking.uniformLocation("topPlane");
+    m_bottomPlanePickingLoc = m_programPicking.uniformLocation("bottomPlane");
 }
 
 void BatchCircle::update() {
