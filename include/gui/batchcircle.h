@@ -54,6 +54,7 @@ private:
     int m_projMatrixPickingLoc = 0;
     int m_viewMatrixPickingLoc = 0;
     int m_invViewportPickingLoc = 0;
+    int m_windowMatrixPickingLoc = 0;
     int m_leftPlanePickingLoc = 0;
     int m_rightPlanePickingLoc = 0;
     int m_topPlanePickingLoc = 0;

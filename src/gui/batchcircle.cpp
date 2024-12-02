@@ -67,6 +67,7 @@ void BatchCircle::init() {
     m_projMatrixPickingLoc = m_programPicking.uniformLocation("projMatrix");
     m_viewMatrixPickingLoc = m_programPicking.uniformLocation("mvMatrix");
     m_invViewportPickingLoc = m_programPicking.uniformLocation("invViewport");
+    m_windowMatrixPickingLoc = m_program.uniformLocation("windowMatrix");
     m_leftPlanePickingLoc = m_program.uniformLocation("leftPlane");
     m_rightPlanePickingLoc = m_program.uniformLocation("rightPlane");
     m_topPlanePickingLoc = m_program.uniformLocation("topPlane");
@@ -117,7 +118,7 @@ void BatchCircle::setProjection(QMatrix4x4 matrix) {
     m_program.release();
 
     m_programPicking.bind();
-    m_programPicking.setUniformValue(m_projMatrixPickingLoc, matrix);
+    m_programPicking.setUniformValue(m_projMatrixPickingLoc, m_projMatrix);
     this->sendUniformsPlaneFrustum(true);
     m_programPicking.release();
 }
@@ -132,7 +133,7 @@ void BatchCircle::setCamera(Camera camera) {
     m_program.release();
 
     m_programPicking.bind();
-    m_programPicking.setUniformValue(m_viewMatrixPickingLoc, camera.getViewMatrix());
+    m_programPicking.setUniformValue(m_viewMatrixPickingLoc, m_viewMatrix);
     this->sendUniformsPlaneFrustum(true);
     m_programPicking.release();
 }
@@ -145,8 +146,10 @@ void BatchCircle::setInvViewport(float x, float y) {
     windowMatrix.translate(1.0f, 1.0f);
     m_program.bind();
     m_program.setUniformValue(m_windowMatrixLoc, windowMatrix);
+    m_program.release();
     m_programPicking.bind();
     m_programPicking.setUniformValue(m_invViewportPickingLoc, x, y);
+    m_programPicking.setUniformValue(m_windowMatrixPickingLoc, windowMatrix);
     m_programPicking.release();
 }
 
