@@ -18,9 +18,7 @@ GLView::GLView(Polytopal2DWindow* parent) :
     this->setAcceptDrops(true);
     m_label.setText("Hello world");
     m_label.setStyleSheet("QLabel { background-color : white; color : black; }");
-    m_prevTime = QDateTime::currentDateTime();
-    m_currentTime = QDateTime::currentDateTime();
-    connect(this, &GLView::frameSwapped, this, &GLView::computeFrameRate);
+    m_lastEnd = std::chrono::high_resolution_clock::now();
 }
 
 void GLView::initializeGL() {
@@ -93,7 +91,15 @@ void GLView::paintGL() {
         item->render(PickingType::PickingNone);
     }
 
-    //this->computeFrameRate();
+    std::chrono::time_point end = std::chrono::high_resolution_clock::now();
+    long timems = std::chrono::duration_cast<std::chrono::milliseconds>(end - m_lastEnd).count();
+
+    QString fps = QString::number(static_cast<int>(1.0f / (static_cast<float>(timems) / 1000.f)));
+    QString ms = QString::number((static_cast<float>(timems)));
+
+    m_label.setText(fps + " fps / " + ms + " ms");
+    m_label.adjustSize();
+    m_lastEnd = std::chrono::high_resolution_clock::now();
 }
 
 void GLView::resizeGL(int w, int h) {
@@ -114,7 +120,7 @@ void GLView::mousePressEvent(QMouseEvent* event) {
         m_cameraBeforeAnim = m_camera;
         m_timerAnimCamera.start();
     }
-    m_prevTime = QDateTime::currentDateTime();
+    m_lastEnd = std::chrono::high_resolution_clock::now();
 }
 
 void GLView::mouseMoveEvent(QMouseEvent* event) {
@@ -605,19 +611,4 @@ void GLView::restoreMeshColor() {
 void GLView::enableCullFace(bool enable) {
     m_cullFace = enable;
     m_flagCullFaceChanged = true;
-}
-
-void GLView::computeFrameRate() {
-    m_currentTime = QDateTime::currentDateTime();
-    m_timeDiffMs = static_cast<float>(m_prevTime.msecsTo(m_currentTime));
-    m_counter += 1.0f;
-    if (m_timeDiffMs >= 50.0) { //every 50ms
-        QString fps = QString::number(static_cast<int>(1000.0f / m_timeDiffMs * m_counter));
-        QString ms = QString::number(m_timeDiffMs / m_counter);
-
-        m_label.setText(fps + " fps / " + ms + " ms");
-        m_label.adjustSize();
-        m_prevTime = m_currentTime;
-        m_counter = 0.0f;
-    }
 }

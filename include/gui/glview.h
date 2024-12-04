@@ -40,8 +40,6 @@ public slots:
     void changeMeshColor(QColor const& color);
     void restoreMeshColor();
 
-    void computeFrameRate();
-
 protected:
     // QOpenGLWidget interface
     void initializeGL() override;
@@ -129,10 +127,8 @@ private:
     bool m_cullFace = true;
 
     QLabel m_label;
-    QDateTime m_prevTime;
-    QDateTime m_currentTime;
-    float m_timeDiffMs = 0.0f;
-    float m_counter = 0.0f;
+
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_lastEnd;
 
 public:
     void removeItem(BatchGraphicsItem* item);
