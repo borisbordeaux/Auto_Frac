@@ -7,7 +7,7 @@
 
 he::Face::Face(QString name, he::HalfEdge* halfEdge) : m_name(std::move(name)), m_halfEdge(halfEdge) {}
 
-he::HalfEdge* he::Face::halfEdge() {
+he::HalfEdge* he::Face::halfEdge() const {
     return m_halfEdge;
 }
 
@@ -19,7 +19,7 @@ QString he::Face::name() const {
     return m_name;
 }
 
-QVector3D he::Face::computeNormal() {
+QVector3D he::Face::computeNormal() const {
     //take 3 points of the face
     QVector3D p1 = this->halfEdge()->origin()->pos();
     QVector3D p2 = this->halfEdge()->next()->origin()->pos();
@@ -27,6 +27,18 @@ QVector3D he::Face::computeNormal() {
 
     //then compute the normal of the vectors created using the taken points
     return QVector3D::normal(p2 - p1, p3 - p2);
+}
+
+he::Point3D he::Face::computeNormalD() const {
+    //take 3 points of the face
+    he::Point3D p1 = this->halfEdge()->origin()->posD();
+    he::Point3D p2 = this->halfEdge()->next()->origin()->posD();
+    he::Point3D p3 = this->halfEdge()->next()->next()->origin()->posD();
+
+    //then compute the normal of the vectors created using the taken points
+    he::Point3D normal = he::Point3D::crossProduct(p2 - p1, p3 - p2);
+    normal.normalize();
+    return normal;
 }
 
 std::size_t he::Face::nbEdges() const {
@@ -112,4 +124,13 @@ QString he::Face::userData() const {
 
 void he::Face::setUserData(QString const& data) {
     m_userData = data;
+}
+
+he::Point3D he::Face::computePolar() const {
+    // polar reciprocation : https://en.wikipedia.org/wiki/Dual_polyhedron#Polar_reciprocation
+    he::Point3D n = this->computeNormalD();
+    he::Point3D p = this->halfEdge()->origin()->posD();
+    double d = he::Point3D::dotProduct(n, p);
+    n /= d;
+    return n;
 }

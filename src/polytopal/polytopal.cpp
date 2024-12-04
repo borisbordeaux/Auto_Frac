@@ -148,12 +148,7 @@ std::vector<poly::InversiveCoordinates> poly::computeIlluminatedCirclesDual(he::
     std::vector<poly::InversiveCoordinates> res;
 
     for (he::Face* f: m.faces()) {
-        // polar reciprocation : https://en.wikipedia.org/wiki/Dual_polyhedron#Polar_reciprocation
-        QVector3D n = f->computeNormal();
-        QVector3D p = f->halfEdge()->origin()->pos();
-        float d = QVector3D::dotProduct(n, p);
-        n /= d;
-        res.emplace_back(he::Point3D(n.x(), n.y(), n.z()));
+        res.emplace_back(f->computePolar());
     }
 
     return res;

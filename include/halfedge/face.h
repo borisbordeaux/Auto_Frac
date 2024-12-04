@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QVector3D>
+#include "point3d.h"
 
 namespace he {
 
@@ -22,7 +23,7 @@ public:
      * @brief getter
      * @return the half-edge associated to this Face
      */
-    he::HalfEdge* halfEdge();
+    he::HalfEdge* halfEdge() const;
     /**
      * @brief setter
      * @param halfEdge the half-edge that has to be
@@ -40,7 +41,8 @@ public:
 	 * @brief compute the normal of the face
 	 * @return the normalized normal of the face
 	 */
-    QVector3D computeNormal();
+    QVector3D computeNormal() const;
+    he::Point3D computeNormalD() const;
 
     std::size_t nbEdges() const;
 
@@ -55,6 +57,8 @@ public:
 
     QString userData() const;
     void setUserData(QString const& data);
+
+    he::Point3D computePolar() const;
 
 private:
     QString m_name;
