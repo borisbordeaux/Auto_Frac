@@ -644,7 +644,7 @@ void Polytopal2DWindow::updateEnablementPoly() {
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotOBJOfCircles() {
-    QVector<gui::Circle> circles = m_batchCircle.circles();
+    QVector <gui::Circle> circles = m_batchCircle.circles();
     if (circles.empty()) { return; }
 
     he::Mesh m;
@@ -878,5 +878,27 @@ void Polytopal2DWindow::closeEvent(QCloseEvent* event) {
     } else {
         m_view->removeItem(&m_batchPlane);
     }
+    m_view->update();
+}
+
+[[maybe_unused]] void Polytopal2DWindow::slotDisplayPolar() {
+    if (m_batchDebugLine.containsData()) {
+        m_batchDebugLine.clearDebugLine();
+    } else {
+        std::vector<he::Point3D> vertices;
+        std::vector<std::pair<std::size_t, std::size_t>> segments;
+        for (he::Face const* f: m_mesh.faces()) {
+            vertices.push_back(f->computePolar());
+        }
+        for (he::HalfEdge const* he: m_mesh.halfEdgesNoTwin()) {
+            std::size_t f1 = m_mesh.indexOf(he->face()).value();
+            std::size_t f2 = m_mesh.indexOf(he->twin()->face()).value();
+            segments.emplace_back(f1, f2);
+        }
+        for (std::pair<std::size_t, std::size_t> s: segments) {
+            m_batchDebugLine.addDebugLine(vertices[s.first].toQVector3D(), vertices[s.second].toQVector3D());
+        }
+    }
+    m_batchDebugLine.update();
     m_view->update();
 }

@@ -42,6 +42,7 @@ public:
     [[nodiscard]] QString toString() const;
 
     std::optional<std::size_t> indexOf(he::Vertex* v) const;
+    std::optional<std::size_t> indexOf(he::Face* v) const;
 
     void updateFloatPosFromDoublePos();
     void updateDoublePosFromFloatPos();

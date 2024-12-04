@@ -119,6 +119,15 @@ std::optional<std::size_t> he::Mesh::indexOf(he::Vertex* v) const {
     return {};
 }
 
+std::optional<std::size_t> he::Mesh::indexOf(he::Face* f) const {
+    for (std::size_t i = 0; i < m_faces.size(); i++) {
+        if (m_faces[i] == f) {
+            return i;
+        }
+    }
+    return {};
+}
+
 void he::Mesh::updateFloatPosFromDoublePos() {
     for (he::Vertex* v: m_vertices) {
         v->setPos(v->posD().toQVector3D());

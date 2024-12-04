@@ -18,7 +18,7 @@ void he::HalfEdge::setOrigin(he::Vertex* origin) {
     m_origin = origin;
 }
 
-he::Face* he::HalfEdge::face() {
+he::Face* he::HalfEdge::face() const {
     return m_face;
 }
 
@@ -26,7 +26,7 @@ void he::HalfEdge::setFace(he::Face* face) {
     m_face = face;
 }
 
-he::HalfEdge* he::HalfEdge::twin() {
+he::HalfEdge* he::HalfEdge::twin() const {
     return m_twin;
 }
 

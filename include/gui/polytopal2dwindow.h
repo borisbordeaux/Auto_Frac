@@ -101,6 +101,7 @@ public slots:
     [[maybe_unused]] void slotSphereRenderTypeChanged(int newValue);
     [[maybe_unused]] void slotDisplayProjectionPoint();
     [[maybe_unused]] void slotDisplayPlane();
+    [[maybe_unused]] void slotDisplayPolar();
 
 protected:
     void closeEvent(QCloseEvent* event) override;

@@ -805,6 +805,87 @@
         <property name="sizeConstraint">
          <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
         </property>
+        <item row="1" column="0">
+         <widget class="QCheckBox" name="checkBox_displayMesh">
+          <property name="layoutDirection">
+           <enum>Qt::LayoutDirection::LeftToRight</enum>
+          </property>
+          <property name="text">
+           <string>Mesh</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QCheckBox" name="checkBox_cullFace">
+          <property name="text">
+           <string>Cull Faces</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QCheckBox" name="checkBox_displayPlane">
+          <property name="text">
+           <string>Plane</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QCheckBox" name="checkBox_darkTheme">
+          <property name="layoutDirection">
+           <enum>Qt::LayoutDirection::LeftToRight</enum>
+          </property>
+          <property name="text">
+           <string>Dark theme</string>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QComboBox" name="comboBox_sphereRenderType">
+          <property name="currentText">
+           <string>ILLUMINATED</string>
+          </property>
+          <property name="currentIndex">
+           <number>1</number>
+          </property>
+          <item>
+           <property name="text">
+            <string>TRANSPARENT</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>ILLUMINATED</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>NONE</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QCheckBox" name="checkBox_displayProjectionPoint">
+          <property name="text">
+           <string>Proj point</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="0">
          <widget class="QCheckBox" name="checkBox_displayUnitSphere">
           <property name="layoutDirection">
@@ -840,84 +921,10 @@
           </item>
          </widget>
         </item>
-        <item row="2" column="0">
-         <widget class="QCheckBox" name="checkBox_darkTheme">
-          <property name="layoutDirection">
-           <enum>Qt::LayoutDirection::LeftToRight</enum>
-          </property>
+        <item row="4" column="0">
+         <widget class="QPushButton" name="pushButton">
           <property name="text">
-           <string>Dark theme</string>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QCheckBox" name="checkBox_displayMesh">
-          <property name="layoutDirection">
-           <enum>Qt::LayoutDirection::LeftToRight</enum>
-          </property>
-          <property name="text">
-           <string>Mesh</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QComboBox" name="comboBox_sphereRenderType">
-          <property name="currentText">
-           <string>ILLUMINATED</string>
-          </property>
-          <property name="currentIndex">
-           <number>1</number>
-          </property>
-          <item>
-           <property name="text">
-            <string>TRANSPARENT</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>ILLUMINATED</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>NONE</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QCheckBox" name="checkBox_cullFace">
-          <property name="text">
-           <string>Cull Faces</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QCheckBox" name="checkBox_displayProjectionPoint">
-          <property name="text">
-           <string>Proj point</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QCheckBox" name="checkBox_displayPlane">
-          <property name="text">
-           <string>Plane</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
+           <string>Polar</string>
           </property>
          </widget>
         </item>
@@ -1180,7 +1187,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1214</x>
-     <y>472</y>
+     <y>458</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1196,7 +1203,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1214</x>
-     <y>500</y>
+     <y>486</y>
     </hint>
     <hint type="destinationlabel">
      <x>4</x>
@@ -1340,7 +1347,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1214</x>
-     <y>528</y>
+     <y>514</y>
     </hint>
     <hint type="destinationlabel">
      <x>1751</x>
@@ -1484,7 +1491,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1340</x>
-     <y>473</y>
+     <y>459</y>
     </hint>
     <hint type="destinationlabel">
      <x>1750</x>
@@ -1548,7 +1555,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1340</x>
-     <y>500</y>
+     <y>486</y>
     </hint>
     <hint type="destinationlabel">
      <x>1835</x>
@@ -1564,7 +1571,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1340</x>
-     <y>529</y>
+     <y>515</y>
     </hint>
     <hint type="destinationlabel">
      <x>1833</x>
@@ -1580,7 +1587,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>1214</x>
-     <y>556</y>
+     <y>542</y>
     </hint>
     <hint type="destinationlabel">
      <x>1837</x>
@@ -1595,12 +1602,28 @@
    <slot>slotDisplayPlane()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1269</x>
-     <y>548</y>
+     <x>1340</x>
+     <y>542</y>
     </hint>
     <hint type="destinationlabel">
      <x>1840</x>
      <y>775</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Polytopal2DWindow</receiver>
+   <slot>slotDisplayPolar()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1183</x>
+     <y>552</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1316</x>
+     <y>-3</y>
     </hint>
    </hints>
   </connection>
@@ -1637,5 +1660,6 @@
   <slot>slotSphereRenderTypeChanged(int)</slot>
   <slot>slotDisplayProjectionPoint()</slot>
   <slot>slotDisplayPlane()</slot>
+  <slot>slotDisplayPolar()</slot>
  </slots>
 </ui>

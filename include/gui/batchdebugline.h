@@ -21,6 +21,8 @@ public:
     int renderOrder() override;
     int pickingOrder() override;
 
+    bool containsData() const { return m_count != 0; }
+
 private:
     QVector<float> m_data;
     int m_count = 0;

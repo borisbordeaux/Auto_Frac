@@ -33,7 +33,7 @@ public:
      * @brief getter
      * @return the face of this half-edge
      */
-    he::Face* face();
+    he::Face* face() const;
 
     /**
      * @brief setter
@@ -45,7 +45,7 @@ public:
      * @brief getter
      * @return the twin half-edge of this half-edge
      */
-    HalfEdge* twin();
+    HalfEdge* twin() const;
 
     /**
      * @brief setter
