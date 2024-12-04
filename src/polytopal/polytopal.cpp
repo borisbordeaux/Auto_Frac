@@ -27,15 +27,6 @@ he::Point3D closestPoint(he::Point3D const& B, he::Point3D const& C) {
     }
 }
 
-QVector3D closestPoint(QVector3D const& p1, QVector3D const& p2) {
-    QVector3D u = p2 - p1;
-    u.normalize();
-    QVector3D ba = -p1;
-
-    QVector3D BH = u * QVector3D::dotProduct(ba, u);
-    return p1 + BH;
-}
-
 he::Point3D barycenter(std::vector<he::Vertex*> const& positions) {
     he::Point3D res { 0, 0, 0 };
     for (he::Vertex* v: positions) {
@@ -133,12 +124,6 @@ void recenter(he::Mesh& m) {
         v->setPosD(v->posD() - barycenter);
     }
 }
-
-void projectToPlan(QVector3D& point) {
-    point.setX(point.x() / (1.0f - point.z()));
-    point.setY(point.y() / (1.0f - point.z()));
-    point.setZ(0.0f);
-}
 } //end anonymous namespace for local functions
 
 void poly::canonicalizeMesh(he::Mesh& m, int steps, double d, bool recenterMesh) {
@@ -163,20 +148,12 @@ std::vector<poly::InversiveCoordinates> poly::computeIlluminatedCirclesDual(he::
     std::vector<poly::InversiveCoordinates> res;
 
     for (he::Face* f: m.faces()) {
-        std::vector<he::HalfEdge*> allHE = f->allHalfEdges();
-        if (allHE.size() > 2) {
-            QVector3D v1 = closestPoint(allHE[0]->origin()->pos(), allHE[0]->next()->origin()->pos());
-            QVector3D v2 = closestPoint(allHE[1]->origin()->pos(), allHE[1]->next()->origin()->pos());
-            QVector3D v3 = closestPoint(allHE[2]->origin()->pos(), allHE[2]->next()->origin()->pos());
-
-            //always project to plan
-            projectToPlan(v1);
-            projectToPlan(v2);
-            projectToPlan(v3);
-
-            gui::Circle c { v1, v2, v3 };
-            res.push_back(c.getInversiveCoordinates());
-        }
+        // polar reciprocation : https://en.wikipedia.org/wiki/Dual_polyhedron#Polar_reciprocation
+        QVector3D n = f->computeNormal();
+        QVector3D p = f->halfEdge()->origin()->pos();
+        float d = QVector3D::dotProduct(n, p);
+        n /= d;
+        res.emplace_back(he::Point3D(n.x(), n.y(), n.z()));
     }
 
     return res;
