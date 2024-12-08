@@ -19,6 +19,25 @@ GLView::GLView(Polytopal2DWindow* parent) :
     m_label.setText("Hello world");
     m_label.setStyleSheet("QLabel { background-color : white; color : black; }");
     m_lastEnd = std::chrono::high_resolution_clock::now();
+
+    connect(this, &GLView::frameSwapped, this, [&]() {
+        std::chrono::time_point end = std::chrono::high_resolution_clock::now();
+        long timeMicroSec = std::chrono::duration_cast<std::chrono::microseconds>(end - m_lastEnd).count();
+        long timeMilliSec = std::chrono::duration_cast<std::chrono::milliseconds>(end - m_lastEnd).count();
+
+        QString fps, frameTime;
+        if (timeMicroSec > 1000) { //if more than 1 millisecond
+            fps = QString::number(static_cast<int>(1.0f / (static_cast<float>(timeMilliSec) / 1000.f))) + " fps / ";
+            frameTime = QString::number(timeMilliSec) + " ms";
+        } else { //if less than 1 millisecond, use microseconds
+            fps = QString::number(static_cast<int>(1.0f / (static_cast<float>(timeMicroSec) / 1000000.f))) + " fps / ";
+            frameTime = QString::number(timeMicroSec) + " us";
+        }
+
+        m_label.setText(fps + frameTime);
+        m_label.adjustSize();
+        m_lastEnd = std::chrono::high_resolution_clock::now();
+    });
 }
 
 void GLView::initializeGL() {
@@ -90,16 +109,6 @@ void GLView::paintGL() {
     for (BatchGraphicsItem* item: m_items) {
         item->render(PickingType::PickingNone);
     }
-
-    std::chrono::time_point end = std::chrono::high_resolution_clock::now();
-    long timems = std::chrono::duration_cast<std::chrono::milliseconds>(end - m_lastEnd).count();
-
-    QString fps = QString::number(static_cast<int>(1.0f / (static_cast<float>(timems) / 1000.f)));
-    QString ms = QString::number((static_cast<float>(timems)));
-
-    m_label.setText(fps + " fps / " + ms + " ms");
-    m_label.adjustSize();
-    m_lastEnd = std::chrono::high_resolution_clock::now();
 }
 
 void GLView::resizeGL(int w, int h) {
