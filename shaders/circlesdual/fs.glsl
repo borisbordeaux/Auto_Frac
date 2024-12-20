@@ -6,8 +6,8 @@ in float distance;
 out vec4 fragColor;
 
 void main() {
-    float dashSize = 5.0;
-    float gapSize = 5.0;
+    float dashSize = 10.0;
+    float gapSize = 10.0;
     if (fract(distance / (dashSize + gapSize)) > dashSize/(dashSize + gapSize)) {
         discard;
     }

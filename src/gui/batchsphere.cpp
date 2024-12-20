@@ -40,9 +40,11 @@ void BatchSphere::init() {
     m_cameraPosLoc = m_program.uniformLocation("cameraPosition");
     m_nbVerticesLoc = m_program.uniformLocation("nbVertices");
     m_renderTypeLoc = m_program.uniformLocation("renderType");
+    m_displayNorthLoc = m_program.uniformLocation("displayNorth");
 
     this->updateMeshData({});
     this->setCircleRenderType(CircleRenderType::ILLUMINATED);
+    this->setDisplayNorth(true);
 }
 
 void BatchSphere::update() {
@@ -200,6 +202,12 @@ void BatchSphere::setCircleRenderType(CircleRenderType type) {
             glUniform1i(m_renderTypeLoc, 2);
             break;
     }
+    m_program.release();
+}
+
+void BatchSphere::setDisplayNorth(bool display) {
+    m_program.bind();
+    glUniform1ui(m_displayNorthLoc, display ? 1 : 0);
     m_program.release();
 }
 

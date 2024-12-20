@@ -39,7 +39,6 @@ Polytopal2DWindow::Polytopal2DWindow(QWidget* parent) :
     he::Mesh sphereMesh;
     he::reader::readOBJ("../obj/unit_sphere.obj", sphereMesh);
     m_batchSphere.setSphereMesh(std::move(sphereMesh));
-    m_batchVertex.setProjectionPoint(true);
 
     m_view->addItem(&m_batchSkybox);
     m_view->addItem(&m_batchSphere);
@@ -156,10 +155,8 @@ void Polytopal2DWindow::openOBJFile(QString const& file) {
 [[maybe_unused]] void Polytopal2DWindow::slotDisplayUnitSphereChanged() {
     if (this->ui->checkBox_displayUnitSphere->isChecked()) {
         m_view->addItem(&m_batchSphere);
-        m_batchVertex.setProjectionPoint(this->ui->checkBox_displayProjectionPoint->isChecked());
     } else {
         m_view->removeItem(&m_batchSphere);
-        m_batchVertex.setProjectionPoint(false);
     }
     m_view->update();
 }
@@ -258,13 +255,11 @@ void Polytopal2DWindow::canonicalizeStep() {
     if (this->ui->checkBox_displayMesh->isChecked()) {
         m_view->addItem(&m_batchFace);
         m_view->addItem(&m_batchEdge);
-        //always in scene
-        m_batchVertex.setDisplayMesh(true);
+        m_view->addItem(&m_batchVertex);
     } else {
         m_view->removeItem(&m_batchFace);
         m_view->removeItem(&m_batchEdge);
-        //always in scene
-        m_batchVertex.setDisplayMesh(false);
+        m_view->removeItem(&m_batchVertex);
     }
     m_view->update();
 }
@@ -644,7 +639,7 @@ void Polytopal2DWindow::updateEnablementPoly() {
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotOBJOfCircles() {
-    QVector <gui::Circle> circles = m_batchCircle.circles();
+    QVector<gui::Circle> circles = m_batchCircle.circles();
     if (circles.empty()) { return; }
 
     he::Mesh m;
@@ -868,7 +863,7 @@ void Polytopal2DWindow::closeEvent(QCloseEvent* event) {
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotDisplayProjectionPoint() {
-    m_batchVertex.setProjectionPoint(this->ui->checkBox_displayProjectionPoint->isChecked() && this->ui->checkBox_displayUnitSphere->isChecked());
+    m_batchSphere.setDisplayNorth(this->ui->checkBox_displayProjectionPoint->isChecked());
     m_view->update();
 }
 

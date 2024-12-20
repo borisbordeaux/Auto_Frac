@@ -56,17 +56,14 @@ void BatchVertex::updateData() {
     m_count = 0;
     m_data.clear();
 
-    //the number of vertices of the mesh plus the projection point on sphere
-    qsizetype nbOfVertices = (m_mesh != nullptr ? static_cast<qsizetype>(m_mesh->vertices().size()) : 0) + 1;
+    //the number of vertices of the mesh
+    qsizetype nbOfVertices = (m_mesh != nullptr ? static_cast<qsizetype>(m_mesh->vertices().size()) : 0);
 
     //for each vertex, there is 1 add
     qsizetype nbOfAdd = 1 * nbOfVertices;
 
     //we resize the data for rapidity
     m_data.resize(nbOfAdd * m_floatsPerVertex);
-
-    //the projection point
-    this->addVertex({ 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, 0.0f);
 
     int ID = 1;
 
@@ -85,27 +82,17 @@ void BatchVertex::updateData() {
 }
 
 void BatchVertex::render(PickingType type) {
-    if (!m_displayMesh && !m_displayProjectionPoint) { return; }
     switch (type) {
         case PickingType::PickingVertex:
-            if (!m_displayMesh) { return; }
             m_programPicking.bind();
             m_vao.bind();
-            glDrawArrays(GL_POINTS, 1, m_count / m_floatsPerVertex - 1);
+            glDrawArrays(GL_POINTS, 0, m_count / m_floatsPerVertex);
             m_programPicking.release();
             break;
         case PickingType::PickingNone:
             m_program.bind();
             m_vao.bind();
-            if (m_displayMesh && !m_displayProjectionPoint) {
-                glDrawArrays(GL_POINTS, 1, m_count / m_floatsPerVertex - 1);
-            }
-            if (!m_displayMesh && m_displayProjectionPoint) {
-                glDrawArrays(GL_POINTS, 0, 1);
-            }
-            if (m_displayMesh && m_displayProjectionPoint) {
-                glDrawArrays(GL_POINTS, 0, m_count / m_floatsPerVertex);
-            }
+            glDrawArrays(GL_POINTS, 0, m_count / m_floatsPerVertex);
             m_program.release();
             break;
         case PickingType::PickingFace:
@@ -140,18 +127,9 @@ void BatchVertex::setCamera(Camera camera) {
 
 void BatchVertex::setMesh(he::Mesh* mesh) {
     m_mesh = mesh;
-    m_displayMesh = true;
     m_selectedVertex = 0;
     m_selectedVertex2 = 0;
     this->updateData();
-}
-
-void BatchVertex::setProjectionPoint(bool displayed) {
-    m_displayProjectionPoint = displayed;
-}
-
-void BatchVertex::setDisplayMesh(bool displayed) {
-    m_displayMesh = displayed;
 }
 
 void BatchVertex::setSelectedVertex(int vertexIndex) {

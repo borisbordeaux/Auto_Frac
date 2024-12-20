@@ -37,6 +37,7 @@ public:
     void updateMeshData(std::vector<poly::InversiveCoordinates> const& circles);
 
     void setCircleRenderType(CircleRenderType type);
+    void setDisplayNorth(bool render);
 
     int renderOrder() override;
     int pickingOrder() override;
@@ -52,6 +53,7 @@ private:
     int m_viewMatrixLoc = 0;
     int m_lightPosLoc = 0;
     int m_cameraPosLoc = 0;
+    int m_displayNorthLoc = 0;
 
     int m_renderTypeLoc = 0;
     int m_nbVerticesLoc = 0;

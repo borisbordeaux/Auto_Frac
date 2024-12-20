@@ -22,8 +22,6 @@ public:
     void setCamera(Camera camera) override;
 
     void setMesh(he::Mesh* mesh);
-    void setProjectionPoint(bool displayed);
-    void setDisplayMesh(bool displayed);
 
     void setSelectedVertex(int vertexIndex);
     void setSelectedVertex2(int vertexIndex);
@@ -53,8 +51,6 @@ private:
     int m_viewMatrixPickingLoc = 0;
 
     he::Mesh* m_mesh = nullptr;
-    bool m_displayProjectionPoint = true;
-    bool m_displayMesh = false;
     int m_selectedVertex = 0;
     int m_selectedVertex2 = 0;
 };

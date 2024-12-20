@@ -6,6 +6,7 @@ out vec4 fragColor;
 
 uniform vec3 lightPos;
 uniform vec3 cameraPosition;
+uniform uint displayNorth;
 
 // 0 : transparent
 // 1 : illuminated regions
@@ -37,6 +38,13 @@ float checkInCircle(bool testAll) {
 }
 
 void main() {
+    if (displayNorth != 0) {
+        if (length(normalize(vertPos) - vec3(0.0, 0.0, 1.0)) < 0.02) {
+            fragColor = vec4(1.0, 0.0, 0.0, 1.0);
+            return;
+        }
+    }
+
     vec3 color = vec3(0.5);
 
     if (renderType == 0) {
