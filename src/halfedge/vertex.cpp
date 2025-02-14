@@ -68,7 +68,7 @@ std::vector<he::Face*> he::Vertex::getAllFacesAroundVertex(he::Face* f) const {
         if (face != nullptr) {
             facesAroundVertex.push_back(face);
         }
-        nxt = nxt->twin()->next();
+        nxt = nxt->prev()->twin();
     } while (nxt != h);
 
     if (f == nullptr) {

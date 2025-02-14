@@ -68,19 +68,20 @@ std::vector<poly::Face> poly::Face::subdivisions() const {
         }
 
         // incidence constraints
-        for (std::size_t i = 0; i < res.size(); ++i) { //for each fractal face subdivisions
-            for (std::size_t j = 0; j < res[i].constData().size(); ++j) { //for each edge of one subdivision
-                for (std::size_t k = 0; k < this->m_edges.size(); ++k) { //for each edge of current face
-                    //get all faces around vertex, with current face the last in the list
-                    std::vector<he::Face*> orderedFacesAroundVertex = this->m_edges[k].HEVertex()->getAllFacesAroundVertex(this->m_face);
-
-                    //for each face that is around vertex
-                    for (std::size_t l = 0; l < orderedFacesAroundVertex.size() - 1; ++l) {
-                        //if the sub-face is the l-th face around vertex
-                        if (res[i].m_face == orderedFacesAroundVertex[l]) {
-                            //need to test if the vertices edges are the same
-                            if (res[i].m_edges[j].HEVertex() == this->m_edges[k].HEVertex()) {
-                                addIncidenceConstraint(*this, k, orderedFacesAroundVertex.size() - 2 - l, j, i);
+        for (std::size_t i = 0; i < m_edges.size(); i++) {
+            poly::Edge e1 = m_edges[i];
+            he::Vertex* polyV1 = e1.HEVertex();
+            for (std::size_t j = 0; j < res.size(); j++) {
+                Face const& f1 = res[j];
+                he::Face* polyF1 = f1.m_face;
+                for (std::size_t k = 0; k < f1.m_edges.size(); k++) {
+                    poly::Edge const& e2 = f1.m_edges[k];
+                    he::Vertex* polyV2 = e2.HEVertex();
+                    if (polyV1 == polyV2) {
+                        std::vector<he::Face*> list = polyV1->getAllFacesAroundVertex(m_face);
+                        for (std::size_t l = 0; l < list.size() - 1; l++) {
+                            if (polyF1 == list[l]) {
+                                addIncidenceConstraint(*this, i, l, j, k);
                             }
                         }
                     }
@@ -118,6 +119,7 @@ bool poly::Face::operator==(const poly::Face& other) const {
         return false;
     }
     return this->m_edges == other.m_edges;
+    //return this->m_face == other.m_face;
 }
 
 poly::Edge const& poly::Face::operator[](std::size_t index) const {
@@ -146,7 +148,7 @@ void poly::Face::addAdjacencyConstraint(const poly::Face& face, unsigned int ind
     s_adjacencyConstraints[face.name()] += "    " + face.name() + "(Sub('" + std::to_string(s1) + "') + Bord('" + std::to_string(b1) + "') + Bord('1'), Sub('" + std::to_string(s2) + "') + Bord('" + std::to_string(b2) + "') + Bord('1'))\n";
 }
 
-void poly::Face::addIncidenceConstraint(const poly::Face& face, unsigned int indexParentEdge, unsigned int indexSubEdge, unsigned int indexSubFaceEdge, unsigned int indexSubFace) {
+void poly::Face::addIncidenceConstraint(const poly::Face& face, unsigned int indexParentEdge, unsigned int indexSubEdge, unsigned int indexSubFace, unsigned int indexSubFaceEdge) {
     if (s_incidenceConstraints.find(face.name()) == std::end(Face::s_incidenceConstraints)) {
         s_incidenceConstraints[face.name()] = "";
     }

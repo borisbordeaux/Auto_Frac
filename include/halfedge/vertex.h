@@ -73,7 +73,7 @@ public:
 
     /**
      * @param f if given, the face to be in last
-     * @return all faces around the vertex (ordered to have the given face in last if applicable)
+     * @return all faces around the vertex in CCW order (ordered to have the given face in last if applicable)
      */
     [[nodiscard]] std::vector<he::Face*> getAllFacesAroundVertex(he::Face* f = nullptr) const;
 
