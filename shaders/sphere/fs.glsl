@@ -54,10 +54,10 @@ void main() {
         }
     } else if (renderType == 1) {
         // illuminated regions
-        color -= checkInCircle(true) * vec3(0.05);
+        color += checkInCircle(true) * vec3(0.15);
     }
 
-    vec3 ambientColor = 0.7 * color.rgb;
+    vec3 ambientColor = 0.6 * color.rgb;
     vec3 diffuseColor = color.rgb;
     vec3 specularColor = vec3(0.2);
 
@@ -70,12 +70,12 @@ void main() {
 
     float specular = 0.0;
 
-    if (renderType != 0 && lambertian > 0.0) {
+    if (lambertian > 0.0) {
         vec3 R = reflect(-L, N);      // Reflected light vector
         vec3 V = normalize(cameraPosition - vertPos); // Vector to viewer
         // Compute the specular term
         float specAngle = max(dot(R, V), 0.0);
-        specular = pow(specAngle, 1.0);
+        specular = pow(specAngle, 5.0);
     }
 
     fragColor = vec4(ambientColor + lambertian * diffuseColor + specular * specularColor, 1.0);
