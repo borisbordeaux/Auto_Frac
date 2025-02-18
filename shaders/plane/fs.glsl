@@ -31,13 +31,17 @@ float checkInCircle() {
 }
 
 void main() {
-    vec3 color = vec3(0.95);
-
-    float nb = checkInCircle();
-    if (nb < 0.5){
+    if (nbVertices == 0) {
         discard;
     }
-    color -= nb * vec3(0.05);
+
+    vec3 color = vec3(0.8);
+
+    float nb = checkInCircle();
+    if (nb > 0.5){
+        discard;
+    }
+    //color -= nb * vec3(0.05);
 
     fragColor = vec4(color, 1.0);
 }
