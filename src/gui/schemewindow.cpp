@@ -92,10 +92,10 @@ bool SchemeWindow::isValidForStructure(frac::Structure const& structure) const {
 std::vector<std::vector<frac::Point2D>> SchemeWindow::coordinates() const {
     float scale = 0.01f;
     std::vector<std::vector<frac::Point2D>> result;
-    for(std::vector<QPointF> const& facesCoords : m_coordinates){
+    for (std::vector<QPointF> const& facesCoords: m_coordinates) {
         result.emplace_back();
-        for(QPointF const& p : facesCoords){
-            result[result.size()-1].emplace_back(p.x()*scale, p.y()*scale);
+        for (QPointF const& p: facesCoords) {
+            result[result.size() - 1].emplace_back(p.x() * scale, p.y() * scale);
         }
     }
     return result;
@@ -343,7 +343,7 @@ void SchemeWindow::localDistributionFace(std::size_t indexFace, bool useTempCoor
     bool firstInternCP = true;
     for (int i = 0; i < static_cast<int>(coords[indexFace].size()); i++) {
         if (m_structure->isInternControlPoint(i, indexFace)) {
-            if (m_structure->isBezierCubic()) {
+            if (m_structure->bezierType() == frac::BezierType::Cubic_Bezier) {
                 if (firstInternCP) {
                     QPointF P0 = coords[indexFace][i - 1];
                     QPointF P1 = coords[indexFace][(i + 2) % nbCtrlPts];
@@ -475,12 +475,12 @@ void SchemeWindow::drawSubdFace(std::size_t i, std::vector<std::vector<QPointF>>
     shapePath.moveTo(coords[i][0]);
     std::size_t j = 0;
     for (frac::Edge const& e: f.constData()) {
-        std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->isBezierCubic() ? 3 : 2) : 1;
+        std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->bezierType() == frac::BezierType::Cubic_Bezier ? 3 : 2) : 1;
         QPointF nextBegin = coords[i][frac::utils::mod(j + nextStepJ, coords[i].size())];
         QPointF currentBegin = coords[i][j];
 
         if (e.edgeType() == frac::EdgeType::BEZIER) {
-            if (m_structure->isBezierCubic()) {
+            if (m_structure->bezierType() == frac::BezierType::Cubic_Bezier) {
                 shapePath.cubicTo(coords[i][j + 1], coords[i][j + 2], nextBegin);
             } else {
                 shapePath.quadTo(coords[i][j + 1], nextBegin);
@@ -534,12 +534,12 @@ void SchemeWindow::drawSubdEdges(std::size_t i, std::vector<std::vector<QPointF>
 
     std::size_t j = 0;
     for (frac::Edge const& e: f.constData()) {
-        std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->isBezierCubic() ? 3 : 2) : 1;
+        std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->bezierType() == frac::BezierType::Cubic_Bezier ? 3 : 2) : 1;
         QPointF nextBegin = coords[i][frac::utils::mod(j + nextStepJ, coords[i].size())];
         QPointF currentBegin = coords[i][j];
 
         if (e.edgeType() == frac::EdgeType::BEZIER) {
-            if (m_structure->isBezierCubic()) {
+            if (m_structure->bezierType() == frac::BezierType::Cubic_Bezier) {
                 QPainterPath path;
                 path.moveTo(currentBegin);
                 path.cubicTo(coords[i][j + 1], coords[i][j + 2], nextBegin);
@@ -589,7 +589,7 @@ void SchemeWindow::drawSubdReqEdges(std::size_t i, std::vector<std::vector<QPoin
 
     std::size_t j = 0;
     for (frac::Edge const& e: f.constData()) {
-        std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->isBezierCubic() ? 3 : 2) : 1;
+        std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->bezierType() == frac::BezierType::Cubic_Bezier ? 3 : 2) : 1;
         QPointF nextBegin = coords[i][frac::utils::mod(j + nextStepJ, coords[i].size())];
         QPointF currentBegin = coords[i][j];
 
@@ -649,7 +649,7 @@ void SchemeWindow::drawSubdInterior(std::size_t i, std::vector<std::vector<QPoin
     //there are some lines that are always here if face has no delay
     std::size_t j = 0;
     for (frac::Edge const& e: f.constData()) {
-        std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->isBezierCubic() ? 3 : 2) : 1;
+        std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->bezierType() == frac::BezierType::Cubic_Bezier ? 3 : 2) : 1;
         QPointF nextBegin = coords[i][(j + nextStepJ) % coords[i].size()];
         QPointF currentBegin = coords[i][j];
         if (e.edgeType() == frac::EdgeType::BEZIER) {
@@ -657,7 +657,7 @@ void SchemeWindow::drawSubdInterior(std::size_t i, std::vector<std::vector<QPoin
             unsigned int n = e.nbActualSubdivisions();
             for (unsigned int k = 0; k < n - 1; k++) {
                 QPointF begin;
-                if (m_structure->isBezierCubic()) {
+                if (m_structure->bezierType() == frac::BezierType::Cubic_Bezier) {
                     begin = SchemeWindow::coordOfPointOnCubicCurveAt(static_cast<float>(k + 1) / static_cast<float>(n), currentBegin, coords[i][j + 1], coords[i][j + 2], nextBegin);
                 } else {
                     begin = SchemeWindow::coordOfPointOnQuadCurveAt(static_cast<float>(k + 1) / static_cast<float>(n), currentBegin, coords[i][j + 1], nextBegin);
@@ -698,7 +698,7 @@ void SchemeWindow::drawSubdInterior(std::size_t i, std::vector<std::vector<QPoin
             case frac::AlgorithmSubdivision::LinksSurroundDelay:
                 j = 0;
                 for (frac::Edge const& e: f.constData()) {
-                    std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->isBezierCubic() ? 3 : 2) : 1;
+                    std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->bezierType() == frac::BezierType::Cubic_Bezier ? 3 : 2) : 1;
                     if (e.isDelay()) {
                         QPointF begin = coords[i][j];
                         QPointF end = coords[i][(j + nextStepJ) % coords[i].size()];
@@ -713,7 +713,7 @@ void SchemeWindow::drawSubdInterior(std::size_t i, std::vector<std::vector<QPoin
             case frac::AlgorithmSubdivision::LinksOnCorners:
                 j = 0;
                 for (frac::Edge const& e: f.constData()) {
-                    std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->isBezierCubic() ? 3 : 2) : 1;
+                    std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->bezierType() == frac::BezierType::Cubic_Bezier ? 3 : 2) : 1;
                     QPointF begin = coords[i][j];
                     QPointF end(begin + (QVector2D(center - begin).normalized() * (QVector2D(center - begin).length() - radius)).toPointF());
                     m_scene.addLine(QLineF(begin, end), SchemeWindow::penOfEdge(f.adjEdge()));
@@ -749,7 +749,7 @@ void SchemeWindow::drawSubdLacuna(std::size_t i, std::vector<std::vector<QPointF
     //there are some lines that are always here if face has no delay
     std::size_t j = 0;
     for (frac::Edge const& e: f.constData()) {
-        std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->isBezierCubic() ? 3 : 2) : 1;
+        std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->bezierType() == frac::BezierType::Cubic_Bezier ? 3 : 2) : 1;
         QPointF nextBegin = coords[i][(j + nextStepJ) % coords[i].size()];
         QPointF currentBegin = coords[i][j];
         if (e.edgeType() == frac::EdgeType::BEZIER) {
@@ -757,7 +757,7 @@ void SchemeWindow::drawSubdLacuna(std::size_t i, std::vector<std::vector<QPointF
             unsigned int n = e.nbActualSubdivisions();
             for (unsigned int k = 0; k < n - 1; k++) {
                 QPointF begin;
-                if (m_structure->isBezierCubic()) {
+                if (m_structure->bezierType() == frac::BezierType::Cubic_Bezier) {
                     begin = SchemeWindow::coordOfPointOnCubicCurveAt(static_cast<float>(k + 1) / static_cast<float>(n), currentBegin, coords[i][j + 1], coords[i][j + 2], nextBegin);
                 } else {
                     begin = SchemeWindow::coordOfPointOnQuadCurveAt(static_cast<float>(k + 1) / static_cast<float>(n), currentBegin, coords[i][j + 1], nextBegin);
@@ -798,7 +798,7 @@ void SchemeWindow::drawSubdLacuna(std::size_t i, std::vector<std::vector<QPointF
             case frac::AlgorithmSubdivision::LinksSurroundDelay:
                 j = 0;
                 for (frac::Edge const& e: f.constData()) {
-                    std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->isBezierCubic() ? 3 : 2) : 1;
+                    std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->bezierType() == frac::BezierType::Cubic_Bezier ? 3 : 2) : 1;
                     if (e.isDelay()) {
                         QPointF begin = coords[i][j];
                         QPointF end = coords[i][(j + nextStepJ) % coords[i].size()];
@@ -816,7 +816,7 @@ void SchemeWindow::drawSubdLacuna(std::size_t i, std::vector<std::vector<QPointF
             case frac::AlgorithmSubdivision::LinksOnCorners:
                 j = 0;
                 for (frac::Edge const& e: f.constData()) {
-                    std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->isBezierCubic() ? 3 : 2) : 1;
+                    std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->bezierType() == frac::BezierType::Cubic_Bezier ? 3 : 2) : 1;
                     QPointF begin = coords[i][j];
                     QPointF end(begin + (QVector2D(center - begin).normalized() * (QVector2D(center - begin).length() - radius)).toPointF());
                     pointsOnCentralLacuna.emplace_back(end);
@@ -876,7 +876,7 @@ void SchemeWindow::drawSubdBlackPointsOnBoundary(std::size_t i, std::vector<std:
 
     std::size_t j = 0;
     for (frac::Edge const& e: f.constData()) {
-        std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->isBezierCubic() ? 3 : 2) : 1;
+        std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->bezierType() == frac::BezierType::Cubic_Bezier ? 3 : 2) : 1;
         QPointF nextBegin = coords[i][frac::utils::mod(j + nextStepJ, coords[i].size())];
         QPointF currentBegin = coords[i][j];
 
@@ -902,7 +902,7 @@ void SchemeWindow::drawSubdBlackPointsOnBoundary(std::size_t i, std::vector<std:
     //there are some lines that are always here if face has no delay
     j = 0;
     for (frac::Edge const& e: f.constData()) {
-        std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->isBezierCubic() ? 3 : 2) : 1;
+        std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->bezierType() == frac::BezierType::Cubic_Bezier ? 3 : 2) : 1;
         QPointF nextBegin = coords[i][(j + nextStepJ) % coords[i].size()];
         QPointF currentBegin = coords[i][j];
         if (e.edgeType() == frac::EdgeType::BEZIER) {
@@ -910,7 +910,7 @@ void SchemeWindow::drawSubdBlackPointsOnBoundary(std::size_t i, std::vector<std:
             unsigned int n = e.nbActualSubdivisions();
             for (unsigned int k = 0; k < n - 1; k++) {
                 QPointF begin;
-                if (m_structure->isBezierCubic()) {
+                if (m_structure->bezierType() == frac::BezierType::Cubic_Bezier) {
                     begin = SchemeWindow::coordOfPointOnCubicCurveAt(static_cast<float>(k + 1) / static_cast<float>(n), currentBegin, coords[i][j + 1], coords[i][j + 2], nextBegin);
                 } else {
                     begin = SchemeWindow::coordOfPointOnQuadCurveAt(static_cast<float>(k + 1) / static_cast<float>(n), currentBegin, coords[i][j + 1], nextBegin);
@@ -963,7 +963,7 @@ void SchemeWindow::drawSubdBlackPointsOnLacuna(std::size_t i, std::vector<std::v
     //there are some lines that are always here if face has no delay
     std::size_t j = 0;
     for (frac::Edge const& e: f.constData()) {
-        std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->isBezierCubic() ? 3 : 2) : 1;
+        std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->bezierType() == frac::BezierType::Cubic_Bezier ? 3 : 2) : 1;
         QPointF nextBegin = coords[i][(j + nextStepJ) % coords[i].size()];
         QPointF currentBegin = coords[i][j];
         if (e.edgeType() == frac::EdgeType::BEZIER) {
@@ -971,7 +971,7 @@ void SchemeWindow::drawSubdBlackPointsOnLacuna(std::size_t i, std::vector<std::v
             unsigned int n = e.nbActualSubdivisions();
             for (unsigned int k = 0; k < n - 1; k++) {
                 QPointF begin;
-                if (m_structure->isBezierCubic()) {
+                if (m_structure->bezierType() == frac::BezierType::Cubic_Bezier) {
                     begin = SchemeWindow::coordOfPointOnCubicCurveAt(static_cast<float>(k + 1) / static_cast<float>(n), currentBegin, coords[i][j + 1], coords[i][j + 2], nextBegin);
                 } else {
                     begin = SchemeWindow::coordOfPointOnQuadCurveAt(static_cast<float>(k + 1) / static_cast<float>(n), currentBegin, coords[i][j + 1], nextBegin);
@@ -1012,7 +1012,7 @@ void SchemeWindow::drawSubdBlackPointsOnLacuna(std::size_t i, std::vector<std::v
             case frac::AlgorithmSubdivision::LinksSurroundDelay:
                 j = 0;
                 for (frac::Edge const& e: f.constData()) {
-                    std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->isBezierCubic() ? 3 : 2) : 1;
+                    std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->bezierType() == frac::BezierType::Cubic_Bezier ? 3 : 2) : 1;
                     if (e.isDelay()) {
                         QPointF begin = coords[i][j];
                         QPointF end = coords[i][(j + nextStepJ) % coords[i].size()];
@@ -1028,7 +1028,7 @@ void SchemeWindow::drawSubdBlackPointsOnLacuna(std::size_t i, std::vector<std::v
             case frac::AlgorithmSubdivision::LinksOnCorners:
                 j = 0;
                 for (frac::Edge const& e: f.constData()) {
-                    std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->isBezierCubic() ? 3 : 2) : 1;
+                    std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->bezierType() == frac::BezierType::Cubic_Bezier ? 3 : 2) : 1;
                     QPointF begin = coords[i][j];
                     QPointF end(begin + (QVector2D(center - begin).normalized() * (QVector2D(center - begin).length() - radius)).toPointF());
                     pointsOnCentralLacuna.emplace_back(end);

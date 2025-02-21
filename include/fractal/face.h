@@ -32,7 +32,7 @@ public:
     [[nodiscard]] unsigned int delay() const;
     [[nodiscard]] frac::AlgorithmSubdivision algo() const;
 
-    std::optional<frac::Edge> edgeIfRequired(frac::Edge const& edge) const;
+    [[nodiscard]] std::optional<frac::Edge> edgeIfRequired(frac::Edge const& edge) const;
 
     void setAdjEdge(frac::Edge const& edge);
     void setGapEdge(frac::Edge const& edge);
@@ -60,7 +60,7 @@ public:
     // key is name of the cell (since it is unique)
     static std::unordered_map<std::string, std::vector<frac::Face>> s_subdivisions;
 
-    std::size_t nbControlPoints(bool bezierCubic) const;
+    std::size_t nbControlPoints(BezierType bezierType, CantorType cantorType) const;
 
 private:
     std::vector<frac::Edge> m_data;

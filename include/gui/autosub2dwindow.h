@@ -67,6 +67,9 @@ private:
 
     void setInfo(std::string const& textInfo, int timeoutMs = 2000);
 
+    frac::CantorType getCantorType() const;
+    frac::BezierType getBezierType() const;
+
 private:
     Ui::AutoSub2DWindow* ui;
     QStatusBar *m_statusBar;

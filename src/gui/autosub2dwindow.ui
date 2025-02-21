@@ -1543,6 +1543,25 @@ QListWidget {
         </widget>
        </item>
        <item>
+        <widget class="QComboBox" name="comboBox_typeCantor">
+         <item>
+          <property name="text">
+           <string>Classic Cantor</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Quadratic Cantor</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Cubic Cantor</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
         <spacer name="horizontalSpacer_14">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>

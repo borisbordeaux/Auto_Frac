@@ -56,7 +56,7 @@ AutoSub2DWindow::~AutoSub2DWindow() {
         faces.push_back(frac::Face::fromStr(this->ui->listWidget_faces->item(i)->text().toStdString()));
     }
 
-    frac::Structure s { faces, this->ui->comboBox_typeBezier->currentIndex() == 1 };
+    frac::Structure s { faces, this->getBezierType(), this->getCantorType() };
 
     for (int i = 0; i < this->ui->listWidget_constraints->count(); ++i) {
         frac::Adjacency c = AutoSub2DWindow::toConstraint(this->ui->listWidget_constraints->item(i)->text());
@@ -350,7 +350,7 @@ AutoSub2DWindow::~AutoSub2DWindow() {
         faces.push_back(frac::Face::fromStr(this->ui->listWidget_faces->item(i)->text().toStdString()));
     }
 
-    std::unique_ptr<frac::Structure> newStruct = std::make_unique<frac::Structure>(faces, this->ui->comboBox_typeBezier->currentIndex() == 1);
+    std::unique_ptr<frac::Structure> newStruct = std::make_unique<frac::Structure>(faces, this->getBezierType(), this->getCantorType());
 
     for (int i = 0; i < this->ui->listWidget_constraints->count(); ++i) {
         frac::Adjacency c = AutoSub2DWindow::toConstraint(this->ui->listWidget_constraints->item(i)->text());
@@ -397,7 +397,7 @@ AutoSub2DWindow::~AutoSub2DWindow() {
         faces.push_back(frac::Face::fromStr(this->ui->listWidget_faces->item(i)->text().toStdString()));
     }
 
-    frac::Structure s { faces, this->ui->comboBox_typeBezier->currentIndex() == 1 };
+    frac::Structure s { faces, this->getBezierType(), this->getCantorType() };
 
     // need to store for each face the number of subdivisions and their type (their face)
     std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>> cache;
@@ -432,7 +432,7 @@ AutoSub2DWindow::~AutoSub2DWindow() {
         faces.push_back(frac::Face::fromStr(this->ui->listWidget_faces->item(i)->text().toStdString()));
     }
 
-    frac::Structure s { faces, this->ui->comboBox_typeBezier->currentIndex() == 1 };
+    frac::Structure s { faces, this->getBezierType(), this->getCantorType() };
 
     // need to store for each face the number of subdivisions and their type (their face)
     std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>> cacheSubdivisions;
@@ -485,7 +485,7 @@ AutoSub2DWindow::~AutoSub2DWindow() {
         faces.push_back(frac::Face::fromStr(this->ui->listWidget_faces->item(i)->text().toStdString()));
     }
 
-    frac::Structure s { faces, this->ui->comboBox_typeBezier->currentIndex() == 1 };
+    frac::Structure s { faces, this->getBezierType(), this->getCantorType() };
 
     // need to store for each face the number of subdivisions and their type (their face)
     std::unordered_map<std::string, std::unordered_map<std::string, std::size_t>> cacheSubdivisions;
@@ -639,4 +639,24 @@ void AutoSub2DWindow::hideEvent(QHideEvent* event) {
         m_schemeWindow->close();
     }
     QWidget::hideEvent(event);
+}
+
+frac::CantorType AutoSub2DWindow::getCantorType() const {
+    switch (this->ui->comboBox_typeCantor->currentIndex()) {
+        case 1:
+            return frac::CantorType::Quadratic_Cantor;
+        case 2:
+            return frac::CantorType::Cubic_Cantor;
+        default:
+            return frac::CantorType::Classic_Cantor;
+    }
+}
+
+frac::BezierType AutoSub2DWindow::getBezierType() const {
+    switch (this->ui->comboBox_typeBezier->currentIndex()) {
+        case 1:
+            return frac::BezierType::Cubic_Bezier;
+        default:
+            return frac::BezierType::Quadratic_Bezier;
+    }
 }
