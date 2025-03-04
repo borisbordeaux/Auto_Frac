@@ -59,6 +59,8 @@ Polytopal2DWindow::Polytopal2DWindow(QWidget* parent) :
 
     connect(&m_colorDialog, &QColorDialog::currentColorChanged, m_view, &GLView::changeMeshColor);
     connect(&m_colorDialog, &QColorDialog::rejected, m_view, &GLView::restoreMeshColor);
+    connect(&m_timerProjection, &QTimer::timeout, this, &Polytopal2DWindow::animatingProjection);
+    connect(&m_timerInversion, &QTimer::timeout, this, &Polytopal2DWindow::animatingInversion);
 }
 
 Polytopal2DWindow::~Polytopal2DWindow() {
@@ -265,11 +267,17 @@ void Polytopal2DWindow::canonicalizeStep() {
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotIncreaseInversion() {
-    this->increaseInversion();
+    if (m_circles.empty() || m_circlesDual.empty()) { return; }
+    if (this->ui->checkBox_animations->isChecked()) {
+        this->initAnimationInversion();
+        m_timerInversion.start();
+    } else {
+        this->increaseInversion();
+    }
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotDecreaseInversion() {
-    if (m_circles.empty()) { return; }
+    if (m_circles.empty() || m_circlesDual.empty()) { return; }
     int inversionLevel = std::max(m_inversionLevel - 1, 0);
     m_inversionLevel = 0;
     m_circlesIndex = 0;
@@ -291,10 +299,15 @@ void Polytopal2DWindow::canonicalizeStep() {
 }
 
 [[maybe_unused]] void Polytopal2DWindow::slotProjectCirclesClicked() {
-    this->updateBatchCircles(false);
-    this->updateBatchCircles(true);
-    this->updateEnablementPoly();
-    m_view->update();
+    if (this->ui->checkBox_animations->isChecked()) {
+        this->initAnimationProjection();
+        m_timerProjection.start();
+    } else {
+        this->updateBatchCircles(false);
+        this->updateBatchCircles(true);
+        this->updateEnablementPoly();
+        m_view->update();
+    }
 }
 
 void Polytopal2DWindow::updateCircles() {
@@ -896,4 +909,134 @@ void Polytopal2DWindow::closeEvent(QCloseEvent* event) {
     }
     m_batchDebugLine.update();
     m_view->update();
+}
+
+void Polytopal2DWindow::initAnimationProjection() {
+    m_tProjection = 0.0f;
+
+    m_circlesBeginProjection.clear();
+    m_circlesEndProjection.clear();
+
+    m_circlesDualBeginProjection.clear();
+    m_circlesDualEndProjection.clear();
+
+    for (poly::InversiveCoordinates const& c: m_circles) {
+        if (this->ui->checkBox_projectCircles->isChecked()) {
+            m_circlesBeginProjection.push_back(c.inverseStereographicProject());
+            m_circlesEndProjection.push_back(c.toCircle());
+        } else {
+            m_circlesBeginProjection.push_back(c.toCircle());
+            m_circlesEndProjection.push_back(c.inverseStereographicProject());
+        }
+    }
+
+    for (poly::InversiveCoordinates const& c: m_circlesDual) {
+        if (this->ui->checkBox_projectCircles->isChecked()) {
+            m_circlesDualBeginProjection.push_back(c.inverseStereographicProject());
+            m_circlesDualEndProjection.push_back(c.toCircle());
+        } else {
+            m_circlesDualBeginProjection.push_back(c.toCircle());
+            m_circlesDualEndProjection.push_back(c.inverseStereographicProject());
+        }
+    }
+}
+
+void Polytopal2DWindow::endAnimationProjection() {
+    m_timerProjection.stop();
+    this->updateBatchCircles(false);
+    this->updateBatchCircles(true);
+    this->updateEnablementPoly();
+    m_view->update();
+}
+
+void Polytopal2DWindow::animatingProjection() {
+    m_tProjection += 0.002f;
+    m_batchCircle.resetCircles();
+    m_batchCircleDual.resetCircles();
+    if (m_tProjection >= 1.0f) {
+        endAnimationProjection();
+    } else {
+        float cb = 1.0f - m_tProjection;
+        float ce = m_tProjection;
+        for (std::size_t i = 0; i < m_circlesBeginProjection.size(); i++) {
+            gui::Circle current { cb * m_circlesBeginProjection[i].center() + ce * m_circlesEndProjection[i].center(),
+                                  cb * m_circlesBeginProjection[i].radius() + ce * m_circlesEndProjection[i].radius(),
+                                  cb * m_circlesBeginProjection[i].axisX() + ce * m_circlesEndProjection[i].axisX(),
+                                  cb * m_circlesBeginProjection[i].axisY() + ce * m_circlesEndProjection[i].axisY() };
+            m_batchCircle.addCircle(current);
+        }
+
+        for (std::size_t i = 0; i < m_circlesDualBeginProjection.size(); i++) {
+            gui::Circle current { cb * m_circlesDualBeginProjection[i].center() + ce * m_circlesDualEndProjection[i].center(),
+                                  cb * m_circlesDualBeginProjection[i].radius() + ce * m_circlesDualEndProjection[i].radius(),
+                                  cb * m_circlesDualBeginProjection[i].axisX() + ce * m_circlesDualEndProjection[i].axisX(),
+                                  cb * m_circlesDualBeginProjection[i].axisY() + ce * m_circlesDualEndProjection[i].axisY() };
+            m_batchCircleDual.addCircle(current);
+        }
+
+        m_batchCircle.updateData();
+        m_batchCircleDual.updateData();
+        m_view->update();
+    }
+}
+
+void Polytopal2DWindow::initAnimationInversion() {
+    m_tInversion = 0.0f;
+
+    m_circlesBeginInversion.clear();
+    m_circlesEndInversion.clear();
+
+    for (poly::InversiveCoordinates const& c: m_circles) {
+        m_circlesBeginInversion.push_back(c);
+        m_circlesEndInversion.push_back(c);
+    }
+
+    //inversion always in plan using inversive coordinates
+    for (std::size_t i = m_circlesIndex; i != m_circles.size(); i++) {
+        for (poly::InversiveCoordinates const& cInv: m_circlesDual) {
+            if (m_circles[i].inverter() != &cInv && !poly::InversiveCoordinates::areOrthogonal(m_circles[i], cInv)) {
+                poly::InversiveCoordinates inverted = poly::InversiveCoordinates::inverse(m_circles[i], cInv);
+                m_circlesBeginInversion.push_back(m_circles[i]);
+                m_circlesEndInversion.push_back(inverted);
+            }
+        }
+    }
+}
+
+void Polytopal2DWindow::endAnimationInversion() {
+    m_timerInversion.stop();
+    this->increaseInversion();
+}
+
+void Polytopal2DWindow::animatingInversion() {
+    m_tInversion += 0.002f;
+    m_batchCircle.resetCircles();
+    if (m_tInversion >= 1.0f) {
+        endAnimationInversion();
+    } else {
+        float cb = 1.0f - m_tInversion;
+        float ce = m_tInversion;
+        for (std::size_t i = 0; i < m_circlesBeginInversion.size(); i++) {
+            if (i < m_circlesIndex) {
+                if (this->ui->checkBox_projectCircles->isChecked()) {
+                    m_batchCircle.addCircle(m_circlesBeginInversion[i].toCircle());
+                } else {
+                    m_batchCircle.addCircle(m_circlesBeginInversion[i].inverseStereographicProject());
+                }
+            } else {
+                gui::Circle current { cb * m_circlesBeginInversion[i].toCircle().center() + ce * m_circlesEndInversion[i].toCircle().center(),
+                                      cb * m_circlesBeginInversion[i].toCircle().radius() + ce * m_circlesEndInversion[i].toCircle().radius(),
+                                      cb * m_circlesBeginInversion[i].toCircle().axisX() + ce * m_circlesEndInversion[i].toCircle().axisX(),
+                                      cb * m_circlesBeginInversion[i].toCircle().axisY() + ce * m_circlesEndInversion[i].toCircle().axisY() };
+                if (this->ui->checkBox_projectCircles->isChecked()) {
+                    m_batchCircle.addCircle(current);
+                } else {
+                    m_batchCircle.addCircle(current.getInversiveCoordinates().inverseStereographicProject());
+                }
+            }
+        }
+
+        m_batchCircle.updateData();
+        m_view->update();
+    }
 }

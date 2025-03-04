@@ -112,6 +112,39 @@ private:
     void updateBatchCircles(bool dual);
 
 private:
+    //animations projection
+    std::vector<gui::Circle> m_circlesBeginProjection;
+    std::vector<gui::Circle> m_circlesDualBeginProjection;
+
+    std::vector<gui::Circle> m_circlesEndProjection;
+    std::vector<gui::Circle> m_circlesDualEndProjection;
+
+    float m_tProjection = 0.0;
+
+    QTimer m_timerProjection;
+
+    void initAnimationProjection();
+    void endAnimationProjection();
+
+public slots:
+    void animatingProjection();
+
+private:
+    //animations inversion
+    std::vector<poly::InversiveCoordinates> m_circlesBeginInversion;
+    std::vector<poly::InversiveCoordinates> m_circlesEndInversion;
+
+    float m_tInversion = 0.0;
+
+    QTimer m_timerInversion;
+
+    void initAnimationInversion();
+    void endAnimationInversion();
+
+public slots:
+    void animatingInversion();
+
+private:
     Ui::Polytopal2DWindow* ui;
 
     QStatusBar* m_statusBar;
