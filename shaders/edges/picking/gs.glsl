@@ -14,7 +14,7 @@ uniform vec2 invViewport;
 void main()
 {
     vecCol = vecColor[0];
-    float r = 16.0;
+    float r = 17.0;
     vec4 p1 = gl_in[0].gl_Position;
     vec4 p2 = gl_in[1].gl_Position;
     vec2 dir = normalize(p2.xy - p1.xy);

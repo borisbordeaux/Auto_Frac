@@ -45,15 +45,17 @@ void main() {
         }
     }
 
-    vec3 color = vec3(0.5);
+    vec3 color = vec3(0.65);
 
     if (renderType == 0) {
         // transparent
+        color = vec3(0.5);
         if (checkInCircle(false) > 0.5) {
             discard;
         }
     } else if (renderType == 1) {
         // illuminated regions
+        color = vec3(0.5);
         color += checkInCircle(true) * vec3(0.15);
     }
 

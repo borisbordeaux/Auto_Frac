@@ -66,7 +66,7 @@ void main() {
             float vpcRadius = length(vpcCenter - vpcPointX);
 
             //number of lines is a quarter of the perimeter length in pixels
-            int nb = max(3, int(PI * vpcRadius / 2.0));
+            int nb = max(6, int(PI * vpcRadius / 2.0));
 
             //number of lines to tessellate (max 64)
             gl_TessLevelOuter[0] = min(64, nb / 64 + 1);

@@ -270,7 +270,7 @@ void Polytopal2DWindow::canonicalizeStep() {
     if (m_circles.empty() || m_circlesDual.empty()) { return; }
     if (this->ui->checkBox_animations->isChecked()) {
         this->initAnimationInversion();
-        m_timerInversion.start();
+        m_timerInversion.start(16);
     } else {
         this->increaseInversion();
     }
@@ -301,7 +301,7 @@ void Polytopal2DWindow::canonicalizeStep() {
 [[maybe_unused]] void Polytopal2DWindow::slotProjectCirclesClicked() {
     if (this->ui->checkBox_animations->isChecked()) {
         this->initAnimationProjection();
-        m_timerProjection.start();
+        m_timerProjection.start(16);
     } else {
         this->updateBatchCircles(false);
         this->updateBatchCircles(true);
@@ -950,7 +950,7 @@ void Polytopal2DWindow::endAnimationProjection() {
 }
 
 void Polytopal2DWindow::animatingProjection() {
-    m_tProjection += 0.002f;
+    m_tProjection += 0.01f;
     m_batchCircle.resetCircles();
     m_batchCircleDual.resetCircles();
     if (m_tProjection >= 1.0f) {
@@ -1009,7 +1009,7 @@ void Polytopal2DWindow::endAnimationInversion() {
 }
 
 void Polytopal2DWindow::animatingInversion() {
-    m_tInversion += 0.002f;
+    m_tInversion += 0.01f;
     m_batchCircle.resetCircles();
     if (m_tInversion >= 1.0f) {
         endAnimationInversion();
