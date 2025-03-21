@@ -37,6 +37,7 @@ void BatchCircle::init() {
     m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/circles/vs.glsl");
     m_program.addShaderFromSourceFile(QOpenGLShader::TessellationControl, "../shaders/circles/tcs.glsl");
     m_program.addShaderFromSourceFile(QOpenGLShader::TessellationEvaluation, "../shaders/circles/tes.glsl");
+    m_program.addShaderFromSourceFile(QOpenGLShader::Geometry, "../shaders/circles/gs.glsl");
     m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/circles/fs.glsl");
     m_program.link();
 
@@ -44,6 +45,7 @@ void BatchCircle::init() {
     m_program.bind();
     m_projMatrixLoc = m_program.uniformLocation("projMatrix");
     m_viewMatrixLoc = m_program.uniformLocation("mvMatrix");
+    m_invViewportLoc = m_program.uniformLocation("invViewport");
     m_windowMatrixLoc = m_program.uniformLocation("windowMatrix");
     m_leftPlaneLoc = m_program.uniformLocation("leftPlane");
     m_rightPlaneLoc = m_program.uniformLocation("rightPlane");
@@ -92,12 +94,20 @@ void BatchCircle::render(PickingType type) {
             }
             break;
         }
-        case PickingType::PickingNone:
+        case PickingType::PickingNone: {
+            bool cullFaceEnabled = glIsEnabled(GL_CULL_FACE);
+            if (cullFaceEnabled) {
+                glDisable(GL_CULL_FACE);
+            }
             m_program.bind();
             m_vao.bind();
             glDrawArrays(GL_PATCHES, 0, static_cast<int>(m_circles.size()));
             m_program.release();
+            if (cullFaceEnabled) {
+                glEnable(GL_CULL_FACE);
+            }
             break;
+        }
         case PickingType::PickingFace:
         case PickingType::PickingEdge:
         case PickingType::PickingVertex:
@@ -141,6 +151,7 @@ void BatchCircle::setInvViewport(float x, float y) {
     windowMatrix.scale(w / 2.0f, h / 2.0f, 1.0f);
     windowMatrix.translate(1.0f, 1.0f);
     m_program.bind();
+    m_program.setUniformValue(m_invViewportLoc, x, y);
     m_program.setUniformValue(m_windowMatrixLoc, windowMatrix);
     m_program.release();
     m_programPicking.bind();

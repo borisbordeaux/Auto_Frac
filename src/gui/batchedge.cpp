@@ -26,6 +26,7 @@ void BatchEdge::init() {
     m_vao.release();
 
     m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/edges/vs.glsl");
+    m_program.addShaderFromSourceFile(QOpenGLShader::Geometry, "../shaders/edges/gs.glsl");
     m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/edges/fs.glsl");
     m_program.link();
 
@@ -33,6 +34,8 @@ void BatchEdge::init() {
     m_program.bind();
     m_projMatrixLoc = m_program.uniformLocation("projMatrix");
     m_viewMatrixLoc = m_program.uniformLocation("mvMatrix");
+    m_invViewportLoc = m_program.uniformLocation("invViewport");
+
     //picking
     m_programPicking.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/edges/picking/vs.glsl");
     m_programPicking.addShaderFromSourceFile(QOpenGLShader::Geometry, "../shaders/edges/picking/gs.glsl");
@@ -96,15 +99,23 @@ void BatchEdge::render(PickingType type) {
             if (cullFaceEnabled) {
                 glEnable(GL_CULL_FACE);
             }
-        }
             break;
+        }
 
-        case PickingType::PickingNone:
+        case PickingType::PickingNone: {
+            bool cullFaceEnabled = glIsEnabled(GL_CULL_FACE);
+            if (cullFaceEnabled) {
+                glDisable(GL_CULL_FACE);
+            }
             m_program.bind();
             m_vao.bind();
             glDrawArrays(GL_LINES, 0, m_count / m_floatsPerVertex);
             m_program.release();
+            if (cullFaceEnabled) {
+                glEnable(GL_CULL_FACE);
+            }
             break;
+        }
         case PickingType::PickingFace:
         case PickingType::PickingVertex:
         case PickingType::PickingCircle:
@@ -134,6 +145,10 @@ void BatchEdge::setCamera(Camera camera) {
 }
 
 void BatchEdge::setInvViewport(float x, float y) {
+    m_program.bind();
+    m_program.setUniformValue(m_invViewportLoc, x, y);
+    m_program.release();
+
     m_programPicking.bind();
     m_programPicking.setUniformValue(m_invViewportPickingLoc, x, y);
     m_programPicking.release();

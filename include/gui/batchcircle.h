@@ -45,6 +45,7 @@ private:
 
     int m_projMatrixLoc = 0;
     int m_viewMatrixLoc = 0;
+    int m_invViewportLoc = 0;
     int m_windowMatrixLoc = 0;
     int m_leftPlaneLoc = 0;
     int m_rightPlaneLoc = 0;

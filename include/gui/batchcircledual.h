@@ -15,7 +15,7 @@ public:
     void render(PickingType type) override;
     void setProjection(QMatrix4x4 matrix) override;
     void setCamera(Camera camera) override;
-    void setInvViewport(float w, float h) override;
+    void setInvViewport(float x, float y) override;
 
     void addCircle(gui::Circle const& circle);
     void resetCircles();
@@ -41,6 +41,7 @@ private:
 
     int m_projMatrixLoc = 0;
     int m_viewMatrixLoc = 0;
+    int m_invViewportLoc = 0;
 
     QVector<gui::Circle> m_circles;
 

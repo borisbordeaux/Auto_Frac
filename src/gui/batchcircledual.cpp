@@ -26,12 +26,14 @@ void BatchCircleDual::init() {
 
     //init shader for circles dual
     m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/circlesdual/vs.glsl");
+    m_program.addShaderFromSourceFile(QOpenGLShader::Geometry, "../shaders/circlesdual/gs.glsl");
     m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/circlesdual/fs.glsl");
     m_program.link();
 
     //get locations of uniforms
     m_program.bind();
     m_projMatrixLoc = m_program.uniformLocation("projMatrix");
+    m_invViewportLoc = m_program.uniformLocation("invViewport");
     m_viewMatrixLoc = m_program.uniformLocation("mvMatrix");
 }
 
@@ -47,16 +49,24 @@ void BatchCircleDual::update() {
 
 void BatchCircleDual::render(PickingType type) {
     switch (type) {
-        case PickingType::PickingNone:
+        case PickingType::PickingNone: {
             glEnable(GL_PRIMITIVE_RESTART_FIXED_INDEX);
+            bool cullFaceEnabled = glIsEnabled(GL_CULL_FACE);
+            if (cullFaceEnabled) {
+                glDisable(GL_CULL_FACE);
+            }
             m_program.bind();
             m_vao.bind();
             //glDrawArrays(GL_LINE_STRIP, 0, m_count / m_floatsPerVertex);
             glDrawElements(GL_LINES, m_countIndices, GL_UNSIGNED_INT, nullptr);
 
             m_program.release();
+            if (cullFaceEnabled) {
+                glEnable(GL_CULL_FACE);
+            }
             glDisable(GL_PRIMITIVE_RESTART_FIXED_INDEX);
             break;
+        }
         case PickingType::PickingCircle:
         case PickingType::PickingFace:
         case PickingType::PickingEdge:
@@ -80,9 +90,14 @@ void BatchCircleDual::setCamera(Camera camera) {
     m_program.release();
 }
 
-void BatchCircleDual::setInvViewport(float w, float h) {
-    m_w = 1.0f / w;
-    m_h = 1.0f / h;
+void BatchCircleDual::setInvViewport(float x, float y) {
+    m_w = 1.0f / x;
+    m_h = 1.0f / y;
+
+    m_program.bind();
+    m_program.setUniformValue(m_invViewportLoc, x, y);
+    m_program.release();
+
     this->updateData();
 }
 

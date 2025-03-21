@@ -45,6 +45,7 @@ private:
     //Edges viewing
     int m_projMatrixLoc = 0;
     int m_viewMatrixLoc = 0;
+    int m_invViewportLoc = 0;
     //Edges picking
     int m_projMatrixPickingLoc = 0;
     int m_viewMatrixPickingLoc = 0;
