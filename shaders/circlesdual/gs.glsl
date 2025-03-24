@@ -11,30 +11,37 @@ out float dist;
 
 uniform vec2 invViewport;
 
+vec2 toScreenSpace(vec4 vertex)
+{
+    return vec2(vertex.xy / vertex.w) / invViewport;
+}
+
+vec4 toWorldSpace(vec4 vertex)
+{
+    return vec4((vertex.xy * vertex.w) * invViewport, vertex.zw);
+}
+
 void main()
 {
+    vec2 p0 = toScreenSpace(gl_in[0].gl_Position);
+    vec2 p1 = toScreenSpace(gl_in[1].gl_Position);
+    vec2 v0 = normalize(p1 - p0);
+    vec2 n0 = vec2(-v0.y, v0.x) * 1.5;
+
     vecCol = vecColor[0];
-    float r = 1.5;
-    vec4 p1 = gl_in[0].gl_Position;
-    vec4 p2 = gl_in[1].gl_Position;
-    vec2 dir = normalize(p2.xy - p1.xy);
-    vec2 normal = vec2(dir.y, -dir.x);
-    vec4 offset1, offset2;
-    offset1 = vec4(normal * invViewport * r * p1.w, 0, 0);
-    offset2 = vec4(normal * invViewport * r * p2.w, 0, 0);
-    vec4 coords[4];
-    coords[0] = p1 + offset1;
-    coords[1] = p1 - offset1;
-    coords[2] = p2 + offset2;
-    coords[3] = p2 - offset2;
-    for (int i = 0; i < 4; ++i) {
-        gl_Position = coords[i];
-        if (i < 2){
-            dist = distance[0];
-        } else {
-            dist = distance[1];
-        }
-        EmitVertex();
-    }
+    dist = distance[0];
+
+    gl_Position = toWorldSpace(vec4(p0 + n0, gl_in[0].gl_Position.zw));
+    EmitVertex();
+    gl_Position = toWorldSpace(vec4(p0 - n0, gl_in[0].gl_Position.zw));
+    EmitVertex();
+
+    dist = distance[1];
+
+    gl_Position = toWorldSpace(vec4(p1 + n0, gl_in[1].gl_Position.zw));
+    EmitVertex();
+    gl_Position = toWorldSpace(vec4(p1 - n0, gl_in[1].gl_Position.zw));
+    EmitVertex();
+
     EndPrimitive();
 }

@@ -62,8 +62,13 @@ void main() {
             vec4 ndcPointX = clipPointX / clipPointX.w;
             vec4 vpcPointX = windowMatrix * ndcPointX;
 
+            //point at the Y axis of the circle in window coordinates
+            vec4 clipPointY = projMatrix * mvMatrix * vec4(center[0] + radius[0] * yAxis[0], 1.0);
+            vec4 ndcPointY = clipPointY / clipPointY.w;
+            vec4 vpcPointY = windowMatrix * ndcPointY;
+
             //radius in pixels
-            float vpcRadius = length(vpcCenter - vpcPointX);
+            float vpcRadius = max(length(vpcCenter - vpcPointX), length(vpcCenter - vpcPointY));
 
             //number of lines is a quarter of the perimeter length in pixels
             int nb = max(3, int(PI * vpcRadius / 2.0));
