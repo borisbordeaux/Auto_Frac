@@ -142,7 +142,7 @@ void poly::StructurePrinter::print_bezier_state_impl(unsigned int n) {
     m_filePrinter.append_nl("    B" + std::to_string(n) + ".prim.elems = [Figure(1, [Bord_('0'), Bord_('1')])]");
     for (unsigned int i = 0; i < n; ++i) {  // for each subdivision T0, T1, ... Tn-1
         m_filePrinter.append_nl("    B" + std::to_string(n) + ".initMat[Sub_('" + std::to_string(i) + "')] = FMat([");
-        std::vector<float> t = frac::utils::get_bezier_transformation(i, n);
+        std::vector<float> t = frac::utils::get_bezier_quadratic_transformation(i, n);
         m_filePrinter.append_nl("        [" + frac::utils::to_string(t[0]) + ", " + frac::utils::to_string(t[1]) + ", " + frac::utils::to_string(t[2]) + "],");
         m_filePrinter.append_nl("        [" + frac::utils::to_string(t[3]) + ", " + frac::utils::to_string(t[4]) + ", " + frac::utils::to_string(t[5]) + "],");
         m_filePrinter.append_nl("        [" + frac::utils::to_string(t[6]) + ", " + frac::utils::to_string(t[7]) + ", " + frac::utils::to_string(t[8]) + "]]).setTyp('Const')");
