@@ -299,7 +299,11 @@ void GLView::pickingManagement(PickingType type) {
             m_mainWindow->setSelectedCircle(index);
             m_mainWindow->updateDataCircles();
             break;
-        default:
+        case PickingType::PickingCircleDual:
+            m_mainWindow->setSelectedCircleDual(index);
+            m_mainWindow->updateDataCircles();
+            break;
+        case PickingType::PickingNone:
             break;
     }
 
@@ -330,6 +334,7 @@ void GLView::setPickingType(PickingType type) {
     m_mainWindow->setSelectedVertex(0);
     m_mainWindow->setSelectedVertex2(0);
     m_mainWindow->setSelectedCircle(0);
+    m_mainWindow->setSelectedCircleDual(0);
     m_mainWindow->updateDataMesh();
     m_mainWindow->updateDataCircles();
     this->update();
@@ -403,6 +408,10 @@ void GLView::keyReleaseEvent(QKeyEvent* event) {
         m_mainWindow->setInfo("Circle selection");
         this->setPickingType(PickingType::PickingCircle);
     }
+    if (event->key() == Qt::Key_D) {
+        m_mainWindow->setInfo("Dual circle selection");
+        this->setPickingType(PickingType::PickingCircleDual);
+    }
     if (event->key() == Qt::Key_Shift) {
         m_isShiftPressed = false;
     }
@@ -423,6 +432,12 @@ void GLView::keyReleaseEvent(QKeyEvent* event) {
         }
         if (m_mainWindow->selectedVertex() != nullptr && m_mainWindow->selectedVertex2() == nullptr) {
             this->removeSelectedVertex();
+        }
+        if(m_mainWindow->selectedCircle() != nullptr) {
+            this->removeSelectedCircle();
+        }
+        if(m_mainWindow->selectedCircleDual() != nullptr) {
+            this->removeSelectedCircleDual();
         }
     }
 }
@@ -575,6 +590,16 @@ void GLView::removeSelectedVertex() {
     m_mainWindow->setSelectedVertex(0);
     m_mainWindow->setSelectedVertex2(0);
     m_mainWindow->updateData();
+    this->update();
+}
+
+void GLView::removeSelectedCircle() {
+    m_mainWindow->removeSelectedCircle();
+    this->update();
+}
+
+void GLView::removeSelectedCircleDual() {
+    m_mainWindow->removeSelectedCircleDual();
     this->update();
 }
 

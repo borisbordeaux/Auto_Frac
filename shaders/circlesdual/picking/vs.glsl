@@ -12,7 +12,11 @@ out vec3 vecColor;
 out float distance;
 
 void main() {
-    vecColor = color;
     distance = dist;
     gl_Position = projMatrix * mvMatrix * vertex;
+    int id = int(ID + 0.2);
+    int mask = 255;
+    vecColor.z = float(id & mask) / 255.0;
+    vecColor.y = float((id >> 8) & mask) / 255.0;
+    vecColor.x = float((id >> 16) & mask) / 255.0;
 }

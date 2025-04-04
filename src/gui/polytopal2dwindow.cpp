@@ -779,6 +779,22 @@ void Polytopal2DWindow::setSelectedCircle(int circleIndex) {
     }
 }
 
+gui::Circle* Polytopal2DWindow::selectedCircle() {
+    return m_batchCircle.selectedCircle();
+}
+
+void Polytopal2DWindow::setSelectedCircleDual(int circleIndex) {
+    m_batchCircleDual.setSelectedCircle(circleIndex);
+    if (m_batchCircleDual.selectedCircle() != nullptr) {
+        qDebug() << "Radius:" << m_batchCircleDual.selectedCircle()->radius() << " real radius:" << m_circlesDual[circleIndex - 1].radius();
+        qDebug() << "----------------";
+    }
+}
+
+gui::Circle* Polytopal2DWindow::selectedCircleDual() {
+    return m_batchCircleDual.selectedCircle();
+}
+
 void Polytopal2DWindow::updateDataCircles() {
     m_batchCircle.updateData();
     m_batchCircleDual.updateData();
@@ -1038,5 +1054,23 @@ void Polytopal2DWindow::animatingInversion() {
 
         m_batchCircle.updateData();
         m_view->update();
+    }
+}
+
+void Polytopal2DWindow::removeSelectedCircle() {
+    if (m_batchCircle.selectedCircle() != nullptr) {
+        int id = m_batchCircle.selectedCircleIndex();
+        auto it = m_circles.begin() + id;
+        m_circles.erase(it);
+        m_batchCircle.removeSelectedCircle();
+    }
+}
+
+void Polytopal2DWindow::removeSelectedCircleDual() {
+    if (m_batchCircleDual.selectedCircle() != nullptr) {
+        int id = m_batchCircleDual.selectedCircleIndex();
+        auto it = m_circlesDual.begin() + id;
+        m_circlesDual.erase(it);
+        m_batchCircleDual.removeSelectedCircle();
     }
 }

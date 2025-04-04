@@ -108,6 +108,7 @@ void BatchCircle::render(PickingType type) {
             }
             break;
         }
+        case PickingType::PickingCircleDual:
         case PickingType::PickingFace:
         case PickingType::PickingEdge:
         case PickingType::PickingVertex:
@@ -211,6 +212,14 @@ gui::Circle* BatchCircle::selectedCircle() {
     return res;
 }
 
+void BatchCircle::removeSelectedCircle() {
+    if (m_selectedCircle - 1 >= 0 && m_selectedCircle - 1 < m_circles.size()) {
+        m_circles.removeAt(m_selectedCircle - 1);
+        m_selectedCircle = 0;
+    }
+    this->updateData();
+}
+
 void BatchCircle::updateColorOfCircles(QVector3D const& color) {
     for (gui::Circle& c: m_circles) {
         c.setColor(color);
@@ -287,4 +296,8 @@ void BatchCircle::sendUniformsPlaneFrustum(bool picking) {
         m_program.setUniformValue(m_topPlaneLoc, BatchCircle::planeOf(ppp, mpp, ppm, inverseProjView));
         m_program.setUniformValue(m_bottomPlaneLoc, BatchCircle::planeOf(pmp, pmm, mmp, inverseProjView));
     }
+}
+
+int BatchCircle::selectedCircleIndex() const {
+    return m_selectedCircle - 1;
 }

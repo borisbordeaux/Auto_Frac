@@ -14,12 +14,15 @@ void BatchCircleDual::init() {
     glEnableVertexAttribArray(0); //coordinates
     glEnableVertexAttribArray(1); //color
     glEnableVertexAttribArray(2); //distance
+    glEnableVertexAttribArray(3); //ID
     //coordinates
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), nullptr);
     //color
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(3 * sizeof(GLfloat)));
     //distance
-    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), reinterpret_cast<void*>(6 * sizeof(GLfloat)));
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(6 * sizeof(GLfloat)));
+    //ID
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), reinterpret_cast<void*>(7 * sizeof(GLfloat)));
     m_ibo.bind();
     m_vbo.release();
     m_vao.release();
@@ -35,6 +38,18 @@ void BatchCircleDual::init() {
     m_projMatrixLoc = m_program.uniformLocation("projMatrix");
     m_invViewportLoc = m_program.uniformLocation("invViewport");
     m_viewMatrixLoc = m_program.uniformLocation("mvMatrix");
+
+    //init shader for circles dual picking
+    m_programPicking.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/circlesdual/picking/vs.glsl");
+    m_programPicking.addShaderFromSourceFile(QOpenGLShader::Geometry, "../shaders/circlesdual/picking/gs.glsl");
+    m_programPicking.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/circlesdual/picking/fs.glsl");
+    m_programPicking.link();
+
+    //get locations of uniforms
+    m_programPicking.bind();
+    m_projMatrixLocPicking = m_programPicking.uniformLocation("projMatrix");
+    m_invViewportLocPicking = m_programPicking.uniformLocation("invViewport");
+    m_viewMatrixLocPicking = m_programPicking.uniformLocation("mvMatrix");
 }
 
 void BatchCircleDual::update() {
@@ -57,10 +72,28 @@ void BatchCircleDual::render(PickingType type) {
             }
             m_program.bind();
             m_vao.bind();
-            //glDrawArrays(GL_LINE_STRIP, 0, m_count / m_floatsPerVertex);
+            m_ibo.bind();
             glDrawElements(GL_LINES, m_countIndices, GL_UNSIGNED_INT, nullptr);
 
             m_program.release();
+            if (cullFaceEnabled) {
+                glEnable(GL_CULL_FACE);
+            }
+            glDisable(GL_PRIMITIVE_RESTART_FIXED_INDEX);
+            break;
+        }
+        case PickingType::PickingCircleDual: {
+            glEnable(GL_PRIMITIVE_RESTART_FIXED_INDEX);
+            bool cullFaceEnabled = glIsEnabled(GL_CULL_FACE);
+            if (cullFaceEnabled) {
+                glDisable(GL_CULL_FACE);
+            }
+            m_programPicking.bind();
+            m_vao.bind();
+            m_ibo.bind();
+            glDrawElements(GL_LINES, m_countIndices, GL_UNSIGNED_INT, nullptr);
+
+            m_programPicking.release();
             if (cullFaceEnabled) {
                 glEnable(GL_CULL_FACE);
             }
@@ -80,6 +113,10 @@ void BatchCircleDual::setProjection(QMatrix4x4 matrix) {
     m_program.bind();
     m_program.setUniformValue(m_projMatrixLoc, matrix);
     m_program.release();
+
+    m_programPicking.bind();
+    m_programPicking.setUniformValue(m_projMatrixLocPicking, matrix);
+    m_programPicking.release();
 }
 
 void BatchCircleDual::setCamera(Camera camera) {
@@ -88,6 +125,10 @@ void BatchCircleDual::setCamera(Camera camera) {
     m_program.bind();
     m_program.setUniformValue(m_viewMatrixLoc, m_view);
     m_program.release();
+
+    m_programPicking.bind();
+    m_programPicking.setUniformValue(m_viewMatrixLocPicking, m_view);
+    m_programPicking.release();
 }
 
 void BatchCircleDual::setInvViewport(float x, float y) {
@@ -97,6 +138,10 @@ void BatchCircleDual::setInvViewport(float x, float y) {
     m_program.bind();
     m_program.setUniformValue(m_invViewportLoc, x, y);
     m_program.release();
+
+    m_programPicking.bind();
+    m_programPicking.setUniformValue(m_invViewportLocPicking, x, y);
+    m_programPicking.release();
 
     this->updateData();
 }
@@ -117,7 +162,7 @@ void BatchCircleDual::updateData() {
     qsizetype nbOfAdd = 2 * nbOfEdges;
 
     //we resize the data for rapidity
-    m_data.resize((nb + 1) * m_circles.size() * 7); //the vertex at angle 0 and 360 are note the same (same position but not the same distance for dashed lines)
+    m_data.resize((nb + 1) * m_circles.size() * 8); //the vertex at angle 0 and 360 are note the same (same position but not the same distance for dashed lines)
     m_indices.resize(nbOfAdd);
 
     //compute of length
@@ -127,10 +172,13 @@ void BatchCircleDual::updateData() {
     windowMatrix.scale(m_w / 2.0f, m_h / 2.0f, 1.0f);
     windowMatrix.translate(1.0f, 1.0f);
 
+    int ID = 1;
     unsigned int j = 0;
     for (gui::Circle const& c: m_circles) {
         float dist = 0.0f;
         QVector2D vpPt;
+        bool isSelected = ID == m_selectedCircle;
+        QVector3D color = isSelected ? QVector3D(0, 1, 0) : c.color();
         for (int i = 0; i <= 360; i += static_cast<int>(360 / nb)) {
             float alpha = qDegreesToRadians(static_cast<float>(i));
             float x = c.center().x() + c.radius() * std::cos(alpha) * c.axisX().x() + c.radius() * std::sin(alpha) * c.axisY().x();
@@ -154,9 +202,10 @@ void BatchCircleDual::updateData() {
             float len = i == 0 ? 0.0f : (vpPt - vpC.toVector2D()).length();
             vpPt = vpC.toVector2D();
             dist += len;
-            this->addVertexCircle({ x, y, z }, c.color(), dist);
+            this->addVertexCircle({ x, y, z }, color, dist, static_cast<float>(ID));
             j++;
         }
+        ID++;
     }
 
     this->update();
@@ -186,7 +235,7 @@ int BatchCircleDual::pickingOrder() {
     return 0;
 }
 
-void BatchCircleDual::addVertexCircle(const QVector3D& v, const QVector3D& color, float dist) {
+void BatchCircleDual::addVertexCircle(const QVector3D& v, const QVector3D& color, float dist, float ID) {
     //add to the end of the data already added
     float* p = m_data.data() + m_count;
     //the coordinates of the vertex
@@ -196,8 +245,35 @@ void BatchCircleDual::addVertexCircle(const QVector3D& v, const QVector3D& color
     *p++ = color.x();
     *p++ = color.y();
     *p++ = color.z();
-    *p = dist;
+    *p++ = dist;
+    *p = ID;
     //we update the amount of data
-    m_count += 7;
+    m_count += 8;
+}
+
+void BatchCircleDual::setSelectedCircle(int circleIndex) {
+    m_selectedCircle = circleIndex;
+}
+
+gui::Circle* BatchCircleDual::selectedCircle() {
+    gui::Circle* res = nullptr;
+
+    if (m_selectedCircle - 1 >= 0 && m_selectedCircle - 1 < m_circles.size()) {
+        res = &m_circles[m_selectedCircle - 1];
+    }
+
+    return res;
+}
+
+void BatchCircleDual::removeSelectedCircle() {
+    if (m_selectedCircle - 1 >= 0 && m_selectedCircle - 1 < m_circles.size()) {
+        m_circles.removeAt(m_selectedCircle - 1);
+        m_selectedCircle = 0;
+    }
+    this->updateData();
+}
+
+int BatchCircleDual::selectedCircleIndex() const {
+    return m_selectedCircle - 1;
 }
 

@@ -95,6 +95,7 @@ void BatchVertex::render(PickingType type) {
             glDrawArrays(GL_POINTS, 0, m_count / m_floatsPerVertex);
             m_program.release();
             break;
+        case PickingType::PickingCircleDual:
         case PickingType::PickingFace:
         case PickingType::PickingEdge:
         case PickingType::PickingCircle:

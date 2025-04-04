@@ -116,6 +116,7 @@ void BatchEdge::render(PickingType type) {
             }
             break;
         }
+        case PickingType::PickingCircleDual:
         case PickingType::PickingFace:
         case PickingType::PickingVertex:
         case PickingType::PickingCircle:

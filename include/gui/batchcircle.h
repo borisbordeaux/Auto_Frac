@@ -22,6 +22,8 @@ public:
     void resetCircles();
     void setSelectedCircle(int circleIndex);
     gui::Circle* selectedCircle();
+    void removeSelectedCircle();
+    int selectedCircleIndex() const;
     void updateColorOfCircles(QVector3D const& color);
     QVector<gui::Circle> const& circles() const;
 

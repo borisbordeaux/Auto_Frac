@@ -54,11 +54,18 @@ public:
 
     void updateDataCircles();
     void setSelectedCircle(int circleIndex);
+    gui::Circle* selectedCircle();
+
+    void setSelectedCircleDual(int circleIndex);
+    gui::Circle* selectedCircleDual();
 
     void updateDataMesh();
     void updateData();
 
     he::Mesh* mesh();
+
+    void removeSelectedCircle();
+    void removeSelectedCircleDual();
 
 public slots:
     [[maybe_unused]] void slotOpenOBJFile();

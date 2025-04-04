@@ -6,6 +6,7 @@ enum class PickingType {
     PickingEdge,
     PickingVertex,
     PickingCircle,
+    PickingCircleDual,
     PickingNone
 };
 

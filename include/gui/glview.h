@@ -80,6 +80,8 @@ private:
     void removeSelectedFace();
     void removeSelectedHalfEdge();
     void removeSelectedVertex();
+    void removeSelectedCircle();
+    void removeSelectedCircleDual();
 
 private:
     //camera of the scene

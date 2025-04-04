@@ -98,6 +98,7 @@ void BatchFace::render(PickingType type) {
         case PickingType::PickingEdge:
         case PickingType::PickingVertex:
         case PickingType::PickingCircle:
+        case PickingType::PickingCircleDual:
             //draw only in depth buffer
             glColorMask(false, false, false, false);
             m_program.bind();
