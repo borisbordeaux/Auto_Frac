@@ -774,7 +774,7 @@ void Polytopal2DWindow::setSelectedVertex2(int vertexIndex) {
 void Polytopal2DWindow::setSelectedCircle(int circleIndex) {
     m_batchCircle.setSelectedCircle(circleIndex);
     if (m_batchCircle.selectedCircle() != nullptr) {
-        qDebug() << "Radius:" << m_batchCircle.selectedCircle()->radius() << " real radius:" << m_circles[circleIndex - 1].radius();
+        qDebug() << "Radius:" << m_batchCircle.selectedCircle()->radius() << " real radius:" << m_circles[circleIndex - 1].radius() << " scalar product with itself:" << poly::InversiveCoordinates::scalarProduct(m_circles[circleIndex - 1], m_circles[circleIndex - 1]);
         qDebug() << "----------------";
     }
 }
@@ -786,7 +786,7 @@ gui::Circle* Polytopal2DWindow::selectedCircle() {
 void Polytopal2DWindow::setSelectedCircleDual(int circleIndex) {
     m_batchCircleDual.setSelectedCircle(circleIndex);
     if (m_batchCircleDual.selectedCircle() != nullptr) {
-        qDebug() << "Radius:" << m_batchCircleDual.selectedCircle()->radius() << " real radius:" << m_circlesDual[circleIndex - 1].radius();
+        qDebug() << "Radius:" << m_batchCircleDual.selectedCircle()->radius() << " real radius:" << m_circlesDual[circleIndex - 1].radius() << " scalar product with itself:" << poly::InversiveCoordinates::scalarProduct(m_circlesDual[circleIndex - 1], m_circlesDual[circleIndex - 1]);
         qDebug() << "----------------";
     }
 }

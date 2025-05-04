@@ -12,12 +12,13 @@ enum class EdgeType {
 };
 
 enum class CantorType {
-    Classic_Cantor,
+    Linear_Cantor,
     Quadratic_Cantor,
     Cubic_Cantor
 };
 
 enum class BezierType {
+    Linear_Bezier,
     Quadratic_Bezier,
     Cubic_Bezier
 };

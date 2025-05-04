@@ -648,7 +648,7 @@ frac::CantorType AutoSub2DWindow::getCantorType() const {
         case 2:
             return frac::CantorType::Cubic_Cantor;
         default:
-            return frac::CantorType::Classic_Cantor;
+            return frac::CantorType::Linear_Cantor;
     }
 }
 

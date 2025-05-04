@@ -115,7 +115,7 @@ std::size_t frac::Edge::nbControlPoints(frac::BezierType bezierType, frac::Canto
     switch (this->edgeType()) {
         case EdgeType::CANTOR:
             switch (cantorType) {
-                case CantorType::Classic_Cantor:
+                case CantorType::Linear_Cantor:
                     return 2;
                 case CantorType::Quadratic_Cantor:
                     return 3;
@@ -125,6 +125,8 @@ std::size_t frac::Edge::nbControlPoints(frac::BezierType bezierType, frac::Canto
             break;
         case EdgeType::BEZIER:
             switch (bezierType) {
+                case BezierType::Linear_Bezier:
+                    return 2;
                 case BezierType::Quadratic_Bezier:
                     return 3;
                 case BezierType::Cubic_Bezier:
@@ -136,25 +138,5 @@ std::size_t frac::Edge::nbControlPoints(frac::BezierType bezierType, frac::Canto
 }
 
 std::size_t frac::Edge::nbInternControlPoints(frac::BezierType bezierType, frac::CantorType cantorType) const {
-    switch (this->edgeType()) {
-        case EdgeType::CANTOR:
-            switch (cantorType) {
-                case CantorType::Classic_Cantor:
-                    return 0;
-                case CantorType::Quadratic_Cantor:
-                    return 1;
-                case CantorType::Cubic_Cantor:
-                    return 2;
-            }
-            break;
-        case EdgeType::BEZIER:
-            switch (bezierType) {
-                case BezierType::Quadratic_Bezier:
-                    return 1;
-                case BezierType::Cubic_Bezier:
-                    return 2;
-            }
-    }
-    //to avoid warning, but may not be executed
-    return 0;
+    return nbControlPoints(bezierType, cantorType) - 2;
 }

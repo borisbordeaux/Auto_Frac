@@ -182,7 +182,7 @@ void frac::StructurePrinter::print_impl_of_edge(const frac::Edge& edge) {
 void frac::StructurePrinter::print_delay_cantor_impl(unsigned int n, unsigned int delay_count) {
     m_filePrinter.append_nl("    C" + std::to_string(n) + "_" + std::to_string(delay_count) + ".subs = {Sub('0'): " + (delay_count > 1 ? "C" + std::to_string(n) + "_" + std::to_string(delay_count - 1) : "C" + std::to_string(n)) + "}");
     m_filePrinter.append_nl("    C" + std::to_string(n) + "_" + std::to_string(delay_count) + ".buildIntern()");
-    if (m_structure.cantorType() == frac::CantorType::Classic_Cantor) {
+    if (m_structure.cantorType() == frac::CantorType::Linear_Cantor) {
         m_filePrinter.append_nl("    C" + std::to_string(n) + "_" + std::to_string(delay_count) + ".space = [Bord_('0'), Bord_('1')]");
     } else if (m_structure.cantorType() == frac::CantorType::Quadratic_Cantor) {
         m_filePrinter.append_nl("    C" + std::to_string(n) + "_" + std::to_string(delay_count) + ".space = [Bord_('0'), Intern_(''), Bord_('1')]");
@@ -204,7 +204,7 @@ void frac::StructurePrinter::print_delay_cantor_impl(unsigned int n, unsigned in
     m_filePrinter.append_nl("    C" + std::to_string(n) + "_" + std::to_string(delay_count) + "(Bord('0') + Sub('0'), Sub('0') + Bord('0'))");
     m_filePrinter.append_nl("    C" + std::to_string(n) + "_" + std::to_string(delay_count) + "(Bord('1') + Sub('0'), Sub('0') + Bord('1'))");
 
-    if (m_structure.cantorType() == frac::CantorType::Classic_Cantor) {
+    if (m_structure.cantorType() == frac::CantorType::Linear_Cantor) {
         m_filePrinter.append_nl("    C" + std::to_string(n) + "_" + std::to_string(delay_count) + ".grid.elems = [Figure(1, [Bord_('0'), Bord_('1')])]");
     } else if (m_structure.cantorType() == frac::CantorType::Quadratic_Cantor) {
         m_filePrinter.append_nl("    C" + std::to_string(n) + "_" + std::to_string(delay_count) + ".grid.elems = [Figure(1, [Bord_('0'), Intern_(''), Bord_('1')])]");
@@ -243,7 +243,7 @@ void frac::StructurePrinter::print_cantor_n_state_impl(unsigned int n) {
     m_filePrinter.append_nl("Sub('" + std::to_string(n - 1) + "'): C" + std::to_string(n) + "}");
     m_filePrinter.append_nl("    C" + std::to_string(n) + ".buildIntern()");
 
-    if (m_structure.cantorType() == frac::CantorType::Classic_Cantor) {
+    if (m_structure.cantorType() == frac::CantorType::Linear_Cantor) {
         m_filePrinter.append_nl("    C" + std::to_string(n) + ".space = [Bord_('0'), Bord_('1')]");
     } else if (m_structure.cantorType() == frac::CantorType::Quadratic_Cantor) {
         m_filePrinter.append_nl("    C" + std::to_string(n) + ".space = [Bord_('0'), Intern_(''), Bord_('1')]");
@@ -268,7 +268,7 @@ void frac::StructurePrinter::print_cantor_n_state_impl(unsigned int n) {
     m_filePrinter.append_nl("    C" + std::to_string(n) + "(Bord('0') + Sub('0'), Sub('0') + Bord('0'))");
     m_filePrinter.append_nl("    C" + std::to_string(n) + "(Bord('1') + Sub('0'), Sub(" + std::to_string(n - 1) + ") + Bord('1'))");
 
-    if (m_structure.cantorType() == frac::CantorType::Classic_Cantor) {
+    if (m_structure.cantorType() == frac::CantorType::Linear_Cantor) {
         m_filePrinter.append_nl("    C" + std::to_string(n) + ".grid.elems = [Figure(1, [Bord_('0'), Bord_('1')])]");
     } else if (m_structure.cantorType() == frac::CantorType::Quadratic_Cantor) {
         m_filePrinter.append_nl("    C" + std::to_string(n) + ".grid.elems = [Figure(1, [Bord_('0'), Intern_(''), Bord_('1')])]");
@@ -277,7 +277,7 @@ void frac::StructurePrinter::print_cantor_n_state_impl(unsigned int n) {
     }
 
     //matrices
-    if (m_structure.cantorType() == frac::CantorType::Classic_Cantor) {
+    if (m_structure.cantorType() == frac::CantorType::Linear_Cantor) {
         for (unsigned int i = 0; i < n; ++i) {  // for each subdivision T0, T1, ... Tn-1
             m_filePrinter.append_nl("    C" + std::to_string(n) + ".initMat[Sub_('" + std::to_string(i) + "')] = FMat([");
             std::vector<float> t = frac::utils::get_cantor_linear_transformation(i, n);
