@@ -774,7 +774,11 @@ void Polytopal2DWindow::setSelectedVertex2(int vertexIndex) {
 void Polytopal2DWindow::setSelectedCircle(int circleIndex) {
     m_batchCircle.setSelectedCircle(circleIndex);
     if (m_batchCircle.selectedCircle() != nullptr) {
-        qDebug() << "Radius:" << m_batchCircle.selectedCircle()->radius() << " real radius:" << m_circles[circleIndex - 1].radius() << " scalar product with itself:" << poly::InversiveCoordinates::scalarProduct(m_circles[circleIndex - 1], m_circles[circleIndex - 1]);
+        gui::Circle* c = m_batchCircle.selectedCircle();
+        poly::InversiveCoordinates ic = m_circles[circleIndex - 1];
+        poly::InversiveCoordinates e4(0,0,0,1);
+        qDebug() << "Inversive coordinates:" <<  ic.e1() << ic.e2() << ic.e3() << ic.e4();
+        qDebug() << "Radius:" << c->radius() << " oriented radius:" << ic.radius() << " scalar product with itself:" << poly::InversiveCoordinates::scalarProduct(ic, ic) << " scalar product with e4:" << poly::InversiveCoordinates::scalarProduct(e4, ic);
         qDebug() << "----------------";
     }
 }

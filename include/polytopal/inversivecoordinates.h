@@ -24,6 +24,11 @@ public:
     InversiveCoordinates const* inverter() const;
     void setInverter(InversiveCoordinates const* inverter);
 
+    double e1() const { return m_e1; };
+    double e2() const { return m_e2; };
+    double e3() const { return m_e3; };
+    double e4() const { return m_e4; };
+
 private:
     double m_e1;
     double m_e2;
