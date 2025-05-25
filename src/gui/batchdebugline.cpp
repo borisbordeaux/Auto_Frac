@@ -16,11 +16,13 @@ void BatchDebugLine::init() {
     m_vao.release();
 
     m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/debugline/vs.glsl");
+    m_program.addShaderFromSourceFile(QOpenGLShader::Geometry, "../shaders/debugline/gs.glsl");
     m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "../shaders/debugline/fs.glsl");
     m_program.link();
     m_program.bind();
     m_projMatrixLoc = m_program.uniformLocation("projMatrix");
     m_viewMatrixLoc = m_program.uniformLocation("mvMatrix");
+    m_invViewportLoc = m_program.uniformLocation("invViewport");
 }
 
 void BatchDebugLine::update() {
@@ -31,10 +33,17 @@ void BatchDebugLine::update() {
 
 void BatchDebugLine::render(PickingType type) {
     if (type != PickingType::PickingNone) { return; }
+    bool cullFaceEnabled = glIsEnabled(GL_CULL_FACE);
+    if (cullFaceEnabled) {
+        glDisable(GL_CULL_FACE);
+    }
     m_program.bind();
     m_vao.bind();
     glDrawArrays(GL_LINES, 0, m_count / m_floatsPerVertex);
     m_program.release();
+    if (cullFaceEnabled) {
+        glEnable(GL_CULL_FACE);
+    }
 }
 
 void BatchDebugLine::setProjection(QMatrix4x4 projection) {
@@ -48,6 +57,12 @@ void BatchDebugLine::setCamera(Camera camera) {
     camera.zoom(0.001f);
     m_program.bind();
     m_program.setUniformValue(m_viewMatrixLoc, camera.getViewMatrix());
+    m_program.release();
+}
+
+void BatchDebugLine::setInvViewport(float x, float y) {
+    m_program.bind();
+    m_program.setUniformValue(m_invViewportLoc, x, y);
     m_program.release();
 }
 

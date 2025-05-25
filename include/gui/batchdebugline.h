@@ -14,6 +14,7 @@ public:
 
     void setProjection(QMatrix4x4 projection) override;
     void setCamera(Camera camera) override;
+    void setInvViewport(float x, float y) override;
 
     void addDebugLine(QVector3D const& v1, QVector3D const& v2);
     void clearDebugLine();
@@ -33,6 +34,7 @@ private:
     QOpenGLShaderProgram m_program;
     int m_projMatrixLoc = 0;
     int m_viewMatrixLoc = 0;
+    int m_invViewportLoc = 0;
 };
 
 
