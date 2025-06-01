@@ -126,8 +126,30 @@ void GLView::mousePressEvent(QMouseEvent* event) {
         m_lastPos = event->pos().toPointF();
         m_clickPos = event->pos();
     } else if (event->button() & Qt::MouseButton::MiddleButton) {
-        m_cameraBeforeAnim = m_camera;
-        m_timerAnimCamera.start();
+        if (m_mainWindow->selectedVertex() != nullptr && event->modifiers().testFlag(Qt::ControlModifier)) {
+            this->centerMeshOnVertex(m_mainWindow->selectedVertex()->pos());
+            if (m_mainWindow->selectedVertex2() != nullptr) {
+                this->rotateMeshForVertex(m_mainWindow->selectedVertex2()->pos());
+            }
+            m_mainWindow->updateData();
+            this->update();
+        } else if (m_mainWindow->selectedEdge() != nullptr && event->modifiers().testFlag(Qt::ControlModifier)) {
+            he::HalfEdge* he = m_mainWindow->selectedEdge();
+            QVector3D v1 = he->origin()->pos();
+            QVector3D v2 = he->next()->origin()->pos();
+            QVector3D v = 0.4990f * v1 + 0.5001 * v2;
+            this->centerMeshOnVertex(v);
+            this->rotateMeshForVertex(v1);
+            m_mainWindow->updateData();
+            this->update();
+        } else if (m_mainWindow->selectedFace() != nullptr && event->modifiers().testFlag(Qt::ControlModifier)) {
+            this->centerMeshOnVertex(m_mainWindow->selectedFace()->barycenter());
+            m_mainWindow->updateData();
+            this->update();
+        } else {
+            m_cameraBeforeAnim = m_camera;
+            m_timerAnimCamera.start();
+        }
     }
     m_lastEnd = std::chrono::high_resolution_clock::now();
 }
@@ -433,10 +455,10 @@ void GLView::keyReleaseEvent(QKeyEvent* event) {
         if (m_mainWindow->selectedVertex() != nullptr && m_mainWindow->selectedVertex2() == nullptr) {
             this->removeSelectedVertex();
         }
-        if(m_mainWindow->selectedCircle() != nullptr) {
+        if (m_mainWindow->selectedCircle() != nullptr) {
             this->removeSelectedCircle();
         }
-        if(m_mainWindow->selectedCircleDual() != nullptr) {
+        if (m_mainWindow->selectedCircleDual() != nullptr) {
             this->removeSelectedCircleDual();
         }
     }
@@ -645,4 +667,22 @@ void GLView::restoreMeshColor() {
 void GLView::enableCullFace(bool enable) {
     m_cullFace = enable;
     m_flagCullFaceChanged = true;
+}
+
+void GLView::centerMeshOnVertex(QVector3D const& pos) {
+    float r = pos.length();
+    float t = qRadiansToDegrees(qAcos(pos.y() / r));
+    float p = qRadiansToDegrees(qAtan2(pos.x(), pos.z()));
+    QMatrix4x4 transform;
+    transform.rotate(-p, 0, 1, 0);
+    transform.rotate(-t + 90.0f, 1, 0, 0);
+    m_mainWindow->mesh()->transformMesh(transform);
+}
+
+void GLView::rotateMeshForVertex(QVector3D const& pos) {
+    float r = pos.length();
+    float t = qRadiansToDegrees(qAcos(pos.y() / r));
+    QMatrix4x4 transform;
+    transform.rotate(-t + 90.0f, 0, 0, 1);
+    m_mainWindow->mesh()->transformMesh(transform);
 }

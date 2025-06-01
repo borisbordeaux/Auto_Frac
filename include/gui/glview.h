@@ -83,6 +83,9 @@ private:
     void removeSelectedCircle();
     void removeSelectedCircleDual();
 
+    void centerMeshOnVertex(QVector3D const& pos);
+    void rotateMeshForVertex(QVector3D const& pos);
+
 private:
     //camera of the scene
     Camera m_camera;
