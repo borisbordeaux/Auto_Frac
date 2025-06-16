@@ -31,6 +31,6 @@ void main() {
         fragColor = vec4(ambientColor + lambertian * diffuseColor + specular * specularColor, color.a);
         //fragColor = vec4(ambientColor + lambertian * diffuseColor, color.a);
     } else {
-        fragColor = vec4(1.0, 0.3, 0.3, 2.0 * color.a);
+        fragColor = vec4(1.0, 0.3, 0.3, 1.2 * color.a);
     }
 }

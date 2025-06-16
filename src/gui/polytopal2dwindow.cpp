@@ -218,6 +218,12 @@ void Polytopal2DWindow::canonicalizeStep() {
     }
 
     this->updateDataMesh();
+
+    if(m_batchDebugLine.containsData()){
+        this->slotDisplayPolar(); // to clear data
+        this->slotDisplayPolar(); // to display polar
+    }
+
     m_view->update();
 }
 
@@ -818,6 +824,10 @@ void Polytopal2DWindow::updateData() {
     this->updateCirclesDual();
     this->updateCircles();
     this->updateDataMesh();
+    if(m_batchDebugLine.containsData()){
+        this->slotDisplayPolar(); // to clear data
+        this->slotDisplayPolar(); // to display polar
+    }
 }
 
 void Polytopal2DWindow::updateBatchCircles(bool dual) {

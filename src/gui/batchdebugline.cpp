@@ -84,7 +84,7 @@ void BatchDebugLine::clearDebugLine() {
 }
 
 int BatchDebugLine::renderOrder() {
-    return 0;
+    return 2;
 }
 
 int BatchDebugLine::pickingOrder() {

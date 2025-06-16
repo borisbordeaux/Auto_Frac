@@ -159,56 +159,55 @@ void GLView::mouseMoveEvent(QMouseEvent* event) {
     qreal dx = event->position().x() - m_lastPos.x();
     qreal dy = event->position().y() - m_lastPos.y();
 
+    m_lastPos = event->pos();
+
     if (m_isKeyXPressed) {
         if (m_mainWindow->selectedVertex() != nullptr) {
             this->handleMoveXVertex(static_cast<float>(dx));
-            m_lastPos = event->pos();
             return;
         }
         if (m_mainWindow->selectedEdge() != nullptr) {
             this->handleMoveXEdge(static_cast<float>(dx));
-            m_lastPos = event->pos();
             return;
         }
         if (m_mainWindow->selectedFace() != nullptr) {
             this->handleMoveXFace(static_cast<float>(dx));
-            m_lastPos = event->pos();
             return;
         }
+        this->handleMoveXPolyhedron(static_cast<float>(dx));
+        return;
     }
     if (m_isKeyYPressed) {
         if (m_mainWindow->selectedVertex() != nullptr) {
             this->handleMoveYVertex(static_cast<float>(-dy));
-            m_lastPos = event->pos();
             return;
         }
         if (m_mainWindow->selectedEdge() != nullptr) {
             this->handleMoveYEdge(static_cast<float>(-dy));
-            m_lastPos = event->pos();
             return;
         }
         if (m_mainWindow->selectedFace() != nullptr) {
             this->handleMoveYFace(static_cast<float>(-dy));
-            m_lastPos = event->pos();
             return;
         }
+        this->handleMoveYPolyhedron(static_cast<float>(-dy));
+        return;
     }
     if (m_isKeyZPressed) {
         if (m_mainWindow->selectedVertex() != nullptr) {
             this->handleMoveZVertex(static_cast<float>(dx - dy) / 2.0f);
-            m_lastPos = event->pos();
             return;
         }
         if (m_mainWindow->selectedEdge() != nullptr) {
             this->handleMoveZEdge(static_cast<float>(dx - dy) / 2.0f);
-            m_lastPos = event->pos();
             return;
         }
         if (m_mainWindow->selectedFace() != nullptr) {
             this->handleMoveZFace(static_cast<float>(dx - dy) / 2.0f);
-            m_lastPos = event->pos();
             return;
         }
+        this->handleMoveZPolyhedron(static_cast<float>(dx - dy) / 2.0f);
+        return;
     }
 
     if (event->buttons() & Qt::LeftButton) {
@@ -240,8 +239,6 @@ void GLView::mouseMoveEvent(QMouseEvent* event) {
         }
         this->update();
     }
-
-    m_lastPos = event->pos();
 }
 
 void GLView::wheelEvent(QWheelEvent* event) {
@@ -549,6 +546,36 @@ void GLView::handleMoveYFace(float dy) {
 
 void GLView::handleMoveZFace(float dz) {
     for (he::Vertex* v: m_mainWindow->selectedFace()->allVertices()) {
+        QVector3D newPos = v->pos();
+        newPos.setZ(newPos.z() + dz / 100.0f);
+        v->setPos(newPos, true);
+    }
+    m_mainWindow->updateData();
+    update();
+}
+
+void GLView::handleMoveXPolyhedron(float dx) {
+    for (he::Vertex* v: m_mainWindow->mesh()->vertices()) {
+        QVector3D newPos = v->pos();
+        newPos.setX(newPos.x() + dx / 100.0f);
+        v->setPos(newPos, true);
+    }
+    m_mainWindow->updateData();
+    update();
+}
+
+void GLView::handleMoveYPolyhedron(float dy) {
+    for (he::Vertex* v: m_mainWindow->mesh()->vertices()) {
+        QVector3D newPos = v->pos();
+        newPos.setY(newPos.y() + dy / 100.0f);
+        v->setPos(newPos, true);
+    }
+    m_mainWindow->updateData();
+    update();
+}
+
+void GLView::handleMoveZPolyhedron(float dz) {
+    for (he::Vertex* v: m_mainWindow->mesh()->vertices()) {
         QVector3D newPos = v->pos();
         newPos.setZ(newPos.z() + dz / 100.0f);
         v->setPos(newPos, true);

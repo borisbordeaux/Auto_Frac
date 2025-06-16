@@ -74,6 +74,10 @@ private:
     void handleMoveYFace(float dy);
     void handleMoveZFace(float dz);
 
+    void handleMoveXPolyhedron(float dx);
+    void handleMoveYPolyhedron(float dy);
+    void handleMoveZPolyhedron(float dz);
+
     void cutFaceOnSelectedVertices();
     void cutSelectedHalfEdge();
 
