@@ -220,13 +220,6 @@ void BatchCircleDual::resetCircles() {
     m_indices.clear();
 }
 
-void BatchCircleDual::updateColorOfCircles(const QVector3D& color) {
-    for (gui::Circle& c: m_circles) {
-        c.setColor(color);
-    }
-    this->updateData();
-}
-
 int BatchCircleDual::renderOrder() {
     return 4;
 }

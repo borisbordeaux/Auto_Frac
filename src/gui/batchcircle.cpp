@@ -51,6 +51,7 @@ void BatchCircle::init() {
     m_rightPlaneLoc = m_program.uniformLocation("rightPlane");
     m_topPlaneLoc = m_program.uniformLocation("topPlane");
     m_bottomPlaneLoc = m_program.uniformLocation("bottomPlane");
+    m_useColoredShaderLoc = m_program.uniformLocation("useColors");
 
     //init shader for circles picking
     m_programPicking.addShaderFromSourceFile(QOpenGLShader::Vertex, "../shaders/circles/picking/vs.glsl");
@@ -220,13 +221,6 @@ void BatchCircle::removeSelectedCircle() {
     this->updateData();
 }
 
-void BatchCircle::updateColorOfCircles(QVector3D const& color) {
-    for (gui::Circle& c: m_circles) {
-        c.setColor(color);
-    }
-    this->updateData();
-}
-
 QVector<gui::Circle> const& BatchCircle::circles() const {
     return m_circles;
 }
@@ -300,4 +294,10 @@ void BatchCircle::sendUniformsPlaneFrustum(bool picking) {
 
 int BatchCircle::selectedCircleIndex() const {
     return m_selectedCircle - 1;
+}
+
+void BatchCircle::useColoredShader(bool use) {
+    m_program.bind();
+    glUniform1ui(m_useColoredShaderLoc, use ? 1 : 0);
+    m_program.release();
 }

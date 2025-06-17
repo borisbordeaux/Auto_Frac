@@ -25,11 +25,14 @@ public:
     int renderOrder() override;
     int pickingOrder() override;
 
+    void useColoredShader(bool use);
+
 private:
     int m_projMatrixLoc = 0;
     int m_viewMatrixLoc = 0;
 
     int m_nbVerticesLoc = 0;
+    int m_useColoredShaderLoc = 0;
 
     QOpenGLVertexArrayObject m_vao;
     QOpenGLBuffer m_vbo;

@@ -1,10 +1,12 @@
+#include <QColor>
 #include "polytopal/inversivecoordinates.h"
+#include "halfedge/vertex.h"
 
 poly::InversiveCoordinates::InversiveCoordinates(double e1, double e2, double e3, double e4) :
-        m_e1(e1), m_e2(e2), m_e3(e3), m_e4(e4), m_inverter(nullptr) {}
+        m_e1(e1), m_e2(e2), m_e3(e3), m_e4(e4), m_inverter(nullptr), m_illuminatingVertex(nullptr) {}
 
 poly::InversiveCoordinates::InversiveCoordinates(he::Point3D point) :
-        m_inverter(nullptr) {
+        m_inverter(nullptr), m_illuminatingVertex(nullptr) {
     double coef = 1.0 / qSqrt(point.lengthSquared() - 1.0);
     m_e1 = coef * point.x();
     m_e2 = coef * point.y();
@@ -21,7 +23,9 @@ bool poly::InversiveCoordinates::areOrthogonal(poly::InversiveCoordinates const&
 }
 
 poly::InversiveCoordinates poly::InversiveCoordinates::inverse(poly::InversiveCoordinates const& inverted, poly::InversiveCoordinates const& inverter) {
-    return inverted - inverter * (2.0 * poly::InversiveCoordinates::scalarProduct(inverted, inverter));
+    poly::InversiveCoordinates res = inverted - inverter * (2.0 * poly::InversiveCoordinates::scalarProduct(inverted, inverter));
+    res.setIlluminatingVertex(inverted.m_illuminatingVertex);
+    return res;
 }
 
 poly::InversiveCoordinates poly::InversiveCoordinates::operator*(double rhs) const {
@@ -67,6 +71,12 @@ gui::Circle poly::InversiveCoordinates::inverseStereographicProject() const {
 
     //return the circle with the new axes
     gui::Circle res { H.toQVector3D(), static_cast<float>(r), xAxis.toQVector3D(), yAxis.toQVector3D() };
+    if (m_illuminatingVertex != nullptr) {
+        QColor color = QColor::fromString(m_illuminatingVertex->userData());
+        if (color.isValid()) {
+            res.setColor({ color.redF(), color.greenF(), color.blueF() });
+        }
+    }
     return res;
 }
 
@@ -94,12 +104,24 @@ he::Point3D poly::InversiveCoordinates::tangencyPoint(poly::InversiveCoordinates
 }
 
 gui::Circle poly::InversiveCoordinates::toCircle() const {
-    return {{ static_cast<float>(m_e1 / (m_e4 - m_e3)),
-              static_cast<float>(m_e2 / (m_e4 - m_e3)),
-              0.0f },
-            static_cast<float>(qAbs(1.0 / (m_e4 - m_e3))) };
+    gui::Circle res {{ static_cast<float>(m_e1 / (m_e4 - m_e3)),
+                       static_cast<float>(m_e2 / (m_e4 - m_e3)),
+                       0.0f },
+                     static_cast<float>(qAbs(1.0 / (m_e4 - m_e3))) };
+
+    if (m_illuminatingVertex != nullptr) {
+        QColor color = QColor::fromString(m_illuminatingVertex->userData());
+        if (color.isValid()) {
+            res.setColor({ color.redF(), color.greenF(), color.blueF() });
+        }
+    }
+    return res;
 }
 
 double poly::InversiveCoordinates::radius() const {
     return 1.0 / (m_e4 - m_e3);
+}
+
+void poly::InversiveCoordinates::setIlluminatingVertex(he::Vertex* v) {
+    m_illuminatingVertex = v;
 }

@@ -24,8 +24,9 @@ public:
     gui::Circle* selectedCircle();
     void removeSelectedCircle();
     int selectedCircleIndex() const;
-    void updateColorOfCircles(QVector3D const& color);
     QVector<gui::Circle> const& circles() const;
+
+    void useColoredShader(bool use);
 
     int renderOrder() override;
     int pickingOrder() override;
@@ -53,6 +54,7 @@ private:
     int m_rightPlaneLoc = 0;
     int m_topPlaneLoc = 0;
     int m_bottomPlaneLoc = 0;
+    int m_useColoredShaderLoc = 0;
 
     int m_projMatrixPickingLoc = 0;
     int m_viewMatrixPickingLoc = 0;

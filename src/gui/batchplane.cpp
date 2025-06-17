@@ -31,7 +31,7 @@ void BatchPlane::init() {
     //allocate necessary memory
     m_vbo.allocate(&planeVertices, sizeof(planeVertices));
 
-    //enable enough attrib array for all the data of the mesh's vertices
+    //enable enough attrib arrays for all the data of the mesh's vertices
     glEnableVertexAttribArray(0); //coordinates
     //3 coordinates of the vertex
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
@@ -48,6 +48,7 @@ void BatchPlane::init() {
     m_projMatrixLoc = m_program.uniformLocation("projMatrix");
     m_viewMatrixLoc = m_program.uniformLocation("mvMatrix");
     m_nbVerticesLoc = m_program.uniformLocation("nbVertices");
+    m_useColoredShaderLoc = m_program.uniformLocation("useColors");
 
     this->updateMeshData({});
 }
@@ -89,12 +90,15 @@ void BatchPlane::updateMeshData(std::vector<poly::InversiveCoordinates> const& c
     }
 
     std::vector<float> data;
-    data.reserve(circles.size() * 3);
+    data.reserve(circles.size() * 6);
     for (poly::InversiveCoordinates const& c: circles) {
         gui::Circle v = c.toCircle();
         data.push_back(v.center().x());
         data.push_back(v.center().y());
         data.push_back(static_cast<float>(c.radius()));
+        data.push_back(v.color().x());
+        data.push_back(v.color().y());
+        data.push_back(v.color().z());
     }
 
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ssbo);
@@ -112,4 +116,10 @@ int BatchPlane::renderOrder() {
 
 int BatchPlane::pickingOrder() {
     return 4;
+}
+
+void BatchPlane::useColoredShader(bool use) {
+    m_program.bind();
+    glUniform1ui(m_useColoredShaderLoc, use ? 1 : 0);
+    m_program.release();
 }

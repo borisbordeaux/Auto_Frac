@@ -4,6 +4,10 @@
 #include "gui/circle.h"
 #include "halfedge/point3d.h"
 
+namespace he {
+class Vertex;
+}
+
 namespace poly {
 class InversiveCoordinates {
 public:
@@ -24,6 +28,8 @@ public:
     InversiveCoordinates const* inverter() const;
     void setInverter(InversiveCoordinates const* inverter);
 
+    void setIlluminatingVertex(he::Vertex* v);
+
     double e1() const { return m_e1; };
     double e2() const { return m_e2; };
     double e3() const { return m_e3; };
@@ -36,6 +42,7 @@ private:
     double m_e4;
 
     InversiveCoordinates const* m_inverter;
+    he::Vertex* m_illuminatingVertex;
 };
 } //namespace poly
 

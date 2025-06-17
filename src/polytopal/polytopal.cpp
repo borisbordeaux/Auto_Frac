@@ -139,6 +139,7 @@ std::vector<poly::InversiveCoordinates> poly::computeIlluminatedCircles(const he
     std::vector<poly::InversiveCoordinates> res;
     for (he::Vertex* v: m.vertices()) {
         poly::InversiveCoordinates c { v->posD() };
+        c.setIlluminatingVertex(v);
         res.push_back(c);
     }
     return res;

@@ -19,7 +19,6 @@ public:
 
     void addCircle(gui::Circle const& circle);
     void resetCircles();
-    void updateColorOfCircles(QVector3D const& color);
 
     int renderOrder() override;
     int pickingOrder() override;
