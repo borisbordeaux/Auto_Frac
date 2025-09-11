@@ -57,6 +57,7 @@ public slots:
     [[maybe_unused]] void slotComputeNbCells();
     [[maybe_unused]] void slotComputeNbLacunas();
     [[maybe_unused]] void slotComputePorosityMetrics();
+    [[maybe_unused]] void slotGenerateMassSpringSystemFile();
 
 private:
     static frac::Adjacency toConstraint(QString const& constraintText);

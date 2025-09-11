@@ -1522,6 +1522,13 @@ QListWidget {
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="pushButton_generateMSSFile">
+         <property name="text">
+          <string>Generate Mass Spring System File</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QCheckBox" name="checkBox_planarControlPoints">
          <property name="text">
           <string>Planar Control Points</string>
@@ -1717,8 +1724,8 @@ QListWidget {
    <slot>slotEditCP()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>393</x>
-     <y>1048</y>
+     <x>266</x>
+     <y>1062</y>
     </hint>
     <hint type="destinationlabel">
      <x>3</x>
@@ -1733,8 +1740,8 @@ QListWidget {
    <slot>slotGenerateScript()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>566</x>
-     <y>1047</y>
+     <x>369</x>
+     <y>1062</y>
     </hint>
     <hint type="destinationlabel">
      <x>1139</x>
@@ -2126,6 +2133,22 @@ QListWidget {
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton_generateMSSFile</sender>
+   <signal>clicked()</signal>
+   <receiver>AutoSub2DWindow</receiver>
+   <slot>slotGenerateMassSpringSystemFile()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>473</x>
+     <y>1052</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1137</x>
+     <y>1010</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>slotGenerateScript()</slot>
@@ -2162,5 +2185,6 @@ QListWidget {
   <slot>slotComputeNbLacunas()</slot>
   <slot>slotComputePorosityMetrics()</slot>
   <slot>slotOnFaceAlgoChanged(int)</slot>
+  <slot>slotGenerateMassSpringSystemFile()</slot>
  </slots>
 </ui>

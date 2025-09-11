@@ -19,6 +19,7 @@ class StructurePrinter {
 public:
     explicit StructurePrinter(frac::Structure const& structure, bool planarControlPoints, std::string filename, std::vector<std::vector<Point2D>> const& coords = {});
     void exportStruct();
+    void exportMassSpringSystemStruct();
 private:
     void print_header();
     void print_vertex_state();

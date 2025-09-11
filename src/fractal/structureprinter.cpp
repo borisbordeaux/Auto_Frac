@@ -9,6 +9,7 @@ frac::StructurePrinter::StructurePrinter(frac::Structure const& structure, bool 
         m_structure(structure), m_planarControlPoints(planarControlPoints), m_filename(std::move(filename)), m_coords(coords) {}
 
 void frac::StructurePrinter::exportStruct() {
+    m_filePrinter.reset();
     this->print_header();
     this->print_vertex_state();
     m_filePrinter.append_nl("    ##############################");
@@ -561,5 +562,42 @@ void frac::StructurePrinter::print_footer() {
     m_filePrinter.append_nl("    model_init.solve()");
     m_filePrinter.append_nl("    model_init.display()");
     m_filePrinter.append_nl("    print('End')");
+}
+
+void frac::StructurePrinter::exportMassSpringSystemStruct() {
+    for (frac::Face const& f: m_structure.allFaces()) {
+        // export one file for all faces
+        m_filePrinter.reset();
+        m_filePrinter.append_nl("# dimension");
+        std::size_t dim = f.nbControlPoints(m_structure.bezierType(), m_structure.cantorType());
+        m_filePrinter.append("d ");
+        m_filePrinter.append_nl(std::to_string(dim));
+        m_filePrinter.append_nl("# fixed masses");
+        std::size_t indexControlPoint = 0;
+        for (frac::Edge const& edge: f.constData()) {
+            // for all control points but the last (handled by the next edge)
+            for (std::size_t i = 0; i < edge.nbControlPoints(m_structure.bezierType(), m_structure.cantorType()) - 1; i++) {
+                //the first control point
+                if (i == 0) {
+                    m_filePrinter.append("m");
+                    for (std::size_t j = 0; j < dim; j++) {
+                        if (j == indexControlPoint) {
+                            m_filePrinter.append(" 1");
+                        } else {
+                            m_filePrinter.append(" 0");
+                        }
+                    }
+                } else { //all internal control points
+                    m_filePrinter.append("m");
+                    // we need to get the coordinates of the points aka barycentric coordinates when incidence constraints are applied
+                    m_filePrinter.append(" coords to get...");
+                }
+                m_filePrinter.append_nl("");
+                indexControlPoint++;
+            }
+        }
+
+        m_filePrinter.printToFile(m_filename + f.name() + ".mss");
+    }
 }
 

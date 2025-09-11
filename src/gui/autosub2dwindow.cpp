@@ -660,3 +660,40 @@ frac::BezierType AutoSub2DWindow::getBezierType() const {
             return frac::BezierType::Quadratic_Bezier;
     }
 }
+
+void AutoSub2DWindow::slotGenerateMassSpringSystemFile() {
+    frac::Face::reset();
+
+    std::vector<frac::Face> faces;
+    for (int i = 0; i < this->ui->listWidget_faces->count(); ++i) {
+        faces.push_back(frac::Face::fromStr(this->ui->listWidget_faces->item(i)->text().toStdString()));
+    }
+
+    frac::Structure s { faces, this->getBezierType(), this->getCantorType() };
+
+    for (int i = 0; i < this->ui->listWidget_constraints->count(); ++i) {
+        frac::Adjacency c = AutoSub2DWindow::toConstraint(this->ui->listWidget_constraints->item(i)->text());
+        //checks if constraint valid
+        try {
+            bool res = faces.at(c.Face1)[c.Edge1] == faces.at(c.Face2)[c.Edge2];
+            if (!res) {
+                this->setInfo("[Error] Constraint " + std::to_string(i) + " : edges are different!");
+                return;
+            } else {
+                s.addAdjacency(c);
+            }
+        } catch (std::out_of_range const& error) {
+            this->setInfo("[Error] Constraint " + std::to_string(i) + " : faces or edges indices are not valid!");
+            return;
+        }
+    }
+
+    std::ostringstream info;
+
+    frac::StructurePrinter printer(s, this->ui->checkBox_planarControlPoints->isChecked(), "../output/");
+    printer.exportMassSpringSystemStruct();
+
+    info << "[Finished] Result in ../output/Cell_*.mss";
+
+    this->setInfo(info.str());
+}

@@ -16,3 +16,7 @@ void frac::FilePrinter::printToFile(std::string const& filename) {
     file << m_output;
     file.close();
 }
+
+void frac::FilePrinter::reset() {
+    m_output = "";
+}
