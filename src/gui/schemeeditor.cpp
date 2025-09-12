@@ -6,7 +6,7 @@
 
 namespace frac {
 SchemeEditor::SchemeEditor(SchemeWindow& schemeWindow) : QGraphicsView(), m_schemeWindow(schemeWindow) {
-    //setRenderHint(QPainter::Antialiasing);
+    setRenderHint(QPainter::Antialiasing);
 }
 
 void SchemeEditor::mousePressEvent(QMouseEvent* event) {

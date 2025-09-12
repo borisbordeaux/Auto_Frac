@@ -720,6 +720,20 @@ void SchemeWindow::drawSubdInterior(std::size_t i, std::vector<std::vector<QPoin
                     j += nextStepJ;
                 }
                 break;
+            case frac::AlgorithmSubdivision::LinksSurroundDelayAndBezier:
+                j = 0;
+                for (std::size_t k = 0; k < f.constData().size(); k++) {
+                    frac::Edge const& e = f.constData()[k];
+                    frac::Edge const& e_next = f.constData()[(k + 1) % f.constData().size()];
+                    std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->bezierType() == frac::BezierType::Cubic_Bezier ? 3 : 2) : 1;
+                    if (e.isDelay() && e_next.isDelay()) {
+                        QPointF end = coords[i][(j + nextStepJ) % coords[i].size()];
+                        QPointF endEndLine(end + (QVector2D(center - end).normalized() * (QVector2D(center - end).length() - radius)).toPointF());
+                        m_scene.addLine(QLineF(end, endEndLine), SchemeWindow::penOfEdge(f.adjEdge()));
+                    }
+                    j += nextStepJ;
+                }
+                break;
             default:
                 break;
         }
@@ -1032,6 +1046,20 @@ void SchemeWindow::drawSubdBlackPointsOnLacuna(std::size_t i, std::vector<std::v
                     QPointF begin = coords[i][j];
                     QPointF end(begin + (QVector2D(center - begin).normalized() * (QVector2D(center - begin).length() - radius)).toPointF());
                     pointsOnCentralLacuna.emplace_back(end);
+                    j += nextStepJ;
+                }
+                break;
+            case frac::AlgorithmSubdivision::LinksSurroundDelayAndBezier:
+                j = 0;
+                for (std::size_t k = 0; k < f.constData().size(); k++) {
+                    frac::Edge const& e = f.constData()[k];
+                    frac::Edge const& e_next = f.constData()[(k + 1) % f.constData().size()];
+                    std::size_t nextStepJ = e.edgeType() == frac::EdgeType::BEZIER ? (m_structure->bezierType() == frac::BezierType::Cubic_Bezier ? 3 : 2) : 1;
+                    if (e.isDelay() && e_next.isDelay()) {
+                        QPointF end = coords[i][(j + nextStepJ) % coords[i].size()];
+                        QPointF endEndLine(end + (QVector2D(center - end).normalized() * (QVector2D(center - end).length() - radius)).toPointF());
+                        pointsOnCentralLacuna.emplace_back(endEndLine);
+                    }
                     j += nextStepJ;
                 }
                 break;
