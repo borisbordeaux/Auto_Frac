@@ -118,8 +118,7 @@ bool poly::Face::operator==(const poly::Face& other) const {
     if (this->len() != other.len()) {
         return false;
     }
-    return this->m_edges == other.m_edges;
-    //return this->m_face == other.m_face;
+    return this->m_face == other.m_face;
 }
 
 poly::Edge const& poly::Face::operator[](std::size_t index) const {
