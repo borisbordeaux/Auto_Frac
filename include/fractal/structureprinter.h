@@ -3,7 +3,9 @@
 
 #include <vector>
 #include <string>
+#include <map>
 #include "utils/fileprinter.h"
+#include "massspringsystem/massspringsystem.h"
 
 namespace frac {
 
@@ -39,9 +41,11 @@ private:
     void print_space_of_cell(frac::Face const& cell);
     void print_prim_of_cell(frac::Face const& cell);
     void print_edge_adjacencies_of_cell(frac::Face const& cell);
+    void print_init_mat_of_cell(frac::Face const& cell);
     void print_plan_control_points();
     void print_plan_coords_control_points();
     void print_footer();
+    void buildMassSpringSystems();
 
 private:
     frac::Structure const& m_structure;
@@ -49,6 +53,11 @@ private:
     std::string const m_filename;
     std::vector<std::vector<Point2D>> const& m_coords;
     frac::FilePrinter m_filePrinter;
+    std::map<std::string, mss::MassSpringSystem> m_systems;
+
+    // ( index of subface, index of edge, index of control point ) -> index of mass
+    using Key = std::tuple<std::size_t, std::size_t, std::size_t>;
+    std::map<std::string, std::map<Key, std::size_t>> m_mapIndices;
 };
 }
 #endif //AUTOFRAC_STRUCTUREPRINTER_H

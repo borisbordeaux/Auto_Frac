@@ -73,6 +73,7 @@ public:
 
     std::size_t nbControlPoints(BezierType bezierType, CantorType cantorType) const;
     std::vector<std::size_t> controlPointIndices(std::size_t indexEdge, frac::BezierType bezierType, frac::CantorType cantorType, bool reverse) const;
+    std::pair<std::size_t, std::size_t> indexControlPointOfEdge(std::size_t indexControlPointOfFace, frac::BezierType bezierType, frac::CantorType cantorType) const;
 
 private:
     std::vector<frac::Edge> m_data;

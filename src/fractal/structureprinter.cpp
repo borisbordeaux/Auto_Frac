@@ -1,3 +1,4 @@
+#include <iostream>
 #include "fractal/structureprinter.h"
 
 #include "fractal/face.h"
@@ -10,6 +11,7 @@ frac::StructurePrinter::StructurePrinter(frac::Structure const& structure, bool 
         m_structure(structure), m_planarControlPoints(planarControlPoints), m_filename(std::move(filename)), m_coords(coords) {}
 
 void frac::StructurePrinter::exportStruct() {
+    this->buildMassSpringSystems();
     m_filePrinter.reset();
     this->print_header();
     this->print_vertex_state();
@@ -85,6 +87,14 @@ void frac::StructurePrinter::exportStruct() {
         }
         m_filePrinter.append_nl("    # edges adjacency constraints");
         this->print_edge_adjacencies_of_cell(c);
+    }
+
+    m_filePrinter.append_nl("    ##############################");
+    m_filePrinter.append_nl("    # initMat of all states");
+    for (const auto& cell: cells) {
+        if (cell.delay() == 0) {
+            this->print_init_mat_of_cell(cell);
+        }
     }
 
     m_filePrinter.append_nl("    # constraints on init cells");
@@ -482,6 +492,35 @@ void frac::StructurePrinter::print_edge_adjacencies_of_cell(frac::Face const& ce
     }
 }
 
+void frac::StructurePrinter::print_init_mat_of_cell(frac::Face const& cell) {
+    std::vector<frac::Face> subs = cell.subdivisions();
+    std::size_t nbControlPoints = cell.nbControlPoints(m_structure.bezierType(), m_structure.cantorType());
+    // for each subface
+    for (std::size_t indexSubFace = 0; indexSubFace < subs.size(); indexSubFace++) {
+        m_filePrinter.append_nl("    " + cell.name() + ".initMat[Sub_('" + std::to_string(indexSubFace) + "')] = FMat([");
+        std::size_t nbControlPointsSubface = subs[indexSubFace].nbControlPoints(m_structure.bezierType(), m_structure.cantorType());
+        // for each control point, hence each line
+        for (std::size_t indexControlPoint = 0; indexControlPoint < nbControlPoints; indexControlPoint++) {
+            if (indexControlPoint != 0) {
+                m_filePrinter.append_nl("],");
+            }
+            m_filePrinter.append("        [");
+            // for each control point of subface
+            for (std::size_t indexControlPointSubface = 0; indexControlPointSubface < nbControlPointsSubface; indexControlPointSubface++) {
+                if (indexControlPointSubface != 0) {
+                    m_filePrinter.append(", ");
+                }
+                std::pair<std::size_t, std::size_t> indexControlPointOfEdge = subs[indexSubFace].indexControlPointOfEdge(indexControlPointSubface, m_structure.bezierType(), m_structure.cantorType());
+                std::size_t indexEdgeOfSubface = indexControlPointOfEdge.second;
+                std::size_t indexControlPointOfEdgeOfSubface = indexControlPointOfEdge.first;
+                std::size_t index = m_mapIndices[cell.name()][Key(indexSubFace, indexEdgeOfSubface, indexControlPointOfEdgeOfSubface)];
+                m_filePrinter.append(frac::utils::to_string(m_systems[cell.name()].masses()[index].position().at(indexControlPoint)));
+            }
+        }
+        m_filePrinter.append_nl("]])");
+    }
+}
+
 void frac::StructurePrinter::print_plan_control_points() {
     std::size_t max = m_structure.faces().size();
     for (std::size_t index_face = 0; index_face < max; ++index_face) {
@@ -566,13 +605,25 @@ void frac::StructurePrinter::print_footer() {
 }
 
 void frac::StructurePrinter::exportMassSpringSystemStruct() {
+    this->buildMassSpringSystems();
+    for (auto const& v: m_systems) {
+        m_filePrinter.reset();
+        m_filePrinter.append(v.second.toString());
+        m_filePrinter.printToFile(m_filename + v.first + ".mss");
+    }
+}
+
+void frac::StructurePrinter::buildMassSpringSystems() {
     frac::Set<frac::Face> faces = m_structure.allFaces();
+    m_systems.clear();
+    m_mapIndices.clear();
     for (frac::Face const& f: faces) {
         // export one file for each face that has not a delay
         if (f.delay() != 0) continue;
         m_filePrinter.reset();
         std::size_t dim = f.nbControlPoints(m_structure.bezierType(), m_structure.cantorType());
-        mss::MassSpringSystem system(dim);
+        m_systems[f.name()] = mss::MassSpringSystem(dim);
+        mss::MassSpringSystem& system = m_systems[f.name()];
 
         std::size_t nbMasses = 0;
         std::vector<frac::Face> const& subdivisions = f.subdivisions();
@@ -582,12 +633,10 @@ void frac::StructurePrinter::exportMassSpringSystemStruct() {
         nbMasses -= subdivisions.size() * f.adjEdge().nbControlPoints(m_structure.bezierType(), m_structure.cantorType());
 
         for (std::size_t i = 0; i < nbMasses; i++) {
-            system.addMass(0.9);
+            system.addMass(0.3);
         }
 
-        // ( index of subface, index of edge, index of control point ) -> index of mass
-        using Key = std::tuple<std::size_t, std::size_t, std::size_t>;
-        std::map<Key, std::size_t> mapIndices;
+        std::map<Key, std::size_t>& mapIndices = m_mapIndices[f.name()];
         std::size_t currentMassIndex = 0;
         for (std::size_t indexSubFace = 0; indexSubFace < subdivisions.size(); indexSubFace++) {
             for (std::size_t indexEdge = 0; indexEdge < subdivisions[indexSubFace].len(); indexEdge++) {
@@ -750,14 +799,16 @@ void frac::StructurePrinter::exportMassSpringSystemStruct() {
             for (std::size_t indexEdge = 0; indexEdge < subdivisions[indexSubFace].len(); indexEdge++) {
                 for (std::size_t indexControlPoint = 0; indexControlPoint < subdivisions[indexSubFace][indexEdge].nbControlPoints(m_structure.bezierType(), m_structure.cantorType()) - 1; indexControlPoint++) {
                     if (static_cast<int>(indexEdge) != subdivisions[indexSubFace].lastInterior()) {
-                        system.addSpring(mapIndices[Key(indexSubFace, indexEdge, indexControlPoint)], mapIndices[Key(indexSubFace, indexEdge, indexControlPoint + 1)], 0.01, 0.0);
+                        if (subdivisions[indexSubFace].algo() == AlgorithmSubdivision::LinksOnCorners && static_cast<int>(indexEdge) == subdivisions[indexSubFace].firstInterior() + 1) {
+                            system.addSpring(mapIndices[Key(indexSubFace, indexEdge, indexControlPoint)], mapIndices[Key(indexSubFace, indexEdge, indexControlPoint + 1)], 0.5, 0.0);
+                        } else {
+                            system.addSpring(mapIndices[Key(indexSubFace, indexEdge, indexControlPoint)], mapIndices[Key(indexSubFace, indexEdge, indexControlPoint + 1)], 0.2, 0.0);
+                        }
                     }
                 }
             }
         }
 
-        m_filePrinter.append(system.toString());
-        m_filePrinter.printToFile(m_filename + f.name() + ".mss");
+        for (int i = 0; i < 1000; i++) { system.update(); }
     }
 }
-

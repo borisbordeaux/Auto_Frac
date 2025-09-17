@@ -294,3 +294,22 @@ std::vector<std::size_t> frac::Face::controlPointIndices(std::size_t indexEdge, 
 
     return res;
 }
+
+std::pair<std::size_t, std::size_t> frac::Face::indexControlPointOfEdge(std::size_t indexControlPointOfFace, frac::BezierType bezierType, frac::CantorType cantorType) const {
+    std::size_t indexControlPointOfEdge = 0;
+    std::size_t indexEdge = 0;
+
+    std::size_t currentControlPoint = 0;
+    // for each edge
+    for (std::size_t i = 0; i < m_data.size(); i++) {
+        std::size_t nbControlPointOfEdge = m_data[i].nbControlPoints(bezierType, cantorType);
+        for (std::size_t j = 0; j < nbControlPointOfEdge - 1; j++) {
+            if (currentControlPoint == indexControlPointOfFace) {
+                indexControlPointOfEdge = j;
+                indexEdge = i;
+            }
+            currentControlPoint++;
+        }
+    }
+    return { indexControlPointOfEdge, indexEdge };
+}
