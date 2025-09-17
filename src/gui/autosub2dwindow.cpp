@@ -29,6 +29,7 @@ AutoSub2DWindow::AutoSub2DWindow(QWidget* parent) :
     this->ui->listWidget_faces->addItem("C_2_0 - C_2_0 - C_2_0 - C_2_0 - C_2_0 / C_2_0 - C_2_0 - C_2_0 / 0 / 2");
     this->ui->listWidget_faces->addItem("B_2_0 - B_2_0 - B_2_0 - B_2_0 / B_2_0 - B_2_0 - B_2_0 / 0 / 2");
     //this->ui->listWidget_faces->addItem("B_3_0 - B_3_0 - B_3_0 - B_3_0 / B_3_0 - B_3_0 - B_3_0 / 0 / 2");
+    //this->ui->listWidget_faces->addItem("B_3_0 - C_2_0 - B_2_0 / C_2_0 - B_2_0 - B_2_0 / 0 / 1");
     this->ui->listWidget_faces->setCurrentRow(this->ui->listWidget_faces->count() - 1);
     // constraints to draw cells connected
     this->ui->listWidget_constraints->addItem("0.0 / 1.0");
@@ -661,7 +662,7 @@ frac::BezierType AutoSub2DWindow::getBezierType() const {
     }
 }
 
-void AutoSub2DWindow::slotGenerateMassSpringSystemFile() {
+[[maybe_unused]] void AutoSub2DWindow::slotGenerateMassSpringSystemFile() {
     frac::Face::reset();
 
     std::vector<frac::Face> faces;

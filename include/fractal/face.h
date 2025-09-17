@@ -12,6 +12,16 @@
 
 namespace frac {
 
+struct Incidence {
+    std::size_t Edge1;
+    std::size_t SubEdge1;
+    std::size_t SubFace2;
+    std::size_t Edge2;
+
+    Incidence(std::size_t edge1, std::size_t subEdge1, std::size_t subFace2, std::size_t edge2) :
+            Edge1(edge1), SubEdge1(subEdge1), SubFace2(subFace2), Edge2(edge2) {}
+};
+
 class Face {
 public:
     Face() : Face(std::vector<frac::Edge> {}) {}
@@ -59,8 +69,10 @@ public:
 
     // key is name of the cell (since it is unique)
     static std::unordered_map<std::string, std::vector<frac::Face>> s_subdivisions;
+    static std::unordered_map<std::string, std::vector<frac::Incidence>> s_incidences;
 
     std::size_t nbControlPoints(BezierType bezierType, CantorType cantorType) const;
+    std::vector<std::size_t> controlPointIndices(std::size_t indexEdge, frac::BezierType bezierType, frac::CantorType cantorType, bool reverse) const;
 
 private:
     std::vector<frac::Edge> m_data;
@@ -74,7 +86,6 @@ private:
     frac::AlgorithmSubdivision m_algo;
 
     static frac::Set<frac::Face> s_existingFaces;
-
 
     static std::size_t computeOffset(frac::Face const& face, frac::Face const& other);
 };

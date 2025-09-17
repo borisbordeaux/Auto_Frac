@@ -5,7 +5,7 @@ std::vector<frac::Face> frac::LinksSurroundDelay::subdivide(const frac::Face& fa
     std::vector<frac::Face> res;
     bool writeConstraints = Face::s_incidenceConstraints.find(face.name()) == Face::s_incidenceConstraints.end();
     if (face.delay() == 0) {
-        //if face has no delay
+        // if face has no delay
         for (std::size_t i = 0; i < face.len(); ++i) {
             // foreach edge
             frac::Edge current = face[i];
@@ -44,7 +44,7 @@ std::vector<frac::Face> frac::LinksSurroundDelay::subdivide(const frac::Face& fa
                     res.push_back(c);
                 }
 
-                //creation of intermediate states
+                // creation of intermediate states
                 int nbIntermediateStates { static_cast<int>(current.nbSubdivisions()) - 2 };
                 for (int j = 0; j < nbIntermediateStates; j++) {
                     std::vector<frac::Edge> boundaries = { current };

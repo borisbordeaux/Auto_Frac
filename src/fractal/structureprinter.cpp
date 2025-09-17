@@ -4,6 +4,7 @@
 #include "fractal/structure.h"
 #include "utils/utils.h"
 #include "utils/point2d.h"
+#include "massspringsystem/massspringsystem.h"
 
 frac::StructurePrinter::StructurePrinter(frac::Structure const& structure, bool planarControlPoints, std::string filename, std::vector<std::vector<Point2D>> const& coords) :
         m_structure(structure), m_planarControlPoints(planarControlPoints), m_filename(std::move(filename)), m_coords(coords) {}
@@ -565,38 +566,197 @@ void frac::StructurePrinter::print_footer() {
 }
 
 void frac::StructurePrinter::exportMassSpringSystemStruct() {
-    for (frac::Face const& f: m_structure.allFaces()) {
-        // export one file for all faces
+    frac::Set<frac::Face> faces = m_structure.allFaces();
+    for (frac::Face const& f: faces) {
+        // export one file for each face that has not a delay
+        if (f.delay() != 0) continue;
         m_filePrinter.reset();
-        m_filePrinter.append_nl("# dimension");
         std::size_t dim = f.nbControlPoints(m_structure.bezierType(), m_structure.cantorType());
-        m_filePrinter.append("d ");
-        m_filePrinter.append_nl(std::to_string(dim));
-        m_filePrinter.append_nl("# fixed masses");
-        std::size_t indexControlPoint = 0;
-        for (frac::Edge const& edge: f.constData()) {
-            // for all control points but the last (handled by the next edge)
-            for (std::size_t i = 0; i < edge.nbControlPoints(m_structure.bezierType(), m_structure.cantorType()) - 1; i++) {
-                //the first control point
-                if (i == 0) {
-                    m_filePrinter.append("m");
-                    for (std::size_t j = 0; j < dim; j++) {
-                        if (j == indexControlPoint) {
-                            m_filePrinter.append(" 1");
+        mss::MassSpringSystem system(dim);
+
+        std::size_t nbMasses = 0;
+        std::vector<frac::Face> const& subdivisions = f.subdivisions();
+        for (frac::Face const& subdivision: subdivisions) {
+            nbMasses += subdivision.nbControlPoints(m_structure.bezierType(), m_structure.cantorType());
+        }
+        nbMasses -= subdivisions.size() * f.adjEdge().nbControlPoints(m_structure.bezierType(), m_structure.cantorType());
+
+        for (std::size_t i = 0; i < nbMasses; i++) {
+            system.addMass(0.9);
+        }
+
+        // ( index of subface, index of edge, index of control point ) -> index of mass
+        using Key = std::tuple<std::size_t, std::size_t, std::size_t>;
+        std::map<Key, std::size_t> mapIndices;
+        std::size_t currentMassIndex = 0;
+        for (std::size_t indexSubFace = 0; indexSubFace < subdivisions.size(); indexSubFace++) {
+            for (std::size_t indexEdge = 0; indexEdge < subdivisions[indexSubFace].len(); indexEdge++) {
+                for (std::size_t indexControlPoint = 0; indexControlPoint < subdivisions[indexSubFace][indexEdge].nbControlPoints(m_structure.bezierType(), m_structure.cantorType()); indexControlPoint++) {
+                    if (indexSubFace == 0) {
+                        // the last control point of last edge is associated to the same mass as the first control point of the first edge, that is the 0-th mass
+                        if (indexEdge == subdivisions[indexSubFace].len() - 1 && indexControlPoint == subdivisions[indexSubFace][indexEdge].nbControlPoints(m_structure.bezierType(), m_structure.cantorType()) - 1) {
+                            mapIndices[Key(indexSubFace, indexEdge, indexControlPoint)] = 0;
                         } else {
-                            m_filePrinter.append(" 0");
+                            // for all other edges, we just need to check if the first control point of the edge is shared by the last of the previous edge
+                            // it is always the case, except for the first edge
+                            if (indexControlPoint == 0 && indexEdge != 0) {
+                                // try to find the index associated to the last control point of the previous edge
+                                auto it = mapIndices.find(Key(indexSubFace, indexEdge - 1, subdivisions[indexSubFace][indexEdge - 1].nbControlPoints(m_structure.bezierType(), m_structure.cantorType()) - 1));
+                                if (it != mapIndices.end()) {
+                                    // if index found, reuse it
+                                    mapIndices[Key(indexSubFace, indexEdge, indexControlPoint)] = it->second;
+                                } else {
+                                    // else association to the next available mass
+                                    mapIndices[Key(indexSubFace, indexEdge, indexControlPoint)] = currentMassIndex;
+                                    currentMassIndex++;
+                                }
+                            } else {
+                                // for all other control points of the edge, association to the next available mass
+                                mapIndices[Key(indexSubFace, indexEdge, indexControlPoint)] = currentMassIndex;
+                                currentMassIndex++;
+                            }
+                        }
+                    } else {
+                        // for all other subfaces, the association must take care of adjacencies
+                        // indices associated to the last interior edge already exist
+                        // the last control point of last edge is associated to the same mass as the first control point of the first edge
+                        if (indexEdge == subdivisions[indexSubFace].len() - 1 && indexControlPoint == subdivisions[indexSubFace][indexEdge].nbControlPoints(m_structure.bezierType(), m_structure.cantorType()) - 1) {
+                            mapIndices[Key(indexSubFace, indexEdge, indexControlPoint)] = mapIndices[Key(indexSubFace, 0, 0)];
+                        } else {
+                            // two different cases : is it the last interior edge or not?
+                            if (subdivisions[indexSubFace].lastInterior() == static_cast<int>(indexEdge)) {
+                                // if last interior edge, retrieve the indices from the first interior edge of the previous subface
+                                std::size_t nbIndicesOfCurrentEdge = subdivisions[indexSubFace][indexEdge].nbControlPoints(m_structure.bezierType(), m_structure.cantorType());
+                                Key oldKey(indexSubFace - 1, subdivisions[indexSubFace - 1].firstInterior(), nbIndicesOfCurrentEdge - indexControlPoint - 1);
+                                mapIndices[Key(indexSubFace, indexEdge, indexControlPoint)] = mapIndices[oldKey];
+                            } else {
+                                // if not the last interior edge
+                                // it could be the first interior edge of the last subface
+                                // or the previous edge of the first interior edge of the last subface
+                                if (indexSubFace == subdivisions.size() - 1 && static_cast<int>(indexEdge) == subdivisions[indexSubFace].firstInterior()) {
+                                    // if first interior edge of the last subface
+                                    // retrieve indices from the last interior edge of the first subface
+                                    std::size_t nbIndicesOfCurrentEdge = subdivisions[indexSubFace][indexEdge].nbControlPoints(m_structure.bezierType(), m_structure.cantorType());
+                                    Key oldKey(0, subdivisions[0].lastInterior(), nbIndicesOfCurrentEdge - indexControlPoint - 1);
+                                    mapIndices[Key(indexSubFace, indexEdge, indexControlPoint)] = mapIndices[oldKey];
+                                    if (indexControlPoint == 0) {
+                                        // we need to fix the last control point of the previous edge
+                                        // it is always associated to a new mass, but it needs to be
+                                        // the same as the first control point of the first interior edge
+                                        std::size_t nbIndicesOfLastEdge = subdivisions[indexSubFace][indexEdge - 1].nbControlPoints(m_structure.bezierType(), m_structure.cantorType());
+                                        mapIndices[Key(indexSubFace, indexEdge - 1, nbIndicesOfLastEdge - 1)] = mapIndices[oldKey];
+                                        currentMassIndex--;
+                                    }
+                                } else {
+                                    // we just need to check if the first control point of the edge is shared by the last of the previous edge
+                                    // it is always the case, except for the first edge
+                                    if (indexControlPoint == 0) {
+                                        if (indexEdge != 0) {
+                                            // find the index associated to the last control point of the previous edge
+                                            Key oldKey(indexSubFace, indexEdge - 1, subdivisions[indexSubFace][indexEdge - 1].nbControlPoints(m_structure.bezierType(), m_structure.cantorType()) - 1);
+                                            mapIndices[Key(indexSubFace, indexEdge, indexControlPoint)] = mapIndices[oldKey];
+                                        } else {
+                                            // for the first edge, we need to check if the last edge is the last interior edge
+                                            if (subdivisions[indexSubFace].lastInterior() == static_cast<int>(subdivisions[indexSubFace].len() - 1)) {
+                                                // if the last edge is the last interior edge
+                                                // we must retrieve the mass index from the first interior edge of the previous subface
+                                                mapIndices[Key(indexSubFace, indexEdge, indexControlPoint)] = mapIndices[Key(indexSubFace - 1, subdivisions[indexSubFace - 1].firstInterior(), 0)];
+                                            } else {
+                                                // if the last edge is not the last interior edge
+                                                // associate to a new index
+                                                mapIndices[Key(indexSubFace, indexEdge, indexControlPoint)] = currentMassIndex;
+                                                currentMassIndex++;
+                                            }
+                                        }
+                                    } else {
+                                        // the last control point of the lacuna edge is associated to
+                                        // the first control point of the lacuna edge of the previous subface
+                                        if (indexControlPoint == subdivisions[indexSubFace][indexEdge].nbControlPoints(m_structure.bezierType(), m_structure.cantorType()) - 1 && subdivisions[indexSubFace].firstInterior() + 1 == static_cast<int>(indexEdge)) {
+                                            Key oldKey(indexSubFace - 1, subdivisions[indexSubFace - 1].firstInterior() + 1, 0);
+                                            mapIndices[Key(indexSubFace, indexEdge, indexControlPoint)] = mapIndices[oldKey];
+                                        } else {
+                                            // for all other control points of the edge, association to the next available mass
+                                            mapIndices[Key(indexSubFace, indexEdge, indexControlPoint)] = currentMassIndex;
+                                            currentMassIndex++;
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
-                } else { //all internal control points
-                    m_filePrinter.append("m");
-                    // we need to get the coordinates of the points aka barycentric coordinates when incidence constraints are applied
-                    m_filePrinter.append(" coords to get...");
                 }
-                m_filePrinter.append_nl("");
-                indexControlPoint++;
             }
         }
 
+        for (auto const& constraint: frac::Face::s_incidences[f.name()]) {
+            frac::EdgeType edgeType = f[constraint.Edge1].edgeType();
+            std::size_t nbControlPoints = f[constraint.Edge1].nbControlPoints(m_structure.bezierType(), m_structure.cantorType());
+            std::vector<std::size_t> controlPointsIndices = f.controlPointIndices(constraint.Edge1, m_structure.bezierType(), m_structure.cantorType(), false);
+            std::vector<float> transformation;
+            if (f[constraint.Edge1].isDelay()) {
+                for (std::size_t i = 0; i < nbControlPoints; i++) {
+                    for (std::size_t j = 0; j < nbControlPoints; j++) {
+                        transformation.push_back(i == j ? 1 : 0);
+                    }
+                }
+            } else {
+                if (edgeType == frac::EdgeType::CANTOR) {
+                    switch (m_structure.cantorType()) {
+                        case CantorType::Linear_Cantor:
+                            transformation = frac::utils::get_cantor_linear_transformation(constraint.SubEdge1, f[constraint.Edge1].nbSubdivisions());
+                            break;
+                        case CantorType::Quadratic_Cantor:
+                            transformation = frac::utils::get_cantor_quadratic_transformation(constraint.SubEdge1, f[constraint.Edge1].nbSubdivisions());
+                            break;
+                        case CantorType::Cubic_Cantor:
+                            transformation = frac::utils::get_cantor_cubic_transformation(constraint.SubEdge1, f[constraint.Edge1].nbSubdivisions());
+                            break;
+                    }
+                } else {
+                    switch (m_structure.bezierType()) {
+                        case BezierType::Linear_Bezier:
+                            transformation = frac::utils::get_bezier_linear_transformation(constraint.SubEdge1, f[constraint.Edge1].nbSubdivisions());
+                            break;
+                        case BezierType::Quadratic_Bezier:
+                            transformation = frac::utils::get_bezier_quadratic_transformation(constraint.SubEdge1, f[constraint.Edge1].nbSubdivisions());
+                            break;
+                        case BezierType::Cubic_Bezier:
+                            transformation = frac::utils::get_bezier_cubic_transformation(constraint.SubEdge1, f[constraint.Edge1].nbSubdivisions());
+                            break;
+                    }
+                }
+            }
+
+            for (std::size_t indexControlPoint = 0; indexControlPoint < nbControlPoints; indexControlPoint++) {
+                mss::Mass& m = system.masses().at(mapIndices[Key(constraint.SubFace2, constraint.Edge2, indexControlPoint)]);
+                if (!m.fixed()) {
+                    m.setFixed(true);
+                    // reset coordinates
+                    for (std::size_t i = 0; i < dim; i++) {
+                        m.position().at(i) = 0;
+                    }
+                    // fill coordinates
+                    for (std::size_t i = 0; i < controlPointsIndices.size(); i++) {
+                        std::size_t columnIndex = indexControlPoint;
+                        std::size_t rowIndex = i;
+                        std::size_t index = controlPointsIndices.size() * rowIndex + columnIndex;
+                        m.position().at(controlPointsIndices[i]) = transformation[index];
+                    }
+                }
+            }
+        }
+
+        for (std::size_t indexSubFace = 0; indexSubFace < subdivisions.size(); indexSubFace++) {
+            for (std::size_t indexEdge = 0; indexEdge < subdivisions[indexSubFace].len(); indexEdge++) {
+                for (std::size_t indexControlPoint = 0; indexControlPoint < subdivisions[indexSubFace][indexEdge].nbControlPoints(m_structure.bezierType(), m_structure.cantorType()) - 1; indexControlPoint++) {
+                    if (static_cast<int>(indexEdge) != subdivisions[indexSubFace].lastInterior()) {
+                        system.addSpring(mapIndices[Key(indexSubFace, indexEdge, indexControlPoint)], mapIndices[Key(indexSubFace, indexEdge, indexControlPoint + 1)], 0.01, 0.0);
+                    }
+                }
+            }
+        }
+
+        m_filePrinter.append(system.toString());
         m_filePrinter.printToFile(m_filename + f.name() + ".mss");
     }
 }

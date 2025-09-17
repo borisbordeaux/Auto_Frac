@@ -5,7 +5,7 @@ std::vector<frac::Face> frac::LinksSurroundDelayAndBezier::subdivide(const frac:
     std::vector<frac::Face> res;
     bool writeConstraints = Face::s_incidenceConstraints.find(face.name()) == Face::s_incidenceConstraints.end();
     if (face.delay() == 0) {
-        //if face has no delay
+        // if face has no delay
         std::vector<std::size_t> visitedDelayEdges;
         for (std::size_t i = 0; i < face.len(); ++i) {
             // foreach edge

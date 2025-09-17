@@ -14,11 +14,12 @@ find_package(OpenCV REQUIRED COMPONENTS core highgui imgcodecs imgproc features2
 
 file(GLOB_RECURSE FILES "src/*.cpp")
 file(GLOB_RECURSE WINDOWS "include/gui/*window.h" "include/gui/glview.h")
+file(GLOB_RECURSE MSS "vendor/MassSpringSystem/src/*.cpp")
 
 # add *window.h files for the ui
-add_executable(AutoFrac ${FILES} ${WINDOWS})
+add_executable(AutoFrac ${FILES} ${WINDOWS} ${MSS})
 
-target_include_directories(AutoFrac PUBLIC include ${OpenCV_INCLUDE_DIRS} vendor/gudhi.3.9.0/include)
+target_include_directories(AutoFrac PUBLIC include ${OpenCV_INCLUDE_DIRS} vendor/gudhi.3.9.0/include vendor/MassSpringSystem/include)
 
 target_link_libraries(AutoFrac PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets Qt6::OpenGLWidgets Qt6::Charts ${OpenCV_LIBS} gmp gmpxx)
 

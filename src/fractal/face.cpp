@@ -10,6 +10,7 @@ frac::Set<frac::Face> frac::Face::s_existingFaces;
 std::map<std::string, std::string> frac::Face::s_incidenceConstraints;
 std::map<std::string, std::string> frac::Face::s_adjacencyConstraints;
 std::unordered_map<std::string, std::vector<frac::Face>> frac::Face::s_subdivisions;
+std::unordered_map<std::string, std::vector<frac::Incidence>> frac::Face::s_incidences;
 
 frac::Face::Face(std::vector<Edge> edges, unsigned int delay, frac::Edge const& adjEdge, frac::Edge const& gapEdge, frac::Edge const& reqEdge, AlgorithmSubdivision algo) :
         m_data(std::move(edges)), m_delay(delay), m_adjEdge(adjEdge), m_gapEdge(gapEdge), m_reqEdge(reqEdge), m_offset(0), m_firstInterior(-1), m_algo(algo) {
@@ -92,19 +93,20 @@ bool frac::Face::operator==(frac::Face const& other) const {
         return false;
     }
 
-    std::vector<frac::Edge> shifted { other.m_data };
-
-    for (std::size_t i = 0; i < this->len(); ++i) {
-        if (m_data == shifted) {
-            return true;
-        }
-        std::vector<frac::Edge> new_shifted { frac::utils::shiftVector(shifted) };
-        shifted.clear();
-        for (Edge const& e: new_shifted) {
-            shifted.emplace_back(e);
-        }
-    }
-    return false;
+    return m_data == other.m_data;
+//    std::vector<frac::Edge> shifted { other.m_data };
+//
+//    for (std::size_t i = 0; i < this->len(); ++i) {
+//        if (m_data == shifted) {
+//            return true;
+//        }
+//        std::vector<frac::Edge> new_shifted { frac::utils::shiftVector(shifted) };
+//        shifted.clear();
+//        for (Edge const& e: new_shifted) {
+//            shifted.emplace_back(e);
+//        }
+//    }
+//    return false;
 }
 
 namespace frac {
@@ -133,6 +135,7 @@ void frac::Face::addIncidenceConstraint(frac::Face const& face, frac::Face const
     int s2 = static_cast<int>(indexSubFace);
     int b2 = frac::utils::mod(static_cast<int>(indexSubFaceEdge) - static_cast<int>(faceSub.offset()), static_cast<int>(faceSub.len()));
     s_incidenceConstraints[face.name()] += "    " + face.name() + "(Bord('" + std::to_string(b1) + "') + Sub('" + std::to_string(s1) + "'), Sub('" + std::to_string(s2) + "') + Bord('" + std::to_string(b2) + "'))\n";
+    s_incidences[face.name()].emplace_back(b1, s1, s2, b2);
 }
 
 std::size_t frac::Face::computeOffset(frac::Face const& face, frac::Face const& other) {
@@ -202,6 +205,7 @@ void frac::Face::reset() {
     Face::s_adjacencyConstraints.clear();
     Face::s_existingFaces.clear();
     Face::s_subdivisions.clear();
+    Face::s_incidences.clear();
 }
 
 void frac::Face::setAdjEdge(frac::Edge const& edge) {
@@ -266,4 +270,27 @@ frac::Face frac::Face::fromStr(std::string const& name) {
 
     frac::AlgorithmSubdivision algo = static_cast<frac::AlgorithmSubdivision>(std::stoul(splitCellName[3]));
     return frac::Face(edges, delay, adjEdge, gapEdge, reqEdge, algo);
+}
+
+std::vector<std::size_t> frac::Face::controlPointIndices(std::size_t indexEdge, frac::BezierType bezierType, frac::CantorType cantorType, bool reverse) const {
+    std::vector<std::size_t> res = {};
+    std::size_t current = 0;
+    for (std::size_t i = 0; i < indexEdge; i++) {
+        //add to current the number of control points on the edge minus one
+        current += m_data[i].nbControlPoints(bezierType, cantorType) - 1;
+    }
+    res.emplace_back(current); //first control point index
+
+    std::size_t nbInternCtrlPts = m_data[indexEdge].nbInternControlPoints(bezierType, cantorType);
+    for (std::size_t i = 1; i <= nbInternCtrlPts; i++) {
+        res.emplace_back((current + i) % this->nbControlPoints(bezierType, cantorType)); //intern control points indices
+    }
+
+    res.emplace_back((current + nbInternCtrlPts + 1) % this->nbControlPoints(bezierType, cantorType)); //last control point index
+
+    if (reverse) {
+        std::reverse(res.begin(), res.end());
+    }
+
+    return res;
 }
