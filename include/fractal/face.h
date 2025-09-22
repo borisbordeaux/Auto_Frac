@@ -71,7 +71,7 @@ public:
     static std::unordered_map<std::string, std::vector<frac::Face>> s_subdivisions;
     static std::unordered_map<std::string, std::vector<frac::Incidence>> s_incidences;
 
-    std::size_t nbControlPoints(BezierType bezierType, CantorType cantorType) const;
+    std::size_t nbControlPoints(frac::BezierType bezierType, frac::CantorType cantorType) const;
     std::vector<std::size_t> controlPointIndices(std::size_t indexEdge, frac::BezierType bezierType, frac::CantorType cantorType, bool reverse) const;
     std::pair<std::size_t, std::size_t> indexControlPointOfEdge(std::size_t indexControlPointOfFace, frac::BezierType bezierType, frac::CantorType cantorType) const;
 

@@ -5,7 +5,6 @@
 #include <sstream>
 #include <vector>
 #include <iomanip>
-#include <unordered_map>
 #include "point2d.h"
 
 namespace frac::utils {

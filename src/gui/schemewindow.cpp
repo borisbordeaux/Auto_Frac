@@ -340,24 +340,31 @@ void SchemeWindow::localDistributionFace(std::size_t indexFace, bool useTempCoor
     }
 
     int nbCtrlPts = static_cast<int>(coords[indexFace].size());
-    bool firstInternCP = true;
-    for (int i = 0; i < static_cast<int>(coords[indexFace].size()); i++) {
+    for (int i = 0; i < nbCtrlPts; i++) {
         if (m_structure->isInternControlPoint(i, indexFace)) {
-            if (m_structure->bezierType() == frac::BezierType::Cubic_Bezier) {
-                if (firstInternCP) {
+            std::pair<std::size_t, std::size_t> indexControlPointOfEdge = m_structure->faces()[indexFace].indexControlPointOfEdge(i, m_structure->bezierType(), m_structure->cantorType());
+            std::size_t indexEdge = indexControlPointOfEdge.second;
+            std::size_t indexControlPoint = indexControlPointOfEdge.first;
+            frac::EdgeType edgeType = m_structure->faces()[indexFace][indexEdge].edgeType();
+            bool isCubic = false;
+            if (edgeType == frac::EdgeType::CANTOR) {
+                isCubic = m_structure->cantorType() == frac::CantorType::Cubic_Cantor;
+            } else {
+                isCubic = m_structure->bezierType() == frac::BezierType::Cubic_Bezier;
+            }
+            if (isCubic) {
+                if (indexControlPoint == 1) {
                     QPointF P0 = coords[indexFace][i - 1];
                     QPointF P1 = coords[indexFace][(i + 2) % nbCtrlPts];
                     QPointF c = SchemeWindow::coordOfPointOnLineAt(1.f / 3.f, P0, P1);
                     coords[indexFace][i] = c;
-                    firstInternCP = false;
                 } else {
                     QPointF P0 = coords[indexFace][i - 2];
                     QPointF P1 = coords[indexFace][(i + 1) % nbCtrlPts];
                     QPointF c = SchemeWindow::coordOfPointOnLineAt(2.f / 3.f, P0, P1);
                     coords[indexFace][i] = c;
-                    firstInternCP = true;
                 }
-            } else {
+            } else { // quadratic
                 coords[indexFace][i] = (coords[indexFace][i - 1] + coords[indexFace][(i + 1) % nbCtrlPts]) / 2.0f;
             }
         }

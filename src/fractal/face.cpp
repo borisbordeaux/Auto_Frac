@@ -240,7 +240,7 @@ std::optional<frac::Edge> frac::Face::edgeIfRequired(const frac::Edge& edge) con
     }
 }
 
-std::size_t frac::Face::nbControlPoints(BezierType bezierType, CantorType cantorType) const {
+std::size_t frac::Face::nbControlPoints(frac::BezierType bezierType, frac::CantorType cantorType) const {
     std::size_t res = 0;
     for (Edge const& e: m_data) {
         res += e.nbControlPoints(bezierType, cantorType);

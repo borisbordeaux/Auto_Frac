@@ -164,13 +164,13 @@ void frac::StructurePrinter::print_cantor_n_state_decl(unsigned int n) {
 }
 
 void frac::StructurePrinter::print_delay_bezier_decl(unsigned int n, unsigned int delay_count) {
-    m_filePrinter.append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + " = Etat('B" + std::to_string(n) + "_" + std::to_string(delay_count) + "', " + (m_structure.bezierType() == BezierType::Cubic_Bezier ? "2" : "1") + ")");
+    m_filePrinter.append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + " = Etat('B" + std::to_string(n) + "_" + std::to_string(delay_count) + "', " + (m_structure.bezierType() == BezierType::Cubic_Bezier ? "2" : (m_structure.bezierType() == BezierType::Quadratic_Bezier ? "1" : "0")) + ")");
     m_filePrinter.append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + ".bords = {Bord('0'): s, Bord('1'): s}");
     m_filePrinter.append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + ".permuts = {Permut('0'): B" + std::to_string(n) + "_" + std::to_string(delay_count) + "}");
 }
 
 void frac::StructurePrinter::print_bezier_state_decl(unsigned int n) {
-    m_filePrinter.append_nl("    B" + std::to_string(n) + " = Etat('B" + std::to_string(n) + "', " + (m_structure.bezierType() == BezierType::Cubic_Bezier ? "2" : "1") + ")");
+    m_filePrinter.append_nl("    B" + std::to_string(n) + " = Etat('B" + std::to_string(n) + "', " + (m_structure.bezierType() == BezierType::Cubic_Bezier ? "2" : (m_structure.bezierType() == BezierType::Quadratic_Bezier ? "1" : "0")) + ")");
     m_filePrinter.append_nl("    B" + std::to_string(n) + ".bords = {Bord('0'): s, Bord('1'): s}");
     m_filePrinter.append_nl("    B" + std::to_string(n) + ".permuts = {Permut('0'): B" + std::to_string(n) + "}");
 }
@@ -319,29 +319,40 @@ void frac::StructurePrinter::print_cantor_n_state_impl(unsigned int n) {
 void frac::StructurePrinter::print_delay_bezier_impl(unsigned int n, unsigned int delay_count) {
     m_filePrinter.append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + ".subs = {Sub('0'): " + (delay_count > 1 ? "B" + std::to_string(n) + "_" + std::to_string(delay_count - 1) : "B" + std::to_string(n)) + "}");
     m_filePrinter.append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + ".buildIntern()");
-    if (m_structure.bezierType() == BezierType::Cubic_Bezier) {
-        m_filePrinter.append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + ".space = [Bord_('0'), Intern_('0'), Intern_('1'), Bord_('1')]");
-    } else {
+    if (m_structure.bezierType() == frac::BezierType::Linear_Bezier) {
+        m_filePrinter.append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + ".space = [Bord_('0'), Bord_('1')]");
+    } else if (m_structure.bezierType() == frac::BezierType::Quadratic_Bezier) {
         m_filePrinter.append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + ".space = [Bord_('0'), Intern_(''), Bord_('1')]");
+    } else {//cubic
+        m_filePrinter.append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + ".space = [Bord_('0'), Intern_('0'), Intern_('1'), Bord_('1')]");
     }
     m_filePrinter.append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + "(Permut('0') + Bord('0'), Bord('1'))");
     m_filePrinter.append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + "(Permut('0') + Bord('1'), Bord('0'))");
-    if (m_structure.bezierType() == BezierType::Cubic_Bezier) {
+
+    //permut intern
+    if (m_structure.bezierType() == frac::BezierType::Quadratic_Bezier) {
+        m_filePrinter.append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + "(Permut('0') + Intern(''), Intern(''))");
+    } else if (m_structure.bezierType() == frac::BezierType::Cubic_Bezier) {
         m_filePrinter.append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + "(Permut('0') + Intern('0'), Intern('1'))");
         m_filePrinter.append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + "(Permut('0') + Intern('1'), Intern('0'))");
-    } else {
-        m_filePrinter.append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + "(Permut('0') + Intern(''), Intern(''))");
     }
+
     m_filePrinter.append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + "(Permut('0') + Sub('0'), Sub('0') + Permut('0'))");
     m_filePrinter.append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + "(Bord('0') + Sub('0'), Sub('0') + Bord('0'))");
     m_filePrinter.append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + "(Bord('1') + Sub('0'), Sub('0') + Bord('1'))");
-    if (m_structure.bezierType() == BezierType::Cubic_Bezier) {
-        m_filePrinter.append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + ".grid.elems = [Figure(1, [Bord_('0'), Intern_('0'), Intern_('1'), Bord_('1')])]");
-    } else {
+
+    if (m_structure.bezierType() == frac::BezierType::Linear_Bezier) {
+        m_filePrinter.append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + ".grid.elems = [Figure(1, [Bord_('0'), Bord_('1')])]");
+    } else if (m_structure.bezierType() == frac::BezierType::Quadratic_Bezier) {
         m_filePrinter.append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + ".grid.elems = [Figure(1, [Bord_('0'), Intern_(''), Bord_('1')])]");
+    } else {//cubic
+        m_filePrinter.append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + ".grid.elems = [Figure(1, [Bord_('0'), Intern_('0'), Intern_('1'), Bord_('1')])]");
     }
+
     m_filePrinter.append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + ".prim.elems = [Figure(1, [Bord_('0'), Bord_('1')])]");
-    if (m_structure.bezierType() == BezierType::Cubic_Bezier) {
+
+    //matrices for intern points
+    if (m_structure.bezierType() == frac::BezierType::Cubic_Bezier) {
         m_filePrinter.append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + ".initMat[Sub_('0') + Intern('0')] = FMat([");
         m_filePrinter.append_nl("        [0.0],");
         m_filePrinter.append_nl("        [1.0],");
@@ -353,7 +364,7 @@ void frac::StructurePrinter::print_delay_bezier_impl(unsigned int n, unsigned in
         m_filePrinter.append_nl("        [0.0],");
         m_filePrinter.append_nl("        [1.0],");
         m_filePrinter.append_nl("        [0.0]]).setTyp('Const')");
-    } else {
+    } else if (m_structure.bezierType() == frac::BezierType::Quadratic_Bezier) {
         m_filePrinter.append_nl("    B" + std::to_string(n) + "_" + std::to_string(delay_count) + ".initMat[Sub_('0') + Intern('')] = FMat([");
         m_filePrinter.append_nl("        [0.0],");
         m_filePrinter.append_nl("        [1.0],");
@@ -368,29 +379,57 @@ void frac::StructurePrinter::print_bezier_state_impl(unsigned int n) {
     }
     m_filePrinter.append_nl("Sub('" + std::to_string(n - 1) + "'): B" + std::to_string(n) + "}");
     m_filePrinter.append_nl("    B" + std::to_string(n) + ".buildIntern()");
-    if (m_structure.bezierType() == BezierType::Cubic_Bezier) {
-        m_filePrinter.append_nl("    B" + std::to_string(n) + ".space = [Bord_('0'), Intern_('0'), Intern_('1'), Bord_('1')]");
-    } else {
+
+    if (m_structure.bezierType() == frac::BezierType::Linear_Bezier) {
+        m_filePrinter.append_nl("    B" + std::to_string(n) + ".space = [Bord_('0'), Bord_('1')]");
+    } else if (m_structure.bezierType() == frac::BezierType::Quadratic_Bezier) {
         m_filePrinter.append_nl("    B" + std::to_string(n) + ".space = [Bord_('0'), Intern_(''), Bord_('1')]");
+    } else {//cubic
+        m_filePrinter.append_nl("    B" + std::to_string(n) + ".space = [Bord_('0'), Intern_('0'), Intern_('1'), Bord_('1')]");
     }
+
     m_filePrinter.append_nl("    B" + std::to_string(n) + "(Permut('0') + Bord('0'), Bord('1'))");
     m_filePrinter.append_nl("    B" + std::to_string(n) + "(Permut('0') + Bord('1'), Bord('0'))");
-    if (m_structure.bezierType() == BezierType::Cubic_Bezier) {
+    for (unsigned int i = 0; i < n; ++i) {
+        m_filePrinter.append_nl("    B" + std::to_string(n) + "(Permut('0') + Sub('" + std::to_string(i) + "'), Sub('" + std::to_string(n - i - 1) + "') + Permut('0'))");
+    }
+
+    //permut intern
+    if (m_structure.bezierType() == frac::BezierType::Quadratic_Bezier) {
+        m_filePrinter.append_nl("    B" + std::to_string(n) + "(Permut('0') + Intern(''), Intern(''))");
+    } else if (m_structure.bezierType() == frac::BezierType::Cubic_Bezier) {
         m_filePrinter.append_nl("    B" + std::to_string(n) + "(Permut('0') + Intern('0'), Intern('1'))");
         m_filePrinter.append_nl("    B" + std::to_string(n) + "(Permut('0') + Intern('1'), Intern('0'))");
-    } else {
-        m_filePrinter.append_nl("    B" + std::to_string(n) + "(Permut('0') + Intern(''), Intern(''))");
     }
-    for (unsigned int i = 0; i < n; ++i) {
-        m_filePrinter.append_nl("    B" + std::to_string(n) + "(Permut('0') + Sub(" + std::to_string(i) + "), Sub(" + std::to_string(n - i - 1) + ") + Permut('0'))");
-    }
-    if (m_structure.bezierType() == BezierType::Cubic_Bezier) {
-        m_filePrinter.append_nl("    B" + std::to_string(n) + ".grid.elems = [Figure(1, [Bord_('0'), Intern_('0'), Intern_('1'), Bord_('1')])]");
-    } else {
+
+    m_filePrinter.append_nl("    B" + std::to_string(n) + "(Bord('0') + Sub('0'), Sub('0') + Bord('0'))");
+    m_filePrinter.append_nl("    B" + std::to_string(n) + "(Bord('1') + Sub('0'), Sub(" + std::to_string(n - 1) + ") + Bord('1'))");
+
+    if (m_structure.bezierType() == frac::BezierType::Linear_Bezier) {
+        m_filePrinter.append_nl("    B" + std::to_string(n) + ".grid.elems = [Figure(1, [Bord_('0'), Bord_('1')])]");
+    } else if (m_structure.bezierType() == frac::BezierType::Quadratic_Bezier) {
         m_filePrinter.append_nl("    B" + std::to_string(n) + ".grid.elems = [Figure(1, [Bord_('0'), Intern_(''), Bord_('1')])]");
+    } else {//cubic
+        m_filePrinter.append_nl("    B" + std::to_string(n) + ".grid.elems = [Figure(1, [Bord_('0'), Intern_('0'), Intern_('1'), Bord_('1')])]");
     }
-    m_filePrinter.append_nl("    B" + std::to_string(n) + ".prim.elems = [Figure(1, [Bord_('0'), Bord_('1')])]");
-    if (m_structure.bezierType() == BezierType::Cubic_Bezier) {
+
+    //matrices
+    if (m_structure.bezierType() == frac::BezierType::Linear_Bezier) {
+        for (unsigned int i = 0; i < n; ++i) {  // for each subdivision T0, T1, ... Tn-1
+            m_filePrinter.append_nl("    B" + std::to_string(n) + ".initMat[Sub_('" + std::to_string(i) + "')] = FMat([");
+            std::vector<float> t = frac::utils::get_bezier_linear_transformation(i, n);
+            m_filePrinter.append_nl("        [" + frac::utils::to_string(t[0]) + ", " + frac::utils::to_string(t[1]) + "],");
+            m_filePrinter.append_nl("        [" + frac::utils::to_string(t[2]) + ", " + frac::utils::to_string(t[3]) + "]]).setTyp('Const')");
+        }
+    } else if (m_structure.bezierType() == frac::BezierType::Quadratic_Bezier) {
+        for (unsigned int i = 0; i < n; ++i) {  // for each subdivision T0, T1, ... Tn-1
+            m_filePrinter.append_nl("    B" + std::to_string(n) + ".initMat[Sub_('" + std::to_string(i) + "')] = FMat([");
+            std::vector<float> t = frac::utils::get_bezier_quadratic_transformation(i, n);
+            m_filePrinter.append_nl("        [" + frac::utils::to_string(t[0]) + ", " + frac::utils::to_string(t[1]) + ", " + frac::utils::to_string(t[2]) + "],");
+            m_filePrinter.append_nl("        [" + frac::utils::to_string(t[3]) + ", " + frac::utils::to_string(t[4]) + ", " + frac::utils::to_string(t[5]) + "],");
+            m_filePrinter.append_nl("        [" + frac::utils::to_string(t[6]) + ", " + frac::utils::to_string(t[7]) + ", " + frac::utils::to_string(t[8]) + "]]).setTyp('Const')");
+        }
+    } else {//cubic
         for (unsigned int i = 0; i < n; ++i) {  // for each subdivision T0, T1, ... Tn-1
             m_filePrinter.append_nl("    B" + std::to_string(n) + ".initMat[Sub_('" + std::to_string(i) + "')] = FMat([");
             std::vector<float> t = frac::utils::get_bezier_cubic_transformation(i, n);
@@ -398,14 +437,6 @@ void frac::StructurePrinter::print_bezier_state_impl(unsigned int n) {
             m_filePrinter.append_nl("        [" + frac::utils::to_string(t[4]) + ", " + frac::utils::to_string(t[5]) + ", " + frac::utils::to_string(t[6]) + ", " + frac::utils::to_string(t[7]) + "],");
             m_filePrinter.append_nl("        [" + frac::utils::to_string(t[8]) + ", " + frac::utils::to_string(t[9]) + ", " + frac::utils::to_string(t[10]) + ", " + frac::utils::to_string(t[11]) + "],");
             m_filePrinter.append_nl("        [" + frac::utils::to_string(t[12]) + ", " + frac::utils::to_string(t[13]) + ", " + frac::utils::to_string(t[14]) + ", " + frac::utils::to_string(t[15]) + "]]).setTyp('Const')");
-        }
-    } else {
-        for (unsigned int i = 0; i < n; ++i) {  // for each subdivision T0, T1, ... Tn-1
-            m_filePrinter.append_nl("    B" + std::to_string(n) + ".initMat[Sub_('" + std::to_string(i) + "')] = FMat([");
-            std::vector<float> t = frac::utils::get_bezier_quadratic_transformation(i, n);
-            m_filePrinter.append_nl("        [" + frac::utils::to_string(t[0]) + ", " + frac::utils::to_string(t[1]) + ", " + frac::utils::to_string(t[2]) + "],");
-            m_filePrinter.append_nl("        [" + frac::utils::to_string(t[3]) + ", " + frac::utils::to_string(t[4]) + ", " + frac::utils::to_string(t[5]) + "],");
-            m_filePrinter.append_nl("        [" + frac::utils::to_string(t[6]) + ", " + frac::utils::to_string(t[7]) + ", " + frac::utils::to_string(t[8]) + "]]).setTyp('Const')");
         }
     }
 }
@@ -587,9 +618,6 @@ void frac::StructurePrinter::print_plan_coords_control_points() {
 }
 
 void frac::StructurePrinter::print_footer() {
-    //for automatic subdivision algorithm
-    //m_filePrinter.append_nl("    auto = Auto(init)");
-    //m_filePrinter.append_nl("    auto.autoSubs(300)");
     m_filePrinter.append_nl("    return init");
     m_filePrinter.append_nl("");
     m_filePrinter.append_nl("");
@@ -620,7 +648,6 @@ void frac::StructurePrinter::buildMassSpringSystems() {
     for (frac::Face const& f: faces) {
         // export one file for each face that has not a delay
         if (f.delay() != 0) continue;
-        m_filePrinter.reset();
         std::size_t dim = f.nbControlPoints(m_structure.bezierType(), m_structure.cantorType());
         m_systems[f.name()] = mss::MassSpringSystem(dim);
         mss::MassSpringSystem& system = m_systems[f.name()];

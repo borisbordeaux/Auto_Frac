@@ -655,7 +655,9 @@ frac::CantorType AutoSub2DWindow::getCantorType() const {
 
 frac::BezierType AutoSub2DWindow::getBezierType() const {
     switch (this->ui->comboBox_typeBezier->currentIndex()) {
-        case 1:
+        case 0:
+            return frac::BezierType::Linear_Bezier;
+        case 2:
             return frac::BezierType::Cubic_Bezier;
         default:
             return frac::BezierType::Quadratic_Bezier;
