@@ -50,7 +50,6 @@ This software also allows to conceive fractals using polyhedron circle packings 
 Such packings need a polyhedron, which can be imported as an OBJ file.
 It is possible to visualize the packing, on the plane or directly on the sphere.
 
-Mettre images interface polyèdre et empilement associé (plan et sphère).
 <img src="img_readme/interface_edit_polyhedron.png" alt="Interface edit of polyhedron with circle packing on plane" width="800px"/>
 <img src="img_readme/interface_edit_polyhedron_2.png" alt="Interface edit of polyhedron with circle packing on sphere" width="800px"/>
 
