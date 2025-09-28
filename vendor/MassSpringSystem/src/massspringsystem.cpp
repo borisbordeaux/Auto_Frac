@@ -1,7 +1,8 @@
 #include <fstream>
 #include <iostream>
+#include <iomanip>
+#include <algorithm>
 #include "massspringsystem/massspringsystem.h"
-#include "utils/utils.h"
 
 namespace mss {
 MassSpringSystem::MassSpringSystem(std::size_t dim) : m_dim(dim) {}
@@ -183,19 +184,27 @@ std::string MassSpringSystem::toString() const {
         if (m.fixed()) {
             res += "\nm";
             for (std::size_t i = 0; i < m_dim; i++) {
-                res += " " + frac::utils::to_string(m.position().at(i));
+                res += " " + MassSpringSystem::toString(m.position().at(i));
             }
         } else {
-            res += "\nn 1 " + frac::utils::to_string(m.damping());
+            res += "\nn 1 " + MassSpringSystem::toString(m.damping());
         }
     }
     for (std::size_t i = 0; i < m_springs.size(); i++) {
         res += "\ns ";
         res += std::to_string(m_springIndices[i].first);
         res += " " + std::to_string(m_springIndices[i].second);
-        res += " " + frac::utils::to_string(m_springs[i].k());
-        res += " " + frac::utils::to_string(m_springs[i].length());
+        res += " " + MassSpringSystem::toString(m_springs[i].k());
+        res += " " + MassSpringSystem::toString(m_springs[i].length());
     }
+    return res;
+}
+
+std::string MassSpringSystem::toString(float value) {
+    std::stringstream stream;
+    stream << std::fixed << std::setprecision(4) << value;
+    std::string res = stream.str();
+    std::replace(res.begin(), res.end(), ',', '.');
     return res;
 }
 } // mss
